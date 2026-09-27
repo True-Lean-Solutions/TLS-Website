@@ -1,0 +1,239 @@
+---
+/**
+ * Contact form. Mechanism is fixed by CLAUDE.md § Contact form contract —
+ * do not change: POST URLSearchParams (never JSON), fire-and-forget, honeypot,
+ * exact field names. It was debugged three times in Phase 1.
+ */
+import { site } from '../data/site';
+
+const timelines = [
+  'As soon as possible',
+  'Within 1–3 months',
+  'Within 3–6 months',
+  'Just exploring for now',
+];
+---
+
+<form class="contact-form" novalidate data-endpoint={site.contactEndpoint}>
+  <div class="row">
+    <div class="field">
+      <label for="cf-name">Name <span aria-hidden="true">*</span></label>
+      <input id="cf-name" name="name" type="text" autocomplete="name" required />
+    </div>
+    <div class="field">
+      <label for="cf-email">Email <span aria-hidden="true">*</span></label>
+      <input id="cf-email" name="email" type="email" autocomplete="email" required />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label for="cf-company">Company <span aria-hidden="true">*</span></label>
+      <input id="cf-company" name="company" type="text" autocomplete="organization" required />
+    </div>
+    <div class="field">
+      <label for="cf-phone">Phone <span class="opt">(optional)</span></label>
+      <input id="cf-phone" name="phone" type="tel" autocomplete="tel" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="cf-timeline">Timeline <span aria-hidden="true">*</span></label>
+    <select id="cf-timeline" name="timeline" required>
+      <option value="" disabled selected>Select a timeline…</option>
+      {timelines.map((t) => <option value={t}>{t}</option>)}
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="cf-challenge">What are you trying to solve? <span aria-hidden="true">*</span></label>
+    <textarea id="cf-challenge" name="challenge" rows="5" maxlength="1000" required></textarea>
+    <p class="counter"><span data-counter>0</span> / 1000</p>
+  </div>
+
+  {/* Honeypot — visually hidden; if filled, we show success and send nothing. */}
+  <div class="hp" aria-hidden="true">
+    <label for="cf-website">Website</label>
+    <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <button class="submit" type="submit">Send message</button>
+
+  <p class="success" role="status" hidden>
+    Thanks — your message is on its way. We'll be in touch shortly.
+  </p>
+  <p class="error" role="alert" hidden>
+    Something went wrong. Please email us at
+    <a href={`mailto:${site.email}`}>{site.email}</a>.
+  </p>
+
+  <noscript>
+    <p class="ns">
+      This form needs JavaScript. You can email us directly at
+      <a href={`mailto:${site.email}`}>{site.email}</a>.
+    </p>
+  </noscript>
+</form>
+
+<style>
+  .contact-form {
+    display: grid;
+    gap: 1.1rem;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem;
+  }
+  .field {
+    display: grid;
+    gap: 0.4rem;
+  }
+  label {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+  }
+  label span[aria-hidden] {
+    color: var(--red-text);
+  }
+  .opt {
+    color: var(--muted);
+    font-weight: 400;
+  }
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-family: var(--font-body);
+    font-size: 1rem;
+  }
+  textarea {
+    resize: vertical;
+  }
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid var(--red);
+    outline-offset: 1px;
+    border-color: var(--red);
+  }
+  input[aria-invalid='true'],
+  select[aria-invalid='true'],
+  textarea[aria-invalid='true'] {
+    border-color: var(--red-text);
+  }
+  .counter {
+    justify-self: end;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .submit {
+    justify-self: start;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1rem;
+    color: #fff;
+    background: var(--red-text);
+    border: 0;
+    border-radius: 999px;
+    padding: 0.9rem 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(194, 54, 54, 0.28);
+    transition: background-color 0.18s ease;
+  }
+  .submit:hover {
+    background: #a82f2f;
+  }
+  .submit[disabled] {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .success,
+  .error,
+  .ns {
+    padding: 0.9rem 1.1rem;
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+  }
+  .success {
+    background: var(--blue-tint);
+    color: var(--blue-text);
+  }
+  .error,
+  .ns {
+    background: var(--red-tint);
+    color: var(--red-text);
+  }
+
+  @media (max-width: 560px) {
+    .row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('.contact-form');
+  if (form) {
+    const endpoint = form.dataset.endpoint!;
+    const challenge = form.querySelector<HTMLTextAreaElement>('#cf-challenge');
+    const counter = form.querySelector<HTMLElement>('[data-counter]');
+    const success = form.querySelector<HTMLElement>('.success');
+    const error = form.querySelector<HTMLElement>('.error');
+    const submit = form.querySelector<HTMLButtonElement>('.submit');
+    const honeypot = form.querySelector<HTMLInputElement>('#cf-website');
+
+    challenge?.addEventListener('input', () => {
+      if (counter) counter.textContent = String(challenge.value.length);
+    });
+
+    const showSuccess = () => {
+      if (success) success.hidden = false;
+      if (error) error.hidden = true;
+      form.reset();
+      if (counter) counter.textContent = '0';
+      if (submit) submit.disabled = true;
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (error) error.hidden = true;
+
+      // Native validation for required fields.
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      // Honeypot filled → bot. Show success, send nothing.
+      if (honeypot && honeypot.value.trim() !== '') {
+        showSuccess();
+        return;
+      }
+
+      const params = new URLSearchParams();
+      new FormData(form).forEach((value, key) => {
+        if (key === 'website') return;
+        params.append(key, value.toString());
+      });
+      params.append('submitted', new Date().toISOString());
+
+      // Fire-and-forget: Apps Script answers with an unreadable redirect.
+      fetch(endpoint, { method: 'POST', body: params }).catch(() => {});
+      showSuccess();
+    });
+  }
+</script>

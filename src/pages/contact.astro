@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ContactForm from '../components/ContactForm.astro';
+import Button from '../components/Button.astro';
+import { site } from '../data/site';
+
+// Meta — source: TLS: Website Pages (2026-09-27), 1w1w7ClLF7Ts7M-FSFJeopTP6Z_13FhXn_q9Qxy2hlT0
+const title = 'True Lean Solutions — Contact Us | Discuss Your Project';
+const description =
+  "Tell us about the business problem you're solving, or send us a message.";
+---
+
+<BaseLayout title={title} description={description} path="/contact/">
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Contact Us"
+        title="Tell us what you're "
+        accent="trying to solve."
+        as="h1"
+        lead="Share the business problem you're working on and we'll get back to you. Prefer to talk it through? Book a free 30-minute call."
+      />
+
+      <div class="contact-grid">
+        <div class="form-col">
+          <ContactForm />
+        </div>
+
+        <aside class="side">
+          <div class="card">
+            <h2>Prefer to talk?</h2>
+            <p>Book a free 30-minute call — enough to figure out where to start.</p>
+            <Button href={site.booking} variant="primary" arrow external>
+              Book a call
+            </Button>
+          </div>
+
+          <div class="card">
+            <h2>Reach us directly</h2>
+            <ul class="details">
+              <li>
+                <span class="k">Email</span>
+                <a href={`mailto:${site.email}`}>{site.email}</a>
+              </li>
+              <li>
+                <span class="k">Phone</span>
+                <a href={site.phoneHref}>{site.phone}</a>
+              </li>
+              <li>
+                <span class="k">LinkedIn</span>
+                <a href={site.social.linkedin} target="_blank" rel="noopener noreferrer">
+                  Company page
+                </a>
+              </li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 0.6fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  .form-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+  }
+  .side {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.6rem;
+    box-shadow: var(--shadow);
+  }
+  .card h2 {
+    font-size: var(--step-1);
+    margin-bottom: 0.5rem;
+  }
+  .card p {
+    color: var(--text-2);
+    font-size: 0.95rem;
+    margin-bottom: 1.1rem;
+  }
+  .details {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.9rem;
+  }
+  .details li {
+    display: grid;
+    gap: 0.15rem;
+  }
+  .k {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .details a {
+    color: var(--blue-text);
+    text-decoration: none;
+  }
+  .details a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

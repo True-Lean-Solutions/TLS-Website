@@ -141,3 +141,19 @@ Entry format:
 **Revisit when.** Mack weighs in, or a cleaner/on-brand hero image replaces the placeholder.
 
 **Where it lives.** `public/hero/hero-team.png`, `src/pages/index.astro` (hero); `CLAUDE.md` § Hard rules (imagery).
+
+---
+
+## 2026-09-28 — Pages without mock-ups are derived from the Home component system
+
+**Status:** interim
+
+**Decision.** Pages that have no reference image (Contact, Services, the four service detail pages, About, Insights, the referral pages, 404) are laid out by reusing the Home components and design language — header/footer, `SectionHeading`/`Eyebrow`, cards, pill buttons, the CTA band — rather than waiting for a per-page mock-up. Reference images may still be pulled from the design GPT where helpful. Contact is the first page built this way.
+
+**Why.** Himanshu approved it (2026-09-28): "Proceed and derive each page's layout from the home components." Keeps the build moving without a mock-up per page.
+
+**Cost we are accepting.** These pages are a reasonable interpretation, not a mock-approved design; each may be reworked when a reference or feedback arrives.
+
+**Revisit when.** A reference image or review changes a specific page's layout.
+
+**Where it lives.** `src/pages/` (each derived page), `src/components/`.
