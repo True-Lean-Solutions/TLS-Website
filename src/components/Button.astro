@@ -1,0 +1,93 @@
+---
+/**
+ * Pill button for CTAs (mock-up house style: fully rounded, optional arrow).
+ * Filled buttons use Action Red (#C23636), AA on white (5.42:1).
+ * Labels come from v2.3 §09 — never "Get Started" / "Request a Quote".
+ */
+import Icon from './Icon.astro';
+import { href as withBase } from '../data/site';
+
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary' | 'ghost-light';
+  external?: boolean;
+  /** Show a trailing arrow (mock-up default for primary CTAs). */
+  arrow?: boolean;
+  class?: string;
+}
+const {
+  href,
+  variant = 'primary',
+  external = false,
+  arrow = false,
+  class: className,
+} = Astro.props;
+
+const resolved = external ? href : withBase(href);
+const extAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+
+<a class:list={['btn', variant, className]} href={resolved} {...extAttrs}>
+  <span><slot /></span>
+  {arrow && <Icon name="arrow" size={18} class="btn-arrow" />}
+</a>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0.9rem 1.6rem;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease,
+      border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .btn :global(.btn-arrow) {
+    transition: transform 0.18s ease;
+  }
+  .btn:hover :global(.btn-arrow) {
+    transform: translateX(3px);
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  .primary {
+    background: var(--red-text);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(194, 54, 54, 0.28);
+  }
+  .primary:hover {
+    background: #a82f2f;
+    color: #fff;
+  }
+
+  .secondary {
+    background: var(--surface);
+    color: var(--ink);
+    border-color: var(--border-2);
+  }
+  .secondary:hover {
+    border-color: var(--red-text);
+    color: var(--red-text);
+  }
+
+  .ghost-light {
+    background: transparent;
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  .ghost-light:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #fff;
+    color: #fff;
+  }
+</style>

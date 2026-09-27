@@ -1,0 +1,68 @@
+---
+import type { Accent } from '../data/services';
+
+/**
+ * One step in the four-step approach (mock-up 05 style: circular marker,
+ * colored underline). The content is a genuine sequence, so the number is
+ * meaningful.
+ */
+interface Props {
+  number: string;
+  title: string;
+  text: string;
+  accent: Accent;
+}
+const { number, title, text, accent } = Astro.props;
+
+const accents: Record<Accent, string> = {
+  red: '--c: var(--red); --c-tint: var(--red-tint);',
+  blue: '--c: var(--blue); --c-tint: var(--blue-tint);',
+  plum: '--c: var(--plum); --c-tint: var(--plum-tint);',
+};
+---
+
+<li class="step" style={accents[accent]}>
+  <span class="marker" aria-hidden="true">{number}</span>
+  <span class="rule" aria-hidden="true"></span>
+  <h3>{title}</h3>
+  <p>{text}</p>
+</li>
+
+<style>
+  .step {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
+  }
+  .marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    background: var(--c-tint);
+    color: var(--c);
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+  .rule {
+    display: block;
+    width: 2rem;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--c);
+    margin: 0.4rem 0 0.1rem;
+  }
+  h3 {
+    font-size: var(--step-1);
+  }
+  p {
+    color: var(--text-2);
+    line-height: 1.55;
+    font-size: 0.96rem;
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+import Icon from './Icon.astro';
+import type { IconName } from './iconTypes';
+import type { Accent } from '../data/services';
+
+interface Props {
+  value: string;
+  label: string;
+  icon: IconName;
+  accent: Accent;
+}
+const { value, label, icon, accent } = Astro.props;
+
+const accents: Record<Accent, string> = {
+  red: '--c: var(--red); --c-tint: var(--red-tint);',
+  blue: '--c: var(--blue); --c-tint: var(--blue-tint);',
+  plum: '--c: var(--plum); --c-tint: var(--plum-tint);',
+};
+---
+
+<div class="stat" style={accents[accent]}>
+  <span class="icon"><Icon name={icon} size={26} /></span>
+  <div class="body">
+    <span class="value">{value}</span>
+    <span class="label">{label}</span>
+  </div>
+</div>
+
+<style>
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    border-radius: var(--radius);
+    background: var(--c-tint);
+    color: var(--c);
+    flex: none;
+  }
+  .value {
+    display: block;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: var(--step-4);
+    line-height: 1;
+    color: var(--c);
+    letter-spacing: -0.02em;
+  }
+  .label {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+</style>

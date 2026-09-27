@@ -1,0 +1,50 @@
+---
+import Eyebrow from './Eyebrow.astro';
+
+interface Props {
+  /** Optional eyebrow label above the heading (mock-up motif). */
+  eyebrow?: string;
+  title: string;
+  /** Trailing phrase rendered in Execution Red (mock-up accent). */
+  accent?: string;
+  lead?: string;
+  align?: 'start' | 'center';
+  as?: 'h1' | 'h2';
+}
+const {
+  eyebrow,
+  title,
+  accent,
+  lead,
+  align = 'start',
+  as: Tag = 'h2',
+} = Astro.props;
+---
+
+<div class:list={['section-heading', align]}>
+  {eyebrow && <Eyebrow label={eyebrow} align={align} />}
+  <Tag>
+    {title}{accent && <><span class="accent">{accent}</span></>}
+  </Tag>
+  {lead && <p class="lead">{lead}</p>}
+</div>
+
+<style>
+  .section-heading {
+    max-width: 62ch;
+    margin-bottom: var(--space-4);
+  }
+  .center {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .accent {
+    color: var(--red);
+  }
+  .lead {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+</style>

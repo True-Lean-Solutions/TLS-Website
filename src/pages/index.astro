@@ -1,0 +1,346 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroArt from '../components/HeroArt.astro';
+import Button from '../components/Button.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import ValueCard from '../components/ValueCard.astro';
+import StatInline from '../components/StatInline.astro';
+import StepRow from '../components/StepRow.astro';
+import TestimonialCard from '../components/TestimonialCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { cta, href } from '../data/site';
+import { services } from '../data/services';
+import { testimonials } from '../data/testimonials';
+
+// Meta — source: TLS: Website Pages (2026-09-27), 1w1w7ClLF7Ts7M-FSFJeopTP6Z_13FhXn_q9Qxy2hlT0
+const title =
+  'True Lean Solutions — Solve the Right Problem. Build the Right Solution.';
+const description =
+  'True Lean Solutions helps organizations turn business needs into practical technology solutions.';
+
+// All Home copy — source: Home Page (2026-09-27), 1zAjHl6Vc7BeO-ApXSVLrsyMmJ5TxOMqRXTaPWgfHAwE
+const values = [
+  {
+    title: 'Built for Growing Businesses',
+    text: 'We know the constraints you work under — limited staff, tight budgets, and no room for solutions that take months to show value. Everything we do is scoped and priced accordingly.',
+    icon: 'talent' as const,
+    accent: 'red' as const,
+  },
+  {
+    title: 'Practical Over Theoretical',
+    text: "Every engagement is anchored in real business outcomes. We don't deliver slide decks; we deliver working systems, documented processes, and measurable improvements.",
+    icon: 'chart' as const,
+    accent: 'blue' as const,
+  },
+  {
+    title: 'The Right Problem First',
+    text: 'We don’t simply build what a client asks for. We work to understand what the business actually needs, challenge assumptions when necessary, and then determine the right solution.',
+    icon: 'ai' as const,
+    accent: 'plum' as const,
+  },
+  {
+    title: 'We Stay After Go-Live',
+    text: "We don't disappear after go-live. We stay engaged to ensure adoption, refine what we've built, and support your growth as your business evolves.",
+    icon: 'clock' as const,
+    accent: 'red' as const,
+  },
+];
+
+const stats = [
+  { value: '$3M', label: 'annual savings from a six-platform integration', icon: 'chart' as const, accent: 'red' as const },
+  { value: '15 hrs', label: 'of manual work removed every week by a custom workflow system', icon: 'clock' as const, accent: 'blue' as const },
+  { value: '3 weeks', label: 'to place a platform architect after two failed searches', icon: 'talent' as const, accent: 'plum' as const },
+];
+
+const steps = [
+  { number: '01', title: 'Understanding', text: 'We start by learning how your business actually runs — your processes, your tools, your team, and your goals. No assumptions, no pre-packaged solutions.', accent: 'red' as const },
+  { number: '02', title: 'Identifying', text: 'We map where time and money are being lost — inefficient processes, disconnected systems, manual tasks that should be automated, and talent gaps slowing delivery.', accent: 'blue' as const },
+  { number: '03', title: 'Designing', text: 'We build a plan tailored to your business size, budget, and current infrastructure — scalable enough to grow with you, practical enough to implement now.', accent: 'plum' as const },
+  { number: '04', title: 'Implementing & Optimizing', text: 'We deliver, measure, and refine — staying involved through go-live and beyond to ensure everything works as intended and your team has fully adopted it.', accent: 'red' as const },
+];
+---
+
+<BaseLayout title={title} description={description} path="/">
+  <!-- 1. Hero -->
+  <section class="hero">
+    <img
+      class="hero-photo"
+      src={href('/hero/hero-team.png')}
+      alt="A consulting team reviewing a solution together at a laptop"
+      width="1672"
+      height="941"
+      fetchpriority="high"
+    />
+    <div class="wrap">
+      <div class="hero-copy">
+        <h1>
+          Solve the Right Problem.<br />
+          Build <span class="accent">the Right Solution.</span>
+        </h1>
+        <p class="lede">
+          We help organizations turn business needs into practical technology
+          solutions.
+        </p>
+        <p class="sub">
+          Others build what you ask for. We help make sure you&rsquo;re building
+          what you actually need — then we deliver it.
+        </p>
+        <div class="hero-cta">
+          <Button href={cta.primary.href} variant="primary" arrow>
+            {cta.primary.label}
+          </Button>
+          <Button href={cta.services.href} variant="secondary">
+            {cta.services.label}
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. What We Do -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="What We Do"
+        title="The tools we use to solve "
+        accent="business problems."
+        lead="AI, software engineering, integrations, automation, and technical talent — put to work on the problems that actually slow your business down."
+      />
+      <div class="grid-4">
+        {services.map((s) => <ServiceCard {...s} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Why TLS -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Why TLS"
+        title="Consulting mindset. Lean thinking. "
+        accent="Technical execution."
+      />
+      <div class="grid-2">
+        {values.map((v) => <ValueCard {...v} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Recent Results -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Recent Results"
+        title="Real problems, "
+        accent="measurable outcomes."
+      />
+      <div class="grid-3 stat-row">
+        {stats.map((s) => <StatInline {...s} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Our Approach -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Our Approach"
+        title="We don't start with technology. "
+        accent="We start with the problem."
+        lead="A straightforward four-step process focused on delivering real value quickly."
+      />
+      <div class="split">
+        <ol class="steps-2 split-main">
+          {steps.map((s) => <StepRow {...s} />)}
+        </ol>
+        <div class="split-art"><HeroArt /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Testimonials -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="Testimonials" title="What our clients say" />
+      <div class="grid-3 testimonials">
+        {testimonials.map((t) => <TestimonialCard testimonial={t} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Clients -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="Our Clients" title="Teams we work with" align="center" />
+      <ul class="clients">
+        <li>
+          <img src={href('/clients/nri.png')} alt="NRI North America" width="400" height="80" loading="lazy" />
+        </li>
+        <li>
+          <img src={href('/clients/uv-concepts.png')} alt="UV Concepts" width="66" height="66" loading="lazy" />
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 8. Closing CTA band -->
+  <CtaBand
+    eyebrow="Let's solve what matters"
+    heading="Not sure where to "
+    accent="start?"
+    text="Most businesses we work with know something isn't working but aren't sure which lever to pull first. A free 30-minute call is enough to find out."
+  >
+    <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
+    <Button href={cta.email.href} variant="secondary" external>{cta.email.label}</Button>
+  </CtaBand>
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(55% 70% at 12% 40%, var(--red-tint), transparent 60%),
+      var(--surface);
+  }
+  .hero-photo {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 60%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center right;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 32%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 32%);
+  }
+  .hero .wrap {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    min-height: 580px;
+  }
+  .hero-copy {
+    max-width: 560px;
+    padding-block: var(--space-6);
+  }
+  .hero-copy .accent {
+    color: var(--red);
+  }
+  .lede {
+    font-size: 1.3rem;
+    color: var(--ink);
+    margin-top: 1.25rem;
+    max-width: 34ch;
+  }
+  .sub {
+    font-size: 1.05rem;
+    color: var(--text-2);
+    margin-top: 0.9rem;
+    max-width: 48ch;
+  }
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 1.75rem;
+  }
+
+  /* Grids */
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 0.85fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  .steps-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem 2.5rem;
+    padding: 0;
+    margin: 0;
+  }
+  .split-art {
+    max-width: 480px;
+    margin-inline: auto;
+  }
+  .stat-row {
+    gap: 2rem;
+  }
+
+  /* Clients */
+  .clients {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 3.5rem;
+  }
+  .clients img {
+    height: 46px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  @media (max-width: 1024px) {
+    .grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .split {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+    .split-art {
+      max-width: 440px;
+    }
+  }
+  @media (max-width: 900px) {
+    .hero-photo {
+      position: static;
+      width: 100%;
+      height: 240px;
+      -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
+      mask-image: linear-gradient(to bottom, #000 60%, transparent);
+    }
+    .hero .wrap {
+      display: block;
+      min-height: 0;
+    }
+    .hero-copy {
+      padding-block: var(--space-4) var(--space-6);
+    }
+  }
+  @media (max-width: 768px) {
+    .grid-3,
+    .grid-2,
+    .stat-row,
+    .steps-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 480px) {
+    .grid-4 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

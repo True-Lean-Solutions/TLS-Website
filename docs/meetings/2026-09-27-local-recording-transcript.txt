@@ -1,0 +1,152 @@
+Transcript — Recording 2026-09-27 233305.mp4 (9:08)
+Machine transcription (Whisper small, English). Likely mis-hearings: "truly solutions" = True Lean Solutions; "lean thinking real reasons" / "link thinking real results" = Lean Thinking. Real Results.
+
+[00:03] Yeah. Okay. So came here.
+[00:07] This
+[00:10] This is not the right thing.
+[00:12] Oh, it went here. Sorry.
+[00:15] Yeah, right? Yeah.
+[00:21] This period looks good or what?
+[00:29] We can try and remove it, but
+[00:32] that's your call.
+[00:35] Yeah.
+[00:37] I know the
+[00:41] We need something there for emphasis.
+[00:48] It's taking a whole look out.
+[00:50] And then are we writing truly solutions like this?
+[00:54] Everywhere.
+[00:57] I mean, everywhere on the website. Yes.
+[01:01] But why only truly and then solutions as a color.
+[01:06] I'm just asking.
+[01:09] That's what I thought looked good
+[01:12] because everything in that color
+[01:15] feels like too bad.
+[01:17] And then everything in black also feels like to land.
+[01:21] And then we kind of a logo.
+[01:23] What colors we put?
+[01:39] It was right.
+[01:41] And use this lean thinking real reasons.
+[01:45] Okay.
+[01:47] Because if you put too, too many things, identity shifts, all those people
+[01:50] that have already seen it, they will not have the right identity.
+[01:52] It'll be distorted in their brains.
+[01:55] So use the same thing over and over.
+[02:00] Truly solutions try ready.
+[02:05] Red might not look good.
+[02:08] Because the website is pink.
+[02:10] Yeah.
+[02:14] And there is red at the top left exactly where the name would be.
+[02:18] So if this background was black, what happens?
+[02:21] You see that in this team, it doesn't even look good.
+[02:30] So if this becomes black,
+[02:32] and everything falls into place, the logo gets better.
+[02:35] The naming convention and our, you know, whatever we've been using.
+[02:40] And this becomes, this stays white because we always kept black
+[02:43] before our background was black.
+[02:46] All of our website images.
+[02:53] We had a lot of images for the website.
+[02:55] You're on the wrong folder, I think.
+[03:00] It's all TLS and PT docs, right?
+[03:04] Oh, no, I think we switched the website folders out
+[03:08] so that not everyone has access.
+[03:11] All right. So this is good.
+[03:13] See the logo.
+[03:15] Black looks really good.
+[03:17] See that?
+[03:19] Yeah.
+[03:21] On the banner. So start there.
+[03:23] Let's go. So black banner, change it.
+[03:26] No, I'm here.
+[03:28] See how all these, these can become white.
+[03:31] Many options.
+[03:35] Okay.
+[03:36] Or whatever that color is.
+[03:38] It may be light gray, may not be black.
+[03:40] Whatever this light gray thing is.
+[03:43] And then when I hover over it, it can become better.
+[03:46] Is the only thing like in terms of like the user experience,
+[03:50] it won't be good.
+[03:53] I think at least not sure because we have a light background
+[03:57] at the bottom and a black nav bar would feel like off.
+[04:04] Either we switch the whole website to only black mode
+[04:07] or dark mode.
+[04:09] I am big fan of that.
+[04:13] That's where I was going next.
+[04:18] Okay. So like when you click the night mode,
+[04:21] that is the only thing we'll have then.
+[04:26] Look at the website I saw.
+[04:30] Looks pretty cool.
+[04:39] So they did black.
+[04:41] And they have white.
+[04:43] They have black again.
+[04:45] So first try the top black.
+[04:53] We'll get there.
+[04:55] Okay. Try the top black and see what it does.
+[05:03] Okay.
+[05:05] And then one by one we'll do this.
+[05:07] Okay.
+[05:16] Look at how copy is happening.
+[05:29] No, we don't have that.
+[05:36] Yeah.
+[05:38] So they go.
+[05:40] Yeah.
+[05:42] Okay.
+[05:45] So change the wordings in such a way that you can use capital
+[05:50] or you can use some grammar or you can use very solid punch
+[05:53] like like annual savings from platform integrations.
+[05:59] 15 hours of manual work every week is not a big savings,
+[06:05] but every week.
+[06:07] So.
+[06:09] The recent results.
+[06:13] It's a throw or one out valuable.
+[06:16] In.
+[06:20] Okay.
+[06:22] Yeah.
+[06:28] You know, you can remove that section, not necessarily.
+[06:31] And then if I click on it, nothing happens, right?
+[06:37] Oh, let me add that.
+[06:39] 14 goes up about our story is last.
+[06:58] Right.
+[07:00] Okay.
+[07:03] Okay.
+[07:06] Good that we have this.
+[07:10] So meet the team.
+[07:12] Sure.
+[07:14] Our
+[07:17] value.
+[07:21] Yeah.
+[07:23] Okay.
+[07:28] Okay.
+[07:30] The document that you shared had like this structure in it.
+[07:33] Right.
+[07:35] Okay.
+[07:38] Okay.
+[07:41] About you are.
+[07:44] Okay.
+[07:46] But when we come when somebody comes to the page, they should know
+[07:49] who.
+[07:51] So what I thought is that I was only building GCSE
+[07:54] section a court team.
+[07:57] Our
+[08:00] story.
+[08:03] Okay.
+[08:06] Okay.
+[08:08] Okay.
+[08:10] Okay.
+[08:13] Okay.
+[08:19] Okay.
+[08:28] Okay.
+[08:30] Great.
+[08:32] And we got it.
+[08:34] it will be picked somewhere or the other.
+[08:36] Build Integrate Automate Deliver is a story we never have created.
+[08:41] This is a slogan.
+[08:43] It should come out because we already have link thinking real results
+[08:47] which we had already thought about.
+[08:49] Yeah.
+[08:51] Okay.
+[08:56] So let's start.
+[08:58] First, open the banner.
+[09:00] Let's see what happens ahead.
+[09:02] How it looks in contrast.
+[09:04] We'll see that.

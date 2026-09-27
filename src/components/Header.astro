@@ -1,0 +1,422 @@
+---
+import Lockup from './Lockup.astro';
+import Button from './Button.astro';
+import { cta, href as withBase } from '../data/site';
+import { primaryNav } from '../data/nav';
+
+const path = Astro.url.pathname;
+
+function isCurrent(linkHref: string): boolean {
+  const target = withBase(linkHref);
+  if (linkHref === '/') return path === withBase('/');
+  return path === target || path.startsWith(target);
+}
+---
+
+<header class="site-header">
+  <div class="wrap bar">
+    <Lockup variant="dark" class="header-lockup" />
+
+    <button
+      class="menu-toggle"
+      aria-expanded="false"
+      aria-controls="primary-nav"
+      aria-label="Menu"
+    >
+      <span class="bars" aria-hidden="true"></span>
+    </button>
+
+    <nav id="primary-nav" class="primary-nav" aria-label="Primary">
+      <ul class="nav-list">
+        {
+          primaryNav.map((item) =>
+            item.children ? (
+              <li class="has-menu">
+                <button
+                  class="nav-link menu-trigger"
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  aria-current={isCurrent(item.href) ? 'page' : undefined}
+                >
+                  {item.label}
+                  <svg class="caret" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true">
+                    <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <ul class="submenu">
+                  {item.children.map((child) => (
+                    <li>
+                      <a
+                        class="submenu-link"
+                        href={withBase(child.href)}
+                        aria-current={
+                          child.href !== item.href && isCurrent(child.href)
+                            ? 'page'
+                            : undefined
+                        }
+                      >
+                        <span class="submenu-label">{child.label}</span>
+                        {child.description && (
+                          <span class="submenu-desc">{child.description}</span>
+                        )}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ) : (
+              <li>
+                <a
+                  class="nav-link"
+                  href={withBase(item.href)}
+                  aria-current={isCurrent(item.href) ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            )
+          )
+        }
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <a class="search-btn" href={withBase('/insights/')} aria-label="Search insights">
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+          <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+          <line x1="12.8" y1="12.8" x2="18" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      </a>
+      <span class="cta-wrap">
+        <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
+      </span>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--ink);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    min-height: var(--header-h);
+  }
+  /* Nav centered between the lockup (left) and the actions (right) */
+  .primary-nav {
+    margin-inline: auto;
+  }
+
+  /* ---- Nav ---- */
+  .nav-list {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    list-style: none;
+    padding: 0;
+  }
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--border);
+    background: none;
+    border: 0;
+    padding: 0.5rem 0.7rem;
+    border-bottom: 2px solid transparent;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .nav-link:hover,
+  .nav-link[aria-current='page'],
+  .nav-link[aria-expanded='true'] {
+    color: #fff;
+    border-bottom-color: var(--red);
+  }
+  .caret {
+    transition: transform 0.18s ease;
+  }
+  .menu-trigger[aria-expanded='true'] .caret {
+    transform: rotate(180deg);
+  }
+
+  /* ---- Dropdown ---- */
+  .has-menu {
+    position: relative;
+  }
+  .submenu {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    min-width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-m);
+    padding: 0.5rem;
+    list-style: none;
+    margin: 0;
+    display: none;
+  }
+  .has-menu[data-open='true'] .submenu {
+    display: block;
+  }
+  .submenu-link {
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .submenu-link:hover,
+  .submenu-link:focus-visible,
+  .submenu-link[aria-current='page'] {
+    background: var(--section);
+    color: var(--ink);
+  }
+  .submenu-label {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .submenu-desc {
+    font-size: 0.82rem;
+    color: var(--text-2);
+    line-height: 1.35;
+  }
+
+  /* ---- Actions ---- */
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .search-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--border);
+    border: 0;
+    border-radius: var(--radius);
+    background: none;
+    cursor: pointer;
+  }
+  .search-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* ---- Mobile toggle (hidden on desktop) ---- */
+  .menu-toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: #fff;
+  }
+  .bars,
+  .bars::before,
+  .bars::after {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: currentColor;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .bars {
+    position: relative;
+    margin: 0 auto;
+  }
+  .bars::before,
+  .bars::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+  .bars::before {
+    top: -7px;
+  }
+  .bars::after {
+    top: 7px;
+  }
+  .menu-toggle[aria-expanded='true'] .bars {
+    background: transparent;
+  }
+  .menu-toggle[aria-expanded='true'] .bars::before {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .menu-toggle[aria-expanded='true'] .bars::after {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 960px) {
+    .menu-toggle {
+      display: block;
+      order: 3;
+    }
+    .actions {
+      order: 2;
+    }
+    .cta-wrap {
+      display: none;
+    }
+    .primary-nav {
+      order: 4;
+      flex-basis: 100%;
+      display: none;
+    }
+    .primary-nav.open {
+      display: block;
+    }
+    .bar {
+      flex-wrap: wrap;
+      padding-block: 0.75rem;
+    }
+    .nav-list {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding-block: 0.5rem 1rem;
+    }
+    .nav-link {
+      width: 100%;
+      justify-content: space-between;
+      padding: 0.9rem 0.5rem;
+      font-size: 1.05rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .nav-link:hover,
+    .nav-link[aria-current='page'],
+    .nav-link[aria-expanded='true'] {
+      border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+    .submenu {
+      position: static;
+      display: none;
+      box-shadow: none;
+      border: 0;
+      background: transparent;
+      padding: 0 0 0.5rem 0.75rem;
+      min-width: 0;
+    }
+    .has-menu[data-open='true'] .submenu {
+      display: block;
+    }
+    .submenu-link {
+      color: var(--border);
+    }
+    .submenu-link:hover,
+    .submenu-link:focus-visible,
+    .submenu-link[aria-current='page'] {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
+    .submenu-desc {
+      color: var(--muted);
+    }
+    .cta-wrap {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Accessible dropdowns + mobile menu.
+  const header = document.currentScript?.previousElementSibling;
+
+  const mq = window.matchMedia('(max-width: 960px)');
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const nav = document.getElementById('primary-nav');
+  const menus = Array.from(document.querySelectorAll<HTMLElement>('.has-menu'));
+
+  function closeAllMenus(except?: HTMLElement) {
+    for (const m of menus) {
+      if (m === except) continue;
+      m.dataset.open = 'false';
+      m.querySelector('.menu-trigger')?.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  // Mobile hamburger
+  toggle?.addEventListener('click', () => {
+    const open = nav?.classList.toggle('open') ?? false;
+    toggle.setAttribute('aria-expanded', String(open));
+    if (!open) closeAllMenus();
+  });
+
+  for (const menu of menus) {
+    const trigger = menu.querySelector<HTMLButtonElement>('.menu-trigger');
+    const links = Array.from(menu.querySelectorAll<HTMLAnchorElement>('.submenu-link'));
+    if (!trigger) continue;
+
+    const open = () => {
+      closeAllMenus(menu);
+      menu.dataset.open = 'true';
+      trigger.setAttribute('aria-expanded', 'true');
+    };
+    const close = (focusTrigger = false) => {
+      menu.dataset.open = 'false';
+      trigger.setAttribute('aria-expanded', 'false');
+      if (focusTrigger) trigger.focus();
+    };
+
+    trigger.addEventListener('click', () => {
+      menu.dataset.open === 'true' ? close() : open();
+    });
+
+    // Hover intent on desktop only
+    menu.addEventListener('mouseenter', () => {
+      if (!mq.matches) open();
+    });
+    menu.addEventListener('mouseleave', () => {
+      if (!mq.matches) close();
+    });
+
+    trigger.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        open();
+        links[0]?.focus();
+      } else if (e.key === 'Escape') {
+        close(true);
+      }
+    });
+
+    links.forEach((link, i) => {
+      link.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          (links[i + 1] ?? links[0]).focus();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          (links[i - 1] ?? trigger).focus();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          close(true);
+        }
+      });
+    });
+  }
+
+  // Click outside / Esc closes open desktop menus
+  document.addEventListener('click', (e) => {
+    if (header && !header.contains(e.target as Node)) closeAllMenus();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAllMenus();
+  });
+</script>

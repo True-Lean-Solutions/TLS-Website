@@ -1,0 +1,83 @@
+---
+/**
+ * Closing call-to-action (mock-up 13): a light rounded card with an eyebrow,
+ * a red-accent headline, pill buttons (default slot), and isometric art.
+ */
+import Eyebrow from './Eyebrow.astro';
+import HeroArt from './HeroArt.astro';
+
+interface Props {
+  eyebrow?: string;
+  heading: string;
+  accent?: string;
+  text?: string;
+}
+const { eyebrow, heading, accent, text } = Astro.props;
+---
+
+<section class="section">
+  <div class="wrap">
+    <div class="cta-card">
+      <div class="cta-copy">
+        {eyebrow && <Eyebrow label={eyebrow} />}
+        <h2>{heading}{accent && <span class="accent">{accent}</span>}</h2>
+        {text && <p>{text}</p>}
+        <div class="actions">
+          <slot />
+        </div>
+      </div>
+      <div class="cta-art"><HeroArt /></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-card {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: 2rem;
+    background:
+      radial-gradient(120% 140% at 100% 0%, var(--blue-tint), transparent 55%),
+      radial-gradient(120% 140% at 0% 100%, var(--red-tint), transparent 55%),
+      var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow);
+    padding: 3rem;
+  }
+  h2 {
+    max-width: 18ch;
+  }
+  .accent {
+    color: var(--red);
+  }
+  p {
+    color: var(--text-2);
+    max-width: 46ch;
+    font-size: 1.05rem;
+    margin-top: 1rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 1.75rem;
+  }
+  .cta-art {
+    max-width: 380px;
+    margin-inline: auto;
+  }
+
+  @media (max-width: 860px) {
+    .cta-card {
+      grid-template-columns: 1fr;
+      padding: 2.25rem;
+    }
+    .cta-art {
+      display: none;
+    }
+  }
+</style>

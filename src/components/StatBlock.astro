@@ -1,0 +1,41 @@
+---
+/**
+ * A verified result. The number leads; the label carries the context
+ * (decision 13). Only publish verified metrics (v2.3 §15).
+ */
+interface Props {
+  value: string;
+  label: string;
+}
+const { value, label } = Astro.props;
+---
+
+<div class="stat">
+  <span class="value">{value}</span>
+  <span class="label">{label}</span>
+</div>
+
+<style>
+  .stat {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    border-top: 3px solid var(--red);
+  }
+  .value {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: var(--step-4);
+    line-height: 1;
+    color: var(--red);
+    letter-spacing: -0.02em;
+  }
+  .label {
+    color: var(--text-2);
+    font-size: 0.98rem;
+    line-height: 1.45;
+  }
+</style>

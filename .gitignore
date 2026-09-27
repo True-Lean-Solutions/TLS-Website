@@ -1,0 +1,17 @@
+# build output
+dist/
+# dependencies
+node_modules/
+# generated types
+.astro/
+# pagefind index (generated into dist)
+# environment
+.env
+.env.production
+# browser automation screenshots (scratch)
+.playwright-mcp/
+# os / editor
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*

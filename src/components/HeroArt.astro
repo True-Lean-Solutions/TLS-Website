@@ -1,0 +1,127 @@
+---
+/**
+ * Hero art — isometric platform with the TLS symbol, red/blue edge light, and
+ * four floating "glass" label cards (06 / 05 direction; v2.3 §13 allows
+ * isometric system art with edge light). No people, mountains, brains, or
+ * circuit boards. Decorative: the whole graphic is aria-hidden.
+ */
+import { href } from '../data/site';
+
+const cards = [
+  { x: 12, y: 96, label1: 'Business', label2: 'Problem', c: '#d94040', cx: 232, cy: 214 },
+  { x: 386, y: 78, label1: 'Lean', label2: 'Thinking', c: '#1288cf', cx: 330, cy: 205 },
+  { x: 6, y: 300, label1: 'Right', label2: 'Solution', c: '#873662', cx: 232, cy: 286 },
+  { x: 392, y: 312, label1: 'Measurable', label2: 'Results', c: '#873662', cx: 330, cy: 292 },
+];
+---
+
+<div class="hero-art" aria-hidden="true">
+  <svg viewBox="0 0 560 470" role="img" width="560" height="470">
+    <defs>
+      <linearGradient id="topFace" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffffff" />
+        <stop offset="1" stop-color="#eef0f8" />
+      </linearGradient>
+      <linearGradient id="leftFace" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#e7e9f3" />
+        <stop offset="1" stop-color="#d7dae8" />
+      </linearGradient>
+      <linearGradient id="rightFace" x1="1" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#dfe2ef" />
+        <stop offset="1" stop-color="#cfd3e4" />
+      </linearGradient>
+      <radialGradient id="redGlow" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0" stop-color="#d94040" stop-opacity="0.45" />
+        <stop offset="1" stop-color="#d94040" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="blueGlow" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0" stop-color="#1288cf" stop-opacity="0.45" />
+        <stop offset="1" stop-color="#1288cf" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    <ellipse cx="120" cy="330" rx="150" ry="110" fill="url(#redGlow)" />
+    <ellipse cx="450" cy="320" rx="150" ry="110" fill="url(#blueGlow)" />
+
+    <!-- connectors from platform to each floating card -->
+    {
+      cards.map((c) => (
+        <g>
+          <line x1="280" y1="250" x2={c.cx} y2={c.cy} stroke={c.c} stroke-opacity="0.4" stroke-width="1.5" />
+          <circle cx={c.cx} cy={c.cy} r="3" fill={c.c} />
+        </g>
+      ))
+    }
+
+    <!-- platform slab -->
+    <g class="slab">
+      <path d="M100 250 L280 350 L280 410 L100 310 Z" fill="url(#leftFace)" />
+      <path d="M460 250 L280 350 L280 410 L460 310 Z" fill="url(#rightFace)" />
+      <path d="M100 250 L280 350 L280 410 L100 310 Z" fill="none" stroke="#d94040" stroke-opacity="0.55" stroke-width="2" />
+      <path d="M460 250 L280 350 L280 410 L460 310 Z" fill="none" stroke="#1288cf" stroke-opacity="0.55" stroke-width="2" />
+      <path d="M280 150 L460 250 L280 350 L100 250 Z" fill="url(#topFace)" stroke="#e2e2ee" stroke-width="1.5" />
+      <path d="M190 200 L370 300 M370 200 L190 300" stroke="#e2e2ee" stroke-width="1" opacity="0.7" />
+    </g>
+
+    <!-- floating glass label cards -->
+    {
+      cards.map((c) => (
+        <g class="card">
+          <rect x={c.x} y={c.y} width="162" height="60" rx="12" fill="#ffffff" fill-opacity="0.92" stroke={c.c} stroke-opacity="0.5" stroke-width="1.5" />
+          <rect x={c.x + 14} y={c.y + 15} width="30" height="30" rx="8" fill={c.c} fill-opacity="0.14" />
+          <circle cx={c.x + 29} cy={c.y + 30} r="6" fill="none" stroke={c.c} stroke-width="2" />
+          <text x={c.x + 56} y={c.y + 26} font-family="Montserrat, sans-serif" font-size="14" font-weight="700" fill="#0d0d0d">{c.label1}</text>
+          <text x={c.x + 56} y={c.y + 44} font-family="Montserrat, sans-serif" font-size="14" font-weight="700" fill="#0d0d0d">{c.label2}</text>
+        </g>
+      ))
+    }
+
+    <!-- floating accent cubes -->
+    <g class="cube cube-a">
+      <path d="M300 96 L322 108 L322 132 L300 120 Z" fill="#1288cf" opacity="0.9" />
+      <path d="M300 96 L278 108 L278 132 L300 120 Z" fill="#1288cf" opacity="0.6" />
+      <path d="M300 96 L322 108 L300 120 L278 108 Z" fill="#1288cf" opacity="0.38" />
+    </g>
+
+    <!-- TLS symbol floating above the platform -->
+    <g class="mark-group">
+      <ellipse cx="280" cy="250" rx="66" ry="24" fill="#0d0d0d" opacity="0.08" />
+      <image href={href('/brand/tls-mark.png')} x="216" y="118" width="128" height="128" />
+    </g>
+  </svg>
+</div>
+
+<style>
+  .hero-art {
+    width: 100%;
+    max-width: 560px;
+    margin-inline: auto;
+  }
+  .hero-art svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .mark-group {
+    animation: float 6s ease-in-out infinite;
+    transform-origin: center;
+  }
+  .card {
+    animation: float 7s ease-in-out infinite;
+  }
+  .card:nth-of-type(2) {
+    animation-duration: 8s;
+  }
+  .cube-a {
+    animation: float 5.5s ease-in-out infinite reverse;
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+</style>

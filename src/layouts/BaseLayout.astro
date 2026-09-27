@@ -1,0 +1,73 @@
+---
+import { getCollection } from 'astro:content';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site, href as withBase, canonicalUrl } from '../data/site';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Path for canonical + OG url, e.g. "/about-us/". Defaults to current. */
+  path?: string;
+  /** Absolute OG image URL; defaults to the site's shared OG image. */
+  ogImage?: string;
+  /** Keep the page out of search indexes (draft / referral pages). */
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  path = Astro.url.pathname,
+  ogImage = canonicalUrl('/og-default.jpg'),
+  noindex = false,
+} = Astro.props;
+
+// Normalize the given path to a canonical (production-domain) URL.
+const cleanPath = path.startsWith(import.meta.env.BASE_URL)
+  ? '/' + path.slice(import.meta.env.BASE_URL.length).replace(/^\//, '')
+  : path;
+const canonical = canonicalUrl(cleanPath);
+
+// Footer: three newest published posts.
+const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3)
+  .map((p) => ({ title: p.data.title, href: withBase(`/insights/${p.id}/`) }));
+---
+
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href={withBase('/brand/tls-mark.png')} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer latestPosts={latestPosts} />
+  </body>
+</html>
