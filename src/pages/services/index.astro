@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Button from '../../components/Button.astro';
+import { cta } from '../../data/site';
+
+// Meta — source: TLS: Website Pages (2026-09-27), 1w1w7ClLF7Ts7M-FSFJeopTP6Z_13FhXn_q9Qxy2hlT0
+const title = 'True Lean Solutions — Our Services';
+const description =
+  'AI, software engineering, integrations, automation and technical talent — used to solve real business problems.';
+
+// Copy — source: Services - Overview (2026-09-27), 1adf8kbl7pTD1AGhmQZYNl4e9vMiNvL4QTugmMiteBBg
+const services = [
+  {
+    title: 'Enterprise AI',
+    href: '/services/enterprise-ai/',
+    icon: 'ai' as const,
+    accent: 'red' as const,
+    blurb:
+      'Give your team AI that works on your business data — with access controls, audit logs, and no public exposure.',
+  },
+  {
+    title: 'Custom Software',
+    href: '/services/software/',
+    icon: 'software' as const,
+    accent: 'blue' as const,
+    blurb:
+      'Web applications, internal tools, customer portals, and platforms designed specifically for your business — your workflows, your data, your customers.',
+  },
+  {
+    title: 'System Integration',
+    href: '/services/integrations/',
+    icon: 'integration' as const,
+    accent: 'plum' as const,
+    blurb:
+      'Connect your disconnected tools and platforms to create seamless workflows, eliminate manual handoffs, and give you real-time visibility across your business.',
+  },
+  {
+    title: 'Technical Talent',
+    href: '/services/technical-talent/',
+    icon: 'talent' as const,
+    accent: 'red' as const,
+    blurb:
+      'Source and place high-quality technology talent sized right for small businesses — no enterprise overhead, just the right person for the role at the right time.',
+  },
+];
+---
+
+<BaseLayout title={title} description={description} path="/services/">
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Our Services"
+        title="Practical tools for "
+        accent="real business problems."
+        as="h1"
+        lead="Each service below is a tool for a specific business problem — and if you're not sure which one you need, that's where we start."
+      />
+      <div class="cards">
+        {services.map((s) => <ServiceCard {...s} />)}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    eyebrow="Let's solve what matters"
+    heading="Not sure where to "
+    accent="start?"
+    text="Most businesses we work with know something isn't working but aren't sure which lever to pull first. Book a free strategy call and we'll help you figure it out."
+  >
+    <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
+    <Button href={cta.email.href} variant="secondary" external>{cta.email.label}</Button>
+  </CtaBand>
+</BaseLayout>
+
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  @media (max-width: 640px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
