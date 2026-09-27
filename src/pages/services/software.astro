@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import InfoCard from '../../components/InfoCard.astro';
+import StepRow from '../../components/StepRow.astro';
+import CaseStudyBlock from '../../components/CaseStudyBlock.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Button from '../../components/Button.astro';
+import { cta } from '../../data/site';
+
+// Meta — source: TLS: Website Pages (2026-09-27)
+const title = 'True Lean Solutions — Custom Software';
+const description = 'Software built to fit the way your business already works.';
+
+// Copy — source: Services - Custom Software Dev (2026-09-27), 1jUJGXXC1gMkxGqpLYdiJY0ogGBGPaBi1eTSAmvgBzas
+const accents = ['red', 'blue', 'plum'] as const;
+
+const whoFor = [
+  { title: "Off-the-shelf tools aren't cutting it", text: "You've tried existing software but it doesn't fit your workflow, requires too many workarounds, or can't handle the way your business actually operates." },
+  { title: 'You have a manual process that should be a product', text: "You're running a business process in spreadsheets, email threads, or manual handoffs that could — and should — be a proper system." },
+  { title: 'Your legacy systems are holding you back', text: "You have older software your team works around daily. It's slowing you down, can't integrate with modern tools, and is becoming a liability." },
+  { title: 'You need to build customer-facing technology', text: 'You want to offer your customers a portal, app, or digital experience that differentiates you from competitors still doing things manually.' },
+];
+
+const steps = [
+  { number: '01', title: 'Discover & Define', text: 'We align with your team on business goals, workflows, and technical requirements, and define scope clearly upfront — no surprises mid-project.' },
+  { number: '02', title: 'Design & Architect', text: 'We design scalable architectures and intuitive experiences. You see and approve designs before a single line of code is written.' },
+  { number: '03', title: 'Build & Iterate', text: 'Using Agile, we deliver in sprints with continuous feedback and full transparency. You see working software regularly — not just at the end.' },
+  { number: '04', title: 'Test & Secure', text: 'We ensure quality through rigorous testing, performance tuning, and security best practices. Every release is tested before it reaches your users.' },
+  { number: '05', title: 'Deploy & Support', text: "We provide smooth deployment and ongoing support for long-term success. We don't disappear after launch." },
+];
+
+const build = [
+  { title: 'Web & Enterprise Applications', text: 'Customer portals, internal workflow systems, SaaS platforms, and partner and vendor management systems.' },
+  { title: 'Legacy System Modernization', text: 'Transform outdated systems into modern, cloud-ready platforms without disrupting operations — through phased migrations with minimal downtime.' },
+  { title: 'API Development & Integrations', text: 'Connect your systems and enable seamless data flow — third-party integrations, process automation, real-time data access, and microservices.' },
+  { title: 'Cloud-Native Applications', text: 'Applications optimized for performance, scalability, and resilience — elastic scaling, improved reliability, cost optimization, and faster deployment.' },
+];
+---
+
+<BaseLayout title={title} description={description} path="/services/software/">
+  <section class="page-hero">
+    <div class="wrap">
+      <Eyebrow label="Custom Software" />
+      <h1>Build exactly what you need — <span class="hl">not a workaround.</span></h1>
+      <p class="lede">
+        Off-the-shelf tools solve generic problems. When your workflows,
+        processes, or customer experiences are unique to how you operate, custom
+        software lets you build for your business instead of bending it to fit
+        someone else's product.
+      </p>
+      <div class="cta">
+        <Button href={cta.primary.href} variant="primary" arrow>Discuss What You Need to Build</Button>
+        <Button href={cta.email.href} variant="secondary" external>Email Us</Button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="What It Is" title="Applications built for " accent="your business." />
+      <div class="prose">
+        <p>Custom software development means building applications, tools, and platforms designed specifically for your business — your workflows, your data, your customers, and your growth goals.</p>
+        <p>This includes web applications, internal tools, customer portals, integrations between systems, and modernizing legacy platforms that hold your business back. We combine practical business understanding with modern engineering to deliver software that's secure, scalable, and built to last.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading eyebrow="Who It's For" title="You'll recognize " accent="the situation." />
+      <div class="cards-2">
+        {whoFor.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="How It Works" title="Clear scope, " accent="working software early." />
+      <ol class="steps-grid">
+        {steps.map((s, i) => <StepRow {...s} accent={accents[i % 3]} />)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading eyebrow="What We Build" title="From portals to " accent="cloud-native platforms." />
+      <div class="cards-2">
+        {build.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <CaseStudyBlock
+        stat="15 hrs / week"
+        title="Internal workflow system eliminates 15 hours of manual work weekly"
+        text="A professional services firm was managing client projects across email, spreadsheets, and disconnected tools — project status was invisible and onboarding took 3 days. TLS built a custom workflow system that automated onboarding, centralized project tracking, and integrated with billing. The result: 15 hours of manual work removed every week, onboarding cut from 3 days to 4 hours, and full project visibility for leadership for the first time."
+      />
+    </div>
+  </section>
+
+  <CtaBand
+    eyebrow="Ready to build"
+    heading="Tell us what you need to "
+    accent="build."
+    text="We'll be straight with you about what makes sense to build custom versus buy off the shelf, and what a realistic timeline and budget look like."
+  >
+    <Button href={cta.primary.href} variant="primary" arrow>Discuss What You Need to Build</Button>
+    <Button href={cta.email.href} variant="secondary" external>Email Us</Button>
+  </CtaBand>
+</BaseLayout>

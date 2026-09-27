@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import InfoCard from '../../components/InfoCard.astro';
+import StepRow from '../../components/StepRow.astro';
+import CaseStudyBlock from '../../components/CaseStudyBlock.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Button from '../../components/Button.astro';
+import { cta } from '../../data/site';
+
+// Meta — source: TLS: Website Pages (2026-09-27)
+const title = 'True Lean Solutions — Technical Talent';
+const description =
+  'Technology talent sized right for businesses, without enterprise overhead.';
+
+// Copy — source: Services - Technical Talent (2026-09-27), 1nBusfLbQynnlO0-Eo2UBoPQCd7yEJSjLTQFaPwA4R-0
+const accents = ['red', 'blue', 'plum'] as const;
+
+const whoFor = [
+  { title: 'No in-house technical recruiter', text: "You need to hire technical talent but don't have an in-house recruiter or HR team with the expertise to evaluate technology candidates." },
+  { title: "You're losing candidates to larger companies", text: "You're finding great candidates but losing them to enterprise offers before you can move fast enough." },
+  { title: "You've had bad hires", text: "You've hired developers or IT staff who looked good on paper but didn't work out — and you need a more rigorous screening process." },
+  { title: 'You need flexibility', text: 'You need contract, contract-to-hire, or permanent staff depending on the engagement — not a one-size-fits-all recruiting model.' },
+];
+
+const steps = [
+  { number: '01', title: 'Role Definition', text: 'We define the role clearly — not just the technical requirements, but the business context, team dynamics, and success criteria. A well-defined role attracts the right candidates.' },
+  { number: '02', title: 'Sourcing & Screening', text: 'We leverage our network and recruiting tools to identify qualified candidates. Every candidate is technically screened before they reach you — no resume spam.' },
+  { number: '03', title: 'Shortlist & Present', text: 'We present a curated shortlist with our assessment of each candidate — technical fit, communication style, availability, and rate expectations.' },
+  { number: '04', title: 'Interview Support', text: 'We coordinate the interview process, provide structured interview guidance, and give you honest feedback on each candidate based on what we hear from them.' },
+  { number: '05', title: 'Offer & Onboarding', text: 'We help you structure competitive offers, navigate counteroffers, and support onboarding to maximize the chance of a successful placement.' },
+];
+
+const roles = [
+  'Software Developers (Java, Python, .NET, Full Stack, Mobile)',
+  'Cloud & DevOps Engineers',
+  'System & Solution Architects',
+  'Data Engineers & Analysts',
+  'Technical Project Managers & Product Owners',
+  'QA & Automation Engineers',
+  'Security & IAM Specialists',
+  'Technical Business Analysts',
+];
+---
+
+<BaseLayout title={title} description={description} path="/services/technical-talent/">
+  <section class="page-hero">
+    <div class="wrap">
+      <Eyebrow label="Technical Talent" />
+      <h1>The right person for the role — <span class="hl">at the right time.</span></h1>
+      <p class="lede">
+        Finding strong technology talent is hard for any business. For small
+        businesses competing against enterprises for the same candidates, it's
+        even harder — unless you have a recruiting partner who understands both
+        sides.
+      </p>
+      <div class="cta">
+        <Button href={cta.primary.href} variant="primary" arrow>Talk to Us About the Role</Button>
+        <Button href={cta.email.href} variant="secondary" external>Email Us</Button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="What It Is" title="IT recruiting sized for " accent="small businesses." />
+      <div class="prose">
+        <p>TLS provides IT recruiting services designed specifically for small businesses. We source, screen, and place technology professionals — developers, architects, project managers, QA engineers, and more — in roles that are scoped and priced for your business size.</p>
+        <p>We don't just fill seats. We match the right person to the right role based on your technical needs, team culture, and growth plans.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading eyebrow="Who It's For" title="You're a fit " accent="if this sounds familiar." />
+      <div class="cards-2">
+        {whoFor.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="How It Works" title="A rigorous process, " accent="honest feedback." />
+      <ol class="steps-grid">
+        {steps.map((s, i) => <StepRow {...s} accent={accents[i % 3]} />)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading eyebrow="What We Place" title="Technical roles we " accent="regularly fill." />
+      <ul class="roles">
+        {roles.map((r) => <li>{r}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <CaseStudyBlock
+        stat="3 weeks"
+        title="Critical architect placed in 3 weeks"
+        text="A mid-sized logistics company needed a Platform Architect to lead a major system overhaul. After two failed attempts with general recruiting firms, they engaged TLS. We defined the role properly, sourced 40 candidates, shortlisted 4, and placed a candidate within 3 weeks. The architect led a successful platform migration that reduced infrastructure costs by 40%."
+      />
+    </div>
+  </section>
+
+  <CtaBand
+    eyebrow="Let's find your hire"
+    heading="Ready to find the "
+    accent="right talent?"
+    text="Tell us about the role you need to fill. We'll be honest about whether we're the right fit and what a realistic timeline and process look like."
+  >
+    <Button href={cta.primary.href} variant="primary" arrow>Talk to Us About the Role</Button>
+    <Button href={cta.email.href} variant="secondary" external>Email Us</Button>
+  </CtaBand>
+</BaseLayout>
+
+<style>
+  .roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    list-style: none;
+    padding: 0;
+    max-width: 900px;
+  }
+  .roles li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.6rem 1.1rem;
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: 0.92rem;
+    color: var(--ink);
+  }
+</style>

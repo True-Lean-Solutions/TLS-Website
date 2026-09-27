@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import InfoCard from '../../components/InfoCard.astro';
+import StepRow from '../../components/StepRow.astro';
+import CaseStudyBlock from '../../components/CaseStudyBlock.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Button from '../../components/Button.astro';
+import { cta } from '../../data/site';
+
+// Meta — source: TLS: Website Pages (2026-09-27)
+const title = 'True Lean Solutions — System Integration';
+const description =
+  'Connect the systems you already run so information moves without anyone rekeying it.';
+
+// Copy — source: Services - System Integration (2026-09-27), 18srqE5hhSz2JJCFAgPlOavMij2k26AvfdgcVVmJPpcI
+const accents = ['red', 'blue', 'plum'] as const;
+
+const whoFor = [
+  { title: 'Manual data transfer', text: 'Your team spends hours each week manually moving data between systems — exporting from one tool, reformatting, importing into another.' },
+  { title: 'Disconnected reporting', text: "You can't get a clear picture of business performance without pulling reports from multiple places and combining them manually." },
+  { title: 'Process breakdowns at handoffs', text: "Work gets dropped or delayed when it moves between departments or tools because there's no automated connection between them." },
+  { title: 'Scaling pains', text: 'Processes that worked fine at 5 people are breaking down at 15 — because they were built on manual coordination, not integrated systems.' },
+];
+
+const steps = [
+  { number: '01', title: 'Systems Audit', text: 'We map every tool you use, how data flows between them today, and where the manual gaps are — a clear picture of what needs to connect and in what order.' },
+  { number: '02', title: 'Integration Design', text: 'We design the architecture — which systems connect, what data flows where, and how to handle edge cases — keeping it as simple as possible while solving the real problems.' },
+  { number: '03', title: 'Build & Connect', text: 'We implement using the right approach for your stack — native connectors, middleware like Zapier or Make, custom APIs, or direct database integrations.' },
+  { number: '04', title: 'Test & Validate', text: 'Every integration is tested end-to-end before going live. We validate data accuracy, test failure scenarios, and make sure your team understands the new flows.' },
+  { number: '05', title: 'Monitor & Optimize', text: 'We stay involved post-launch to monitor for issues, handle edge cases that emerge in production, and optimize flows as your business evolves.' },
+];
+---
+
+<BaseLayout title={title} description={description} path="/services/integrations/">
+  <section class="page-hero">
+    <div class="wrap">
+      <Eyebrow label="System Integration" />
+      <h1>Your tools should work together — <span class="hl">so your team doesn't have to.</span></h1>
+      <p class="lede">
+        Most small businesses run on 5–15 disconnected tools. Data lives in
+        silos, your team copies information between systems by hand, and
+        decisions get made on outdated information. We fix that.
+      </p>
+      <div class="cta">
+        <Button href={cta.primary.href} variant="primary" arrow>Discuss Your Integration</Button>
+        <Button href={cta.email.href} variant="secondary" external>Email Us</Button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="What It Is" title="One unified system, " accent="not fifteen silos." />
+      <div class="prose">
+        <p>System Integration connects your existing tools, platforms, and data sources so they work together as a unified system. Instead of your CRM, accounting software, inventory system, and communication tools operating independently, they share data automatically and in real time.</p>
+        <p>The result: less manual work, fewer errors, faster decisions, and a business that runs with less friction.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading eyebrow="Who It's For" title="You're a good fit if you're " accent="dealing with this." />
+      <div class="cards-2">
+        {whoFor.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="How It Works" title="Audit, connect, " accent="and keep it running." />
+      <ol class="steps-grid">
+        {steps.map((s, i) => <StepRow {...s} accent={accents[i % 3]} />)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="wrap">
+      <CaseStudyBlock
+        stat="$3M / year"
+        title="$3M annual savings through system integration"
+        text="A mid-sized logistics company was managing operations across six disconnected platforms. Manual data entry between systems consumed 20+ hours per week and caused costly fulfillment errors. TLS designed and implemented a unified integration layer connecting their ERP, WMS, CRM, and billing systems. The result: a 73% reduction in manual data entry, near-zero fulfillment errors, and $3M in annual operational savings."
+      />
+    </div>
+  </section>
+
+  <CtaBand
+    eyebrow="Let's connect your stack"
+    heading="Ready to connect "
+    accent="your systems?"
+    text="Book a free 30-minute strategy call. We'll review your current tech stack and identify the highest-impact integration opportunities for your business."
+  >
+    <Button href={cta.primary.href} variant="primary" arrow>Discuss Your Integration</Button>
+    <Button href={cta.email.href} variant="secondary" external>Email Us</Button>
+  </CtaBand>
+</BaseLayout>

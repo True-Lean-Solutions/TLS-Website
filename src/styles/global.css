@@ -113,6 +113,68 @@ a:hover {
 .prose strong {
   color: var(--ink);
 }
+
+/* Content / service pages */
+.hl {
+  color: var(--red);
+}
+.section-alt {
+  background: var(--section);
+}
+.page-hero {
+  padding-block: var(--space-7) var(--space-6);
+  background:
+    radial-gradient(50% 70% at 12% 30%, var(--red-tint), transparent 60%),
+    radial-gradient(50% 70% at 90% 20%, var(--blue-tint), transparent 60%);
+}
+.page-hero h1 {
+  max-width: 20ch;
+}
+.page-hero .lede {
+  max-width: 60ch;
+  margin-top: 1.25rem;
+  font-size: 1.15rem;
+  color: var(--text-2);
+}
+.page-hero .cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 1.75rem;
+}
+.cards-2,
+.cards-3 {
+  display: grid;
+  gap: 1.5rem;
+}
+.cards-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.cards-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.75rem;
+  padding: 0;
+  margin: 0;
+}
+@media (max-width: 900px) {
+  .cards-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .steps-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .cards-2,
+  .cards-3,
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .section {
   padding-block: var(--space-7);
 }
