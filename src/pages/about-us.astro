@@ -1,0 +1,150 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import TeamCard from '../components/TeamCard.astro';
+import InfoCard from '../components/InfoCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Button from '../components/Button.astro';
+import { cta } from '../data/site';
+import { coreTeam, advisors } from '../data/team';
+
+// Meta — source: TLS: Website Pages (2026-09-27)
+const title = 'True Lean Solutions — About Us';
+const description =
+  'How True Lean Solutions grew from a lean-thinking partnership into a consultative technology execution partner within Akhani LLC.';
+// Copy — source: About Us (2026-09-27), 17QpMfSbas3gC4XwfamL8SgRRytEN6Sj6UGkkwsEunKg
+// Section order per decision 14.
+---
+
+<BaseLayout title={title} description={description} path="/about-us/">
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="wrap">
+      <Eyebrow label="About Us" />
+      <h1>Built through relationships. <span class="hl">Proven through execution.</span></h1>
+      <p class="lede">
+        True Lean Solutions began with a simple belief: the best technology
+        solutions start with understanding the real problem.
+      </p>
+      <div class="cta">
+        <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
+        <Button href={cta.email.href} variant="secondary" external>{cta.email.label}</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Team -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="Core Team" title="The people behind " accent="the work." />
+      <div class="cards-3">
+        {coreTeam.map((p) => <TeamCard person={p} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Advisors -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Advisors"
+        title="Guidance from " accent="experienced leaders."
+        lead="Experienced leaders who guide our strategy and help us deliver greater value to our clients."
+      />
+      <div class="cards-3">
+        {advisors.map((p) => <TeamCard person={p} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- What We Believe -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="What We Believe" title="Solve the right problem, " accent="the right way." />
+      <div class="prose">
+        <p>We don't blindly build what is requested. We help make sure you're solving the right problem, in the right way — before and during execution.</p>
+        <p><strong>Consulting mindset. Lean thinking. Technical execution.</strong></p>
+        <p>Understand what matters. Eliminate what doesn't. Build what creates value.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Story -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading eyebrow="Our Story" title="From a shared belief to " accent="a first big opportunity." />
+      <div class="prose">
+        <p>Founder Sajeed Lakhani built the company with that principle at its core, guided by a long-standing friendship and professional relationship with Mack Akhani. Years earlier, Sajeed and Mack had helped establish the DFW Lean Six Sigma Meetup community, bringing together professionals interested in continuous improvement, practical problem solving, and creating measurable value.</p>
+        <p>Their collaboration extended beyond professional networking. Over the years, they took part in projects and community service initiatives, including Dallas GiveCamp, where technology professionals come together over a single weekend to help nonprofit organizations turn real needs into working technology solutions.</p>
+        <p>True Lean Solutions formally began in 2025 under True Lean LLC. Its first major opportunity came through NRI North America, part of Nomura Research Institute — a global consulting and technology organization headquartered in Japan, operating in several countries for more than five decades. TLS was brought in to help build contractor pipelines for NRI's client projects.</p>
+        <p>Rather than treat the engagement as a conventional staffing assignment, the team applied lean principles to the entire challenge, rapidly designing a structured operating model for recruiting, screening, onboarding, contractor coordination, and delivery management. It proved something larger than the staffing model itself: the team could quickly understand a business need, organize the right capability around it, and put that capability into operation.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How We Evolved -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="How We Evolved" title="Staffing was the beginning — " accent="not the destination." />
+      <div class="prose">
+        <p>As the team became more deeply involved in solving client needs, the broader vision became clear: a technology organization that helps clients solve difficult business problems through lean thinking, a consulting mindset, and strong technical execution.</p>
+        <p>That led True Lean Solutions beyond talent solutions into software engineering, application development, integrations, automation, AI solutions, and technical architecture — responding to what clients actually needed rather than forcing every problem into a predefined service offering. Talent solutions remain part of what we do; they simply don't define us.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TLS and Tech Transpire -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading eyebrow="TLS and Tech Transpire" title="Two brands, " accent="one family." />
+      <div class="prose">
+        <p>As True Lean Solutions grew, it needed broader leadership, stronger operating infrastructure, and a platform for its next stage. At the same time, Mack Akhani was building Tech Transpire, a consulting business that helps organizations create clarity, align stakeholders, and realize greater business value from technology. The fit was natural, and Sajeed and Mack brought True Lean Solutions into Akhani LLC alongside Tech Transpire.</p>
+      </div>
+      <div class="cards-2 pair">
+        <InfoCard
+          title="Tech Transpire"
+          text="Helps organizations determine what needs to be solved and why — clarity, stakeholder alignment, and business transformation."
+          accent="blue"
+        />
+        <InfoCard
+          title="True Lean Solutions"
+          text="Helps design and build the technical solution when needed — software, integrations, automation, AI, and technical talent."
+          accent="red"
+        />
+      </div>
+      <div class="prose">
+        <p>The two brands remain distinct, and each engages independently. Clients can work with either one, or with both when a challenge calls for it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Today -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="Today" title="A technology execution company " accent="within Akhani LLC." />
+      <div class="prose">
+        <p>True Lean Solutions operates as a technology execution company within the Akhani LLC family of brands, bringing together technical leadership, software engineering, integrations, automation, AI, talent capabilities, and a consulting mindset to help organizations turn business needs into practical technology solutions.</p>
+        <p><strong>Solve the right problem. Build the right solution. Create measurable value.</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    eyebrow="Let's talk"
+    heading="Let's talk about the problem "
+    accent="you're solving."
+    text="Others build what you ask for. We help make sure you're building what you actually need — then we deliver it."
+  >
+    <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
+    <Button href={cta.email.href} variant="secondary" external>{cta.email.label}</Button>
+  </CtaBand>
+</BaseLayout>
+
+<style>
+  .pair {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    max-width: 900px;
+  }
+</style>
