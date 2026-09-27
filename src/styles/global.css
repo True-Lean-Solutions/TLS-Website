@@ -98,6 +98,21 @@ a:hover {
 .reading {
   max-width: var(--reading);
 }
+
+/* Running prose (service/article body sections) */
+.prose {
+  max-width: var(--reading);
+}
+.prose p {
+  color: var(--text-2);
+  margin-bottom: 1rem;
+}
+.prose p:last-child {
+  margin-bottom: 0;
+}
+.prose strong {
+  color: var(--ink);
+}
 .section {
   padding-block: var(--space-7);
 }

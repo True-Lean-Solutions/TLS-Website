@@ -1,0 +1,50 @@
+---
+import type { Accent } from '../data/services';
+
+/** Generic content card (colored top rule + heading + text) for service pages. */
+interface Props {
+  title: string;
+  text: string;
+  accent?: Accent;
+}
+const { title, text, accent = 'red' } = Astro.props;
+
+const accents: Record<Accent, string> = {
+  red: '--c: var(--red);',
+  blue: '--c: var(--blue);',
+  plum: '--c: var(--plum);',
+};
+---
+
+<div class="info-card" style={accents[accent]}>
+  <span class="rule" aria-hidden="true"></span>
+  <h3>{title}</h3>
+  <p>{text}</p>
+</div>
+
+<style>
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.6rem;
+    box-shadow: var(--shadow);
+  }
+  .rule {
+    display: block;
+    width: 2rem;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--c);
+    margin-bottom: 1rem;
+  }
+  h3 {
+    font-size: var(--step-1);
+    margin-bottom: 0.5rem;
+  }
+  p {
+    color: var(--text-2);
+    line-height: 1.6;
+    font-size: 0.96rem;
+  }
+</style>

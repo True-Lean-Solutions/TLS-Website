@@ -1,0 +1,193 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import InfoCard from '../../components/InfoCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Button from '../../components/Button.astro';
+import { cta, site } from '../../data/site';
+
+// Meta — source: TLS: Website Pages (2026-09-27)
+const title = 'True Lean Solutions — Enterprise AI';
+const description =
+  'Governed, private AI for growing businesses. Start with Meeting Intelligence and expand at your own pace.';
+
+// Copy — source: Services - Enterprise AI (2026-09-27), 1rUpXq5cu9aQArbtCwNOTdeIRuthGTUAMBx-LxWCy1J4
+const accents = ['red', 'blue', 'plum'] as const;
+
+const whoFor = [
+  { title: "Your team is using AI tools you didn't approve", text: "Employees are using ChatGPT, Claude, Gemini, or other public tools with company data. You don't know what's being shared, there's no audit trail, and you have no control over how that data is used by the model providers." },
+  { title: "You're paying for AI but can't control the cost", text: 'AI token consumption is becoming an infrastructure cost. You need visibility into who’s using what, which models are being called, and whether high-cost models are being used for tasks a lighter model could handle.' },
+  { title: 'You need AI that understands your business context', text: 'A CEO asking "How did we perform last quarter?" needs a different answer than a sales rep asking the same question. Enterprise AI understands identity, role, department, and permissions before it answers.' },
+  { title: "You want to adopt AI but can't risk vendor lock-in", text: 'Today’s best model may not be tomorrow’s. You need an AI foundation that works across multiple approved commercial, cloud, and self-hosted models — so you can change the model without rebuilding your infrastructure.' },
+];
+
+const pillars = [
+  { title: 'Security', text: 'Private and on-premises deployment. Enterprise authentication and single sign-on. End-to-end encryption. Private networking. Your data stays inside your controlled environment — no exposure to public AI tools.' },
+  { title: 'Governance', text: 'Role-based access control. Department and workspace-level permissions. Policies and guardrails that define what AI can and cannot do. Full audit logging of every AI interaction across your organization.' },
+  { title: 'Control', text: 'LLM-agnostic architecture with no vendor lock-in. Intelligent model routing selects the right model for each task. AI cost optimization manages token consumption. Change the model — keep your foundation.' },
+];
+
+const whatYouGet = [
+  { title: 'Enterprise AI Chat', text: 'A secure AI workspace for everyday productivity. Create, analyze, ask questions, work with documents, and access approved organizational knowledge through one conversational experience.' },
+  { title: 'AI Assistants', text: 'Purpose-built intelligence for departments, roles, and business functions. Give Finance, Sales, HR, Operations, and Leadership AI experiences connected to the right knowledge and permissions.' },
+  { title: 'AI Agents', text: 'Move beyond answers into execution. AI Agents use approved tools, data, and enterprise systems to support or automate defined business processes — within controlled boundaries.' },
+];
+
+const meetingFeatures = [
+  { title: 'Automatic Recording', text: 'Joins Microsoft Teams, Zoom, and Google Meet automatically. No manual setup, no browser extensions, no friction.' },
+  { title: 'Professional Minutes of Meeting', text: 'Structured, share-ready MoMs generated instantly after every call. Consistent format, every time.' },
+  { title: 'Action Item Tracking', text: 'Every commitment captured and assigned. No follow-up falls through the cracks.' },
+  { title: 'Conversational Search', text: '"What did we commit to Client X?" — answered instantly from your entire meeting history, with the source meeting linked.' },
+  { title: 'Enterprise-Grade Security', text: 'Private deployment. Complete data ownership. Your recordings and transcripts never leave your controlled environment.' },
+];
+---
+
+<BaseLayout title={title} description={description} path="/services/enterprise-ai/">
+  <!-- Hero -->
+  <section class="svc-hero">
+    <div class="wrap">
+      <Eyebrow label="Enterprise AI" />
+      <h1>Put AI to work — governed, private, and <span class="accent">under your control.</span></h1>
+      <p class="lede">
+        Your employees are already using AI — pasting client data into public
+        tools and making decisions on models that don't understand your
+        business, permissions, or policies. That's not a productivity win. It's
+        a governance gap.
+      </p>
+      <div class="cta">
+        <Button href={cta.primary.href} variant="primary" arrow>Book a Demo</Button>
+        <Button href={cta.email.href} variant="secondary" external>Email Us</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- What It Is -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="What It Is" title="One secure layer between your people and " accent="approved AI." />
+      <div class="prose">
+        <p>Enterprise AI is an intelligent layer between your people, your organizational knowledge, your business systems, and approved AI models — all governed through one secure platform.</p>
+        <p>Unlike consumer AI tools that operate outside your control, every interaction is governed by your access policies, grounded in your business context, and deployed within your infrastructure. With self-hosted models, no data leaves your environment, and there's no vendor lock-in to any single model.</p>
+        <p>True Lean Solutions is the exclusive US implementation partner for <strong>Wisebric</strong>, an Enterprise AI governance and orchestration platform built by Iconflux Technologies — a software firm with 14+ years of enterprise engineering and 500+ projects delivered across industries.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Who It's For -->
+  <section class="section alt">
+    <div class="wrap">
+      <SectionHeading eyebrow="Who It's For" title="You'll recognize " accent="the problem." />
+      <div class="grid-2">
+        {whoFor.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Three Pillars -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="Built on Three Pillars" title="Security. Governance. " accent="Control." />
+      <div class="grid-3">
+        {pillars.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- What You Get -->
+  <section class="section alt">
+    <div class="wrap">
+      <SectionHeading eyebrow="What You Get" title="From chat to " accent="autonomous agents." />
+      <div class="grid-3">
+        {whatYouGet.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Meeting Intelligence -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Start Here: Meeting Intelligence"
+        title="The fastest way in — "
+        accent="no integration required."
+        lead="Enterprise AI doesn't have to start with a large transformation. Start with one practical problem, prove the value, and expand when you're ready. Meeting Intelligence captures every conversation, generates professional minutes, tracks action items, and makes your meeting history searchable."
+      />
+      <div class="grid-3">
+        {meetingFeatures.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Why not SaaS -->
+  <section class="section alt">
+    <div class="wrap">
+      <SectionHeading eyebrow="Why Not Just Use a SaaS Meeting Tool?" title="Your institutional knowledge " accent="should belong to you." />
+      <div class="prose">
+        <p>With a SaaS meeting recorder, your data is stored outside your premises. Once the meeting is done, the knowledge lives on someone else's servers — and if the provider raises prices, you either pay more or lose access to your own history. That's vendor lock-in applied to your institutional knowledge.</p>
+        <p>Meeting Intelligence runs inside your infrastructure. Your recordings, transcripts, and the knowledge built from them belong to you — permanently. And it's built on the same governed Enterprise AI platform your organization can expand into as adoption grows.</p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    eyebrow="Ready when you are"
+    heading="Bring Enterprise AI into "
+    accent="your organization."
+    text="Start with Meeting Intelligence, see value in the first week, and expand into the full platform when you're ready. No large upfront transformation required."
+  >
+    <Button href={cta.primary.href} variant="primary" arrow>Book a Demo</Button>
+    <Button href={cta.email.href} variant="secondary" external>Email Us</Button>
+  </CtaBand>
+</BaseLayout>
+
+<style>
+  .svc-hero {
+    padding-block: var(--space-7) var(--space-6);
+    background:
+      radial-gradient(50% 70% at 12% 30%, var(--red-tint), transparent 60%),
+      radial-gradient(50% 70% at 90% 20%, var(--blue-tint), transparent 60%);
+  }
+  .svc-hero h1 {
+    max-width: 18ch;
+  }
+  .svc-hero .accent {
+    color: var(--red);
+  }
+  .svc-hero .lede {
+    max-width: 60ch;
+    margin-top: 1.25rem;
+    font-size: 1.15rem;
+    color: var(--text-2);
+  }
+  .svc-hero .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 1.75rem;
+  }
+  .alt {
+    background: var(--section);
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  @media (max-width: 900px) {
+    .grid-3 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .grid-2,
+    .grid-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
