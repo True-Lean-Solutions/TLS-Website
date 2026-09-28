@@ -1,0 +1,56 @@
+title: Why Technical Engagements Need One Accountable Owner
+date: 2026-08-17
+category: perspectives
+excerpt: Split ownership doesn't split the risk — it multiplies it.
+cover: /insights/covers/one-accountable-owner.png
+coverAlt: An abstract illustration of shared project ownership
+author: Hemang Dwivedi
+readTime: 3 min read
+topics:
+  - Process Automation
+source: 1utEowNV-IhLp5mFaORQiMuaAlYGtCz19
+blocks:
+  - type: richtext
+    markdown: |
+      Multi-party technical engagements — a client, an incumbent vendor, and a new team brought in to fix or extend the work — fail in a very specific and very avoidable way. Not because the technical work is too hard, but because no single party is actually accountable for the outcome. Everyone is responsible for their piece. Nobody is responsible for the whole.
+
+      ## The failure mode is predictable
+
+      When ownership is split across a client, a vendor, and a third party, decisions default to whoever is easiest to reach rather than whoever should be making them. Issues get attributed to "the other side" instead of resolved. Timelines slip because no one is positioned to unblock across all three parties at once. None of this requires bad faith from anyone involved — it is simply what diffuse accountability produces, structurally, every time.
+  - type: cards
+    columns: 2
+    items:
+      - icon: alert
+        title: Unclear escalation paths
+        body: When something breaks, whose job is it to fix it? In a split-ownership setup, the honest answer is often nobody is sure — and that uncertainty costs days.
+      - icon: users
+        title: Competing incentives
+        body: A vendor incentivized to protect their prior work and a new team incentivized to demonstrate value are not naturally aligned, even when both want the client to succeed.
+      - icon: cloud
+        title: Diffused accountability
+        body: If the outcome disappoints, every party can reasonably point to another party's piece — which means the client is the only one who actually absorbs the failure.
+      - icon: clock
+        title: Slower resolution, every time
+        body: Multi-party coordination overhead adds real time to every decision, even simple ones — and that overhead compounds across the life of an engagement.
+  - type: steps
+    heading: What actually fixes this
+    accent: red
+    items:
+      - title: Name a single accountable owner
+        body: One party — not a committee — has to be responsible for the outcome, with the authority to make calls across the full scope of the work.
+      - title: Define escalation before you need it
+        body: Decide who resolves disputes and blockers before the first one happens, not in the middle of one.
+      - title: Document decisions in one place
+        body: A shared, single source of truth for decisions and their rationale prevents the "that's not what we agreed" problem that split ownership breeds.
+      - title: Review the structure regularly, not just the work
+        body: Revisit whether the ownership model itself is still serving the engagement — not just whether tasks are getting done.
+  - type: callout
+    variant: dark
+    title: The principle — accountability has to be structural, not aspirational
+    body: Good intentions from every party involved do not substitute for one party actually owning the outcome. That's a structural decision, not a personality trait.
+    tag: Delivery model · Engagement structure · Accountability
+  - type: richtext
+    markdown: |
+      ## Navigating a multi-party engagement?
+
+      If you're managing a technical relationship split across a client, a vendor, and a third party, we can help you figure out where accountability actually needs to sit — before the gaps become expensive. [Talk to the TLS team](/contact/).
