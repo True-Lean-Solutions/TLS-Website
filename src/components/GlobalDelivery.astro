@@ -7,6 +7,7 @@
 import Eyebrow from './Eyebrow.astro';
 import Button from './Button.astro';
 import Icon from './Icon.astro';
+import { href } from '../data/site';
 import type { Accent } from '../data/services';
 
 type Status = 'Headquarters' | 'Active' | 'Expanding';
@@ -26,7 +27,7 @@ const locations: Location[] = [
   { n: '03', city: 'United Kingdom', status: 'Active', desc: 'UK Presence', x: 494, y: 168 },
   { n: '04', city: 'United Arab Emirates', status: 'Expanding', desc: 'Expanding Capabilities', x: 612, y: 236 },
   { n: '05', city: 'Australia', status: 'Expanding', desc: 'Expanding Capabilities', x: 838, y: 372 },
-  { n: '06', city: 'Mexico', status: 'Expanding', desc: 'Expanding Capabilities', x: 214, y: 262 },
+  { n: '06', city: 'Mexico', status: 'Expanding', desc: 'Expanding Capabilities · Guadalajara', x: 214, y: 262 },
 ];
 
 const statusAccent: Record<Status, Accent> = {
@@ -39,9 +40,6 @@ const accentVar: Record<Accent, string> = {
   blue: 'var(--blue)',
   plum: 'var(--plum)',
 };
-
-const hq = locations[0];
-const others = locations.slice(1);
 
 const advantages = [
   { icon: 'users' as const, title: 'Global Talent', body: 'Access specialized expertise beyond geographic boundaries.' },
@@ -64,45 +62,14 @@ const advantages = [
         <Button href="#global-presence" variant="primary" arrow>Our Global Presence</Button>
       </div>
 
-      <div class="map" aria-hidden="true">
-        <svg viewBox="0 0 1000 520" width="1000" height="520">
-          <defs>
-            <linearGradient id="arc" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="#d94040" />
-              <stop offset="1" stop-color="#1288cf" />
-            </linearGradient>
-          </defs>
-          <!-- faint landmass hints -->
-          <g fill="#e6e8f2">
-            <path d="M120 150 Q170 110 250 130 Q300 150 285 210 Q270 270 210 275 Q150 275 130 220 Z" />
-            <path d="M250 285 Q305 285 320 340 Q330 420 275 435 Q245 425 250 360 Z" />
-            <path d="M455 140 Q520 135 540 175 Q520 210 470 205 Q445 180 455 140 Z" />
-            <path d="M470 215 Q560 210 585 285 Q575 360 505 365 Q470 320 470 215 Z" />
-            <path d="M560 130 Q700 115 785 165 Q760 250 660 270 Q580 250 560 190 Z" />
-            <path d="M800 345 Q860 335 878 380 Q855 410 805 400 Q790 375 800 345 Z" />
-          </g>
-          <!-- connection arcs from HQ -->
-          {
-            others.map((l) => (
-              <path
-                d={`M${hq.x} ${hq.y} Q${(hq.x + l.x) / 2} ${Math.min(hq.y, l.y) - 70} ${l.x} ${l.y}`}
-                fill="none"
-                stroke="url(#arc)"
-                stroke-width="2"
-                stroke-opacity="0.7"
-              />
-            ))
-          }
-          <!-- pins -->
-          {
-            locations.map((l) => (
-              <g>
-                <circle cx={l.x} cy={l.y} r="9" fill={accentVar[statusAccent[l.status]]} opacity="0.25" />
-                <circle cx={l.x} cy={l.y} r="4.5" fill={accentVar[statusAccent[l.status]]} />
-              </g>
-            ))
-          }
-        </svg>
+      <div class="map">
+        <img
+          src={href('/about/global-map.png')}
+          alt="World map showing True Lean Solutions locations: the USA, Mexico, United Kingdom, UAE, India and Australia"
+          width="1774"
+          height="887"
+          loading="lazy"
+        />
       </div>
     </div>
 
@@ -173,9 +140,10 @@ const advantages = [
     max-width: 46ch;
     line-height: 1.6;
   }
-  .map svg {
+  .map img {
     width: 100%;
     height: auto;
+    display: block;
   }
 
   .locations {
