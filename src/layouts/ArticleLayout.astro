@@ -47,7 +47,7 @@ const jsonLd = {
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </Fragment>
-  <article class="article">
+  <article class="article" data-reveal="load">
     <div class="wrap">
       <header class="head">
         <a class="cat" href={withBase(`/insights/${data.category}/`)}>{cat.label}</a>
@@ -92,7 +92,7 @@ const jsonLd = {
       <section class="section section-alt">
         <div class="wrap">
           <h2 class="related-h">Related insights</h2>
-          <div class="related-grid">
+          <div class="related-grid" data-reveal="stagger">
             {related.map((p) => <InsightCard post={p} />)}
           </div>
         </div>

@@ -23,17 +23,21 @@ const {
   class: className,
 } = Astro.props;
 
-const resolved = external ? href : withBase(href);
+// In-page anchors (#id) stay relative so they scroll instead of navigating.
+const resolved = external || href.startsWith('#') ? href : withBase(href);
 const extAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+// Primary CTAs lean very slightly toward the cursor (motion.ts, desktop only).
+const magnetic = variant === 'primary' ? { 'data-magnetic': '' } : {};
 ---
 
-<a class:list={['btn', variant, className]} href={resolved} {...extAttrs}>
+<a class:list={['btn', variant, className]} href={resolved} {...extAttrs} {...magnetic}>
   <span><slot /></span>
   {arrow && <Icon name="arrow" size={18} class="btn-arrow" />}
 </a>
 
 <style>
   .btn {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -47,27 +51,49 @@ const extAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {
     border: 2px solid transparent;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.18s ease, color 0.18s ease,
-      border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    /* Magnetic offset (motion.ts) rides on `translate`, hover lift on
+       `transform`, so the two compose instead of fighting. */
+    translate: var(--mag-x, 0) var(--mag-y, 0);
+    transition:
+      background-color var(--ix-fast) ease,
+      color var(--ix-fast) ease,
+      border-color var(--ix-fast) ease,
+      transform var(--ix-base) var(--ix-ease),
+      box-shadow var(--ix-base) var(--ix-ease),
+      translate 300ms var(--ix-ease);
   }
   .btn :global(.btn-arrow) {
-    transition: transform 0.18s ease;
+    transition: transform var(--ix-base) var(--ix-ease);
   }
   .btn:hover :global(.btn-arrow) {
-    transform: translateX(3px);
-  }
-  .btn:active {
-    transform: translateY(1px);
+    transform: translateX(4px);
   }
 
   .primary {
     background: var(--red-text);
     color: #fff;
     box-shadow: 0 6px 18px rgba(194, 54, 54, 0.28);
+    overflow: hidden;
+    isolation: isolate;
   }
   .primary:hover {
     background: #a82f2f;
     color: #fff;
+    box-shadow: 0 10px 24px -4px rgba(194, 54, 54, 0.38);
+  }
+  /* A faint highlight that crosses the button once per hover. */
+  .primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.16) 50%,
+      transparent 70%
+    );
+    transform: translateX(-110%);
+    pointer-events: none;
   }
 
   .secondary {
@@ -78,6 +104,7 @@ const extAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {
   .secondary:hover {
     border-color: var(--red-text);
     color: var(--red-text);
+    box-shadow: 0 8px 20px -8px rgba(13, 13, 13, 0.16);
   }
 
   .ghost-light {
@@ -89,5 +116,18 @@ const extAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {
     background: rgba(255, 255, 255, 0.12);
     border-color: #fff;
     color: #fff;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .primary:hover::after {
+      transform: translateX(110%);
+      transition: transform 800ms var(--ix-ease);
+    }
+  }
+  .btn:active {
+    transform: translateY(1px);
   }
 </style>

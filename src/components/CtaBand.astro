@@ -17,7 +17,7 @@ const { eyebrow, heading, accent, text } = Astro.props;
 
 <section class="section">
   <div class="wrap">
-    <div class="cta-card">
+    <div class="cta-card ix-light" data-reveal>
       <div class="cta-copy">
         {eyebrow && <Eyebrow label={eyebrow} />}
         <h2>{heading}{accent && <span class="accent">{accent}</span>}</h2>
@@ -47,6 +47,7 @@ const { eyebrow, heading, accent, text } = Astro.props;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow);
     padding: 3rem;
+    --ix-light-size: 520px;
   }
   h2 {
     max-width: 18ch;

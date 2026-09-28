@@ -2,6 +2,7 @@
 import Icon from './Icon.astro';
 import type { IconName } from './iconTypes';
 import type { Accent } from '../data/services';
+import { parseMetric, formatMetric } from '../scripts/metric';
 
 interface Props {
   value: string;
@@ -11,6 +12,11 @@ interface Props {
 }
 const { value, label, icon, accent } = Astro.props;
 
+// Count-up (motion.ts): the real value stays the element's text; the starting
+// state ("$0", "0 hrs") is drawn over it from first paint when motion is on.
+const metric = parseMetric(value);
+const zero = metric ? formatMetric(metric, 0) : undefined;
+
 const accents: Record<Accent, string> = {
   red: '--c: var(--red); --c-tint: var(--red-tint);',
   blue: '--c: var(--blue); --c-tint: var(--blue-tint);',
@@ -18,10 +24,10 @@ const accents: Record<Accent, string> = {
 };
 ---
 
-<div class="stat" style={accents[accent]}>
-  <span class="icon"><Icon name={icon} size={26} /></span>
+<div class="stat ix-group" style={accents[accent]}>
+  <span class="icon glass-icon"><Icon name={icon} size={26} /></span>
   <div class="body">
-    <span class="value">{value}</span>
+    <span class="value" data-count-up={metric ? '' : undefined} data-count-live={zero}>{value}</span>
     <span class="label">{label}</span>
   </div>
 </div>
@@ -39,7 +45,6 @@ const accents: Record<Accent, string> = {
     width: 54px;
     height: 54px;
     border-radius: var(--radius);
-    background: var(--c-tint);
     color: var(--c);
     flex: none;
   }

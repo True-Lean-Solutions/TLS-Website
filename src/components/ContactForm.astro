@@ -152,10 +152,24 @@ const timelines = [
     padding: 0.9rem 1.8rem;
     cursor: pointer;
     box-shadow: 0 6px 18px rgba(194, 54, 54, 0.28);
-    transition: background-color 0.18s ease;
+    transition:
+      background-color var(--ix-fast) ease,
+      transform var(--ix-base) var(--ix-ease),
+      box-shadow var(--ix-base) var(--ix-ease);
   }
   .submit:hover {
     background: #a82f2f;
+  }
+  .submit:not([disabled]):hover {
+    box-shadow: 0 10px 24px -4px rgba(194, 54, 54, 0.38);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .submit:not([disabled]):hover {
+      transform: translateY(-2px);
+    }
+  }
+  .submit:not([disabled]):active {
+    transform: translateY(1px);
   }
   .submit[disabled] {
     opacity: 0.6;

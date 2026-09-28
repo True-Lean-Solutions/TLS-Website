@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
-import Eyebrow from '../../components/Eyebrow.astro';
 import InfoCard from '../../components/InfoCard.astro';
 import StepRow from '../../components/StepRow.astro';
 import CaseStudyBlock from '../../components/CaseStudyBlock.astro';
+import SolutionHero from '../../components/SolutionHero.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import Button from '../../components/Button.astro';
 import { cta } from '../../data/site';
@@ -45,27 +45,21 @@ const roles = [
 ---
 
 <BaseLayout title={title} description={description} path="/services/technical-talent/">
-  <section class="page-hero">
-    <div class="wrap">
-      <Eyebrow label="Technical Talent" />
-      <h1>The right person for the role — <span class="hl">at the right time.</span></h1>
-      <p class="lede">
-        Finding strong technology talent is hard for any business. For small
-        businesses competing against enterprises for the same candidates, it's
-        even harder — unless you have a recruiting partner who understands both
-        sides.
-      </p>
-      <div class="cta">
-        <Button href={cta.primary.href} variant="primary" arrow>Talk to Us About the Role</Button>
-        <Button href={cta.email.href} variant="secondary" external>Email Us</Button>
-      </div>
-    </div>
-  </section>
+  <SolutionHero
+    eyebrow="Technical Talent"
+    title="The right person for the role —"
+    highlight="at the right time."
+    description="Finding strong technology talent is hard for any business. For small businesses competing against enterprises for the same candidates, it's even harder — unless you have a recruiting partner who understands both sides."
+    primaryCta={{ label: "Talk to Us About the Role", href: cta.primary.href }}
+    secondaryCta={{ label: 'Email Us', href: cta.email.href, external: true }}
+    icon="talent"
+    accent="red"
+  />
 
   <section class="section">
     <div class="wrap">
       <SectionHeading eyebrow="What It Is" title="IT recruiting sized for " accent="small businesses." />
-      <div class="prose">
+      <div class="prose" data-reveal="stagger">
         <p>TLS provides IT recruiting services designed specifically for small businesses. We source, screen, and place technology professionals — developers, architects, project managers, QA engineers, and more — in roles that are scoped and priced for your business size.</p>
         <p>We don't just fill seats. We match the right person to the right role based on your technical needs, team culture, and growth plans.</p>
       </div>
@@ -75,7 +69,7 @@ const roles = [
   <section class="section section-alt">
     <div class="wrap">
       <SectionHeading eyebrow="Who It's For" title="You're a fit " accent="if this sounds familiar." />
-      <div class="cards-2">
+      <div class="cards-2" data-reveal="stagger">
         {whoFor.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
       </div>
     </div>
@@ -84,7 +78,7 @@ const roles = [
   <section class="section">
     <div class="wrap">
       <SectionHeading eyebrow="How It Works" title="A rigorous process, " accent="honest feedback." />
-      <ol class="steps-grid">
+      <ol class="steps-grid" data-reveal="stagger">
         {steps.map((s, i) => <StepRow {...s} accent={accents[i % 3]} />)}
       </ol>
     </div>
@@ -93,7 +87,7 @@ const roles = [
   <section class="section section-alt">
     <div class="wrap">
       <SectionHeading eyebrow="What We Place" title="Technical roles we " accent="regularly fill." />
-      <ul class="roles">
+      <ul class="roles" data-reveal>
         {roles.map((r) => <li>{r}</li>)}
       </ul>
     </div>

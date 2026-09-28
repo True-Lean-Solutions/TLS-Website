@@ -1,24 +1,42 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import type { IconName } from '../components/iconTypes';
+import type { Accent } from './services';
+
+interface CategoryMeta {
+  label: string;
+  description: string;
+  /** Header mega-menu icon and accent (UI only). */
+  icon: IconName;
+  accent: Accent;
+}
 
 /** Insights category metadata (decision 11). */
 export const categoryMeta = {
   perspectives: {
     label: 'Perspectives',
     description: 'Ideas, trends and expert thinking.',
+    icon: 'lightbulb',
+    accent: 'blue',
   },
   'case-studies': {
     label: 'Case Studies',
     description: 'Real challenges, real solutions.',
+    icon: 'briefcase',
+    accent: 'red',
   },
   guides: {
     label: 'Guides',
     description: 'Practical frameworks and how-to resources.',
+    icon: 'book',
+    accent: 'plum',
   },
   news: {
     label: 'News',
     description: 'Company updates and announcements.',
+    icon: 'megaphone',
+    accent: 'blue',
   },
-} as const;
+} as const satisfies Record<string, CategoryMeta>;
 
 export type CategorySlug = keyof typeof categoryMeta;
 export const categoryOrder: CategorySlug[] = [

@@ -97,7 +97,7 @@ Cover images in the sheet are Drive links. Download each one into `public/insigh
 | Advisor: Mayank Pujara | `1IoCEOZrk0CdWHsM5Co6_dvPjv65XqZ83` | `public/team/mayank-pujara.png` |
 | Advisor: Sanket Thakkar | `14EBqwO6Tq4h3wpUqsfyWyGy5gP4bBdKn` | `public/team/sanket-thakkar.png` |
 | Client logo: NRI | `1P70t_tSWD9Nxan-D1FuzjfYnxDOI7Jsh` | `public/clients/nri.png` |
-| Client logo: UV Concepts | `1zUc-91l43ndozxNQy_QriQVxRdBYfUib` | `public/clients/uv-concepts.png` |
+| Client logo: UV Concepts | `1zUc-91l43ndozxNQy_QriQVxRdBYfUib` | `public/clients/uv-concepts.png` (2026-09-29: white background made transparent, mark unchanged) |
 
 The TLS logo files are already in `public/brand/`:
 
@@ -108,3 +108,25 @@ The TLS logo files are already in `public/brand/`:
 | `tls-lockup-on-dark-reference.png` | A low-resolution screenshot of the full dark lockup: symbol, white TLS, red TRUE LEAN SOLUTIONS, tagline. **Reference only. Never ship it.** Build the lockup in HTML/SVG from `tls-mark.png` plus live text, or ask Hemang for a vector master. |
 
 The `Website Images` folder (`15yCgSqOptLQgUsgDYIn3LTgWUu_9reS5`) holds other images, including `image1.png` to `image15.png`, uploaded by pratapsinghh29@gmail.com, with no stated purpose. Use them only where the index sheet or a page doc references them.
+
+**Home › Common Business Challenges (2026-09-29).** Hemang supplied two images directly in the session, not from Drive:
+- `ChatGPT Image Sep 28, 2026, 05_06_52 AM(1).png` (1672×941): the TLS isometric platform with four glass cards ("Business Problem", "Lean Thinking", "Right Solution", "Measurable Results"). It is the section's visual. The master is kept at `docs/references/pages/home/challenges-image-original.png`, and two web versions are made from it without adding any new imagery:
+  - `public/home/challenges-visual.webp` (1672×941, 2026-09-29, v3) is the only web version, used at every width. It is the same image at its own size and shape: sharp in the middle, softening toward its edges. A 12 px blurred copy shows through over the outer 15% (sides) and 17% (top, bottom). There is no darkening and no blurred fill. The page's CSS masks then dissolve those edges into the canvas. Canvas 2D, WebP q 0.86. (The earlier `challenges-bg.webp` and the blurred-fill composition were removed.)
+- "Fold 4.png": the layout and copy reference, saved as `docs/references/pages/home/fold-4-common-challenges.png`. It is never shipped.
+
+The section copy is the text in that reference, supplied and approved by Hemang (2026-09-29). It is in `src/components/CommonChallenges.astro`. The labels on the image's glass cards are part of the artwork, not site copy.
+
+## 5. Solutions expansion (2026-09-28)
+
+Folder: `SOLUTIONS` (`1w6rQ53kBwkL6kv6QGzmYX1j24oYIR__x`, Mack), one subfolder per solution. Imported once; the site never reads it.
+
+| Solution | Source used | Drive ID |
+|---|---|---|
+| Data & Analytics | TLS Website: Data & Analytics (Mack). A drafted page plan built from the partner site PilgrimIQ. Only its TLS positioning lines are used (Fold 1 hero, final fold). **Do not publish** its mock dashboard figures ($24.8M, +12.4%, 94%, 87%), the partner's industry experience, or partner-attributed beliefs as TLS claims. | `1ukO2kvtwRtS00MqQ84yRgNMEZtv2PG1ESHGLrOmMt7Y` |
+| Workflow Automation | Subfolder empty. Card copy is drafted from Brand Guide v2.3, capability "Process Improvement & Automation". | `1dNn7fJxwni_xS8tXOZhvVz3883lVjljW` |
+| Technology Strategy | Subfolder empty. Card copy is drafted from TLS's existing positioning only (v2.3 §01; Home hero), per Hemang. | `1zfroHLueJvcJ2-lDybkeYSkwTYi5V32b` |
+| Cyber Security | Subfolder empty. Name only until copy exists (Hemang). `TLS_Cybersecurity_Service_Clarity_Framework.docx` (`1o1RAmrP64o538cg0Q9XecrDECmU5bD4_`) is an unanswered internal questionnaire, not a source. | `1Y8qMP3JdjRwmBVzbEWmkoTZOWiclyUqv` |
+
+`Custom Software`, `Integrations` and `Tallent Solutions` are empty (corrected 2026-09-29). `Artificial Intelligence (AI)` holds five ChatGPT full-page mock-ups with baked-in UI, prices ("$500/year", "$4,500/month") and unverified statistics ("$750B", "50% of US consumers"): **never publish any of it**, and they are not usable as backgrounds. The existing solutions keep their 2026-09-27 copy (§1). The two images in the `SOLUTIONS` root are ChatGPT mock-ups with placeholder copy (including the banned CTA "Get Started"): visual direction only.
+
+**Solutions hero image.** `public/solutions/hero-solutions.webp` is `ChatGPT Image Sep 28, 2026, 12_01_18 PM.png` from the `SOLUTIONS` root (`16e-mNdSFPZwzHvqeJhGRmbcycAHLEXeR`, 1774×887; Hemang supplied the same file directly). Its baked-in mock-up text and red "Get Started" button were retouched out (inpainted from the surrounding background) so the page's real HTML hero text is the only copy; nothing else in the image was changed. Encoded as WebP (q 0.86, ~156 KB). To redo it, start from the Drive original, not from the WebP. Since 2026-09-29 the same image is the hero background on all eight solution pages too (Hemang), via `src/components/SolutionHero.astro`.

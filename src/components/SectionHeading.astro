@@ -10,6 +10,8 @@ interface Props {
   lead?: string;
   align?: 'start' | 'center';
   as?: 'h1' | 'h2';
+  /** Fade up on scroll (motion.css). Off when a parent runs its own reveal. */
+  reveal?: boolean;
 }
 const {
   eyebrow,
@@ -18,10 +20,13 @@ const {
   lead,
   align = 'start',
   as: Tag = 'h2',
+  reveal = true,
 } = Astro.props;
+// Page titles (h1) sit above the fold, so they animate on load, not on scroll.
+const revealMode = !reveal ? undefined : Tag === 'h1' ? 'load' : '';
 ---
 
-<div class:list={['section-heading', align]}>
+<div class:list={['section-heading', align]} data-reveal={revealMode}>
   {eyebrow && <Eyebrow label={eyebrow} align={align} />}
   <Tag>
     {title}{accent && <><span class="accent">{accent}</span></>}

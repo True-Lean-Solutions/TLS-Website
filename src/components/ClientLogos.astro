@@ -1,0 +1,168 @@
+---
+/**
+ * Client logo strip. Real logos only (src/data/clients.ts).
+ * - Fewer than MARQUEE_MIN logos: a calm static row. A marquee needs the set
+ *   repeated across the screen, and with a couple of genuine clients that
+ *   repetition would look padded.
+ * - MARQUEE_MIN or more: a slow infinite marquee (30 s per loop, linear),
+ *   faded at both edges, paused on hover/focus, static under reduced motion.
+ * Logos are muted until hovered (opacity, plus grayscale where it's safe).
+ */
+import { clients } from '../data/clients';
+import { href } from '../data/site';
+
+interface Props {
+  /** Override for testing/layout reuse; defaults to all clients. */
+  items?: typeof clients;
+}
+const { items = clients } = Astro.props;
+const MARQUEE_MIN = 6;
+const marquee = items.length >= MARQUEE_MIN;
+---
+
+<div class:list={['logos', marquee ? 'logos--marquee' : 'logos--static']}>
+  {
+    marquee ? (
+      <div class="logos-viewport">
+        <ul class="logos-track">
+          {[0, 1].map((copy) =>
+            items.map((c) => (
+              <li class="logo" aria-hidden={copy === 1 ? 'true' : undefined}>
+                <img
+                  class:list={[c.muted]}
+                  src={href(c.logo)}
+                  alt={copy === 1 ? '' : c.name}
+                  width={c.width}
+                  height={c.height}
+                  style={`height: ${c.displayHeight}px`}
+                  loading="lazy"
+                />
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
+    ) : (
+      <ul class="logos-row">
+        {items.map((c) => (
+          <li class="logo">
+            <img
+              class:list={[c.muted]}
+              src={href(c.logo)}
+              alt={c.name}
+              width={c.width}
+              height={c.height}
+              style={`height: ${c.displayHeight}px`}
+              loading="lazy"
+            />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</div>
+
+<style>
+  /* A hairline band that frames the logos: fades out toward both ends. */
+  .logos {
+    position: relative;
+    padding-block: 1.6rem;
+  }
+  .logos::before,
+  .logos::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-2) 20%, var(--border-2) 80%, transparent);
+  }
+  .logos::before {
+    top: 0;
+  }
+  .logos::after {
+    bottom: 0;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+  .logo img {
+    width: auto;
+    max-width: none;
+    object-fit: contain;
+    opacity: 0.65;
+    transition:
+      opacity var(--ix-base) var(--ix-ease),
+      filter var(--ix-base) var(--ix-ease),
+      transform var(--ix-base) var(--ix-ease);
+  }
+  .logo img.grayscale {
+    filter: grayscale(100%);
+  }
+  .logo img.fade {
+    opacity: 0.72;
+  }
+  .logo:hover img {
+    opacity: 1;
+    filter: none;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .logo:hover img {
+      transform: scale(1.04);
+    }
+  }
+
+  /* Static row */
+  .logos-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem 4.5rem;
+  }
+
+  /* Marquee */
+  .logos-viewport {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .logos-track {
+    display: flex;
+    align-items: center;
+    gap: 4.5rem;
+    width: max-content;
+    padding-right: 4.5rem; /* the gap that joins the two copies */
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .logos-track {
+      animation: logos-scroll 30s linear infinite;
+    }
+    .logos--marquee:is(:hover, :focus-within) .logos-track {
+      animation-play-state: paused;
+    }
+  }
+  @keyframes logos-scroll {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .logos-track {
+      flex-wrap: wrap;
+      justify-content: center;
+      width: auto;
+    }
+    .logos-track > [aria-hidden='true'] {
+      display: none;
+    }
+  }
+</style>

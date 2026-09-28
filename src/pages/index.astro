@@ -7,8 +7,10 @@ import ServiceCard from '../components/ServiceCard.astro';
 import ValueCard from '../components/ValueCard.astro';
 import StatInline from '../components/StatInline.astro';
 import StepRow from '../components/StepRow.astro';
-import TestimonialCard from '../components/TestimonialCard.astro';
+import ClientLogos from '../components/ClientLogos.astro';
+import TestimonialCarousel from '../components/TestimonialCarousel.astro';
 import CtaBand from '../components/CtaBand.astro';
+import CommonChallenges from '../components/CommonChallenges.astro';
 import { cta, href } from '../data/site';
 import { services } from '../data/services';
 import { testimonials } from '../data/testimonials';
@@ -73,7 +75,7 @@ const steps = [
       fetchpriority="high"
     />
     <div class="wrap">
-      <div class="hero-copy">
+      <div class="hero-copy" data-reveal="load">
         <h1>
           Solve the Right Problem.<br />
           Build <span class="accent">the Right Solution.</span>
@@ -98,7 +100,24 @@ const steps = [
     </div>
   </section>
 
-  <!-- 2. What We Do -->
+  <!-- 2. Why TLS (moved up above Common Business Challenges, 2026-09-29) -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Why TLS"
+        title="Consulting mindset. Lean thinking. "
+        accent="Technical execution."
+      />
+      <div class="grid-2" data-reveal="stagger">
+        {values.map((v) => <ValueCard {...v} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Common Business Challenges (Fold 4 reference, 2026-09-29) -->
+  <CommonChallenges />
+
+  <!-- 4. What We Do -->
   <section class="section">
     <div class="wrap">
       <SectionHeading
@@ -107,27 +126,13 @@ const steps = [
         accent="business problems."
         lead="AI, software engineering, integrations, automation, and technical talent — put to work on the problems that actually slow your business down."
       />
-      <div class="grid-4">
+      <div class="grid-4" data-reveal="stagger">
         {services.map((s) => <ServiceCard {...s} />)}
       </div>
     </div>
   </section>
 
-  <!-- 3. Why TLS -->
-  <section class="section">
-    <div class="wrap">
-      <SectionHeading
-        eyebrow="Why TLS"
-        title="Consulting mindset. Lean thinking. "
-        accent="Technical execution."
-      />
-      <div class="grid-2">
-        {values.map((v) => <ValueCard {...v} />)}
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. Recent Results -->
+  <!-- 5. Recent Results -->
   <section class="section">
     <div class="wrap">
       <SectionHeading
@@ -135,13 +140,13 @@ const steps = [
         title="Real problems, "
         accent="measurable outcomes."
       />
-      <div class="grid-3 stat-row">
+      <div class="grid-3 stat-row" data-reveal="stagger" data-count-group>
         {stats.map((s) => <StatInline {...s} />)}
       </div>
     </div>
   </section>
 
-  <!-- 5. Our Approach -->
+  <!-- 6. Our Approach -->
   <section class="section">
     <div class="wrap">
       <SectionHeading
@@ -151,36 +156,24 @@ const steps = [
         lead="A straightforward four-step process focused on delivering real value quickly."
       />
       <div class="split">
-        <ol class="steps-2 split-main">
+        <ol class="steps-2 split-main" data-reveal="stagger">
           {steps.map((s) => <StepRow {...s} />)}
         </ol>
-        <div class="split-art"><HeroArt /></div>
+        <div class="split-art" data-reveal><HeroArt /></div>
       </div>
     </div>
   </section>
 
-  <!-- 6. Testimonials -->
-  <section class="section">
-    <div class="wrap">
-      <SectionHeading eyebrow="Testimonials" title="What our clients say" />
-      <div class="grid-3 testimonials">
-        {testimonials.map((t) => <TestimonialCard testimonial={t} />)}
-      </div>
-    </div>
-  </section>
-
-  <!-- 7. Clients -->
-  <section class="section">
+  <!-- 7. Client proof: who we work with, then what they say. -->
+  <section class="section proof">
     <div class="wrap">
       <SectionHeading eyebrow="Our Clients" title="Teams we work with" align="center" />
-      <ul class="clients">
-        <li>
-          <img src={href('/clients/nri.png')} alt="NRI North America" width="400" height="80" loading="lazy" />
-        </li>
-        <li>
-          <img src={href('/clients/uv-concepts.png')} alt="UV Concepts" width="66" height="66" loading="lazy" />
-        </li>
-      </ul>
+      <div class="proof-logos" data-reveal><ClientLogos /></div>
+
+      <div class="proof-voices">
+        <SectionHeading eyebrow="Testimonials" title="What our clients say" align="center" />
+        <div data-reveal><TestimonialCarousel testimonials={testimonials} /></div>
+      </div>
     </div>
   </section>
 
@@ -214,6 +207,11 @@ const steps = [
     object-position: center right;
     -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 32%);
     mask-image: linear-gradient(to right, transparent 0%, #000 32%);
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .hero-photo {
+      animation: ix-fade 1000ms ease-out backwards;
+    }
   }
   .hero .wrap {
     position: relative;
@@ -286,20 +284,18 @@ const steps = [
     gap: 2rem;
   }
 
-  /* Clients */
-  .clients {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 3.5rem;
+  /* Client proof: tight, intentional spacing. */
+  .proof {
+    overflow-x: clip; /* the card's soft glow may spread past narrow screens */
   }
-  .clients img {
-    height: 46px;
-    width: auto;
-    object-fit: contain;
+  .proof :global(.section-heading) {
+    margin-bottom: 1.5rem;
+  }
+  .proof-voices {
+    margin-top: var(--space-6);
+  }
+  .proof-voices :global(.section-heading) {
+    margin-bottom: 2.25rem;
   }
 
   @media (max-width: 1024px) {

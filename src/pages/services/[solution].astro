@@ -1,0 +1,93 @@
+---
+/**
+ * Short pages for the four solutions added 2026-09-28 (Hemang: "a minimal page
+ * per solution — hero + CTA — using only the card copy"), until each has full
+ * page copy. The four original solutions keep their own page files.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SolutionHero from '../../components/SolutionHero.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Button from '../../components/Button.astro';
+import { cta } from '../../data/site';
+import { moreSolutions, type Service } from '../../data/services';
+
+export function getStaticPaths() {
+  return moreSolutions.map((s) => ({
+    params: { solution: s.href.split('/').filter(Boolean).pop() },
+    props: { solution: s },
+  }));
+}
+
+interface Props {
+  solution: Service;
+}
+const { solution } = Astro.props;
+const slug = solution.href.split('/').filter(Boolean).pop()!;
+
+interface PageCopy {
+  /** [plain, red accent]. */
+  headline: [string, string];
+  /** Defaults to the card blurb. */
+  lede?: string;
+  /** Primary CTA label, from Brand Guide v2.3 §09. */
+  cta: string;
+  band?: { eyebrow: string; heading: string; accent: string; text: string };
+}
+
+const copy: Record<string, PageCopy> = {
+  // Headlines: Hemang (2026-09-29), built on each card's copy.
+  // v2.3 §09 "Process / Automation" CTA.
+  'workflow-automation': { headline: ['Turn friction into', 'better workflows.'], cta: 'Discuss the Workflow' },
+  // v2.3 §09 "Requirements Not Yet Clear" CTA.
+  'technology-strategy': { headline: ['Make technology work toward', 'the right goal.'], cta: 'Bring Us the Need' },
+  // source: TLS Website: Data & Analytics (Mack, 2026-09-28),
+  // 1ukO2kvtwRtS00MqQ84yRgNMEZtv2PG1ESHGLrOmMt7Y — Fold 1 hero and final fold.
+  'data-analytics': {
+    headline: ['Turn data into', 'better decisions.'],
+    lede: 'Your data already contains answers. We help you connect it, organize it, visualize it, and turn it into intelligence your teams can actually use.',
+    cta: 'Discuss Your Project',
+    band: {
+      eyebrow: 'Data & Analytics',
+      heading: 'Your data already has a story. ',
+      accent: "Let's make it useful.",
+      text: "Start with the decisions that matter. We'll help you build the strategy, data foundation and analytics capability to answer them.",
+    },
+  },
+  // No description yet (Hemang, 2026-09-28); headline Hemang (2026-09-29).
+  'cyber-security': { headline: ['Protect what', 'your business depends on.'], cta: 'Discuss Your Project' },
+};
+
+const page = copy[slug];
+const [plain, accent] = page.headline;
+const lede = page.lede ?? (solution.blurb || undefined);
+
+// Closing band — source: Services - Overview (2026-09-27),
+// 1adf8kbl7pTD1AGhmQZYNl4e9vMiNvL4QTugmMiteBBg (same band as the Solutions page).
+const band = page.band ?? {
+  eyebrow: "Let's solve what matters",
+  heading: 'Not sure where to ',
+  accent: 'start?',
+  text: "Most businesses we work with know something isn't working but aren't sure which lever to pull first. Book a free strategy call and we'll help you figure it out.",
+};
+
+const title = `True Lean Solutions — ${solution.title}`;
+const description = lede ?? `Talk to True Lean Solutions about ${solution.title}.`;
+---
+
+<BaseLayout title={title} description={description} path={solution.href}>
+  <SolutionHero
+    eyebrow={solution.title}
+    title={plain}
+    highlight={accent}
+    description={lede}
+    primaryCta={{ label: page.cta, href: cta.primary.href }}
+    secondaryCta={{ label: cta.email.label, href: cta.email.href, external: true }}
+    icon={solution.icon}
+    accent={solution.accent}
+  />
+
+  <CtaBand eyebrow={band.eyebrow} heading={band.heading} accent={band.accent} text={band.text}>
+    <Button href={cta.primary.href} variant="primary" arrow>{page.cta}</Button>
+    <Button href={cta.email.href} variant="secondary" external>{cta.email.label}</Button>
+  </CtaBand>
+</BaseLayout>
