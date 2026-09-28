@@ -1,0 +1,358 @@
+/* TLS interaction layer — motion tokens and the reusable utilities every
+   component opts into. Nothing here changes the at-rest design: each rule is a
+   hover/focus state, an entrance, or a transition. Reduced motion switches it
+   off (see the end of this file and global.css § Motion).
+
+     .glass-icon            premium glass tile behind an icon (+ --round via radius)
+     .glass-icon--neutral   uncolored glass that lights up on hover (social/utility icons)
+     .glass-icon--dark      glass that appears on hover on the black header
+     .ix-card               card hover: lift, deeper shadow, accent edge
+     .ix-card--quiet        smaller lift for non-link cards
+     .ix-group              hover animates the group's glass icon, no lift
+     .ix-light              faint radial light that follows the cursor (motion.ts)
+     [data-reveal]          fade-up on scroll (motion.ts)
+     [data-reveal=stagger]  children fade up in sequence as they enter
+     [data-reveal=load]     children fade up on page load (CSS only, above the fold)
+     [data-reveal=editorial] stronger masked heading reveal (About › What We Believe)
+
+   State rules that must beat a component's scoped at-rest styles are prefixed
+   with :root (Astro's scoped selectors carry an extra attribute). */
+
+@property --gi {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1288cf;
+}
+
+:root {
+  --ix-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ix-fast: 220ms; /* nav, dropdown, color changes */
+  --ix-base: 420ms; /* cards, icons, buttons */
+  --ix-slow: 720ms; /* scroll reveals */
+  --ix-stagger: 80ms;
+  --ix-rise: 24px;
+  --ix-shadow-lift: 0 16px 38px -12px rgba(13, 13, 13, 0.16),
+    0 4px 12px -4px rgba(13, 13, 13, 0.06);
+}
+
+/* ---- Smooth in-page scrolling that clears the sticky header ---- */
+:where([id]) {
+  scroll-margin-top: calc(var(--header-h) + 1.5rem);
+}
+
+/* ==== 1. Glass icon ==================================================== */
+/* Size and radius come from the host component; this supplies the material.
+   Layers: ::before = the colored light under the glass, ::after = the frosted
+   pane (translucent gradient, rim, inner highlight, soft accent shadow), then
+   the icon. No backdrop-filter here on purpose: on these solid card surfaces it
+   had nothing to blur, and any backdrop-filter at rest makes Chromium drop
+   subpixel (ClearType) text rendering for the whole page. The dropdown, which
+   does sit over content, keeps its blur (Header.astro). */
+.glass-icon {
+  --gi: var(--c, var(--blue));
+  position: relative;
+  isolation: isolate;
+  background: none;
+  transition:
+    transform var(--ix-base) var(--ix-ease),
+    color var(--ix-fast) ease,
+    --gi var(--ix-base) var(--ix-ease);
+}
+.glass-icon::before,
+.glass-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.glass-icon::before {
+  z-index: -2;
+  background: radial-gradient(
+    56% 56% at 76% 84%,
+    color-mix(in srgb, var(--gi) 30%, transparent),
+    transparent 74%
+  );
+  transition:
+    transform var(--ix-base) var(--ix-ease),
+    opacity var(--ix-base) var(--ix-ease);
+}
+.glass-icon::after {
+  z-index: -1;
+  background:
+    linear-gradient(
+      150deg,
+      rgba(255, 255, 255, 0.62) 0%,
+      rgba(255, 255, 255, 0.18) 50%,
+      rgba(255, 255, 255, 0.06) 100%
+    ),
+    color-mix(in srgb, var(--gi) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gi) 16%, rgba(255, 255, 255, 0.85));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 2px color-mix(in srgb, var(--gi) 12%, transparent),
+    0 1px 2px rgba(13, 13, 13, 0.04),
+    0 6px 14px -7px color-mix(in srgb, var(--gi) 26%, transparent);
+  transition:
+    box-shadow var(--ix-base) var(--ix-ease),
+    opacity var(--ix-base) var(--ix-ease);
+}
+.glass-icon > svg {
+  transition: transform var(--ix-base) var(--ix-ease);
+}
+
+/* Neutral: uncolored at rest; the light fades in under the glass on hover. */
+.glass-icon--neutral {
+  --gi: var(--text-2);
+}
+.glass-icon--neutral::before {
+  opacity: 0;
+}
+.glass-icon--neutral:is(:hover, :focus-visible) {
+  --gi: var(--gi-hover, var(--blue));
+}
+.glass-icon--neutral:is(:hover, :focus-visible)::before {
+  opacity: 0.85;
+}
+
+/* Dark: invisible at rest on the black header, a smoked-glass pane on hover.
+   Painted on the element itself (not a zero-opacity pseudo layer), which keeps
+   the header's text on subpixel rendering. */
+.glass-icon--dark::before,
+.glass-icon--dark::after {
+  display: none;
+}
+.glass-icon--dark {
+  background-color: transparent;
+  box-shadow:
+    inset 0 0 0 1px transparent,
+    inset 0 1px 0 transparent;
+  transition:
+    transform var(--ix-base) var(--ix-ease),
+    color var(--ix-fast) ease,
+    background-color var(--ix-fast) ease,
+    box-shadow var(--ix-base) var(--ix-ease);
+}
+.glass-icon--dark > svg {
+  transition:
+    transform var(--ix-base) var(--ix-ease),
+    filter var(--ix-base) var(--ix-ease);
+}
+:root .glass-icon--dark:is(:hover, :focus-visible) {
+  background-color: rgba(255, 255, 255, 0.09);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 8px 18px -8px rgba(0, 0, 0, 0.75);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* Glow deepens and the light drifts under the glass. */
+  :root :is(.glass-icon:hover, .ix-card:hover .glass-icon, .ix-group:hover .glass-icon)::after {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 2px color-mix(in srgb, var(--gi) 14%, transparent),
+      0 1px 2px rgba(13, 13, 13, 0.04),
+      0 12px 24px -8px color-mix(in srgb, var(--gi) 40%, transparent);
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :root :is(.glass-icon:hover, .ix-card:hover .glass-icon, .ix-group:hover .glass-icon) {
+    transform: translateY(-3px) scale(1.04);
+  }
+  :root :is(.glass-icon:hover, .ix-card:hover .glass-icon, .ix-group:hover .glass-icon) > svg {
+    transform: translateY(-1px);
+  }
+  :root :is(.glass-icon:hover, .ix-card:hover .glass-icon, .ix-group:hover .glass-icon)::before {
+    transform: translate(-3px, -3px) scale(1.14);
+  }
+  :root .glass-icon.glass-icon--dark:hover {
+    transform: translateY(-1px);
+  }
+  :root .glass-icon.glass-icon--dark:hover > svg {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
+  }
+}
+
+/* ==== 2. Card hover ==================================================== */
+.ix-card {
+  transition:
+    transform var(--ix-base) var(--ix-ease),
+    box-shadow var(--ix-base) var(--ix-ease),
+    border-color var(--ix-base) var(--ix-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  :root .ix-card:hover {
+    box-shadow: var(--ix-shadow-lift);
+    border-color: color-mix(in srgb, var(--c, var(--blue)) 24%, var(--border));
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :root .ix-card:hover {
+    transform: translateY(-5px);
+  }
+  :root .ix-card--quiet:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* ==== 3. Cursor light ================================================== */
+/* motion.ts writes --mx/--my on pointermove (fine pointers only). The light
+   sits above the surface and below the content, so text is never washed. */
+.ix-light {
+  position: relative;
+  isolation: isolate;
+}
+.ix-light::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    var(--ix-light-size, 220px) circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in srgb, var(--c, var(--blue)) 8%, transparent),
+    transparent 68%
+  );
+  opacity: 0;
+  transition: opacity var(--ix-base) var(--ix-ease);
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .ix-light:hover::before {
+    opacity: 1;
+  }
+}
+
+/* ==== 4. Scroll reveal ================================================= */
+@keyframes ix-rise {
+  from {
+    opacity: 0;
+    translate: 0 var(--ix-rise);
+  }
+}
+@keyframes ix-mask {
+  from {
+    opacity: 0;
+    clip-path: inset(100% -0.2em -0.2em -0.2em);
+    translate: 0 0.45em;
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(-0.2em -0.2em -0.2em -0.2em);
+    translate: 0 0;
+  }
+}
+@keyframes ix-draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes ix-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Hidden-until-revealed only applies on screen, with motion allowed, and once
+   the head script has confirmed JS + IntersectionObserver (html.ix). Content
+   is never hidden from print, reduced-motion users, or no-JS visitors. */
+@media screen and (prefers-reduced-motion: no-preference) {
+  html.ix :is([data-reveal='']:not(.is-in), [data-reveal='stagger'] > :not(.is-in)) {
+    opacity: 0;
+  }
+  html.ix :is([data-reveal=''], [data-reveal='stagger'] > *).is-in {
+    animation: ix-rise var(--ix-slow) var(--ix-ease) var(--ix-d, 0ms) backwards;
+  }
+  html.ix .ix-instant {
+    animation: none !important;
+  }
+
+  /* Above the fold: pure CSS, runs on first paint, no JS dependency. */
+  [data-reveal='load'] > * {
+    --ix-rise: 16px;
+    animation: ix-rise var(--ix-slow) var(--ix-ease) backwards;
+  }
+  [data-reveal='load'] > :nth-child(2) { animation-delay: calc(1 * var(--ix-stagger)); }
+  [data-reveal='load'] > :nth-child(3) { animation-delay: calc(2 * var(--ix-stagger)); }
+  [data-reveal='load'] > :nth-child(4) { animation-delay: calc(3 * var(--ix-stagger)); }
+  [data-reveal='load'] > :nth-child(n + 5) { animation-delay: calc(4 * var(--ix-stagger)); }
+
+  /* Editorial: eyebrow rule draws, heading rises out of a mask, then copy. */
+  html.ix [data-reveal='editorial']:not(.is-in) :is(.eyebrow, h2, .prose > *) {
+    opacity: 0;
+  }
+  html.ix [data-reveal='editorial'].is-in .eyebrow {
+    animation: ix-fade 600ms var(--ix-ease) backwards;
+  }
+  html.ix [data-reveal='editorial'].is-in .eyebrow .rule {
+    transform-origin: left center;
+    animation: ix-draw 900ms var(--ix-ease) 80ms backwards;
+  }
+  html.ix [data-reveal='editorial'].is-in h2 {
+    animation: ix-mask 1000ms var(--ix-ease) 140ms backwards;
+  }
+  html.ix [data-reveal='editorial'].is-in .prose > * {
+    animation: ix-rise 760ms var(--ix-ease) backwards;
+  }
+  html.ix [data-reveal='editorial'].is-in .prose > :nth-child(1) { animation-delay: 460ms; }
+  html.ix [data-reveal='editorial'].is-in .prose > :nth-child(2) { animation-delay: 580ms; }
+  html.ix [data-reveal='editorial'].is-in .prose > :nth-child(n + 3) { animation-delay: 700ms; }
+}
+
+/* ==== Count-up metrics ================================================= */
+/* The real value ("$3M") is always the element's text: it sizes the box (no
+   layout shift) and is what crawlers, screen readers, copy/paste and
+   no-JS / reduced-motion visitors get. While [data-count-live] is set — from
+   first paint, since StatInline renders the "$0" state — that text is made
+   invisible and the counter is drawn over it from the attribute, silently
+   (empty alt text). motion.ts updates the attribute and removes it at the
+   end of each count, handing back to the real text. */
+@media screen and (prefers-reduced-motion: no-preference) {
+  html.ix [data-count-up][data-count-live] {
+    position: relative;
+    -webkit-text-fill-color: transparent;
+  }
+  html.ix [data-count-up][data-count-live]::after {
+    content: attr(data-count-live);
+    content: attr(data-count-live) / '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    -webkit-text-fill-color: currentColor;
+    pointer-events: none;
+  }
+}
+
+/* ==== 5. Page transitions ============================================== */
+/* Cross-document View Transitions: zero JS; browsers without support simply
+   navigate normally. The header is its own layer so it stays put, and the
+   active-nav underline morphs to its new item (see Header.astro). */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+::view-transition-old(root) {
+  animation: 160ms ease-in both ix-page-out;
+}
+::view-transition-new(root) {
+  animation: 240ms var(--ix-ease) both ix-page-in;
+}
+::view-transition-group(ix-nav-indicator) {
+  animation-duration: 250ms;
+  animation-timing-function: var(--ix-ease);
+}
+@keyframes ix-page-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes ix-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

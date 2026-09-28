@@ -1,20 +1,22 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
+import SolutionHero from '../../components/SolutionHero.astro';
 import ServiceCard from '../../components/ServiceCard.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import Button from '../../components/Button.astro';
 import { cta } from '../../data/site';
+import { moreSolutions } from '../../data/services';
 
 // Meta — source: TLS: Website Pages (2026-09-27), 1w1w7ClLF7Ts7M-FSFJeopTP6Z_13FhXn_q9Qxy2hlT0
-const title = 'True Lean Solutions — Our Services';
+const title = 'True Lean Solutions — Our Solutions';
 const description =
   'AI, software engineering, integrations, automation and technical talent — used to solve real business problems.';
 
 // Copy — source: Services - Overview (2026-09-27), 1adf8kbl7pTD1AGhmQZYNl4e9vMiNvL4QTugmMiteBBg
 const services = [
   {
-    title: 'Enterprise AI',
+    title: 'AI & Automation',
     href: '/services/enterprise-ai/',
     icon: 'ai' as const,
     accent: 'red' as const,
@@ -49,17 +51,28 @@ const services = [
 ---
 
 <BaseLayout title={title} description={description} path="/services/">
-  <section class="section">
+  <!-- Cinematic hero (SolutionHero). Copy — Hemang (2026-09-28), from Mack's
+       mock-up in SOLUTIONS (Drive 16e-mNdSFPZwzHvqeJhGRmbcycAHLEXeR); CTA per
+       v2.3 §09. -->
+  <SolutionHero
+    size="xl"
+    eyebrow="Technology that turns"
+    title="From Ideas to"
+    highlight="Real Impact."
+    description="We help organizations strategize, build, integrate and optimize technology to operate smarter and achieve greater value."
+    primaryCta={cta.primary}
+  />
+
+  <section class="section sol-intro">
     <div class="wrap">
       <SectionHeading
-        eyebrow="Our Services"
+        eyebrow="Our Solutions"
         title="Practical tools for "
         accent="real business problems."
-        as="h1"
-        lead="Each service below is a tool for a specific business problem — and if you're not sure which one you need, that's where we start."
+        lead="Each solution below is a tool for a specific business problem — and if you're not sure which one you need, that's where we start."
       />
-      <div class="cards">
-        {services.map((s) => <ServiceCard {...s} />)}
+      <div class="cards" data-reveal="stagger">
+        {[...services, ...moreSolutions].map((s) => <ServiceCard {...s} />)}
       </div>
     </div>
   </section>
@@ -76,6 +89,13 @@ const services = [
 </BaseLayout>
 
 <style>
+  /* The intro keeps its page-title size now that the hero holds the h1. */
+  .sol-intro :global(.section-heading h2) {
+    font-size: var(--step-5);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
   .cards {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

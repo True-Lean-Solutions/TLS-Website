@@ -7,6 +7,7 @@
 @import '@fontsource/roboto/500.css';
 
 @import './tokens.css';
+@import './motion.css';
 
 /* ---- Reset ---- */
 *,
@@ -83,6 +84,7 @@ a {
   color: var(--blue-text);
   text-underline-offset: 0.15em;
   text-decoration-thickness: from-font;
+  transition: color var(--ix-fast) ease;
 }
 a:hover {
   color: var(--red-text);

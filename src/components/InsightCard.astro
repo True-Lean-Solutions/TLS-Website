@@ -12,7 +12,7 @@ const url = withBase(`/insights/${post.id}/`);
 const topicsAttr = data.topics.join('|');
 ---
 
-<article class="insight-card" data-topics={topicsAttr}>
+<article class="insight-card ix-card ix-light" data-topics={topicsAttr}>
   <a class="cover-link" href={url} tabindex="-1" aria-hidden="true">
     {
       data.cover ? (
@@ -43,11 +43,10 @@ const topicsAttr = data.topics.join('|');
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow);
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
-  .insight-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-m);
+  /* Hover lift: motion.css (.ix-card). The cover eases in slightly. */
+  .cover-link {
+    overflow: hidden;
   }
   .cover {
     display: block;
@@ -55,6 +54,12 @@ const topicsAttr = data.topics.join('|');
     aspect-ratio: 16 / 9;
     object-fit: cover;
     background: var(--section);
+    transition: transform 700ms var(--ix-ease);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .insight-card:hover .cover {
+      transform: scale(1.03);
+    }
   }
   .placeholder {
     background: var(--grad);
@@ -82,6 +87,7 @@ const topicsAttr = data.topics.join('|');
   h3 a {
     color: var(--ink);
     text-decoration: none;
+    transition: color var(--ix-fast) ease;
   }
   h3 a:hover {
     color: var(--blue-text);

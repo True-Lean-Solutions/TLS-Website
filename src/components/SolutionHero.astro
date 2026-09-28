@@ -1,0 +1,322 @@
+---
+/**
+ * Cinematic hero shared by the Solutions page and every solution page: one
+ * image and one layout for the whole family; each page brings its own copy,
+ * CTAs, icon and accent. Text sits left (on the dark side of the image), the
+ * meeting and skyline right, the red/blue wave along the bottom.
+ * Image: public/solutions/hero-solutions.webp (see docs/sources.md §5).
+ */
+import Eyebrow from './Eyebrow.astro';
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import type { IconName } from './iconTypes';
+import type { Accent } from '../data/services';
+import { href } from '../data/site';
+
+interface Cta {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+interface Props {
+  eyebrow: string;
+  /** White part of the headline. */
+  title: string;
+  /** TLS red part, on its own line. */
+  highlight?: string;
+  description?: string;
+  primaryCta: Cta;
+  secondaryCta?: Cta;
+  /** Solution icon shown in a glass tile beside the eyebrow. */
+  icon?: IconName;
+  /** Tints the icon tile and a faint glow over the image. */
+  accent?: Accent;
+  /** 'xl' for the Solutions page; 'lg' for solution pages' longer headlines. */
+  size?: 'xl' | 'lg';
+  image?: { src: string; width: number; height: number };
+  /** object-position per breakpoint, if a page's image needs a different crop. */
+  position?: { desktop?: string; tablet?: string; mobile?: string };
+}
+
+const {
+  eyebrow,
+  title,
+  highlight,
+  description,
+  primaryCta,
+  secondaryCta,
+  icon,
+  accent = 'red',
+  size = 'lg',
+  image = { src: '/solutions/hero-solutions.webp', width: 1774, height: 887 },
+  position = {},
+} = Astro.props;
+
+const accentVar: Record<Accent, string> = { red: 'var(--red)', blue: 'var(--blue)', plum: 'var(--plum)' };
+const style = [
+  `--c: ${accentVar[accent]}`,
+  `--pos-desktop: ${position.desktop ?? '60% 80%'}`,
+  `--pos-tablet: ${position.tablet ?? '78% 80%'}`,
+  `--pos-mobile: ${position.mobile ?? '100% 100%'}`,
+].join('; ');
+---
+
+<section class:list={['sh', `sh--${size}`, { 'sh--icon': icon }]} style={style}>
+  <img
+    class="sh-bg"
+    src={href(image.src)}
+    alt=""
+    width={image.width}
+    height={image.height}
+    fetchpriority="high"
+    decoding="async"
+  />
+  <div class="wrap">
+    <div class="sh-copy">
+      {
+        icon ? (
+          <p class="sh-kicker">
+            <span class="sh-ic glass-icon">
+              <Icon name={icon} size={18} />
+            </span>
+            <span class="sh-kicker-label">{eyebrow}</span>
+          </p>
+        ) : (
+          <Eyebrow label={eyebrow} />
+        )
+      }
+      <h1>
+        {title}{' '}{highlight && <span class="hl sh-hl">{highlight}</span>}
+      </h1>
+      {description && <p class="sh-lede">{description}</p>}
+      <div class="sh-cta">
+        <Button href={primaryCta.href} variant="primary" arrow external={primaryCta.external}>
+          {primaryCta.label}
+        </Button>
+        {
+          secondaryCta && (
+            <Button href={secondaryCta.href} variant="ghost-light" external={secondaryCta.external}>
+              {secondaryCta.label}
+            </Button>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sh {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    min-height: clamp(560px, 76vh, 740px);
+    background: #070a14; /* the image's own darkness, shown while it loads */
+    color: #fff;
+  }
+  /* The photo, "background-size: cover" style, anchored low so the red/blue
+     wave always forms the bottom edge. */
+  .sh-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--pos-desktop);
+  }
+  /* Readability: darker behind the text, clear over the meeting and skyline. */
+  .sh::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.5) 0%,
+      rgba(0, 0, 0, 0.22) 42%,
+      rgba(0, 0, 0, 0) 65%
+    );
+  }
+  /* Each solution's accent, as a faint light over the upper right. */
+  .sh--icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(
+      45% 60% at 82% 18%,
+      color-mix(in srgb, var(--c) 18%, transparent),
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+  .sh .wrap {
+    width: 100%;
+  }
+  .sh-copy {
+    max-width: 600px;
+    padding-block: var(--space-6) var(--space-7);
+  }
+  .sh--xl .sh-copy {
+    max-width: 560px;
+  }
+
+  /* Eyebrow: the site's eyebrow on light-on-dark, or icon + label. */
+  .sh-copy :global(.eyebrow) {
+    color: var(--border);
+  }
+  .sh-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.1rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--border);
+  }
+  /* Smoked glass tile on the dark image, glyph in a lightened accent. */
+  .sh-ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    color: color-mix(in srgb, var(--c) 62%, #fff);
+  }
+  .sh-ic::after {
+    background: color-mix(in srgb, var(--c) 20%, rgba(255, 255, 255, 0.04));
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 8px 20px -10px color-mix(in srgb, var(--c) 60%, transparent);
+    /* No backdrop-filter: at rest it would cost the page subpixel text. */
+  }
+  .sh-ic::before {
+    opacity: 0.55;
+  }
+
+  .sh h1 {
+    color: #fff;
+    line-height: 1.06;
+  }
+  .sh--xl h1 {
+    font-size: clamp(2.5rem, 1.6rem + 3.4vw, 4rem);
+  }
+  .sh--lg h1 {
+    font-size: clamp(2.2rem, 1.45rem + 2.6vw, 3.25rem);
+  }
+  .sh-hl {
+    display: block;
+  }
+  .sh-lede {
+    margin-top: 1.25rem;
+    max-width: 30em;
+    font-size: 1.12rem;
+    line-height: 1.6;
+    color: var(--border);
+  }
+  .sh--xl .sh-lede {
+    max-width: 27em; /* three lines on the Solutions page, as briefed */
+    font-size: 1.15rem;
+  }
+  .sh-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 1.9rem;
+  }
+
+  /* Entrance: eyebrow, headline, copy, CTAs in sequence. Image holds still. */
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .sh-copy > :global(*) {
+      --ix-rise: 20px;
+      animation: ix-rise 700ms var(--ix-ease) backwards;
+    }
+    .sh-copy > :global(:nth-child(1)) { --ix-rise: 15px; animation-delay: 60ms; }
+    .sh-copy > :global(:nth-child(2)) { animation-delay: 200ms; }
+    .sh-copy > :global(:nth-child(3)) { animation-delay: 350ms; }
+    .sh-copy > :global(:nth-child(4)) { animation-delay: 500ms; }
+  }
+
+  /* Tablet: shorter, narrower copy, image shifted so the meeting sits clear
+     of the text. */
+  @media (max-width: 1024px) {
+    .sh {
+      /* Tall enough for the longest copy, so every page matches. */
+      min-height: clamp(560px, 70vh, 720px);
+    }
+    .sh-bg {
+      object-position: var(--pos-tablet);
+    }
+    .sh::before {
+      background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.62) 0%,
+        rgba(0, 0, 0, 0.38) 45%,
+        rgba(0, 0, 0, 0) 70%
+      );
+    }
+    .sh-copy,
+    .sh--xl .sh-copy {
+      max-width: 410px;
+    }
+    .sh-lede,
+    .sh--xl .sh-lede {
+      font-size: 1.05rem;
+    }
+  }
+
+  /* Phone: the copy on the image's dark tone, then a band of the photo — the
+     meeting and the wave — below it. The band never sits under the text, so
+     long copy can't collide with the people. */
+  @media (max-width: 640px) {
+    .sh {
+      display: block;
+      min-height: 0;
+      padding-bottom: 290px;
+    }
+    .sh-bg {
+      inset: auto 0 0 0;
+      height: 400px;
+      object-position: var(--pos-mobile);
+    }
+    .sh::before {
+      background: linear-gradient(
+        180deg,
+        #070a14 0%,
+        #070a14 calc(100% - 400px),
+        rgba(7, 10, 20, 0.55) calc(100% - 330px),
+        rgba(7, 10, 20, 0) calc(100% - 230px)
+      );
+    }
+    .sh--icon::after {
+      background: radial-gradient(
+        70% 40% at 80% 0%,
+        color-mix(in srgb, var(--c) 20%, transparent),
+        transparent 70%
+      );
+    }
+    .sh-copy,
+    .sh--xl .sh-copy {
+      padding-block: var(--space-5) 0;
+    }
+    .sh--xl h1 {
+      font-size: clamp(2.1rem, 1.2rem + 4.4vw, 2.6rem);
+    }
+    .sh--lg h1 {
+      font-size: clamp(1.9rem, 1.1rem + 4vw, 2.3rem);
+    }
+    .sh-lede,
+    .sh--xl .sh-lede {
+      font-size: 1rem;
+    }
+  }
+</style>

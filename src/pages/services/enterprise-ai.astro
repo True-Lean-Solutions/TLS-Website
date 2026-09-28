@@ -1,14 +1,14 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
-import Eyebrow from '../../components/Eyebrow.astro';
 import InfoCard from '../../components/InfoCard.astro';
+import SolutionHero from '../../components/SolutionHero.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import Button from '../../components/Button.astro';
 import { cta } from '../../data/site';
 
 // Meta — source: TLS: Website Pages (2026-09-27)
-const title = 'True Lean Solutions — Enterprise AI';
+const title = 'True Lean Solutions — AI & Automation';
 const description =
   'Governed, private AI for growing businesses. Start with Meeting Intelligence and expand at your own pace.';
 
@@ -45,28 +45,22 @@ const meetingFeatures = [
 
 <BaseLayout title={title} description={description} path="/services/enterprise-ai/">
   <!-- Hero -->
-  <section class="svc-hero">
-    <div class="wrap">
-      <Eyebrow label="Enterprise AI" />
-      <h1>Put AI to work — governed, private, and <span class="accent">under your control.</span></h1>
-      <p class="lede">
-        Your employees are already using AI — pasting client data into public
-        tools and making decisions on models that don't understand your
-        business, permissions, or policies. That's not a productivity win. It's
-        a governance gap.
-      </p>
-      <div class="cta">
-        <Button href={cta.primary.href} variant="primary" arrow>Book a Demo</Button>
-        <Button href={cta.email.href} variant="secondary" external>Email Us</Button>
-      </div>
-    </div>
-  </section>
+  <SolutionHero
+    eyebrow="AI & Automation"
+    title="Put AI to work — governed, private, and"
+    highlight="under your control."
+    description="Your employees are already using AI — pasting client data into public tools and making decisions on models that don't understand your business, permissions, or policies. That's not a productivity win. It's a governance gap."
+    primaryCta={{ label: "Book a Demo", href: cta.primary.href }}
+    secondaryCta={{ label: 'Email Us', href: cta.email.href, external: true }}
+    icon="ai"
+    accent="red"
+  />
 
   <!-- What It Is -->
   <section class="section">
     <div class="wrap">
       <SectionHeading eyebrow="What It Is" title="One secure layer between your people and " accent="approved AI." />
-      <div class="prose">
+      <div class="prose" data-reveal="stagger">
         <p>Enterprise AI is an intelligent layer between your people, your organizational knowledge, your business systems, and approved AI models — all governed through one secure platform.</p>
         <p>Unlike consumer AI tools that operate outside your control, every interaction is governed by your access policies, grounded in your business context, and deployed within your infrastructure. With self-hosted models, no data leaves your environment, and there's no vendor lock-in to any single model.</p>
         <p>True Lean Solutions is the exclusive US implementation partner for <strong>Wisebric</strong>, an Enterprise AI governance and orchestration platform built by Iconflux Technologies — a software firm with 14+ years of enterprise engineering and 500+ projects delivered across industries.</p>
@@ -78,7 +72,7 @@ const meetingFeatures = [
   <section class="section alt">
     <div class="wrap">
       <SectionHeading eyebrow="Who It's For" title="You'll recognize " accent="the problem." />
-      <div class="grid-2">
+      <div class="grid-2" data-reveal="stagger">
         {whoFor.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
       </div>
     </div>
@@ -88,7 +82,7 @@ const meetingFeatures = [
   <section class="section">
     <div class="wrap">
       <SectionHeading eyebrow="Built on Three Pillars" title="Security. Governance. " accent="Control." />
-      <div class="grid-3">
+      <div class="grid-3" data-reveal="stagger">
         {pillars.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
       </div>
     </div>
@@ -98,7 +92,7 @@ const meetingFeatures = [
   <section class="section alt">
     <div class="wrap">
       <SectionHeading eyebrow="What You Get" title="From chat to " accent="autonomous agents." />
-      <div class="grid-3">
+      <div class="grid-3" data-reveal="stagger">
         {whatYouGet.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
       </div>
     </div>
@@ -113,7 +107,7 @@ const meetingFeatures = [
         accent="no integration required."
         lead="Enterprise AI doesn't have to start with a large transformation. Start with one practical problem, prove the value, and expand when you're ready. Meeting Intelligence captures every conversation, generates professional minutes, tracks action items, and makes your meeting history searchable."
       />
-      <div class="grid-3">
+      <div class="grid-3" data-reveal="stagger">
         {meetingFeatures.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
       </div>
     </div>
@@ -123,7 +117,7 @@ const meetingFeatures = [
   <section class="section alt">
     <div class="wrap">
       <SectionHeading eyebrow="Why Not Just Use a SaaS Meeting Tool?" title="Your institutional knowledge " accent="should belong to you." />
-      <div class="prose">
+      <div class="prose" data-reveal="stagger">
         <p>With a SaaS meeting recorder, your data is stored outside your premises. Once the meeting is done, the knowledge lives on someone else's servers — and if the provider raises prices, you either pay more or lose access to your own history. That's vendor lock-in applied to your institutional knowledge.</p>
         <p>Meeting Intelligence runs inside your infrastructure. Your recordings, transcripts, and the knowledge built from them belong to you — permanently. And it's built on the same governed Enterprise AI platform your organization can expand into as adoption grows.</p>
       </div>
@@ -142,30 +136,6 @@ const meetingFeatures = [
 </BaseLayout>
 
 <style>
-  .svc-hero {
-    padding-block: var(--space-7) var(--space-6);
-    background:
-      radial-gradient(50% 70% at 12% 30%, var(--red-tint), transparent 60%),
-      radial-gradient(50% 70% at 90% 20%, var(--blue-tint), transparent 60%);
-  }
-  .svc-hero h1 {
-    max-width: 18ch;
-  }
-  .svc-hero .accent {
-    color: var(--red);
-  }
-  .svc-hero .lede {
-    max-width: 60ch;
-    margin-top: 1.25rem;
-    font-size: 1.15rem;
-    color: var(--text-2);
-  }
-  .svc-hero .cta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.9rem;
-    margin-top: 1.75rem;
-  }
   .alt {
     background: var(--section);
   }

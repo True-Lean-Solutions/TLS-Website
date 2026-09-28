@@ -20,15 +20,16 @@ const accents: Record<Accent, string> = {
 };
 ---
 
-<a class="service-card" href={withBase(href)} style={accents[accent]}>
-  <span class="icon"><Icon name={icon} size={26} /></span>
+<a class="service-card ix-card ix-light" href={withBase(href)} style={accents[accent]}>
+  <span class="icon glass-icon"><Icon name={icon} size={26} /></span>
   <span class="rule" aria-hidden="true"></span>
   <h3>{title}</h3>
-  <p>{blurb}</p>
-  <span class="arrow" aria-hidden="true"><Icon name="arrow" size={18} /></span>
+  {blurb ? <p>{blurb}</p> : <span class="grow" aria-hidden="true"></span>}
+  <span class="arrow glass-icon" aria-hidden="true"><Icon name="arrow" size={18} /></span>
 </a>
 
 <style>
+  /* Hover lift, cursor light and glass icons: motion.css (.ix-card, .ix-light, .glass-icon). */
   .service-card {
     display: flex;
     flex-direction: column;
@@ -41,11 +42,6 @@ const accents: Record<Accent, string> = {
     text-decoration: none;
     color: var(--ink);
     box-shadow: var(--shadow);
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-  }
-  .service-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-m);
   }
   .icon {
     display: inline-flex;
@@ -54,7 +50,6 @@ const accents: Record<Accent, string> = {
     width: 52px;
     height: 52px;
     border-radius: var(--radius);
-    background: var(--c-tint);
     color: var(--c);
   }
   .rule {
@@ -73,6 +68,10 @@ const accents: Record<Accent, string> = {
     font-size: 0.96rem;
     flex-grow: 1;
   }
+  /* A name-only card keeps its arrow at the bottom like the others. */
+  .grow {
+    flex-grow: 1;
+  }
   .arrow {
     display: inline-flex;
     align-items: center;
@@ -80,12 +79,12 @@ const accents: Record<Accent, string> = {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--c-tint);
     color: var(--c);
     margin-top: 0.6rem;
-    transition: transform 0.18s ease;
   }
-  .service-card:hover .arrow {
-    transform: translateX(4px);
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .service-card:hover .arrow {
+      transform: translateX(5px);
+    }
   }
 </style>

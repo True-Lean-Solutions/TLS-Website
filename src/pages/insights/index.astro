@@ -21,7 +21,7 @@ const cats = categoriesWithPosts(posts);
 
 <BaseLayout title={title} description={description} path="/insights/">
   <section class="page-hero">
-    <div class="wrap">
+    <div class="wrap" data-reveal="load">
       <Eyebrow label="Insights" />
       <h1>Practical notes on <span class="hl">building things that hold up.</span></h1>
       <p class="lede">
@@ -57,7 +57,7 @@ const cats = categoriesWithPosts(posts);
         )
       }
 
-      <div class="grid" id="post-grid">
+      <div class="grid" id="post-grid" data-reveal="stagger">
         {posts.map((p) => <InsightCard post={p} />)}
       </div>
       <p class="empty" id="no-results" hidden>No posts match that topic.</p>
@@ -88,6 +88,10 @@ const cats = categoriesWithPosts(posts);
           if (noResults) noResults.hidden = shown !== 0;
         });
       });
+      // Deep link from the header menu's Browse by Topic: /insights/?topic=…
+      const wanted = new URLSearchParams(location.search).get('topic');
+      const match = Array.from(buttons).find((b) => b.getAttribute('data-topic') === wanted);
+      if (match) match.click();
     });
   </script>
 </BaseLayout>
@@ -122,6 +126,10 @@ const cats = categoriesWithPosts(posts);
     color: var(--ink);
     text-decoration: none;
     cursor: pointer;
+    transition:
+      background-color var(--ix-fast) ease,
+      border-color var(--ix-fast) ease,
+      color var(--ix-fast) ease;
   }
   .chip:hover {
     border-color: var(--red-text);

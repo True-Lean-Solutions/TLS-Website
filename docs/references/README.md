@@ -35,7 +35,7 @@ Brand Guide v2.3 overrides the mock-ups on all of these:
 | 07-isometric-art-dark-no-logo.png | Dark isometric art | Only a dark emphasis band, if one is approved |
 | 08-services-cards-with-photos.png | Service cards with image headers | Services overview (alternative) |
 | 09-services-cards-icons.png | Service cards with icons | **Home: What We Do** and Services overview |
-| 10-common-challenges.png | Challenges list plus art | Not in v1 (no approved copy block) |
+| 10-common-challenges.png | Challenges list plus art | Nothing: superseded by the Fold 4 reference below (2026-09-29) |
 | 11-results-and-case-studies.png | Stats and case-study carousel | **Home: Recent Results** layout (verified numbers only) |
 | 12-why-choose-us.png | 2×2 value cards plus art | **Home: Why TLS** layout |
 | 13-cta-band-and-footer.png | CTA band and full footer | **Home: closing CTA band** and **site footer** |
@@ -47,3 +47,11 @@ Brand Guide v2.3 overrides the mock-ups on all of these:
 These routes have no mock-up: About Us, the four service detail pages, Insights index and categories, Insights article, Contact, Referral Partner Program, Referral FAQ, and 404.
 
 **Before building the layout of one of these pages, ask for a reference image.** Hemang or Himanshu supplies it. Save it as `docs/references/pages/<route>/<nn>-<what-it-shows>.png` and add a row to this index. If they tell you to proceed without one, derive the layout from the components already built for Home, and record that in `docs/decisions.md`.
+
+## Page references received
+
+| File | Shows | Use for |
+|---|---|---|
+| `pages/home/fold-4-common-challenges.png` | "Fold 4": Common Business Challenges, with copy on the left, four challenge cards, and isometric art on the right (Hemang, 2026-09-29) | **Home: Common Business Challenges** layout and copy (copy verbatim). Its header shows the retired "Services" label and the banned "Get Started" CTA, and its art labels ("Operational Efficiency", etc.) are not copy. Ignore all of that. Never ship the image itself. |
+| `pages/home/challenges-image-original.png` | The TLS isometric platform image (1672×941) Hemang supplied as that section's visual | Not a layout reference: the **source master** for `public/home/challenges-visual.webp`. See `docs/sources.md` §4. |
+| `pages/about/global-delivery-mockup.jpg` | Global delivery map fold | About: Global Delivery layout |

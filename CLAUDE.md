@@ -56,7 +56,8 @@ Where the answer would not change what you build, proceed and state the assumpti
 - **Minimal JavaScript:**
   - nav dropdowns and the mobile menu;
   - Insights search and topic filter;
-  - the contact form.
+  - the contact form;
+  - the interaction layer (`src/scripts/motion.ts` + `src/styles/motion.css`: scroll reveals, cursor light, magnetic CTAs; see `docs/decisions.md`, 2026-09-28). Reuse its utilities (`.glass-icon`, `.ix-card`, `.ix-light`, `data-reveal`) rather than adding one-off animations.
   Everything else ships as static HTML.
 - **Commands:**
   - `npm run dev`: local server.
@@ -71,9 +72,9 @@ Where the answer would not change what you build, proceed and state the assumpti
 
 ```
 src/
-  components/    Header, Lockup, NavDropdown, MobileNav, Footer, Button, SectionHeading,
-                 ServiceCard, StatBlock, CaseStudyCard, StepRow, ValueCard, TestimonialCard,
-                 ClientStrip, CtaBand, TeamCard, ContactForm, InsightCard, TopicFilter
+  components/    Header, Lockup, NavDropdown, MobileNav, Footer, Button, SectionHeading, SolutionHero (every /services/ hero),
+                 CommonChallenges, ServiceCard, StatBlock, CaseStudyCard, StepRow, ValueCard, TestimonialCarousel,
+                 ClientLogos, CtaBand, TeamCard, ContactForm, InsightCard, TopicFilter
   layouts/       BaseLayout.astro (head, SEO, header, footer), ArticleLayout.astro
   pages/         index, about-us, services/index, services/[4 detail pages], insights/index,
                  insights/[category], insights/[slug], contact, referral-partner-program,
@@ -94,11 +95,12 @@ Every data file and every Markdown post records where its content came from, as 
 |---|---|---|---|
 | `/` | Home (2026-09-27) | Mock-ups 05, 06, 09, 11, 12, 13 | Fold order below |
 | `/about-us/` | About Us (2026-09-27) | **Ask** | Reorder per decision 14: hero → Core Team → Advisors → What We Believe → Our Story → How We Evolved → TLS and Tech Transpire (settled: keep) → Today → CTA |
-| `/services/` | Services - Overview | 09 (or 08) | Four services, in the order Enterprise AI, Custom Software, System Integration, Technical Talent |
+| `/services/` | Services - Overview | 09 (or 08) | Labeled **Solutions** on the site (2026-09-28). Four solutions, in the order AI & Automation (formerly Enterprise AI), Custom Software, System Integration, Technical Talent. URLs stay `/services/…` |
 | `/services/enterprise-ai/` | Services - Enterprise AI | **Ask** | Wisebric partnership is approved for public use |
 | `/services/software/` | Services - Custom Software Dev | **Ask** | |
 | `/services/integrations/` | Services - System Integration | **Ask** | |
 | `/services/technical-talent/` | Services - Technical Talent | **Ask** | |
+| `/services/workflow-automation/`, `/services/technology-strategy/`, `/services/data-analytics/`, `/services/cyber-security/` | `docs/sources.md` §5 | Derive | Short pages (one template, `[solution].astro`) added 2026-09-28. Cyber Security is name-only until copy exists. Never publish the Data & Analytics draft's mock figures or partner claims. |
 | `/insights/` | Index sheet and posts | **Ask** | Explore All: every post, newest first, with Browse by Topic and search |
 | `/insights/<category>/` | Same | **Ask** | perspectives, case-studies, guides, news. A category with no published posts is hidden from menus and has no page. |
 | `/insights/<slug>/` | Post files | **Ask** | Article layout, related posts |
@@ -115,16 +117,19 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
    - Copy: the H1, subcopy and both CTAs from the Home doc.
    - Art: the isometric platform with the TLS symbol and red/blue edge light (06 direction).
    - No people.
-2. **What We Do.** Four service cards with icons (09), from the Home doc's "What We Do" section. Each card links to its service page.
-3. **Why TLS.**
+2. **Why TLS** (moved up from after What We Do, 2026-09-29).
    - Four value cards (12 layout), from the Home doc.
    - The section subhead "Consulting mindset. Lean thinking. Technical execution." is approved body copy.
-4. **Recent Results.**
+3. **Common Business Challenges** (added 2026-09-29).
+   - Layout and copy: the Fold 4 reference (`docs/references/pages/home/fold-4-common-challenges.png`). Copy verbatim as Hemang supplied it.
+   - Four challenge cards, each linking to the solution that answers it.
+   - Visual: the TLS isometric platform image Hemang supplied (not the reference image, and no new image). See `docs/decisions.md`.
+4. **What We Do.** Four service cards with icons (09), from the Home doc's "What We Do" section. Each card links to its service page.
+5. **Recent Results.**
    - The three verified stats from the Home doc (11 layout, verified numbers only).
    - Optional case-study cards linking to the three service-page case studies, using their verbatim headlines.
-5. **Our Approach.** The four steps from the Home doc (01 Understanding, 02 Identifying, 03 Designing, 04 Implementing & Optimizing), in the 05 step-row layout.
-6. **Testimonials.** The reviews sheet. Mayank Pujara's position reads "CEO · TLS advisor"; keep it exactly as given.
-7. **Clients.** NRI and UV Concepts logos.
+6. **Our Approach.** The four steps from the Home doc (01 Understanding, 02 Identifying, 03 Designing, 04 Implementing & Optimizing), in the 05 step-row layout.
+7. **Clients, then testimonials** (one section since 2026-09-29). "Our Clients / Teams we work with" with the client logo strip (`ClientLogos`: a static row until there are 6+ real logos, then a slow marquee), then "What our clients say" as one featured review at a time (`TestimonialCarousel`). The reviews sheet, verbatim. Mayank Pujara's position reads "CEO · TLS advisor"; keep it exactly as given.
 8. **Closing CTA band.** "Not Sure Where to Start?" with both CTAs, in the 13 CTA band layout.
 
 ## Header, lockup, footer
@@ -132,12 +137,12 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
 - **Header.**
   - Full-width Ink Black bar, sticky.
   - Lockup at left.
-  - Nav: Home, About Us, Services ▾, Insights ▾, Contact Us.
+  - Nav: Home, About Us, Solutions ▾, Insights ▾, Contact Us. ("Solutions" replaced "Services" as the label on 2026-09-28; see `docs/decisions.md`.)
   - Search icon, which opens Insights search.
   - One Action Red button, "Discuss Your Project" → `/contact/`.
   - Nav links are Border Gray. Hover and current page are white with a 2 px Execution Red underline.
   - Dropdowns must work by keyboard: arrow keys, Esc to close, focus returns to the trigger. On touch, a tap toggles the menu without navigating.
-- **Services menu:** Enterprise AI, Custom Software, System Integration, Technical Talent, plus "All Services".
+- **Solutions menu:** AI & Automation, Custom Software, System Integration, Technical Talent, Workflow Automation, Technology Strategy, Data & Analytics, Cyber Security, plus "All Solutions" (8 solutions since 2026-09-28; Home and the footer list the first four).
 - **Insights menu.**
   - Explore All, Perspectives, Case Studies, Guides and News, each with its one-line description.
   - Browse by Topic: topics from post front matter.
@@ -232,9 +237,9 @@ Keep this mechanism exactly. It was debugged three times in Phase 1, and replaci
   - Tali (v1.1);
   - newsletter / "Stay Connected" capture (dropped 2026-09-28);
   - dark mode;
-  - the "common challenges" fold from mock-up 10;
   - **Referral Partner Program / FAQ pages (dropped 2026-09-28** — handled externally at akhani.us, the referral partner portal).
   - (Privacy Policy and Terms of Service are now **in** v1 — see the Pages table.)
+  - (A common challenges fold is now **in** v1, on Home, from the Fold 4 reference, not mock-up 10 — see the Home fold order, 2026-09-29.)
   - (An Insights authoring workflow / CMS is being chosen — see `docs/decisions.md`.)
 
 ## First session checklist

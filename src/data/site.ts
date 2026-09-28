@@ -35,7 +35,7 @@ export const site = {
 /** Approved CTAs (v2.3 §09). Never "Get Started" or "Request a Quote". */
 export const cta = {
   primary: { label: 'Discuss Your Project', href: '/contact/' },
-  services: { label: 'See Our Services', href: '/services/' },
+  services: { label: 'See Our Solutions', href: '/services/' },
   email: { label: 'Email Us', href: `mailto:${site.email}` },
 } as const;
 

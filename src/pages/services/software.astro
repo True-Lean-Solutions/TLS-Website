@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
-import Eyebrow from '../../components/Eyebrow.astro';
 import InfoCard from '../../components/InfoCard.astro';
 import StepRow from '../../components/StepRow.astro';
 import CaseStudyBlock from '../../components/CaseStudyBlock.astro';
+import SolutionHero from '../../components/SolutionHero.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import Button from '../../components/Button.astro';
 import { cta } from '../../data/site';
@@ -40,27 +40,21 @@ const build = [
 ---
 
 <BaseLayout title={title} description={description} path="/services/software/">
-  <section class="page-hero">
-    <div class="wrap">
-      <Eyebrow label="Custom Software" />
-      <h1>Build exactly what you need — <span class="hl">not a workaround.</span></h1>
-      <p class="lede">
-        Off-the-shelf tools solve generic problems. When your workflows,
-        processes, or customer experiences are unique to how you operate, custom
-        software lets you build for your business instead of bending it to fit
-        someone else's product.
-      </p>
-      <div class="cta">
-        <Button href={cta.primary.href} variant="primary" arrow>Discuss What You Need to Build</Button>
-        <Button href={cta.email.href} variant="secondary" external>Email Us</Button>
-      </div>
-    </div>
-  </section>
+  <SolutionHero
+    eyebrow="Custom Software"
+    title="Build exactly what you need —"
+    highlight="not a workaround."
+    description="Off-the-shelf tools solve generic problems. When your workflows, processes, or customer experiences are unique to how you operate, custom software lets you build for your business instead of bending it to fit someone else's product."
+    primaryCta={{ label: "Discuss What You Need to Build", href: cta.primary.href }}
+    secondaryCta={{ label: 'Email Us', href: cta.email.href, external: true }}
+    icon="software"
+    accent="blue"
+  />
 
   <section class="section">
     <div class="wrap">
       <SectionHeading eyebrow="What It Is" title="Applications built for " accent="your business." />
-      <div class="prose">
+      <div class="prose" data-reveal="stagger">
         <p>Custom software development means building applications, tools, and platforms designed specifically for your business — your workflows, your data, your customers, and your growth goals.</p>
         <p>This includes web applications, internal tools, customer portals, integrations between systems, and modernizing legacy platforms that hold your business back. We combine practical business understanding with modern engineering to deliver software that's secure, scalable, and built to last.</p>
       </div>
@@ -70,7 +64,7 @@ const build = [
   <section class="section section-alt">
     <div class="wrap">
       <SectionHeading eyebrow="Who It's For" title="You'll recognize " accent="the situation." />
-      <div class="cards-2">
+      <div class="cards-2" data-reveal="stagger">
         {whoFor.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
       </div>
     </div>
@@ -79,7 +73,7 @@ const build = [
   <section class="section">
     <div class="wrap">
       <SectionHeading eyebrow="How It Works" title="Clear scope, " accent="working software early." />
-      <ol class="steps-grid">
+      <ol class="steps-grid" data-reveal="stagger">
         {steps.map((s, i) => <StepRow {...s} accent={accents[i % 3]} />)}
       </ol>
     </div>
@@ -88,7 +82,7 @@ const build = [
   <section class="section section-alt">
     <div class="wrap">
       <SectionHeading eyebrow="What We Build" title="From portals to " accent="cloud-native platforms." />
-      <div class="cards-2">
+      <div class="cards-2" data-reveal="stagger">
         {build.map((c, i) => <InfoCard title={c.title} text={c.text} accent={accents[i % 3]} />)}
       </div>
     </div>

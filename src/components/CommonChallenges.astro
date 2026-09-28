@@ -1,0 +1,402 @@
+---
+/**
+ * Home › Common Business Challenges — between Why TLS and What We Do.
+ * Layout and copy: the "Fold 4" reference (Hemang, 2026-09-29;
+ * docs/references/pages/home/fold-4-common-challenges.png), copy verbatim.
+ * Visual: the TLS isometric platform image (Hemang, 2026-09-29), sharp in the
+ * middle and softly blurred toward its edges (public/home/challenges-visual.webp),
+ * dissolved into the canvas on every edge with CSS masks, so it reads as part
+ * of the section, not a rectangle.
+ * Each card links to the solution that answers that challenge.
+ */
+import Eyebrow from './Eyebrow.astro';
+import Icon from './Icon.astro';
+import type { IconName } from './iconTypes';
+import type { Accent } from '../data/services';
+import { href } from '../data/site';
+
+interface Challenge {
+  title: string;
+  text: string;
+  icon: IconName;
+  accent: Accent;
+  href: string;
+}
+const challenges: Challenge[] = [
+  {
+    title: 'Inefficient Processes',
+    text: 'Eliminate waste and improve performance across your operations.',
+    icon: 'chart',
+    accent: 'red',
+    href: '/services/workflow-automation/',
+  },
+  {
+    title: 'Disconnected Systems',
+    text: 'Integrate your tools and data for a unified, streamlined environment.',
+    icon: 'database',
+    accent: 'blue',
+    href: '/services/integrations/',
+  },
+  {
+    title: 'Scaling Teams',
+    text: 'Build the right structure, processes, and technology to support growth.',
+    icon: 'talent',
+    accent: 'plum',
+    href: '/services/technical-talent/',
+  },
+  {
+    title: 'Underutilized Technology',
+    text: 'Maximize the value of your current and new technology investments.',
+    icon: 'gear',
+    accent: 'red',
+    href: '/services/technology-strategy/',
+  },
+];
+
+const accents: Record<Accent, string> = {
+  red: '--c: var(--red); --c-text: var(--red-text);',
+  blue: '--c: var(--blue); --c-text: var(--blue-text);',
+  plum: '--c: var(--plum); --c-text: var(--plum);',
+};
+---
+
+<section class="cc" aria-labelledby="cc-title">
+  <div class="wrap">
+    <div class="cc-copy">
+      <div class="cc-intro" data-reveal="stagger">
+        <Eyebrow label="Common Business Challenges" />
+        <h2 id="cc-title">Complex Challenges.<br /><span class="hl">Practical</span> Solutions.</h2>
+        <p class="cc-lede">
+          We help organizations turn real business challenges into clear,
+          actionable solutions using a pragmatic, lean approach and the right
+          technology.
+        </p>
+      </div>
+
+      <!-- The cards and the image read together: on desktop (≥1280px) the
+           image sits beside the cards, centered on them; below that it is a
+           band between the intro and the cards. -->
+      <div class="cc-body">
+        <div class="cc-visual" data-reveal>
+          <img
+            src={href('/home/challenges-visual.webp')}
+            alt=""
+            width="1672"
+            height="941"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+
+        <ul class="cc-list" data-reveal="stagger">
+          {
+            challenges.map((c) => (
+              <li>
+                <a class="cc-card ix-card ix-card--quiet ix-light" href={href(c.href)} style={accents[c.accent]}>
+                  <span class="cc-ic glass-icon">
+                    <Icon name={c.icon} size={26} />
+                  </span>
+                  <span class="cc-text">
+                    <h3 class="cc-title">{c.title}</h3>
+                    <span class="cc-desc">{c.text}</span>
+                  </span>
+                  <span class="cc-arrow glass-icon" aria-hidden="true">
+                    <Icon name="arrow" size={18} />
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cc {
+    /* The copy column: as wide as the h2 at its 3.5rem cap. The image is
+       fully opaque only to its right; under the copy it is at most a faint
+       haze, so it never costs the text any contrast. */
+    --cc-col: 620px;
+    --cc-start: calc(max(0px, (100% - var(--wrap)) / 2) + var(--gutter));
+    /* Desktop image width: the platform (0.203–0.855 of the image's width)
+       fills the room from 40px right of the copy column to ~20px short of
+       the screen edge; the image's faded left tiles run behind the cards.
+       920px cap: its top and bottom fades stay inside the section. */
+    --cc-img-w: clamp(640px, 76.7vw - 147px, 920px);
+    --cc-img-x: calc(var(--cc-col) + 40px - 0.203 * var(--cc-img-w)); /* image's left edge */
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  /* The image's glow on the page: a soft Build Blue / Bridge Plum wash
+     centered on the image and reaching past its faded edges. closest-side
+     ends both gradients inside the box, so they never stop on a line. */
+  .cc::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--cc-start) + var(--cc-img-x) - 0.25 * var(--cc-img-w));
+    width: calc(1.5 * var(--cc-img-w));
+    background:
+      radial-gradient(closest-side at 46% 46%, rgba(18, 136, 207, 0.1), transparent),
+      radial-gradient(closest-side at 56% 68%, rgba(135, 54, 98, 0.07), transparent);
+    pointer-events: none;
+  }
+  .cc .wrap {
+    display: flex;
+    align-items: center;
+    min-height: 700px;
+    padding-block: clamp(3rem, 2rem + 2.5vw, 4rem);
+  }
+  .cc-copy {
+    width: 100%;
+  }
+  .cc-intro,
+  .cc-list {
+    max-width: var(--cc-col);
+  }
+
+  /* The visual. Desktop: beside the cards and centered on them, so the
+     heading reads first and the cards and the platform read together. Its
+     faded left tiles emerge from behind the cards (84% white, so only a
+     faint tint shows through); the platform starts 40px right of them and
+     the image runs off the right of the screen.
+     The image's own edges are already softly blurred; two masks (left/right
+     × top/bottom, intersected) dissolve them into the canvas, so the corners
+     fade sharp → soft → page. The masks sit on the wrapper, over the
+     image's area only: its 4px padding keeps the wrapper's own edges clear
+     of the image (a masked edge that falls between pixels lets a sliver of
+     that pixel through). */
+  .cc-body {
+    position: relative;
+  }
+  .cc-visual {
+    --cc-mask-x: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.1) 5%,
+      rgba(0, 0, 0, 0.4) 10.5%,
+      rgba(0, 0, 0, 0.8) 16%,
+      #000 21%,
+      #000 93%,
+      transparent 100%
+    );
+    --cc-mask-y: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 7%,
+      rgba(0, 0, 0, 0.5) 13%,
+      rgba(0, 0, 0, 0.85) 18.5%,
+      #000 23%,
+      #000 81%,
+      rgba(0, 0, 0, 0.85) 85.5%,
+      rgba(0, 0, 0, 0.5) 91%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    );
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    left: calc(var(--cc-img-x) - 4px);
+    width: calc(var(--cc-img-w) + 8px);
+    padding: 4px;
+    translate: 0 -50%;
+    pointer-events: none;
+    -webkit-mask-image: var(--cc-mask-x), var(--cc-mask-y);
+    -webkit-mask-composite: source-in;
+    mask-image: var(--cc-mask-x), var(--cc-mask-y);
+    mask-composite: intersect;
+    mask-size: 100% 100%;
+    mask-origin: content-box;
+    mask-repeat: no-repeat;
+  }
+  .cc-visual img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .cc-intro :global(.eyebrow) {
+    color: var(--text-2);
+  }
+  .cc h2 {
+    font-size: clamp(2.3rem, 1.4rem + 2.8vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+  }
+  .cc-lede {
+    margin-top: 1rem;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+
+  .cc-list {
+    display: grid;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+  }
+  .cc-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.1rem;
+    padding: 0.8rem 1.1rem 0.8rem 0.8rem;
+    background: rgba(255, 255, 255, 0.84);
+    border: 1px solid rgba(226, 226, 238, 0.95);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 6px 22px -14px rgba(13, 13, 13, 0.18);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .cc-ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius);
+    color: var(--c);
+  }
+  .cc-text {
+    display: grid;
+    gap: 0.2rem;
+    padding-left: 1.25rem;
+    border-left: 1px solid var(--border);
+  }
+  .cc-title {
+    font-size: 1.12rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .cc-desc {
+    font-size: 0.93rem;
+    line-height: 1.5;
+    color: var(--text-2);
+  }
+  .cc-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--c);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .cc-card:hover .cc-arrow {
+      transform: translateX(5px);
+    }
+  }
+
+  /* Entrance: copy and cards rise in sequence (reveal system); the image
+     settles from a hair larger with a fade. */
+  .cc-intro,
+  .cc-list {
+    --ix-rise: 18px;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    :global(html.ix) .cc-visual[data-reveal]:global(.is-in) {
+      animation: cc-settle 900ms var(--ix-ease) backwards;
+    }
+  }
+  @keyframes cc-settle {
+    from {
+      opacity: 0;
+      scale: 1.02;
+    }
+  }
+
+  /* Below 1280px the room beside the copy is too narrow for the whole
+     platform, so: intro, then the image, then the cards. The image keeps its
+     shape and dissolves on all four sides (edge to edge on phones; up to
+     1000px wide, centered, on tablets). */
+  @media (max-width: 1279px) {
+    .cc .wrap {
+      display: block;
+      min-height: 0;
+      padding-block: var(--space-6);
+    }
+    .cc::before {
+      display: none;
+    }
+    .cc-list {
+      max-width: none;
+    }
+    .cc-intro {
+      max-width: 680px;
+    }
+    .cc-visual {
+      --cc-mask-x: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0, 0, 0, 0.45) 5.5%,
+        #000 12%,
+        #000 88%,
+        rgba(0, 0, 0, 0.45) 94.5%,
+        transparent 100%
+      );
+      --cc-mask-y: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(0, 0, 0, 0.45) 7.5%,
+        #000 16%,
+        #000 86%,
+        rgba(0, 0, 0, 0.45) 93%,
+        transparent 100%
+      );
+      position: relative;
+      z-index: 0;
+      top: auto;
+      left: auto;
+      translate: none;
+      width: min(100% + 2 * var(--gutter), 1000px);
+      margin: 0.25rem 0 0 max(-1 * var(--gutter), (100% - 1000px) / 2);
+    }
+    .cc-list {
+      grid-template-columns: 1fr 1fr;
+      margin-top: 0.5rem; /* the image's own bottom fade is the gap */
+    }
+  }
+  @media (max-width: 640px) {
+    .cc-list {
+      grid-template-columns: 1fr;
+    }
+    .cc-card {
+      gap: 1rem;
+    }
+    .cc-ic {
+      width: 48px;
+      height: 48px;
+    }
+    .cc-text {
+      padding-left: 1rem;
+    }
+  }
+  /* Small phones: give the copy the room. */
+  @media (max-width: 480px) {
+    .cc-card {
+      gap: 0.8rem;
+      padding: 0.75rem 0.85rem 0.75rem 0.75rem;
+    }
+    .cc-ic {
+      width: 44px;
+      height: 44px;
+    }
+    .cc-text {
+      padding-left: 0.8rem;
+    }
+    .cc-arrow {
+      width: 34px;
+      height: 34px;
+    }
+  }
+</style>

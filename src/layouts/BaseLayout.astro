@@ -47,6 +47,33 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href={withBase('/brand/tls-mark.png')} />
 
+    <!-- Interaction layer (see src/styles/motion.css).
+         1. Opt in to scroll reveals before first paint; if the motion script
+            hasn't run within 3s, un-hide everything.
+         2. Page transitions: name the header only while a transition runs, so
+            it holds still without a permanent view-transition-name (which
+            costs subpixel text rendering in the narrow header layout). These
+            listeners must exist before first render, hence inline in head. -->
+    <link rel="expect" href="#main" blocking="render" />
+    <script is:inline>
+      (function (d) {
+        if ('IntersectionObserver' in window) {
+          d.classList.add('ix');
+          setTimeout(function () {
+            if (!window.__ixReady) d.classList.remove('ix');
+          }, 3000);
+        }
+        function nameHeader(vt) {
+          var h = d.querySelector('.site-header');
+          if (!h) return;
+          h.style.viewTransitionName = vt ? 'ix-header' : '';
+          if (vt) vt.finished.finally(function () { h.style.viewTransitionName = ''; });
+        }
+        window.addEventListener('pageswap', function (e) { if (e.viewTransition) nameHeader(e.viewTransition); });
+        window.addEventListener('pagereveal', function (e) { nameHeader(e.viewTransition); });
+      })(document.documentElement);
+    </script>
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -78,5 +105,8 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
       <slot />
     </main>
     <Footer latestPosts={latestPosts} />
+    <script>
+      import '../scripts/motion.ts';
+    </script>
   </body>
 </html>

@@ -41,6 +41,17 @@ const accentVar: Record<Accent, string> = {
   plum: 'var(--plum)',
 };
 
+// Pulse rings over the pins baked into global-map.webp, as % of the image
+// (measured from the 1600×800 asset). Decorative only.
+const pins = [
+  { x: 16.75, y: 37.1, c: 'var(--red)' }, // USA
+  { x: 13.25, y: 49.3, c: 'var(--red)' }, // Mexico
+  { x: 43.0, y: 23.9, c: 'var(--blue)' }, // United Kingdom
+  { x: 57.1, y: 48.9, c: 'color-mix(in srgb, var(--blue), var(--plum))' }, // UAE
+  { x: 68.6, y: 48.1, c: 'var(--red)' }, // India
+  { x: 85.6, y: 75.5, c: 'var(--blue)' }, // Australia
+];
+
 const advantages = [
   { icon: 'users' as const, title: 'Global Talent', body: 'Access specialized expertise beyond geographic boundaries.' },
   { icon: 'gear' as const, title: 'Connected Delivery', body: 'Teams designed to collaborate across locations and time zones.' },
@@ -51,7 +62,7 @@ const advantages = [
 <section class="section global">
   <div class="wrap">
     <div class="top">
-      <div class="intro">
+      <div class="intro" data-reveal>
         <Eyebrow label="Global Delivery" />
         <h2>Built in Dallas. <span class="hl">Connected Globally.</span></h2>
         <p>
@@ -62,7 +73,7 @@ const advantages = [
         <Button href="#global-presence" variant="primary" arrow>Our Global Presence</Button>
       </div>
 
-      <div class="map">
+      <div class="map" data-reveal>
         <img
           src={href('/about/global-map.webp')}
           alt="World map showing True Lean Solutions locations: the USA, Mexico, United Kingdom, UAE, India and Australia"
@@ -70,10 +81,19 @@ const advantages = [
           height="800"
           loading="lazy"
         />
+        {
+          pins.map((p, i) => (
+            <span
+              class="pin"
+              aria-hidden="true"
+              style={`--x: ${p.x}%; --y: ${p.y}%; --c: ${p.c}; --pulse-delay: ${(i * 0.47).toFixed(2)}s;`}
+            />
+          ))
+        }
       </div>
     </div>
 
-    <ol class="locations" id="global-presence">
+    <ol class="locations" id="global-presence" data-reveal="stagger">
       {
         locations.map((l) => {
           const acc = statusAccent[l.status];
@@ -93,7 +113,7 @@ const advantages = [
     </ol>
 
     <div class="advantage">
-      <div class="adv-intro">
+      <div class="adv-intro" data-reveal>
         <Eyebrow label="The Advantage" />
         <h2>One Team. <span class="hl">Global Capability.</span></h2>
         <p>
@@ -103,11 +123,11 @@ const advantages = [
           accountability.
         </p>
       </div>
-      <div class="adv-grid">
+      <div class="adv-grid" data-reveal="stagger">
         {
           advantages.map((a, i) => (
-            <div class="adv-card" style={`--c: ${accentVar[(['red', 'blue', 'plum'] as Accent[])[i]]};`}>
-              <span class="adv-ic"><Icon name={a.icon} size={24} /></span>
+            <div class="adv-card ix-card ix-card--quiet ix-light" style={`--c: ${accentVar[(['red', 'blue', 'plum'] as Accent[])[i]]};`}>
+              <span class="adv-ic glass-icon"><Icon name={a.icon} size={24} /></span>
               <h4>{a.title}</h4>
               <p>{a.body}</p>
             </div>
@@ -140,10 +160,54 @@ const advantages = [
     max-width: 46ch;
     line-height: 1.6;
   }
+  .map {
+    position: relative;
+  }
   .map img {
     width: 100%;
     height: auto;
     display: block;
+  }
+
+  /* A slow, faint ring breathing out of each pin (~2.8s cycle, offset per
+     pin). Paused until the map has scrolled into view. */
+  .pin {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: 2.6%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border: 1.5px solid var(--c);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pin {
+      animation: pin-pulse 2.8s cubic-bezier(0.2, 0.6, 0.35, 1) var(--pulse-delay) infinite;
+    }
+    :global(html.ix) .map:not(.is-in) .pin {
+      animation-play-state: paused;
+    }
+    /* Each location's accent bar draws in as its card arrives. */
+    :global(html.ix) .loc:global(.is-in) .rule {
+      transform-origin: left center;
+      animation: ix-draw 900ms var(--ix-ease) calc(var(--ix-d, 0ms) + 180ms) backwards;
+    }
+  }
+  @keyframes pin-pulse {
+    0% {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    18% {
+      opacity: 0.55;
+    }
+    100% {
+      transform: scale(2.6);
+      opacity: 0;
+    }
   }
 
   .locations {
@@ -228,7 +292,6 @@ const advantages = [
     width: 46px;
     height: 46px;
     border-radius: var(--radius);
-    background: color-mix(in srgb, var(--c) 12%, transparent);
     color: var(--c);
     margin-bottom: 0.9rem;
   }
