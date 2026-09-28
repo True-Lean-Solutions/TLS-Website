@@ -1,0 +1,63 @@
+---
+import type { Block } from '../content.config';
+import RichText from './blocks/RichText.astro';
+import CardGrid from './blocks/CardGrid.astro';
+import StatGroup from './blocks/StatGroup.astro';
+import Steps from './blocks/Steps.astro';
+import Callout from './blocks/Callout.astro';
+import Quote from './blocks/Quote.astro';
+import ImageBlock from './blocks/ImageBlock.astro';
+
+interface Props {
+  blocks: Block[];
+}
+const { blocks } = Astro.props;
+---
+
+<div class="blocks">
+  {
+    blocks.map((b) => (
+      <>
+        {b.type === 'richtext' && <RichText markdown={b.markdown} />}
+        {b.type === 'cards' && (
+          <CardGrid heading={b.heading} columns={b.columns} items={b.items} />
+        )}
+        {b.type === 'stats' && (
+          <StatGroup heading={b.heading} accent={b.accent} items={b.items} />
+        )}
+        {b.type === 'steps' && (
+          <Steps heading={b.heading} accent={b.accent} items={b.items} />
+        )}
+        {b.type === 'callout' && (
+          <Callout title={b.title} body={b.body} tag={b.tag} variant={b.variant} />
+        )}
+        {b.type === 'quote' && <Quote text={b.text} attribution={b.attribution} />}
+        {b.type === 'image' && (
+          <ImageBlock src={b.src} alt={b.alt} caption={b.caption} />
+        )}
+      </>
+    ))
+  }
+</div>
+
+<style>
+  .blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+  .blocks :global(.block-reading) {
+    max-width: 720px;
+    width: 100%;
+    margin-inline: auto;
+  }
+  .blocks :global(.block-wide) {
+    max-width: 900px;
+    width: 100%;
+    margin-inline: auto;
+  }
+  .blocks :global(.block-h) {
+    font-size: var(--step-2);
+    margin-bottom: 1.1rem;
+  }
+</style>

@@ -1,8 +1,27 @@
-export type IconName =
-  | 'ai'
-  | 'software'
-  | 'integration'
-  | 'talent'
-  | 'arrow'
-  | 'chart'
-  | 'clock';
+/** Icon set available to service cards and CMS-authored insight cards. */
+export const iconNames = [
+  'ai',
+  'software',
+  'integration',
+  'talent',
+  'arrow',
+  'chart',
+  'clock',
+  'alert',
+  'process',
+  'target',
+  'search',
+  'shield',
+  'zap',
+  'lightbulb',
+  'check',
+  'gear',
+  'cloud',
+  'code',
+  'database',
+  'lock',
+  'rocket',
+  'users',
+] as const;
+
+export type IconName = (typeof iconNames)[number];

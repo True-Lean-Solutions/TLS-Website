@@ -1,0 +1,113 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import InsightCard from '../../components/InsightCard.astro';
+import { href as withBase } from '../../data/site';
+import {
+  getPublishedPosts,
+  categoriesWithPosts,
+  categoryMeta,
+  type CategorySlug,
+  type Post,
+} from '../../data/insights';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const cats = categoriesWithPosts(posts);
+  const categoryPaths = cats.map((c) => ({
+    params: { entry: c },
+    props: { kind: 'category' as const, entry: c },
+  }));
+  const postPaths = posts.map((p) => ({
+    params: { entry: p.id },
+    props: { kind: 'article' as const, entry: p.id },
+  }));
+  return [...categoryPaths, ...postPaths];
+}
+
+interface Props {
+  kind: 'category' | 'article';
+  entry: string;
+}
+const { kind, entry } = Astro.props as Props;
+
+const all = await getPublishedPosts();
+
+let article: Post | null = null;
+let related: Post[] = [];
+let category: CategorySlug | null = null;
+let categoryPosts: Post[] = [];
+
+if (kind === 'article') {
+  article = all.find((p) => p.id === entry) ?? null;
+  if (article) {
+    related = all
+      .filter((p) => p.id !== article!.id && p.data.category === article!.data.category)
+      .slice(0, 3);
+    for (const p of all) {
+      if (related.length >= 3) break;
+      if (p.id !== article.id && !related.includes(p)) related.push(p);
+    }
+  }
+} else {
+  category = entry as CategorySlug;
+  categoryPosts = all.filter((p) => p.data.category === category);
+}
+---
+
+{
+  kind === 'article' && article ? (
+    <ArticleLayout post={article} related={related} />
+  ) : (
+    <BaseLayout
+      title={`${categoryMeta[category!].label} — True Lean Solutions Insights`}
+      description={categoryMeta[category!].description}
+      path={`/insights/${category}/`}
+    >
+      <section class="page-hero">
+        <div class="wrap">
+          <Eyebrow label="Insights" />
+          <h1>{categoryMeta[category!].label}</h1>
+          <p class="lede">{categoryMeta[category!].description}</p>
+          <p class="back"><a href={withBase('/insights/')}>← All insights</a></p>
+        </div>
+      </section>
+      <section class="section">
+        <div class="wrap">
+          <div class="grid">
+            {categoryPosts.map((p) => <InsightCard post={p} />)}
+          </div>
+        </div>
+      </section>
+    </BaseLayout>
+  )
+}
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .back {
+    margin-top: 1rem;
+  }
+  .back a {
+    color: var(--blue-text);
+    text-decoration: none;
+    font-family: var(--font-head);
+    font-weight: 600;
+  }
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

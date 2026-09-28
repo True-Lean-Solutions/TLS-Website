@@ -1,0 +1,85 @@
+title: Six Account Tiers, One Source of Truth, No Refresh Button
+date: 2026-09-02
+category: case-studies
+excerpt: A market thesis, no product, no requirements, no team. Nine capability domains, four client surfaces and automated settlement later, it was code-complete.
+cover: /insights/covers/six-account-tiers-one-source-of-truth.png
+coverAlt: An abstract illustration of a multi-tenant platform architecture
+author: Ketul Akhani
+readTime: 5 min read
+topics:
+  - Software Development
+source: 1SS08H71zSHPgWGLlFMvMorJImvZVn99r
+blocks:
+  - type: stats
+    heading: At a glance
+    accent: blue
+    items:
+      - value: "6 tiers"
+        label: Account hierarchy from platform administrator to end user, each with scoped visibility.
+      - value: "9 domains"
+        label: Capability areas defined and sequenced from a blank page before development began.
+      - value: "4 surfaces"
+        label: API and backend, web, desktop and native mobile clients built in parallel.
+      - value: "3 phases"
+        label: MVP through full feature set, scoped and sequenced before the first line of code.
+  - type: richtext
+    markdown: |
+      ## The client
+
+      A platform operator building a new multi-tenant transactional product. The company had a clear market thesis and nothing else: no product definition, no requirements, no architecture, and no engineering organization.
+
+      ## The challenge
+
+      The hard part was never the individual features. It was that the entire product had to be defined, architected, and built in parallel — inside a regulatory environment that shaped the architecture from day one, for an operator with no existing engineering function to build on.
+
+      Underneath that sat four constraints that had to be solved structurally rather than patched later.
+  - type: cards
+    columns: 2
+    items:
+      - icon: search
+        title: No specification to build from
+        body: There was a market thesis, not a product. Nothing existed that a team could estimate against, sequence, or start building.
+      - icon: shield
+        title: Strict visibility boundaries between tiers
+        body: Every account level had to see its own downline and nothing above or beside it — scoped to that account's subtree at query time, not filtered on the way out to the interface.
+      - icon: zap
+        title: Accurate position without asking for it
+        body: Users needed their financial position correct at any moment without triggering a refresh. That is a push architecture and a settlement model, not a reporting feature bolted on at the end.
+      - icon: process
+        title: Settlement that resolves without either party
+        body: Manual reconciliation was the single largest source of dispute in the market. Settlement needed to execute automatically against an agreed outcome, provably, with neither side able to influence it.
+  - type: steps
+    heading: What we did
+    accent: blue
+    items:
+      - title: Built the capability model before writing code
+        body: The product was decomposed into nine top-level domains, then mapped down through features and sub-features to individual functions. That tree became the single reference for scope, sequencing, estimation, and progress.
+      - title: Ran structured requirements elicitation against it
+        body: Each requirement was captured with its goal, priority, and separate completion tracking across API, UX, UI, and test — so partial progress stayed visible per layer.
+      - title: Sequenced three delivery phases and fixed their scope
+        body: An MVP for the core transactional flow, a second phase adding management depth and reporting, and a third adding live capability and native mobile — each settled before build, not negotiated during it.
+      - title: Made the hierarchy a data model, not a permission check
+        body: Tier visibility was pushed into the data access layer, so an account's boundary was enforced when the query resolved. New surfaces inherited it automatically.
+      - title: Integrated live third-party data feeds
+        body: External providers were connected through a dedicated integration layer, isolating the platform from provider-side changes and keeping feed latency out of the transactional path.
+      - title: Moved settlement onto automated contracts
+        body: A contract generator produced settlement contracts programmatically, with independent audit of the contract code before release. Outcomes resolved against agreed conditions without either counterparty in the loop.
+      - title: Built four client surfaces against one API
+        body: Backend, web, desktop, and native mobile were developed in parallel against a single internal API, so behavior stayed consistent across surfaces.
+  - type: richtext
+    markdown: |
+      ## The results
+
+      The platform was delivered code-complete across all planned scope. Six account tiers resolve correctly, with each level seeing only its own subtree. Four client surfaces run against a single internal API. Live third-party data flows through a dedicated integration layer, and settlement executes automatically against agreed conditions through audited contracts.
+
+      The capability model built at the outset held for the duration of the programme. Scope, sequencing, estimation, and progress tracking all resolved back to the same artifact — unusual on greenfield work of this size, and the main reason the build stayed estimable throughout.
+  - type: callout
+    variant: dark
+    title: Why it worked
+    body: The capability model came before the first line of code, and everything else referenced it. Decomposing the whole product into a capability tree first gave scope, sequencing, estimation, and progress a common reference — so partial completion was measurable instead of a matter of opinion.
+    tag: Greenfield build · Multi-tenant architecture · Systems integration · Automated settlement
+  - type: richtext
+    markdown: |
+      ## Building something that doesn't exist yet?
+
+      [Talk to us about your build](/contact/).

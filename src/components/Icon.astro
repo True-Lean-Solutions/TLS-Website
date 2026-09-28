@@ -1,9 +1,4 @@
 ---
-/**
- * Inline line icons in brand style. Abstract/geometric only — no brains,
- * circuit boards, robots, or invented people (v2.3 §13). `talent` is a plain
- * UI person glyph, not illustrated people imagery.
- */
 import type { IconName } from './iconTypes';
 
 interface Props {
@@ -26,64 +21,25 @@ const common = {
 } as const;
 ---
 
-{
-  name === 'ai' && (
-    <svg {...common}>
-      <path d="M12 3.2l1.7 4.6 4.6 1.7-4.6 1.7L12 15.8l-1.7-4.6L5.7 9.5l4.6-1.7z" />
-      <path d="M18.5 15.5l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z" />
-    </svg>
-  )
-}
-{
-  name === 'software' && (
-    <svg {...common}>
-      <path d="M9 8l-4 4 4 4" />
-      <path d="M15 8l4 4-4 4" />
-    </svg>
-  )
-}
-{
-  name === 'integration' && (
-    <svg {...common}>
-      <path d="M12 3l8.5 4.5L12 12 3.5 7.5z" />
-      <path d="M3.5 12L12 16.5 20.5 12" />
-      <path d="M3.5 16.5L12 21l8.5-4.5" />
-    </svg>
-  )
-}
-{
-  name === 'talent' && (
-    <svg {...common}>
-      <circle cx="9" cy="8.5" r="3" />
-      <path d="M3.4 19a5.6 5.6 0 0111.2 0" />
-      <circle cx="17" cy="9" r="2.2" />
-      <path d="M16 13.6A4.8 4.8 0 0121 18" />
-    </svg>
-  )
-}
-{
-  name === 'arrow' && (
-    <svg {...common}>
-      <path d="M4 12h14" />
-      <path d="M13 7l5 5-5 5" />
-    </svg>
-  )
-}
-{
-  name === 'chart' && (
-    <svg {...common}>
-      <path d="M4 20h16" />
-      <path d="M7 20v-5" />
-      <path d="M12 20v-9" />
-      <path d="M17 20v-13" />
-    </svg>
-  )
-}
-{
-  name === 'clock' && (
-    <svg {...common}>
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="M12 7.5V12l3 2" />
-    </svg>
-  )
-}
+{name === 'ai' && (<svg {...common}><path d="M12 3.2l1.7 4.6 4.6 1.7-4.6 1.7L12 15.8l-1.7-4.6L5.7 9.5l4.6-1.7z" /><path d="M18.5 15.5l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z" /></svg>)}
+{name === 'software' && (<svg {...common}><path d="M9 8l-4 4 4 4" /><path d="M15 8l4 4-4 4" /></svg>)}
+{name === 'code' && (<svg {...common}><path d="M9 8l-4 4 4 4" /><path d="M15 8l4 4-4 4" /></svg>)}
+{name === 'integration' && (<svg {...common}><path d="M12 3l8.5 4.5L12 12 3.5 7.5z" /><path d="M3.5 12L12 16.5 20.5 12" /><path d="M3.5 16.5L12 21l8.5-4.5" /></svg>)}
+{name === 'talent' && (<svg {...common}><circle cx="9" cy="8.5" r="3" /><path d="M3.4 19a5.6 5.6 0 0111.2 0" /><circle cx="17" cy="9" r="2.2" /><path d="M16 13.6A4.8 4.8 0 0121 18" /></svg>)}
+{name === 'users' && (<svg {...common}><circle cx="9" cy="8.5" r="3" /><path d="M3.4 19a5.6 5.6 0 0111.2 0" /><circle cx="17" cy="9" r="2.2" /><path d="M16 13.6A4.8 4.8 0 0121 18" /></svg>)}
+{name === 'arrow' && (<svg {...common}><path d="M4 12h14" /><path d="M13 7l5 5-5 5" /></svg>)}
+{name === 'chart' && (<svg {...common}><path d="M4 20h16" /><path d="M7 20v-5" /><path d="M12 20v-9" /><path d="M17 20v-13" /></svg>)}
+{name === 'clock' && (<svg {...common}><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></svg>)}
+{name === 'alert' && (<svg {...common}><path d="M12 3.5L2.5 20h19z" /><path d="M12 10v4.5" /><path d="M12 17.5h.01" /></svg>)}
+{name === 'process' && (<svg {...common}><circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" /><path d="M7 12h3M14 12h3" /></svg>)}
+{name === 'target' && (<svg {...common}><circle cx="12" cy="12" r="8.5" /><circle cx="12" cy="12" r="4.5" /><circle cx="12" cy="12" r="0.8" fill="currentColor" /></svg>)}
+{name === 'search' && (<svg {...common}><circle cx="10.5" cy="10.5" r="6" /><line x1="15" y1="15" x2="20" y2="20" /></svg>)}
+{name === 'shield' && (<svg {...common}><path d="M12 3l7 3v5c0 4.6-3 7.6-7 9-4-1.4-7-4.4-7-9V6z" /><path d="M9 12l2 2 4-4" /></svg>)}
+{name === 'zap' && (<svg {...common}><path d="M13 3L5 13h5l-1 8 8-10h-5z" /></svg>)}
+{name === 'lightbulb' && (<svg {...common}><path d="M9.5 18h5" /><path d="M10 21h4" /><path d="M12 3a6 6 0 00-4 10.5c.8.8 1.1 1.3 1.1 2.5h5.8c0-1.2.3-1.7 1.1-2.5A6 6 0 0012 3z" /></svg>)}
+{name === 'check' && (<svg {...common}><path d="M20 6L9 17l-5-5" /></svg>)}
+{name === 'gear' && (<svg {...common}><circle cx="12" cy="12" r="3.2" /><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2 2M16.8 16.8l2 2M18.8 5.2l-2 2M7.2 16.8l-2 2" /></svg>)}
+{name === 'cloud' && (<svg {...common}><path d="M7 18a4 4 0 010-8 5 5 0 019.6-1.4A3.6 3.6 0 0117.5 18z" /></svg>)}
+{name === 'database' && (<svg {...common}><ellipse cx="12" cy="6" rx="7" ry="3" /><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6" /><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6" /></svg>)}
+{name === 'lock' && (<svg {...common}><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 018 0v3" /></svg>)}
+{name === 'rocket' && (<svg {...common}><path d="M5.5 14.5c-1 1-1.5 4-1.5 4s3-.5 4-1.5" /><path d="M9 15l-3-3c2-6 6-8 11-8 0 5-2 9-8 11z" /><circle cx="14.5" cy="9.5" r="1.5" /></svg>)}

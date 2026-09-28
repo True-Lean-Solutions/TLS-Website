@@ -1,0 +1,99 @@
+---
+import Icon from '../Icon.astro';
+import type { IconName } from '../iconTypes';
+import type { Accent } from '../../data/services';
+
+interface Item {
+  icon?: string;
+  title: string;
+  body: string;
+  accent?: Accent;
+}
+interface Props {
+  heading?: string;
+  columns?: number;
+  items: Item[];
+}
+const { heading, columns = 3, items } = Astro.props;
+
+const accents: Record<Accent, string> = {
+  red: '--c: var(--red); --ct: var(--red-tint);',
+  blue: '--c: var(--blue); --ct: var(--blue-tint);',
+  plum: '--c: var(--plum); --ct: var(--plum-tint);',
+};
+const rotate: Accent[] = ['red', 'blue', 'plum'];
+---
+
+<div class="card-block block-wide">
+  {heading && <h3 class="block-h">{heading}</h3>}
+  <div class:list={['grid', columns === 2 ? 'g2' : 'g3']}>
+    {
+      items.map((it, i) => (
+        <div class="card" style={accents[it.accent ?? rotate[i % 3]]}>
+          {it.icon && (
+            <span class="ic"><Icon name={it.icon as IconName} size={24} /></span>
+          )}
+          <span class="rule" aria-hidden="true" />
+          <h4>{it.title}</h4>
+          <p>{it.body}</p>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .g2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .g3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+  .ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius);
+    background: var(--ct);
+    color: var(--c);
+    margin-bottom: 0.9rem;
+  }
+  .rule {
+    display: block;
+    width: 2rem;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--c);
+    margin-bottom: 0.9rem;
+  }
+  h4 {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+  }
+  p {
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  @media (max-width: 720px) {
+    .g2,
+    .g3 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

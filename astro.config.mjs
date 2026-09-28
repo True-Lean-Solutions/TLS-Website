@@ -17,13 +17,5 @@ export default defineConfig({
   site: SITE,
   base: BASE,
   trailingSlash: 'always',
-  integrations: [
-    sitemap({
-      // Draft/noindex routes are kept out of the sitemap in each page's head;
-      // referral pages are also filtered here as a backstop.
-      filter: (page) =>
-        !page.includes('/referral-partner-program/') &&
-        !page.includes('/referral-faq/'),
-    }),
-  ],
+  integrations: [sitemap()],
 });

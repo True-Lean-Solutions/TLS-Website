@@ -1,0 +1,79 @@
+title: A Commission Cascade Where Every Tier Can Only Move One Way
+date: 2026-09-02
+category: case-studies
+excerpt: Commission looks like a percentage field until you build it across six tiers. Then it's four problems, and getting one wrong costs you margin or an argument you can't settle.
+cover: /insights/covers/commission-cascade-every-tier-one-way.png
+coverAlt: An abstract illustration of a tiered commission structure
+author: Ketul Akhani
+readTime: 5 min read
+topics:
+  - Software Development
+source: 1idKy-3K0VQcA-xLmud-FQ9GPxQ-d2x9J
+blocks:
+  - type: stats
+    heading: At a glance
+    accent: red
+    items:
+      - value: "6 tiers"
+        label: The levels the rate cascade resolves across, from organization down to end user.
+      - value: One direction
+        label: Every tier can raise its own rate but never undercut the level above it.
+      - value: Effective-dated
+        label: Every rate change is stored with its timestamp and is fully auditable.
+      - value: Subtree-wide
+        label: Each proposed change is validated against every level beneath it before commit.
+  - type: richtext
+    markdown: |
+      ## The client
+
+      The same platform operator, building the revenue-share engine that sat underneath the transactional product. Revenue was split across a distribution chain — the organization, its agents, and their sub-agents — with the end user's rate determined by wherever they sat in that chain.
+
+      ## The challenge
+
+      Commission looks like a percentage field until you try to build it across a hierarchy. Then it becomes four separate problems, and getting any one of them wrong produces either a silent margin leak or an argument nobody can settle.
+  - type: cards
+    columns: 2
+    items:
+      - icon: process
+        title: Defaults that cascade to accounts that don't exist yet
+        body: A rate set at organization level had to apply to every account currently beneath it and to every account created afterwards — so the default had to resolve rather than propagate.
+      - icon: shield
+        title: A constraint that only permits movement one way
+        body: Any tier could raise its own rate but never set one below the level above it. Enforcing that meant validating a proposed change against the entire subtree beneath it, not just its immediate parent.
+      - icon: clock
+        title: Disputes are about dates, not rates
+        body: When a party questions what they were paid, the argument is almost never about the current rate — it's about which rate applied on a particular day. That makes the change history the product.
+      - icon: alert
+        title: Settled history has to stay settled
+        body: A rate change made today cannot retroactively alter transactions already settled under the previous rate. Settlement had to resolve against the rate in force at the time of the transaction.
+  - type: steps
+    heading: What we did
+    accent: red
+    items:
+      - title: Modeled the rate as an effective-dated record, not a field
+        body: Every rate is a row with an effective date and time rather than a value that gets overwritten. Changing a rate appends history instead of destroying it — so the audit trail is a consequence of the design.
+      - title: Made the constraint a pre-commit validation across the subtree
+        body: Before any change commits, the system walks every level beneath the changing tier and rejects the write if the result would leave any descendant below the ceiling set above it. No interface path can bypass it.
+      - title: Resolved rates at read time by walking the hierarchy
+        body: Rather than writing a rate onto every account, the applicable rate is resolved by walking up the tree to the nearest explicit override. New accounts inherit correctly with no backfill.
+      - title: Separated organization defaults from tier overrides
+        body: An organization-wide default and a specific agent's override are different kinds of record, not the same field written by different users. Keeping them distinct is what makes it possible to answer why a given account has the rate it has.
+      - title: Made settlement read the historical rate
+        body: Settlement resolves the rate in force at the transaction's timestamp, so past settlements stay correct permanently and a rate change never rewrites financial history.
+  - type: richtext
+    markdown: |
+      ## The results
+
+      The engine resolves rates correctly across six tiers, with organization-level defaults reaching accounts created long after the default was set. The one-directional constraint is enforced at the data layer, so no tier can undercut the level above it through any interface path.
+
+      Every rate change carries its effective date and time, which means questions about what applied when have an answer rather than a negotiation. Settled transactions remain settled at the rate that was in force when they occurred.
+  - type: callout
+    variant: dark
+    title: The transferable part
+    body: Any business that splits revenue down a distribution chain has this problem, whether or not it knows it yet. Franchise networks, insurance brokerages, reseller channels, and affiliate programs all cascade a rate through tiers. Modeling it as effective-dated records with subtree validation costs slightly more up front and removes an entire category of argument permanently.
+    tag: Revenue share · Hierarchical data modeling · Audit design · Multi-tier systems
+  - type: richtext
+    markdown: |
+      ## Splitting revenue across a distribution chain?
+
+      [Talk to us about your system](/contact/).

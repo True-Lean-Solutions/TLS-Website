@@ -1,0 +1,237 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+import InsightCard from '../components/InsightCard.astro';
+import { site, href as withBase, canonicalUrl } from '../data/site';
+import { categoryMeta, formatDate, type Post } from '../data/insights';
+
+interface Props {
+  post: Post;
+  related: Post[];
+}
+const { post, related } = Astro.props;
+const { data } = post;
+const cat = categoryMeta[data.category];
+const ogImage = data.cover ? canonicalUrl(data.cover) : undefined;
+const canonical = canonicalUrl(`/insights/${post.id}/`);
+
+// BlogPosting structured data for rich results.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: data.title,
+  description: data.excerpt,
+  datePublished: data.date.toISOString(),
+  dateModified: data.date.toISOString(),
+  author: { '@type': 'Person', name: data.author ?? site.name },
+  ...(ogImage ? { image: [ogImage] } : {}),
+  publisher: {
+    '@type': 'Organization',
+    name: site.name,
+    logo: {
+      '@type': 'ImageObject',
+      url: canonicalUrl('/brand/tls-mark.png'),
+    },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+};
+---
+
+<BaseLayout
+  title={`${data.title} — True Lean Solutions`}
+  description={data.excerpt}
+  path={`/insights/${post.id}/`}
+  ogImage={ogImage}
+  ogType="article"
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </Fragment>
+  <article class="article">
+    <div class="wrap">
+      <header class="head">
+        <a class="cat" href={withBase(`/insights/${data.category}/`)}>{cat.label}</a>
+        <h1>{data.title}</h1>
+        <p class="meta">
+          {data.author && <span>{data.author}</span>}
+          {data.author && <span aria-hidden="true">·</span>}
+          <time datetime={data.date.toISOString()}>{formatDate(data.date)}</time>
+          {data.readTime && <span aria-hidden="true">·</span>}
+          {data.readTime && <span>{data.readTime}</span>}
+        </p>
+      </header>
+    </div>
+
+    {
+      data.cover && (
+        <div class="wrap">
+          <img class="cover" src={withBase(data.cover)} alt={data.coverAlt ?? ''} width="1200" height="675" fetchpriority="high" />
+        </div>
+      )
+    }
+
+    <div class="wrap">
+      <div class="article-content">
+        <BlockRenderer blocks={data.blocks} />
+      </div>
+
+      {
+        data.topics.length > 0 && (
+          <ul class="topics" aria-label="Topics">
+            {data.topics.map((t) => <li>{t}</li>)}
+          </ul>
+        )
+      }
+
+      <p class="back"><a href={withBase('/insights/')}>← All insights</a></p>
+    </div>
+  </article>
+
+  {
+    related.length > 0 && (
+      <section class="section section-alt">
+        <div class="wrap">
+          <h2 class="related-h">Related insights</h2>
+          <div class="related-grid">
+            {related.map((p) => <InsightCard post={p} />)}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .article {
+    padding-top: var(--space-6);
+  }
+  .head,
+  .topics,
+  .back {
+    max-width: var(--reading);
+    margin-inline: auto;
+  }
+  .article-content {
+    margin-top: 2.5rem;
+  }
+  .cat {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--red-text);
+    text-decoration: none;
+  }
+  .head h1 {
+    margin-top: 0.6rem;
+    font-size: var(--step-4);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+  .cover {
+    display: block;
+    width: 100%;
+    max-width: 960px;
+    margin: 2rem auto 0;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+  .article-body {
+    margin-top: 2.5rem;
+    font-size: 1.08rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .article-body :global(h2) {
+    font-size: var(--step-2);
+    margin: 2.2rem 0 0.75rem;
+  }
+  .article-body :global(h3) {
+    font-size: var(--step-1);
+    margin: 1.75rem 0 0.5rem;
+  }
+  .article-body :global(p) {
+    margin-bottom: 1.15rem;
+  }
+  .article-body :global(ul),
+  .article-body :global(ol) {
+    margin: 0 0 1.15rem 1.25rem;
+  }
+  .article-body :global(li) {
+    margin-bottom: 0.4rem;
+  }
+  .article-body :global(a) {
+    color: var(--blue-text);
+  }
+  .article-body :global(blockquote) {
+    margin: 1.5rem 0;
+    padding-left: 1.25rem;
+    border-left: 3px solid var(--red);
+    color: var(--text-2);
+    font-style: italic;
+  }
+  .article-body :global(img) {
+    border-radius: var(--radius);
+    margin: 1.5rem 0;
+  }
+  .article-body :global(code) {
+    background: var(--section);
+    padding: 0.1em 0.35em;
+    border-radius: 5px;
+    font-size: 0.9em;
+  }
+  .topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    list-style: none;
+    padding: 0;
+    margin-top: 2.5rem;
+  }
+  .topics li {
+    background: var(--section);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.82rem;
+    color: var(--text-2);
+  }
+  .back {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .back a {
+    color: var(--blue-text);
+    text-decoration: none;
+    font-family: var(--font-head);
+    font-weight: 600;
+  }
+  .related-h {
+    margin-bottom: 1.5rem;
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  @media (max-width: 900px) {
+    .related-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

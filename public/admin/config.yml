@@ -1,0 +1,135 @@
+# Sveltia / Decap CMS configuration for TLS Insights.
+# The editor lives at /admin/ and commits Markdown-free structured YAML posts
+# to src/content/insights/, which the site renders as blocks (see BlockRenderer).
+
+backend:
+  name: github
+  repo: True-Lean-Solutions/TLS-Website
+  branch: main
+  # OAuth handler for GitHub login. Deploy the free `sveltia-cms-auth`
+  # Cloudflare Worker, create a GitHub OAuth app, and put the worker URL here.
+  # See docs/cms-setup.md.
+  base_url: https://REPLACE-WITH-YOUR-AUTH-WORKER.workers.dev
+
+# Cover images and in-article images are committed here.
+media_folder: public/insights/covers
+public_folder: /insights/covers
+
+# Show a "Draft" state; draft posts stay out of the live site until published.
+publish_mode: editorial_workflow
+
+collections:
+  - name: insights
+    label: Insights
+    label_singular: Insight post
+    description: Blog posts, perspectives, and case studies for the Insights section.
+    folder: src/content/insights
+    extension: yaml
+    format: yaml
+    create: true
+    identifier_field: title
+    slug: '{{slug}}'
+    summary: '{{title}}  ·  {{category}}  ·  {{date}}'
+    sortable_fields: [date, title, category]
+    fields:
+      - { label: Title, name: title, widget: string, hint: 'Shows as the H1 and the browser/tab and social title.' }
+      - { label: Publish date, name: date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, picker_utc: true }
+      - label: Category
+        name: category
+        widget: select
+        default: perspectives
+        options:
+          - { label: Perspectives, value: perspectives }
+          - { label: Case Studies, value: case-studies }
+          - { label: Guides, value: guides }
+          - { label: News, value: news }
+      - { label: Excerpt (meta description), name: excerpt, widget: text, hint: 'Aim for ~150 characters. Used as the search/social description.' }
+      - { label: Cover image, name: cover, widget: image, required: false, hint: '16:9 works best. Used for the card and social preview.' }
+      - { label: Cover alt text, name: coverAlt, widget: string, required: false, hint: 'Describe the image for screen readers and SEO.' }
+      - { label: Author, name: author, widget: string, required: false }
+      - { label: Read time, name: readTime, widget: string, required: false, hint: 'e.g. "4 min read".' }
+      - { label: Topics, name: topics, widget: list, required: false, hint: 'Powers "Browse by Topic". e.g. Software Development, Process Automation.' }
+      - { label: Draft, name: draft, widget: boolean, default: false, required: false }
+      - label: Content blocks
+        name: blocks
+        label_singular: block
+        widget: list
+        types:
+          - label: Rich text
+            name: richtext
+            widget: object
+            summary: 'Rich text'
+            fields:
+              - { label: Content, name: markdown, widget: markdown }
+          - label: Icon cards
+            name: cards
+            widget: object
+            summary: 'Cards: {{fields.heading}}'
+            fields:
+              - { label: Heading, name: heading, widget: string, required: false }
+              - { label: Columns, name: columns, widget: select, options: ['2', '3'], default: '3' }
+              - label: Cards
+                name: items
+                widget: list
+                summary: '{{fields.title}}'
+                fields:
+                  - label: Icon
+                    name: icon
+                    widget: select
+                    required: false
+                    options: [ai, software, integration, talent, chart, clock, alert, process, target, search, shield, zap, lightbulb, check, gear, cloud, code, database, lock, rocket, users, arrow]
+                  - { label: Title, name: title, widget: string }
+                  - { label: Body, name: body, widget: text }
+                  - { label: Accent color, name: accent, widget: select, required: false, options: [red, blue, plum] }
+          - label: Stat group
+            name: stats
+            widget: object
+            summary: 'Stats: {{fields.heading}}'
+            fields:
+              - { label: Heading, name: heading, widget: string, required: false }
+              - { label: Accent color, name: accent, widget: select, options: [red, blue, plum], default: red }
+              - label: Stats
+                name: items
+                widget: list
+                summary: '{{fields.value}}'
+                fields:
+                  - { label: Value, name: value, widget: string, hint: 'e.g. "$3M", "6 tiers".' }
+                  - { label: Label, name: label, widget: text }
+          - label: Steps
+            name: steps
+            widget: object
+            summary: 'Steps: {{fields.heading}}'
+            fields:
+              - { label: Heading, name: heading, widget: string, required: false }
+              - { label: Accent color, name: accent, widget: select, options: [red, blue, plum], default: red }
+              - label: Steps
+                name: items
+                widget: list
+                summary: '{{fields.title}}'
+                fields:
+                  - { label: Title, name: title, widget: string }
+                  - { label: Body, name: body, widget: text }
+          - label: Callout
+            name: callout
+            widget: object
+            summary: 'Callout: {{fields.title}}'
+            fields:
+              - { label: Title, name: title, widget: string, required: false }
+              - { label: Body, name: body, widget: text }
+              - { label: Tags, name: tag, widget: string, required: false, hint: 'Separate tags with " · ".' }
+              - { label: Style, name: variant, widget: select, options: [dark, light], default: dark }
+          - label: Quote
+            name: quote
+            widget: object
+            summary: 'Quote'
+            fields:
+              - { label: Quote, name: text, widget: text }
+              - { label: Attribution, name: attribution, widget: string, required: false }
+          - label: Image
+            name: image
+            widget: object
+            summary: 'Image'
+            fields:
+              - { label: Image, name: src, widget: image }
+              - { label: Alt text, name: alt, widget: string }
+              - { label: Caption, name: caption, widget: string, required: false }

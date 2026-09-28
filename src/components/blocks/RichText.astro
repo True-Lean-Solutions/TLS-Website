@@ -1,0 +1,10 @@
+---
+import { marked } from 'marked';
+interface Props {
+  markdown: string;
+}
+const { markdown } = Astro.props;
+const html = marked.parse(markdown, { async: false }) as string;
+---
+
+<div class="rich block-reading" set:html={html} />

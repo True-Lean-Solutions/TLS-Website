@@ -12,8 +12,10 @@ interface Props {
   path?: string;
   /** Absolute OG image URL; defaults to the site's shared OG image. */
   ogImage?: string;
-  /** Keep the page out of search indexes (draft / referral pages). */
+  /** Keep the page out of search indexes (draft pages). */
   noindex?: boolean;
+  /** Open Graph type; "article" for Insights posts. */
+  ogType?: string;
 }
 
 const {
@@ -22,6 +24,7 @@ const {
   path = Astro.url.pathname,
   ogImage = canonicalUrl('/og-default.jpg'),
   noindex = false,
+  ogType = 'website',
 } = Astro.props;
 
 // Normalize the given path to a canonical (production-domain) URL.
@@ -49,7 +52,7 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

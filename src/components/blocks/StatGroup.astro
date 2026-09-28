@@ -1,0 +1,59 @@
+---
+import type { Accent } from '../../data/services';
+
+interface Props {
+  heading?: string;
+  accent?: Accent;
+  items: { value: string; label: string }[];
+}
+const { heading, accent = 'red', items } = Astro.props;
+const accents: Record<Accent, string> = {
+  red: '--c: var(--red);',
+  blue: '--c: var(--blue);',
+  plum: '--c: var(--plum);',
+};
+---
+
+<div class="stat-group block-wide" style={accents[accent]}>
+  {heading && <h3 class="block-h">{heading}</h3>}
+  <div class="grid">
+    {
+      items.map((it) => (
+        <div class="stat">
+          <span class="v">{it.value}</span>
+          <span class="l">{it.label}</span>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.25rem;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    border-top: 3px solid var(--c);
+    padding: 1.4rem;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .v {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: var(--step-3);
+    line-height: 1;
+    color: var(--c);
+    letter-spacing: -0.02em;
+  }
+  .l {
+    color: var(--text-2);
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+</style>

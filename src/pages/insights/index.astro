@@ -1,0 +1,170 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import InsightCard from '../../components/InsightCard.astro';
+import { href as withBase } from '../../data/site';
+import {
+  getPublishedPosts,
+  allTopics,
+  categoriesWithPosts,
+  categoryMeta,
+} from '../../data/insights';
+
+const title = 'True Lean Solutions — Insights';
+const description =
+  'Practical notes on integration, automation and hiring for small businesses.';
+
+const posts = await getPublishedPosts();
+const topics = allTopics(posts);
+const cats = categoriesWithPosts(posts);
+---
+
+<BaseLayout title={title} description={description} path="/insights/">
+  <section class="page-hero">
+    <div class="wrap">
+      <Eyebrow label="Insights" />
+      <h1>Practical notes on <span class="hl">building things that hold up.</span></h1>
+      <p class="lede">
+        Perspectives, case studies, and guides on integration, automation, and
+        hiring for small and mid-sized businesses.
+      </p>
+
+      <link rel="stylesheet" href={withBase('/pagefind/pagefind-ui.css')} />
+      <div id="search" class="search"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <nav class="chips cats" aria-label="Insight categories">
+        <a class="chip active" href={withBase('/insights/')}>Explore All</a>
+        {cats.map((c) => (
+          <a class="chip" href={withBase(`/insights/${c}/`)}>{categoryMeta[c].label}</a>
+        ))}
+      </nav>
+
+      {
+        topics.length > 0 && (
+          <div class="topics-row">
+            <span class="topics-label">Browse by topic</span>
+            <div class="chips topics" role="group" aria-label="Filter by topic">
+              <button class="chip topic active" data-topic="all" type="button">All</button>
+              {topics.map((t) => (
+                <button class="chip topic" data-topic={t} type="button">{t}</button>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      <div class="grid" id="post-grid">
+        {posts.map((p) => <InsightCard post={p} />)}
+      </div>
+      <p class="empty" id="no-results" hidden>No posts match that topic.</p>
+    </div>
+  </section>
+
+  <script is:inline src={withBase('/pagefind/pagefind-ui.js')}></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.PagefindUI) {
+        new window.PagefindUI({ element: '#search', showImages: false, showSubResults: true });
+      }
+      // Browse by Topic filter
+      const buttons = document.querySelectorAll('.chip.topic');
+      const cards = document.querySelectorAll('#post-grid .insight-card');
+      const noResults = document.getElementById('no-results');
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const topic = btn.getAttribute('data-topic');
+          buttons.forEach((b) => b.classList.toggle('active', b === btn));
+          let shown = 0;
+          cards.forEach((card) => {
+            const topics = (card.getAttribute('data-topics') || '').split('|');
+            const match = topic === 'all' || topics.includes(topic);
+            card.style.display = match ? '' : 'none';
+            if (match) shown++;
+          });
+          if (noResults) noResults.hidden = shown !== 0;
+        });
+      });
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .search {
+    max-width: 560px;
+    margin-top: 1.75rem;
+    --pagefind-ui-primary: var(--red-text);
+    --pagefind-ui-text: var(--ink);
+    --pagefind-ui-background: var(--surface);
+    --pagefind-ui-border: var(--border-2);
+    --pagefind-ui-border-radius: 12px;
+    --pagefind-ui-font: var(--font-body);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .cats {
+    margin-bottom: 1.5rem;
+  }
+  .chip {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    background: var(--surface);
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .chip:hover {
+    border-color: var(--red-text);
+    color: var(--red-text);
+  }
+  .chip.active {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .topics-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    margin-bottom: 2rem;
+  }
+  .topics-label {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .empty {
+    margin-top: 1.5rem;
+    color: var(--text-2);
+  }
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

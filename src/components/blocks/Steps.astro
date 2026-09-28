@@ -1,0 +1,73 @@
+---
+import type { Accent } from '../../data/services';
+
+interface Props {
+  heading?: string;
+  accent?: Accent;
+  items: { title: string; body: string }[];
+}
+const { heading, accent = 'red', items } = Astro.props;
+const accents: Record<Accent, string> = {
+  red: '--c: var(--red); --ct: var(--red-tint);',
+  blue: '--c: var(--blue); --ct: var(--blue-tint);',
+  plum: '--c: var(--plum); --ct: var(--plum-tint);',
+};
+---
+
+<div class="steps-block block-wide" style={accents[accent]}>
+  {heading && <h3 class="block-h">{heading}</h3>}
+  <ol class="list">
+    {
+      items.map((it, i) => (
+        <li>
+          <span class="n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <div class="body">
+            <h4>{it.title}</h4>
+            <p>{it.body}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.25rem;
+  }
+  li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.1rem;
+    align-items: start;
+  }
+  .n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--ct);
+    color: var(--c);
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 0.95rem;
+    flex: none;
+  }
+  h4 {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin: 0.35rem 0 0.35rem;
+  }
+  p {
+    color: var(--text-2);
+    line-height: 1.55;
+    font-size: 0.96rem;
+  }
+</style>

@@ -34,7 +34,7 @@ Entry format:
 
 ## 2026-09-28 — Articles are Markdown files in the repo, not a CMS
 
-**Status:** interim
+**Status:** superseded (by the block content model + Sveltia CMS decision below)
 
 **Decision.** Insights posts live in `src/content/insights/` as Markdown with a typed front-matter schema. Publishing a post takes a commit.
 
@@ -157,3 +157,19 @@ Entry format:
 **Revisit when.** A reference image or review changes a specific page's layout.
 
 **Where it lives.** `src/pages/` (each derived page), `src/components/`.
+
+---
+
+## 2026-09-28 — Insights use a block content model + Sveltia CMS (supersedes the Markdown-file decision)
+
+**Status:** interim
+
+**Decision.** Insights posts are **structured YAML** with an ordered `blocks` array (rich text, icon cards, stat groups, steps, callouts, quote, image), rendered by `BlockRenderer` into real components. Authoring is via **Sveltia CMS** at `/admin/` (a maintained Decap successor), which commits to `src/content/insights/` with a variable-type block list and an icon picker — so anyone with repo access can publish cards/stats/callouts without a developer. This **supersedes** the earlier "Articles are Markdown files, not a CMS" decision. Adds one dependency, `marked`, to render rich-text blocks.
+
+**Why.** Himanshu: the cards/icons/callouts are important on the inside pages and the CMS must author them — "future-proof the CMS so that I am not required for it." Flat Markdown couldn't represent or author those blocks.
+
+**Cost we are accepting.** More moving parts than Markdown (a block schema, a CMS config, and a GitHub OAuth worker to stand up — see `docs/cms-setup.md`). The `marked` dependency renders rich-text blocks.
+
+**Revisit when.** A block type is missing, or a hosted CMS is preferred over the git-based one.
+
+**Where it lives.** `src/content.config.ts` (block schema), `src/components/BlockRenderer.astro` + `src/components/blocks/`, `public/admin/` (CMS), `docs/cms-setup.md`.

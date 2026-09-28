@@ -3,8 +3,28 @@ import Lockup from './Lockup.astro';
 import Button from './Button.astro';
 import { cta, href as withBase } from '../data/site';
 import { primaryNav } from '../data/nav';
+import {
+  getPublishedPosts,
+  categoriesWithPosts,
+  categoryMeta,
+} from '../data/insights';
 
 const path = Astro.url.pathname;
+
+// Build the Insights submenu from categories that actually have posts,
+// so empty categories (e.g. Guides, News) stay out of the menu.
+const insightsCats = categoriesWithPosts(await getPublishedPosts());
+const insightsChildren = [
+  { label: 'Explore All', href: '/insights/', description: 'Every post, newest first.' },
+  ...insightsCats.map((c) => ({
+    label: categoryMeta[c].label,
+    href: `/insights/${c}/`,
+    description: categoryMeta[c].description,
+  })),
+];
+const navItems = primaryNav.map((item) =>
+  item.label === 'Insights' ? { ...item, children: insightsChildren } : item
+);
 
 function isCurrent(linkHref: string): boolean {
   const target = withBase(linkHref);
@@ -29,7 +49,7 @@ function isCurrent(linkHref: string): boolean {
     <nav id="primary-nav" class="primary-nav" aria-label="Primary">
       <ul class="nav-list">
         {
-          primaryNav.map((item) =>
+          navItems.map((item) =>
             item.children ? (
               <li class="has-menu">
                 <button

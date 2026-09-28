@@ -103,8 +103,6 @@ Every data file and every Markdown post records where its content came from, as 
 | `/insights/<category>/` | Same | **Ask** | perspectives, case-studies, guides, news. A category with no published posts is hidden from menus and has no page. |
 | `/insights/<slug>/` | Post files | **Ask** | Article layout, related posts |
 | `/contact/` | Manifest meta; the form contract below | **Ask** | Form plus booking link |
-| `/referral-partner-program/` | Referral Partner Program | **Ask** | `draft` in the manifest: build it, keep it out of nav and the sitemap, `noindex` |
-| `/referral-faq/` | Referral Partner FAQ | **Ask** | Same as above |
 | `/404` | None | **Ask** | Short, links home. UI copy only. |
 | `/privacy-policy/` | Approved template | Derive | v1 (settled 2026-09-28). Generated from a standard template; **nothing ships until Himanshu approves every clause**. Draft with clearly marked placeholders for entity name, jurisdiction, and the exact contact-form data collected. |
 | `/terms-of-service/` | Approved template | Derive | Same as above. |
@@ -232,11 +230,12 @@ Keep this mechanism exactly. It was debugged three times in Phase 1, and replaci
 - Keep `docs/references/README.md` current when references are added.
 - Out of scope for v1:
   - Tali (v1.1);
-  - an articles CMS;
   - newsletter / "Stay Connected" capture (dropped 2026-09-28);
   - dark mode;
-  - the "common challenges" fold from mock-up 10.
+  - the "common challenges" fold from mock-up 10;
+  - **Referral Partner Program / FAQ pages (dropped 2026-09-28** — handled externally at akhani.us, the referral partner portal).
   - (Privacy Policy and Terms of Service are now **in** v1 — see the Pages table.)
+  - (An Insights authoring workflow / CMS is being chosen — see `docs/decisions.md`.)
 
 ## First session checklist
 
