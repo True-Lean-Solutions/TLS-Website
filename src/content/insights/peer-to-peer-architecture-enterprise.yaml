@@ -1,0 +1,61 @@
+title: Peer-to-Peer Architecture and Why Enterprise Teams Underestimate It
+date: 2026-06-01
+category: perspectives
+excerpt: Resilience is a design choice, not a coincidence.
+cover: /insights/covers/peer-to-peer-architecture-enterprise.png
+coverAlt: An abstract illustration of a peer-to-peer network
+author: Hemang Dwivedi
+readTime: 3 min read
+topics:
+  - Software Development
+source: 1LgdLcThQGeUPHtFxdVleWzWLjUFLDiMs
+blocks:
+  - type: richtext
+    markdown: |
+      When most enterprise teams think about distributed systems, they think about servers, cloud infrastructure, and centralized orchestration. The client connects to the server. The server handles everything. Simple to reason about, easy to scale vertically — and often far more fragile than it looks.
+
+      Peer-to-peer architecture challenges that assumption. And the results, when done correctly, are systems that are more resilient, lower-latency, and free from single points of failure by design.
+
+      ## What we built — and what it taught us
+
+      NexusFlow, our open-source multi-device input sharing system, was built on exactly this principle. Every existing solution required a dedicated host machine — if that machine went down, everything stopped. We built the opposite: a fully peer-to-peer network where any machine could participate as an equal, with automatic device discovery over UDP and reliable input transmission over TCP.
+  - type: stats
+    accent: plum
+    items:
+      - value: Sub-100ms
+        label: Input latency achieved on a local network in prototype testing.
+      - value: Zero
+        label: Central host dependency — any machine can act as a peer.
+      - value: "4"
+        label: 'Independent subsystems: discovery, routing, UI, and networking.'
+  - type: cards
+    heading: The enterprise lessons
+    columns: 2
+    items:
+      - icon: shield
+        title: Eliminate single points of failure
+        body: Instead of "the server is down, everything stops," you get graceful degradation — the system continues under partial failure.
+      - icon: zap
+        title: Design the failure model first
+        body: The question is not just how do we build this — it is what happens when one part fails, and is the system ready for it.
+      - icon: integration
+        title: Independent subsystems reduce complexity
+        body: Modular architecture enables independent development of each layer, significantly reducing debugging complexity and team dependencies.
+      - icon: chart
+        title: Serverless by design scales differently
+        body: No dedicated host means no scaling bottleneck at the centre. The network grows as peers join — not as you provision more servers.
+  - type: richtext
+    markdown: |
+      ## What this means for your architecture
+
+      The same thinking applies when designing integration architectures, event-driven systems, or any platform that needs to remain available under partial failure conditions. Most enterprise teams skip the failure-model question until the first major incident. We ask it at the start.
+  - type: callout
+    variant: dark
+    title: Our architecture principle — design for what fails, not just for what works
+    body: Resilience is not added after the fact. It is a first-class design decision made at the start of every build.
+    tag: Distributed systems · Fault tolerance · Production-ready
+  - type: richtext
+    markdown: |
+      ## Want to build systems that don't collapse when one component does?
+
+      [Talk to our technical team](/contact/).
