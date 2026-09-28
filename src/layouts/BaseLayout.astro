@@ -22,7 +22,7 @@ const {
   title,
   description,
   path = Astro.url.pathname,
-  ogImage = canonicalUrl('/og-default.jpg'),
+  ogImage = canonicalUrl('/og-default.png'),
   noindex = false,
   ogType = 'website',
 } = Astro.props;
@@ -50,6 +50,12 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="True Lean Solutions — Insights"
+      href={withBase('/rss.xml')}
+    />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <meta property="og:type" content={ogType} />
