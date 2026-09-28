@@ -1,0 +1,65 @@
+title: 'Automating Recruitment with AI: What Works, What Doesn''t, and What Teams Miss'
+date: 2026-06-15
+category: perspectives
+excerpt: The gap between the demo and production is where most AI initiatives break.
+cover: /insights/covers/automating-recruitment-with-ai.png
+coverAlt: An abstract illustration of an AI-assisted recruitment pipeline
+author: Hemang Dwivedi
+readTime: 3 min read
+topics:
+  - Process Automation
+source: 1vrogSrVTdhw2BrrhgHB17DldaQ--dYrC
+blocks:
+  - type: richtext
+    markdown: |
+      The promise of AI in HR is loud right now. Automated sourcing. AI-written outreach. Intelligent candidate matching. Every vendor has a pitch. And if you have tried to implement any of it, you have probably found that the gap between the demo and the production reality is significant.
+
+      We built an end-to-end automated recruitment pipeline for an HR technology company that was spending enormous manual effort on passive candidate outreach. Here is what we learned.
+  - type: cards
+    heading: What actually works
+    columns: 3
+    items:
+      - icon: check
+        title: High-volume discovery automation
+        body: Candidate discovery based on configurable criteria — role, seniority, skills, geography — is well-suited to automation. Tedious, repetitive, and perfectly structured for a machine.
+      - icon: check
+        title: Personalized AI-generated outreach
+        body: AI-powered message generation tailored to each candidate profile replaces generic templated copy. Response rates improve when the message feels relevant.
+      - icon: check
+        title: End-to-end pipeline tracking
+        body: Recording outreach status, response rates, and pipeline stage for every candidate — visibility the team never had manually.
+  - type: cards
+    heading: What teams consistently underestimate
+    columns: 3
+    items:
+      - icon: alert
+        title: The governance layer
+        body: Outreach without oversight is a liability. A structured approval step where managers review, approve, or reject shortlists before the pipeline engages is not a bottleneck — it is what keeps the system trustworthy.
+      - icon: alert
+        title: Measurement built in from the start
+        body: Automating outreach without tracking means flying blind. Measurement must be designed in — not bolted on afterward.
+      - icon: alert
+        title: The process underneath
+        body: AI amplifies the workflow it sits on. If the underlying process is broken, automating it at scale just breaks things faster.
+  - type: steps
+    heading: How we structured the system
+    accent: red
+    items:
+      - title: Discovery
+        body: Candidate identification using configurable criteria — role, seniority, skills, geography.
+      - title: Approval gate
+        body: A review workflow where recruitment managers approve or reject shortlists before any outreach is sent.
+      - title: Personalized outreach
+        body: AI-generated messages tailored to each candidate profile — not templates.
+      - title: Tracking and measurement
+        body: Full pipeline visibility from discovery through to engagement, with response-rate tracking built in from day one.
+  - type: callout
+    variant: dark
+    title: The principle — AI works as an amplifier, not a replacement for process
+    body: The governance layer is not optional. It is what makes the system trustworthy at scale.
+    tag: AI-powered · Human-governed · Measurable
+  - type: richtext
+    markdown: |
+      ## Building AI workflows that are trustworthy, not just fast
+
+      If you are evaluating automation for your HR or operations team, [talk to us before you build](/contact/).

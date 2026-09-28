@@ -1,0 +1,67 @@
+title: What Financial Systems Integration Actually Requires
+date: 2026-06-29
+category: perspectives
+excerpt: That nobody tells you upfront.
+cover: /insights/covers/what-financial-systems-integration-requires.png
+coverAlt: An abstract illustration of connected financial systems
+author: Hemang Dwivedi
+readTime: 3 min read
+topics:
+  - Process Automation
+source: 17k4rBaVJq5HBOBdMGlPF5OJ0PiIT84Ua
+blocks:
+  - type: richtext
+    markdown: |
+      Enterprise financial systems integration is one of those projects that gets underestimated in almost every organization that attempts it. The pitch is straightforward: connect System A to System B, automate the data transfer, eliminate manual work. The reality is considerably more involved.
+
+      We have built integration layers between payroll and HCM platforms, between CRM and ERP systems, and between custom applications and enterprise financial databases. Across all of them, the most dangerous assumption is that the two systems speak the same language. They almost never do.
+  - type: steps
+    heading: The three layers of complexity
+    accent: blue
+    items:
+      - title: Field-level mismatches
+        body: A string in one system is an integer in another. Dates formatted differently. Required fields that are nullable in the source. Every mismatch needs explicit handling — not just a type cast.
+      - title: Pagination and authentication at scale
+        body: Most enterprise APIs are rate-limited and require token refresh cycles. An integration that works in testing against small data sets behaves differently processing thousands of records against a production endpoint.
+      - title: Failure handling and observability
+        body: What is the retry strategy? How does the system communicate failures? Where does the engineer go when a record fails to sync and nobody noticed for three days?
+  - type: richtext
+    markdown: |
+      ## What this looks like in production
+
+      These are not edge cases. They are the normal operating conditions of a production integration. When we built the payroll and HCM integration between two enterprise platforms, we designed clean architectural separation between data access, mapping, transformation, and API consumption layers from the start. That structure is what made the system debuggable when vendor file formats changed and extensible when new data sources were added.
+  - type: cards
+    heading: How we build integration systems
+    columns: 2
+    items:
+      - icon: gear
+        title: Layered architecture
+        body: Data access, mapping, transformation, and API consumption separated into distinct layers — so each can be debugged, tested, and extended independently.
+      - icon: shield
+        title: Defensive field mapping
+        body: Every field mapping accounts for nullability, type mismatches, and format variations. Edge cases handled before they become incidents.
+      - icon: alert
+        title: Failure-first design
+        body: Retry strategies, error logging, and observability designed in from day one — not added when the first production incident forces it.
+      - icon: check
+        title: Built for change
+        body: Vendor schemas change. APIs update. The architecture accounts for this so the system does not require a rewrite every time upstream changes.
+  - type: stats
+    accent: blue
+    items:
+      - value: "2"
+        label: Enterprise payroll platforms integrated in production.
+      - value: 100%
+        label: Automated — manual data transfer processes eliminated.
+      - value: "0"
+        label: Downstream reconciliation errors after stabilization.
+  - type: callout
+    variant: dark
+    title: Our standard — production-ready from day one, not just demo-ready
+    body: We design for what the integration will face in the real world, not just what the requirements document describes.
+    tag: Enterprise integration · Financial systems · Production-grade
+  - type: richtext
+    markdown: |
+      ## Planning a financial systems integration?
+
+      If you are planning a new integration or inheriting one that is underperforming, [let us talk](/contact/).
