@@ -2,7 +2,7 @@ title: Why Advanced Languages Like Go and Rust Matter for Enterprise Systems
 date: 2026-08-14
 category: perspectives
 excerpt: Not every problem needs Python. Some need to not fail under load.
-cover: /insights/covers/go-rust-enterprise-systems.png
+cover: /insights/covers/go-rust-enterprise-systems.webp
 coverAlt: An abstract illustration of high-performance systems engineering
 author: Hemang Dwivedi
 readTime: 3 min read

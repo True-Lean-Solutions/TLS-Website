@@ -15,9 +15,9 @@ interface Props {
 const { number, title, text, accent } = Astro.props;
 
 const accents: Record<Accent, string> = {
-  red: '--c: var(--red); --c-tint: var(--red-tint);',
-  blue: '--c: var(--blue); --c-tint: var(--blue-tint);',
-  plum: '--c: var(--plum); --c-tint: var(--plum-tint);',
+  red: '--c: var(--red); --c-tint: var(--red-tint); --c-text: var(--red-text);',
+  blue: '--c: var(--blue); --c-tint: var(--blue-tint); --c-text: var(--blue-text);',
+  plum: '--c: var(--plum); --c-tint: var(--plum-tint); --c-text: var(--plum);',
 };
 ---
 
@@ -44,7 +44,7 @@ const accents: Record<Accent, string> = {
     height: 3.25rem;
     border-radius: 50%;
     background: var(--c-tint);
-    color: var(--c);
+    color: var(--c-text);
     font-family: var(--font-head);
     font-weight: 800;
     font-size: 1.1rem;

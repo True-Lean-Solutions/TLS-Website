@@ -22,9 +22,9 @@ const {
 } = Astro.props;
 
 const Tag = home ? 'a' : 'div';
-const linkAttrs = home
-  ? { href: href('/'), 'aria-label': `${site.name} — home` }
-  : {};
+// No aria-label: let the visible lockup text be the accessible name
+// (an aria-label that omitted "TLS" tripped WCAG 2.5.3 name-mismatch).
+const linkAttrs = home ? { href: href('/') } : {};
 ---
 
 <Tag class:list={['lockup', variant, className]} {...linkAttrs}>
@@ -94,6 +94,9 @@ const linkAttrs = home
   /* On light surfaces */
   .light .tls {
     color: var(--ink);
+  }
+  .light .wordmark {
+    color: var(--red-text); /* darker Action Red for AA on light surfaces */
   }
   .light .tagline {
     color: var(--text-2);

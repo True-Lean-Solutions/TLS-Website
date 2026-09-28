@@ -8,9 +8,9 @@ interface Props {
 }
 const { heading, accent = 'red', items } = Astro.props;
 const accents: Record<Accent, string> = {
-  red: '--c: var(--red); --ct: var(--red-tint);',
-  blue: '--c: var(--blue); --ct: var(--blue-tint);',
-  plum: '--c: var(--plum); --ct: var(--plum-tint);',
+  red: '--c: var(--red); --ct: var(--red-tint); --ctext: var(--red-text);',
+  blue: '--c: var(--blue); --ct: var(--blue-tint); --ctext: var(--blue-text);',
+  plum: '--c: var(--plum); --ct: var(--plum-tint); --ctext: var(--plum);',
 };
 ---
 
@@ -53,7 +53,7 @@ const accents: Record<Accent, string> = {
     height: 2.75rem;
     border-radius: 50%;
     background: var(--ct);
-    color: var(--c);
+    color: var(--ctext);
     font-family: var(--font-head);
     font-weight: 800;
     font-size: 0.95rem;

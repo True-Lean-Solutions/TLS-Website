@@ -14,7 +14,7 @@
   --section: #f0f0f7;    /* Section Gray */
   --ink: #0d0d0d;        /* text, header background */
   --text-2: #5a5a72;
-  --muted: #94a3b8;
+  --muted: #6b7280; /* darkened for AA contrast on light surfaces */
   --border: #e2e2ee;     /* also nav text on the black header (15.1:1) */
   --border-2: #cbd5e1;
 

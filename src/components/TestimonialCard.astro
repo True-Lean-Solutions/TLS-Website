@@ -18,7 +18,7 @@ const attribution = [testimonial.position, testimonial.company]
 ---
 
 <figure class:list={['testimonial', { 'is-long': long }]}>
-  <div class="stars" aria-label={`${testimonial.stars} out of 5 stars`}>
+  <div class="stars" role="img" aria-label={`${testimonial.stars} out of 5 stars`}>
     {
       Array.from({ length: testimonial.stars }).map(() => (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

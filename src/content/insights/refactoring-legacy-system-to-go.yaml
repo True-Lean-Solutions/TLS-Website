@@ -2,7 +2,7 @@ title: 'Refactoring a Legacy System to Go: What We Learned Modernizing an Enterp
 date: 2026-07-27
 category: perspectives
 excerpt: Performance problems are rarely about the language — until they are.
-cover: /insights/covers/refactoring-legacy-system-to-go.png
+cover: /insights/covers/refactoring-legacy-system-to-go.webp
 coverAlt: An abstract illustration of modernizing a codebase
 author: Hemang Dwivedi
 readTime: 3 min read
