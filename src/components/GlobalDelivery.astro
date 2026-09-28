@@ -1,0 +1,298 @@
+---
+/**
+ * Global delivery section for About (Mack, 2026-09-28): "Built in Dallas.
+ * Connected Globally." — a world map with location pins, numbered location
+ * cards, and the "One Team. Global Capability." advantage row.
+ */
+import Eyebrow from './Eyebrow.astro';
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import type { Accent } from '../data/services';
+
+type Status = 'Headquarters' | 'Active' | 'Expanding';
+interface Location {
+  n: string;
+  city: string;
+  status: Status;
+  desc: string;
+  x: number;
+  y: number;
+}
+
+// Pin coordinates are in the map's 1000×520 viewBox (roughly geographic).
+const locations: Location[] = [
+  { n: '01', city: 'Dallas–Fort Worth', status: 'Headquarters', desc: 'Global Headquarters · Prosper, Texas', x: 232, y: 214 },
+  { n: '02', city: 'India', status: 'Active', desc: 'Technology & Delivery', x: 686, y: 250 },
+  { n: '03', city: 'United Kingdom', status: 'Active', desc: 'UK Presence', x: 494, y: 168 },
+  { n: '04', city: 'United Arab Emirates', status: 'Expanding', desc: 'Expanding Capabilities', x: 612, y: 236 },
+  { n: '05', city: 'Australia', status: 'Expanding', desc: 'Expanding Capabilities', x: 838, y: 372 },
+  { n: '06', city: 'Mexico', status: 'Expanding', desc: 'Expanding Capabilities', x: 214, y: 262 },
+];
+
+const statusAccent: Record<Status, Accent> = {
+  Headquarters: 'red',
+  Active: 'blue',
+  Expanding: 'plum',
+};
+const accentVar: Record<Accent, string> = {
+  red: 'var(--red)',
+  blue: 'var(--blue)',
+  plum: 'var(--plum)',
+};
+
+const hq = locations[0];
+const others = locations.slice(1);
+
+const advantages = [
+  { icon: 'users' as const, title: 'Global Talent', body: 'Access specialized expertise beyond geographic boundaries.' },
+  { icon: 'gear' as const, title: 'Connected Delivery', body: 'Teams designed to collaborate across locations and time zones.' },
+  { icon: 'target' as const, title: 'One Standard', body: 'Consistent accountability, quality, and True Lean thinking wherever the work happens.' },
+];
+---
+
+<section class="section global">
+  <div class="wrap">
+    <div class="top">
+      <div class="intro">
+        <Eyebrow label="Global Delivery" />
+        <h2>Built in Dallas. <span class="hl">Connected Globally.</span></h2>
+        <p>
+          True Lean Solutions is headquartered in the Dallas–Fort Worth area,
+          with a growing international delivery network designed to bring
+          together the right talent, expertise, and capabilities for our clients.
+        </p>
+        <Button href="#global-presence" variant="primary" arrow>Our Global Presence</Button>
+      </div>
+
+      <div class="map" aria-hidden="true">
+        <svg viewBox="0 0 1000 520" width="1000" height="520">
+          <defs>
+            <linearGradient id="arc" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#d94040" />
+              <stop offset="1" stop-color="#1288cf" />
+            </linearGradient>
+          </defs>
+          <!-- faint landmass hints -->
+          <g fill="#e6e8f2">
+            <path d="M120 150 Q170 110 250 130 Q300 150 285 210 Q270 270 210 275 Q150 275 130 220 Z" />
+            <path d="M250 285 Q305 285 320 340 Q330 420 275 435 Q245 425 250 360 Z" />
+            <path d="M455 140 Q520 135 540 175 Q520 210 470 205 Q445 180 455 140 Z" />
+            <path d="M470 215 Q560 210 585 285 Q575 360 505 365 Q470 320 470 215 Z" />
+            <path d="M560 130 Q700 115 785 165 Q760 250 660 270 Q580 250 560 190 Z" />
+            <path d="M800 345 Q860 335 878 380 Q855 410 805 400 Q790 375 800 345 Z" />
+          </g>
+          <!-- connection arcs from HQ -->
+          {
+            others.map((l) => (
+              <path
+                d={`M${hq.x} ${hq.y} Q${(hq.x + l.x) / 2} ${Math.min(hq.y, l.y) - 70} ${l.x} ${l.y}`}
+                fill="none"
+                stroke="url(#arc)"
+                stroke-width="2"
+                stroke-opacity="0.7"
+              />
+            ))
+          }
+          <!-- pins -->
+          {
+            locations.map((l) => (
+              <g>
+                <circle cx={l.x} cy={l.y} r="9" fill={accentVar[statusAccent[l.status]]} opacity="0.25" />
+                <circle cx={l.x} cy={l.y} r="4.5" fill={accentVar[statusAccent[l.status]]} />
+              </g>
+            ))
+          }
+        </svg>
+      </div>
+    </div>
+
+    <ol class="locations" id="global-presence">
+      {
+        locations.map((l) => {
+          const acc = statusAccent[l.status];
+          return (
+            <li class="loc" style={`--c: ${accentVar[acc]};`}>
+              <div class="loc-head">
+                <span class="num">{l.n}</span>
+                <span class="badge">{l.status}</span>
+              </div>
+              <h3>{l.city}</h3>
+              <p>{l.desc}</p>
+              <span class="rule" aria-hidden="true" />
+            </li>
+          );
+        })
+      }
+    </ol>
+
+    <div class="advantage">
+      <div class="adv-intro">
+        <Eyebrow label="The Advantage" />
+        <h2>One Team. <span class="hl">Global Capability.</span></h2>
+        <p>
+          Our distributed model brings together business leadership, specialized
+          technology expertise, and delivery capabilities across markets — while
+          maintaining a single standard for quality, communication, and
+          accountability.
+        </p>
+      </div>
+      <div class="adv-grid">
+        {
+          advantages.map((a, i) => (
+            <div class="adv-card" style={`--c: ${accentVar[(['red', 'blue', 'plum'] as Accent[])[i]]};`}>
+              <span class="adv-ic"><Icon name={a.icon} size={24} /></span>
+              <h4>{a.title}</h4>
+              <p>{a.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .global {
+    background: var(--surface);
+  }
+  .hl {
+    color: var(--red);
+  }
+  .top {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .intro h2 {
+    max-width: 14ch;
+  }
+  .intro p {
+    color: var(--text-2);
+    margin: 1rem 0 1.75rem;
+    max-width: 46ch;
+    line-height: 1.6;
+  }
+  .map svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .locations {
+    list-style: none;
+    padding: 0;
+    margin: 3rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.25rem;
+  }
+  .loc {
+    padding-top: 1rem;
+  }
+  .loc-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+  .num {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .badge {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c);
+  }
+  .loc h3 {
+    font-size: 1.05rem;
+  }
+  .loc p {
+    color: var(--text-2);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+  .loc .rule {
+    display: block;
+    height: 3px;
+    width: 100%;
+    border-radius: 999px;
+    background: var(--c);
+    margin-top: 1rem;
+    opacity: 0.85;
+  }
+
+  .advantage {
+    margin-top: 3.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .adv-intro h2 {
+    max-width: 16ch;
+  }
+  .adv-intro p {
+    color: var(--text-2);
+    margin-top: 1rem;
+    max-width: 60ch;
+    line-height: 1.6;
+  }
+  .adv-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .adv-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+  .adv-ic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--c) 12%, transparent);
+    color: var(--c);
+    margin-bottom: 0.9rem;
+  }
+  .adv-card h4 {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+  }
+  .adv-card p {
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 1024px) {
+    .locations {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem 1.25rem;
+    }
+  }
+  @media (max-width: 860px) {
+    .top {
+      grid-template-columns: 1fr;
+    }
+    .adv-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .locations {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
