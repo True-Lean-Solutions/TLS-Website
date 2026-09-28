@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+import { href } from '../data/site';
+import { quickLinks } from '../data/nav';
+
+const title = 'True Lean Solutions — Page not found';
+const description = 'The page you were looking for could not be found.';
+---
+
+<BaseLayout title={title} description={description} path="/404/" noindex>
+  <section class="notfound">
+    <div class="wrap">
+      <p class="code" aria-hidden="true">404</p>
+      <h1>This page took a wrong turn.</h1>
+      <p class="lede">
+        The page you're looking for doesn't exist or has moved. Let's get you
+        back on track.
+      </p>
+      <div class="cta">
+        <Button href="/" variant="primary" arrow>Back to home</Button>
+        <Button href="/contact/" variant="secondary">Contact us</Button>
+      </div>
+      <nav class="links" aria-label="Helpful links">
+        {quickLinks.map((l) => <a href={href(l.href)}>{l.label}</a>)}
+      </nav>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    padding-block: var(--space-7);
+    text-align: center;
+    background:
+      radial-gradient(50% 60% at 50% 20%, var(--red-tint), transparent 60%);
+  }
+  .code {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: clamp(4rem, 2rem + 12vw, 9rem);
+    line-height: 1;
+    background: var(--grad-h);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  h1 {
+    margin-top: 0.5rem;
+  }
+  .lede {
+    max-width: 44ch;
+    margin: 1rem auto 0;
+    color: var(--text-2);
+    font-size: 1.1rem;
+  }
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    justify-content: center;
+    margin-top: 1.75rem;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 2.5rem;
+  }
+  .links a {
+    color: var(--blue-text);
+    text-decoration: none;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .links a:hover {
+    color: var(--red-text);
+    text-decoration: underline;
+  }
+</style>
