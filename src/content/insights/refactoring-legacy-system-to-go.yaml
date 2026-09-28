@@ -1,0 +1,56 @@
+title: 'Refactoring a Legacy System to Go: What We Learned Modernizing an Enterprise Codebase'
+date: 2026-07-27
+category: perspectives
+excerpt: Performance problems are rarely about the language — until they are.
+cover: /insights/covers/refactoring-legacy-system-to-go.png
+coverAlt: An abstract illustration of modernizing a codebase
+author: Hemang Dwivedi
+readTime: 3 min read
+topics:
+  - Software Development
+source: 14NZRBiXe6DBGFHqvz6_-bSHNEiL6TVbk
+blocks:
+  - type: richtext
+    markdown: |
+      A large enterprise client came to us with a system that had grown past what its original language and architecture could comfortably support. Response times under load were unpredictable, concurrency bugs surfaced intermittently in production, and every new feature took longer to ship safely than the last. The fix was not a rewrite from a blank page — it was a disciplined refactor of the core services into Go.
+
+      ## Why Go, specifically
+
+      Go is not the right choice for every migration. It earned its place here because the system's actual bottleneck was concurrent request handling under sustained load — exactly the problem Go's runtime is built around. We do not migrate languages because a stack is unfashionable. We migrate when the language a system was written in can no longer express the concurrency and performance guarantees the business actually needs.
+  - type: cards
+    columns: 2
+    items:
+      - icon: zap
+        title: Goroutines over thread management
+        body: Lightweight concurrency primitives replaced hand-rolled thread pools that were the source of the original system's intermittent failures.
+      - icon: shield
+        title: Compile-time safety
+        body: Static typing caught a category of runtime errors before deployment that the previous stack only surfaced in production.
+      - icon: rocket
+        title: Single-binary deployment
+        body: Simplified the deployment pipeline considerably — no runtime dependency management at the infrastructure layer.
+      - icon: chart
+        title: Predictable performance under load
+        body: Load testing showed consistent latency at scale, replacing the unpredictable degradation the original system exhibited.
+  - type: steps
+    heading: What refactoring in place actually requires
+    accent: plum
+    items:
+      - title: Audit the legacy surface area first
+        body: Every consumer of the system — internal and external — has to be mapped before anything moves, or the refactor breaks contracts nobody knew existed.
+      - title: Maintain behavioral parity during transition
+        body: The refactored services had to produce identical outputs to the legacy system for a defined validation period before cutover — not just pass unit tests.
+      - title: Cut over in phases, not all at once
+        body: Traffic was shifted incrementally, with the ability to roll back any single service independently if it underperformed.
+      - title: Treat closure and handoff as part of the deliverable
+        body: Documentation, ownership transfer, and a clean project closeout mattered as much as the code — a refactor that leaves the receiving team unable to maintain it has failed.
+  - type: callout
+    variant: dark
+    title: The real lesson — a language migration is a systems project, not a syntax project
+    body: Most of the risk in a refactor like this isn't the new code — it's everything the legacy system was quietly doing that nobody had written down.
+    tag: Go · Systems migration · Enterprise engineering
+  - type: richtext
+    markdown: |
+      ## Considering a language or platform migration?
+
+      If your system's language is fighting the performance or reliability guarantees your business needs, we can help you figure out whether a migration is actually the right call — and execute it without breaking what already works. [Talk to our engineering team](/contact/).

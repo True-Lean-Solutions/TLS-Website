@@ -1,0 +1,56 @@
+title: When a Home-Grown ERP Beats an Off-the-Shelf Platform
+date: 2026-08-03
+category: perspectives
+excerpt: Not every business fits inside someone else's workflow.
+cover: /insights/covers/home-grown-erp-vs-off-the-shelf.png
+coverAlt: An abstract illustration of a custom business platform
+author: Hemang Dwivedi
+readTime: 3 min read
+topics:
+  - Software Development
+source: 1Xz8CDSHJgOHR-B9-V1nRTvUyESnNXyDA
+blocks:
+  - type: richtext
+    markdown: |
+      Off-the-shelf ERP platforms sell a promise: implement our system and inherit years of best practices for free. For a lot of businesses, that promise holds. For businesses whose core operations do not map cleanly onto a generic workflow, it does not — and the cost of forcing the fit is usually higher than the cost of building something that actually matches how the business runs.
+
+      ## Where off-the-shelf starts to break down
+
+      The pattern shows up the same way almost every time: a business licenses a platform, spends months configuring and customizing it to approximate their actual process, and ends up maintaining a fragile layer of workarounds on top of a system that was never designed for their workflow in the first place. At that point, the platform is not saving effort — it is taxing it.
+  - type: cards
+    columns: 2
+    items:
+      - icon: gear
+        title: Full control over the workflow
+        body: The system is built around how the business actually operates, not the other way around — no configuring around a vendor's assumptions.
+      - icon: chart
+        title: No licensing bloat
+        body: Per-seat or per-module licensing costs that scale with headcount disappear; you pay for what you build and maintain, not for unused platform breadth.
+      - icon: integration
+        title: Tailored integrations from day one
+        body: Custom builds are designed to talk to your actual systems — no middleware layer working around a platform's rigid integration model.
+      - icon: database
+        title: Ownership of the data model
+        body: The data structure reflects your business logic, not a vendor's generic schema — which matters enormously once you start building reporting or automation on top of it.
+  - type: steps
+    heading: When custom actually makes sense
+    accent: red
+    items:
+      - title: Your core workflow doesn't map to standard modules
+        body: If you are spending more time customizing than configuring, that is a signal the platform was the wrong starting point.
+      - title: Licensing costs scale worse than build costs
+        body: Per-seat and per-module pricing can outpace the cost of a custom build faster than most teams initially estimate.
+      - title: Integration needs are extensive
+        body: If the ERP needs to talk to five or six other systems in ways the vendor didn't anticipate, custom integration work is happening either way — the question is what you're integrating with.
+      - title: You need long-term ownership of the roadmap
+        body: A custom system's roadmap is yours to set. A platform's roadmap is the vendor's — and you inherit their priorities, not yours.
+  - type: callout
+    variant: dark
+    title: The real question — are you buying software, or someone else's assumptions about your business?
+    body: Off-the-shelf isn't wrong — it's just built for the average case. If your operations are not the average case, custom stops being a luxury and starts being the lower-risk option.
+    tag: ERP · Custom systems · Enterprise architecture
+  - type: richtext
+    markdown: |
+      ## Weighing custom vs. off-the-shelf?
+
+      We help teams figure out honestly which side of that line they're on — before committing budget to either path. [Talk to the TLS team](/contact/).

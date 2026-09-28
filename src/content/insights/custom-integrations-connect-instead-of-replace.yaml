@@ -1,0 +1,56 @@
+title: 'Building Custom Integrations: When to Connect Instead of Replace'
+date: 2026-08-10
+category: perspectives
+excerpt: Most systems don't need to be replaced. They need to talk to each other properly.
+cover: /insights/covers/custom-integrations-connect-instead-of-replace.png
+coverAlt: An abstract illustration of connected systems
+author: Hemang Dwivedi
+readTime: 3 min read
+topics:
+  - Process Automation
+source: 1ScuD6IZFAhmxNcrD_s8k7QhaSOIV1-Ds
+blocks:
+  - type: richtext
+    markdown: |
+      The default instinct when two systems don't talk to each other well is to replace one of them. That instinct is usually more expensive and more disruptive than the alternative: building an integration layer that lets both systems keep doing what they already do well, and handles the translation between them properly.
+
+      ## Why integration usually beats replacement
+
+      Replacing a system means migrating data, retraining users, re-validating every downstream report, and accepting a period where things are less stable than before. An integration, done well, touches none of that — it sits between systems that already work and makes them work together.
+  - type: cards
+    columns: 2
+    items:
+      - icon: integration
+        title: Less disruption to daily operations
+        body: Teams keep using the tools they already know — the integration works in the background, not as a forced relearning exercise.
+      - icon: lightbulb
+        title: Preserves institutional knowledge
+        body: Years of configuration, workflow habits, and knowledge built into an existing system don't get thrown away.
+      - icon: clock
+        title: Faster time to value
+        body: An integration layer typically ships in weeks, not the months or quarters a full replacement project requires.
+      - icon: shield
+        title: Lower overall risk
+        body: You're not betting the business on a new platform working correctly on day one — you're connecting two systems that already do.
+  - type: steps
+    heading: What makes an integration durable instead of brittle
+    accent: blue
+    items:
+      - title: Map the actual data flow, not the assumed one
+        body: Field-level mismatches, type differences, and format inconsistencies between systems have to be identified before a single line of integration code is written.
+      - title: Define a single source of truth per data type
+        body: When two systems can both write to the same field, you need an explicit rule for which one wins — or you get silent data drift.
+      - title: Build resilient failure handling
+        body: Integrations run continuously and unattended. What happens when an API rate-limits, times out, or returns malformed data has to be designed in, not discovered in production.
+      - title: Monitor and iterate after go-live
+        body: Source systems change their schemas and APIs over time. An integration that isn't monitored quietly breaks the day the first upstream change ships.
+  - type: callout
+    variant: dark
+    title: The pattern to watch for — is this a data problem or an architecture problem?
+    body: Most "we need to replace this system" conversations are actually "these two systems don't talk to each other properly" conversations wearing a bigger price tag.
+    tag: Systems integration · Architecture · Enterprise engineering
+  - type: richtext
+    markdown: |
+      ## Systems that should be talking to each other, but aren't?
+
+      We build integration layers that are boring in the best way — reliable, monitored, and built to survive the next schema change. [Talk to our integration team](/contact/).
