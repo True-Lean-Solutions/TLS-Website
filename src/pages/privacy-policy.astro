@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import { site } from '../data/site';
+
+const title = 'True Lean Solutions — Privacy Policy';
+const description =
+  'How True Lean Solutions collects, uses, and protects information submitted through this website.';
+
+// TEMPLATE — pending clause-by-clause approval (Himanshu). Placeholders in
+// [brackets] need confirming before launch: legal entity, governing state,
+// effective date.
+const effectiveDate = '[Effective date]';
+const entity = '[True Lean Solutions legal entity]';
+const state = '[State]';
+---
+
+<BaseLayout title={title} description={description} path="/privacy-policy/">
+  <section class="page-hero">
+    <div class="wrap">
+      <Eyebrow label="Legal" />
+      <h1>Privacy Policy</h1>
+      <p class="lede">Last updated: {effectiveDate}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="prose legal">
+        <p>
+          This Privacy Policy explains how {entity} ("True Lean Solutions," "we,"
+          "us," or "our") collects, uses, and protects information when you visit
+          trueleansolutions.com (the "Site") or contact us through it. By using
+          the Site, you agree to the practices described here.
+        </p>
+
+        <h2>Information we collect</h2>
+        <p>We collect information you provide directly to us, and a limited amount of technical information.</p>
+        <ul>
+          <li>
+            <strong>Information you submit.</strong> When you complete our contact
+            form we collect your name, email address, company, an optional phone
+            number, your project timeline, and the message you send us. When you
+            book a call, that scheduling is handled by our calendar provider.
+          </li>
+          <li>
+            <strong>Technical information.</strong> Like most websites, our host
+            may automatically log standard technical data such as IP address,
+            browser type, and pages visited, for security and reliability.
+          </li>
+        </ul>
+
+        <h2>How we use your information</h2>
+        <ul>
+          <li>To respond to your inquiry and provide the services you request.</li>
+          <li>To communicate with you about your project or booking.</li>
+          <li>To operate, secure, and improve the Site.</li>
+        </ul>
+        <p>We do not sell your personal information.</p>
+
+        <h2>How your information is processed and shared</h2>
+        <p>
+          We share information only with service providers that help us operate
+          the Site and respond to you, and only as needed for those purposes:
+        </p>
+        <ul>
+          <li>
+            <strong>Form processing.</strong> Contact-form submissions are sent to
+            a Google Apps Script endpoint and stored in our Google Workspace
+            account.
+          </li>
+          <li><strong>Scheduling.</strong> Call bookings are handled through our calendar provider.</li>
+        </ul>
+        <p>
+          We may also disclose information if required by law or to protect our
+          rights, safety, or property.
+        </p>
+
+        <h2>Data retention</h2>
+        <p>
+          We retain contact submissions for as long as needed to respond to and
+          manage our relationship with you, and as required for legitimate
+          business or legal purposes. You may ask us to delete your information at
+          any time (see "Contact us").
+        </p>
+
+        <h2>Your choices and rights</h2>
+        <p>
+          You may request access to, correction of, or deletion of the personal
+          information you have provided by emailing us. Depending on where you
+          live, you may have additional rights under applicable privacy laws.
+        </p>
+
+        <h2>Security</h2>
+        <p>
+          We take reasonable measures to protect the information submitted through
+          the Site. However, no method of transmission or storage is completely
+          secure, and we cannot guarantee absolute security.
+        </p>
+
+        <h2>Children's privacy</h2>
+        <p>The Site is intended for businesses and is not directed to children under 13, and we do not knowingly collect their information.</p>
+
+        <h2>Changes to this policy</h2>
+        <p>We may update this Privacy Policy from time to time. Changes take effect when posted here, with an updated "Last updated" date.</p>
+
+        <h2>Contact us</h2>
+        <p>
+          Questions about this policy or your information? Email
+          <a href={`mailto:${site.email}`}>{site.email}</a> or call {site.phone}.
+          This Site and {entity} operate in the United States, and this policy is
+          governed by the laws of the State of {state}.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal h2 {
+    font-family: var(--font-head);
+    font-size: var(--step-1);
+    margin: 2rem 0 0.6rem;
+    color: var(--ink);
+  }
+  .legal ul {
+    margin: 0 0 1rem 1.25rem;
+    color: var(--text-2);
+  }
+  .legal li {
+    margin-bottom: 0.5rem;
+  }
+</style>
