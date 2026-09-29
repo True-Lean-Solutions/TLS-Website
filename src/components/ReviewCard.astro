@@ -1,0 +1,199 @@
+---
+/**
+ * One client review, verbatim from src/data/testimonials.ts (the reviews
+ * sheet) and attributed exactly: stars, the full quote, and the client's logo
+ * where we have one (otherwise initials). Used by ReviewReel.
+ *
+ * A `clone` is a copy for the reel's seamless loop: hidden from assistive
+ * tech and out of the tab order (the original is the one that is read).
+ * Long reviews are clamped in the reel (never shortened: the full text stays
+ * in the page), and "Read full review" opens all of it.
+ */
+import Icon from './Icon.astro';
+import type { Testimonial } from '../data/testimonials';
+import { clientFor } from '../data/clients';
+import { href } from '../data/site';
+
+interface Props {
+  t: Testimonial;
+  clone?: boolean;
+}
+const { t, clone = false } = Astro.props;
+const client = clientFor(t.company);
+const role = [t.position, t.company].filter(Boolean).join(', ');
+const long = t.quote.length > 300;
+---
+
+<figure
+  class:list={['rc', 'ix-card', 'ix-card--quiet', { 'is-long': long }]}
+  aria-hidden={clone ? 'true' : undefined}
+  data-clone={clone ? '' : undefined}
+>
+  <span class="rc-mark" aria-hidden="true">&ldquo;</span>
+  <div class="rc-stars" role="img" aria-label={`${t.stars} out of 5 stars`}>
+    {
+      Array.from({ length: t.stars }).map(() => (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2.5l2.9 6.2 6.6.8-4.9 4.5 1.3 6.6L12 18.9 6.1 21.2l1.3-6.6L2.5 9.5l6.6-.8z" />
+        </svg>
+      ))
+    }
+  </div>
+  <blockquote class="rc-quote">
+    {t.quote.split('\n\n').map((p) => <p>{p}</p>)}
+  </blockquote>
+  {
+    long && (
+      <button class="rc-more" type="button" tabindex={clone ? -1 : undefined}>
+        <span>Read full review</span>
+        <Icon name="arrow" size={16} class="rc-more-arrow" />
+      </button>
+    )
+  }
+  <figcaption class="rc-who">
+    {
+      client ? (
+        <span class="rc-logo">
+          <img
+            src={href(client.logo)}
+            alt={client.name}
+            width={client.width}
+            height={client.height}
+            style={`height: ${Math.round(client.displayHeight * 0.7)}px`}
+            loading="lazy"
+          />
+        </span>
+      ) : (
+        <span class="rc-avatar" aria-hidden="true">{t.initials}</span>
+      )
+    }
+    <span class="rc-id">
+      <span class="rc-name">{t.name}</span>
+      {role && <span class="rc-role">{role}</span>}
+    </span>
+  </figcaption>
+</figure>
+
+<style>
+  .rc {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 1.5rem 1.6rem 1.35rem;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(226, 226, 238, 0.95);
+    border-radius: var(--radius-lg);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 18px 40px -26px rgba(13, 13, 13, 0.22),
+      0 3px 12px -6px rgba(13, 13, 13, 0.06);
+  }
+  .rc-mark {
+    position: absolute;
+    top: -0.12em;
+    right: 1.1rem;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 4.5rem;
+    line-height: 1;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0.18;
+    pointer-events: none;
+    user-select: none;
+  }
+  .rc-stars {
+    display: flex;
+    gap: 3px;
+    color: var(--red);
+    margin-bottom: 0.9rem;
+  }
+  .rc-quote {
+    margin: 0 0 1.1rem;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .rc-quote p + p {
+    margin-top: 0.7em;
+  }
+  .rc-more {
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+    align-self: flex-start;
+    margin: -0.35rem 0 1.1rem;
+    padding: 0.2rem 0;
+    border: 0;
+    background: none;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--red-text);
+    cursor: pointer;
+  }
+  .rc-more :global(.rc-more-arrow) {
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  .rc-more:hover :global(.rc-more-arrow),
+  .rc-more:focus-visible :global(.rc-more-arrow) {
+    transform: translateX(4px);
+  }
+  /* With JS, long reviews are clamped (the full text stays in the page and
+     opens in full from "Read full review"). */
+  :global(html.ix) .rc.is-long .rc-quote {
+    max-height: calc(1.6em * 7);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(#000 62%, transparent);
+    mask-image: linear-gradient(#000 62%, transparent);
+  }
+  :global(html.ix) .rc-more {
+    display: inline-flex;
+  }
+  .rc-who {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-top: auto;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--border);
+  }
+  .rc-logo {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+  }
+  .rc-logo img {
+    width: auto;
+    max-width: none;
+  }
+  .rc-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--section);
+    color: var(--text-2);
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.76rem;
+  }
+  .rc-id {
+    display: grid;
+  }
+  .rc-name {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .rc-role {
+    font-size: 0.85rem;
+    color: var(--text-2);
+  }
+</style>

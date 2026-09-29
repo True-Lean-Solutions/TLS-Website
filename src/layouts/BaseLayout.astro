@@ -100,6 +100,7 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"></div>
     <Header />
     <main id="main">
       <slot />

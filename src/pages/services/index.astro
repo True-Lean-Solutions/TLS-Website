@@ -101,6 +101,23 @@ const services = [
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
   }
+
+  /* Horizontal sequence (desktop, when the scene fits the screen; the scroll
+     layer sets .is-track and drives the row with vertical scroll): the same
+     eight cards, in the same order, as one row that runs off the right edge.
+     Tighter section padding so the pinned scene fits below the header. */
+  .sol-intro:global(.is-track) {
+    overflow: clip;
+    padding-block: var(--space-5);
+  }
+  .sol-intro:global(.is-track) .cards {
+    display: flex;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+  .sol-intro:global(.is-track) .cards > :global(*) {
+    flex: 0 0 clamp(300px, 26vw, 370px);
+  }
   @media (max-width: 640px) {
     .cards {
       grid-template-columns: 1fr;

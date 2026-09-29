@@ -297,6 +297,58 @@ const accents: Record<Accent, string> = {
     }
   }
 
+  /* Story (wide desktop; the scroll layer pins the section and sets
+     .is-story / .is-active): one challenge at a time comes forward — lifted
+     surface, accent edge and light, full-colour icon — while the others sit
+     back: flatter, title in secondary grey, icon desaturated. Text keeps full
+     AA contrast in both states (nothing is faded with opacity). */
+  .cc-card {
+    transition:
+      translate 520ms var(--ix-ease),
+      background-color 520ms var(--ix-ease),
+      border-color 520ms var(--ix-ease),
+      box-shadow 520ms var(--ix-ease);
+  }
+  .cc-title {
+    transition: color 420ms var(--ix-ease);
+  }
+  .cc-ic,
+  .cc-arrow {
+    transition:
+      transform var(--ix-base) var(--ix-ease),
+      filter 520ms var(--ix-ease),
+      opacity 520ms var(--ix-ease);
+  }
+  .cc:global(.is-story) .cc-card {
+    background: rgba(255, 255, 255, 0.62);
+    box-shadow: none;
+  }
+  .cc:global(.is-story) .cc-card .cc-title {
+    color: var(--text-2);
+  }
+  .cc:global(.is-story) .cc-card :is(.cc-ic, .cc-arrow) {
+    filter: saturate(0.3);
+    opacity: 0.7;
+  }
+  .cc:global(.is-story) .cc-card:global(.is-active) {
+    translate: 12px 0;
+    background: rgba(255, 255, 255, 0.97);
+    border-color: color-mix(in srgb, var(--c) 32%, var(--border));
+    box-shadow:
+      0 20px 44px -24px color-mix(in srgb, var(--c) 55%, transparent),
+      0 2px 6px rgba(13, 13, 13, 0.04);
+  }
+  .cc:global(.is-story) .cc-card:global(.is-active) .cc-title {
+    color: var(--ink);
+  }
+  .cc:global(.is-story) .cc-card:global(.is-active) :is(.cc-ic, .cc-arrow) {
+    filter: none;
+    opacity: 1;
+  }
+  .cc:global(.is-story) .cc-card:global(.is-active) .cc-arrow {
+    transform: translateX(5px);
+  }
+
   /* Entrance: copy and cards rise in sequence (reveal system); the image
      settles from a hair larger with a fade. */
   .cc-intro,

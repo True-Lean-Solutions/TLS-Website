@@ -3,8 +3,19 @@
  * Contact form. Mechanism is fixed by CLAUDE.md § Contact form contract —
  * do not change: POST URLSearchParams (never JSON), fire-and-forget, honeypot,
  * exact field names. It was debugged three times in Phase 1.
+ *
+ * Presentation (2026-09-29): the one form reads as a four-stage conversation
+ * (About you → Timeline → The problem → Let's talk). Each stage is a labelled
+ * group. The current stage follows scroll position and focus, and each change
+ * is announced on `document` as a `cf:stage` event (the Contact page's step
+ * indicator listens). Labels, fields, validation and sending are as before.
+ * The additions are states only: completed fields, the counter's meter,
+ * invalid fields marked after a failed submit, and a short "Sending…" beat
+ * before the (unchanged) confirmation.
  */
 import { site } from '../data/site';
+import { contactStages } from '../data/contact';
+import Icon from './Icon.astro';
 
 const timelines = [
   'As soon as possible',
@@ -12,43 +23,104 @@ const timelines = [
   'Within 3–6 months',
   'Just exploring for now',
 ];
+const [s1, s2, s3, s4] = contactStages.map((s, i) => ({
+  ...s,
+  id: `cf-stage-${i + 1}`,
+  labelId: `cf-stage-${i + 1}-t`,
+}));
 ---
 
 <form class="contact-form" novalidate data-endpoint={site.contactEndpoint}>
-  <div class="row">
-    <div class="field">
-      <label for="cf-name">Name <span aria-hidden="true">*</span></label>
-      <input id="cf-name" name="name" type="text" autocomplete="name" required />
+  {/* Stages 01–03 share a box with the compact step indicator, so the indicator
+      lets go before 04 (it never sits over Send message or the confirmation). */}
+  <div class="stages">
+  {/* Compact step indicator: always on tablets and phones; on desktop, only
+      while the step list beside the form is out of view (the page toggles it). */}
+  <div class="strip" aria-hidden="true" style="--i: 0">
+    <span class="strip-nums">
+      {contactStages.map((s, i) => <span class:list={['strip-n', { 'is-active': i === 0 }]}>{s.n}</span>)}
+    </span>
+    <span class="strip-names">
+      {contactStages.map((s, i) => <span class:list={['strip-t', { 'is-active': i === 0 }]}>{s.name}</span>)}
+    </span>
+  </div>
+
+  <div class="stage stage--about is-active" id={s1.id} role="group" aria-labelledby={s1.labelId}>
+    <p class="stage-head">
+      <span class="stage-n" aria-hidden="true">{s1.n}</span>
+      <span class="stage-rule" aria-hidden="true"></span>
+      <span class="stage-t" id={s1.labelId}>{s1.name}</span>
+      <Icon name="check" size={14} class="stage-ok" />
+    </p>
+    <div class="row">
+      <div class="field">
+        <label for="cf-name">Name <span aria-hidden="true">*</span></label>
+        <div class="control">
+          <input id="cf-name" name="name" type="text" autocomplete="name" required />
+          <Icon name="check" size={16} class="tick" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="cf-email">Email <span aria-hidden="true">*</span></label>
+        <div class="control">
+          <input id="cf-email" name="email" type="email" autocomplete="email" required />
+          <Icon name="check" size={16} class="tick" />
+        </div>
+      </div>
     </div>
-    <div class="field">
-      <label for="cf-email">Email <span aria-hidden="true">*</span></label>
-      <input id="cf-email" name="email" type="email" autocomplete="email" required />
+    <div class="row">
+      <div class="field">
+        <label for="cf-company">Company <span aria-hidden="true">*</span></label>
+        <div class="control">
+          <input id="cf-company" name="company" type="text" autocomplete="organization" required />
+          <Icon name="check" size={16} class="tick" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="cf-phone">Phone <span class="opt">(optional)</span></label>
+        <div class="control">
+          <input id="cf-phone" name="phone" type="tel" autocomplete="tel" />
+          <Icon name="check" size={16} class="tick" />
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="row">
+  <div class="stage stage--timeline" id={s2.id} role="group" aria-labelledby={s2.labelId}>
+    <p class="stage-head">
+      <span class="stage-n" aria-hidden="true">{s2.n}</span>
+      <span class="stage-rule" aria-hidden="true"></span>
+      <span class="stage-t" id={s2.labelId}>{s2.name}</span>
+      <Icon name="check" size={14} class="stage-ok" />
+    </p>
     <div class="field">
-      <label for="cf-company">Company <span aria-hidden="true">*</span></label>
-      <input id="cf-company" name="company" type="text" autocomplete="organization" required />
-    </div>
-    <div class="field">
-      <label for="cf-phone">Phone <span class="opt">(optional)</span></label>
-      <input id="cf-phone" name="phone" type="tel" autocomplete="tel" />
+      <label for="cf-timeline">Timeline <span aria-hidden="true">*</span></label>
+      <div class="control control--select">
+        <select id="cf-timeline" name="timeline" required>
+          <option value="" disabled selected>Select a timeline…</option>
+          {timelines.map((t) => <option value={t}>{t}</option>)}
+        </select>
+        <Icon name="check" size={16} class="tick" />
+      </div>
     </div>
   </div>
 
-  <div class="field">
-    <label for="cf-timeline">Timeline <span aria-hidden="true">*</span></label>
-    <select id="cf-timeline" name="timeline" required>
-      <option value="" disabled selected>Select a timeline…</option>
-      {timelines.map((t) => <option value={t}>{t}</option>)}
-    </select>
-  </div>
-
-  <div class="field">
-    <label for="cf-challenge">What are you trying to solve? <span aria-hidden="true">*</span></label>
-    <textarea id="cf-challenge" name="challenge" rows="5" maxlength="1000" required></textarea>
-    <p class="counter"><span data-counter>0</span> / 1000</p>
+  <div class="stage stage--problem" id={s3.id} role="group" aria-labelledby={s3.labelId}>
+    <span class="band" aria-hidden="true"></span>
+    <p class="stage-head">
+      <span class="stage-n" aria-hidden="true">{s3.n}</span>
+      <span class="stage-rule" aria-hidden="true"></span>
+      <span class="stage-t" id={s3.labelId}>{s3.name}</span>
+      <Icon name="check" size={14} class="stage-ok" />
+    </p>
+    <div class="field">
+      <label for="cf-challenge">What are you trying to solve? <span aria-hidden="true">*</span></label>
+      <textarea id="cf-challenge" name="challenge" rows="5" maxlength="1000" required aria-describedby="cf-count"></textarea>
+      <div class="count">
+        <span class="meter" aria-hidden="true"><span class="meter-fill"></span></span>
+        <p class="counter" id="cf-count"><span data-counter>0</span> / 1000</p>
+      </div>
+    </div>
   </div>
 
   {/* Honeypot — visually hidden; if filled, we show success and send nothing. */}
@@ -56,16 +128,34 @@ const timelines = [
     <label for="cf-website">Website</label>
     <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
   </div>
+  </div>
 
-  <button class="submit" type="submit">Send message</button>
+  <div class="stage stage--talk" id={s4.id} role="group" aria-labelledby={s4.labelId}>
+    <p class="stage-head">
+      <span class="stage-n" aria-hidden="true">{s4.n}</span>
+      <span class="stage-rule" aria-hidden="true"></span>
+      <span class="stage-t" id={s4.labelId}>{s4.name}</span>
+      <Icon name="check" size={14} class="stage-ok" />
+    </p>
+    <div class="send">
+      <button class="submit" type="submit">
+        <span class="submit-face">
+          <span>Send message</span>
+          <Icon name="arrow" size={18} class="submit-arrow" />
+        </span>
+        <span class="submit-busy" aria-hidden="true"><span class="spinner"></span>Sending…</span>
+      </button>
 
-  <p class="success" role="status" hidden>
-    Thanks — your message is on its way. We'll be in touch shortly.
-  </p>
-  <p class="error" role="alert" hidden>
-    Something went wrong. Please email us at
-    <a href={`mailto:${site.email}`}>{site.email}</a>.
-  </p>
+      <p class="success" role="status" tabindex="-1" hidden>
+        <svg class="success-tick" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
+        <span>Thanks — your message is on its way. We'll be in touch shortly.</span>
+      </p>
+      <p class="error" role="alert" hidden>
+        Something went wrong. Please email us at
+        <a href={`mailto:${site.email}`}>{site.email}</a>.
+      </p>
+    </div>
+  </div>
 
   <noscript>
     <p class="ns">
@@ -76,24 +166,125 @@ const timelines = [
 </form>
 
 <style>
-  .contact-form {
+  .contact-form,
+  .stages {
     display: grid;
-    gap: 1.1rem;
+    --gap: 1.15rem;
   }
+  /* Anything focused inside the form scrolls clear of the sticky header and
+     the compact step indicator below it. */
+  .contact-form :is(a, button, input, select, textarea) {
+    scroll-margin-top: calc(var(--header-h) + 5.5rem);
+  }
+
+  /* ---- Stages: one form, read as a conversation ---- */
+  .stage {
+    position: relative;
+    display: grid;
+    gap: var(--gap);
+    padding-block: 1.9rem;
+    border-top: 1px solid var(--border);
+  }
+  .stage--about {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .stage--talk {
+    padding-bottom: 0;
+  }
+  .stage-head {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.78rem;
+    line-height: 1.2;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .stage-n {
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    transition: color var(--ix-base) var(--ix-ease);
+  }
+  .stage-rule {
+    position: relative;
+    flex: none;
+    width: 2.25rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--border-2);
+    overflow: hidden;
+  }
+  .stage-rule::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 700ms var(--ix-ease);
+  }
+  .stage-t {
+    transition: color var(--ix-base) var(--ix-ease);
+  }
+  .stage-head :global(.stage-ok) {
+    flex: none;
+    color: var(--blue);
+    opacity: 0;
+    scale: 0.5;
+    transition:
+      opacity var(--ix-fast) ease,
+      scale var(--ix-base) var(--ix-ease);
+  }
+  /* Completed stage: a small check after its name. */
+  .stage.is-done .stage-n {
+    color: var(--ink);
+  }
+  .stage.is-done :global(.stage-ok) {
+    opacity: 1;
+    scale: 1;
+  }
+  /* Current stage: number in Action Red, the rule draws, the name comes forward. */
+  .stage.is-active .stage-n {
+    color: var(--red-text);
+  }
+  .stage.is-active .stage-rule::after {
+    transform: scaleX(1);
+  }
+  .stage.is-active .stage-t {
+    color: var(--ink);
+  }
+
+  /* ---- Fields ---- */
   .row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.1rem;
+    gap: var(--gap) 1.25rem;
   }
   .field {
     display: grid;
-    gap: 0.4rem;
+    gap: 0.45rem;
   }
   label {
+    justify-self: start;
     font-family: var(--font-head);
     font-weight: 600;
     font-size: 0.9rem;
     color: var(--ink);
+    transition:
+      translate var(--ix-base) var(--ix-ease),
+      color var(--ix-fast) ease;
+  }
+  .field:focus-within label {
+    translate: 3px 0;
+  }
+  .field:has([aria-invalid='true']) label {
+    color: var(--red-text);
   }
   label span[aria-hidden] {
     color: var(--red-text);
@@ -102,37 +293,191 @@ const timelines = [
     color: var(--muted);
     font-weight: 400;
   }
+  .control {
+    position: relative;
+  }
   input,
   select,
   textarea {
     width: 100%;
-    padding: 0.75rem 0.85rem;
+    padding: 0.8rem 0.95rem;
     border: 1px solid var(--border-2);
     border-radius: var(--radius);
     background: var(--surface);
     font-family: var(--font-body);
     font-size: 1rem;
+    /* Transparent at rest so the focus edge fades in (and shows in forced colors). */
+    outline: 2px solid transparent;
+    outline-offset: 0;
+    /* Focus and validation states ease in rather than snapping. */
+    transition:
+      border-color var(--ix-fast) ease,
+      background-color var(--ix-base) var(--ix-ease),
+      box-shadow var(--ix-base) var(--ix-ease),
+      outline-color var(--ix-fast) ease;
+  }
+  .control input {
+    padding-right: 2.6rem;
+  }
+  .control--select select {
+    padding-right: 4.6rem;
+  }
+  select:has(> option[value='']:checked) {
+    color: var(--muted);
+  }
+  :is(input, select, textarea):hover:not(:focus-visible) {
+    border-color: var(--muted);
   }
   textarea {
     resize: vertical;
   }
+  /* Focus: the edge turns red, the field warms very slightly, a soft glow. */
   input:focus-visible,
   select:focus-visible,
   textarea:focus-visible {
-    outline: 3px solid var(--red);
-    outline-offset: 1px;
+    outline-color: var(--red);
     border-color: var(--red);
+    background-color: color-mix(in srgb, var(--red) 2.5%, var(--surface));
+    box-shadow: 0 10px 24px -14px rgba(217, 64, 64, 0.5);
+  }
+  /* Completed: a small check and a slightly firmer edge. */
+  .control :global(.tick) {
+    position: absolute;
+    top: 50%;
+    right: 0.95rem;
+    translate: 0 -50%;
+    color: var(--blue);
+    opacity: 0;
+    scale: 0.6;
+    pointer-events: none;
+    transition:
+      opacity var(--ix-fast) ease,
+      scale var(--ix-base) var(--ix-ease);
+  }
+  .control--select :global(.tick) {
+    right: 2.9rem;
+  }
+  .field.is-done :global(.tick) {
+    opacity: 1;
+    scale: 1;
+  }
+  .field.is-done :is(input, select):not(:focus-visible) {
+    border-color: color-mix(in srgb, var(--blue) 42%, var(--border-2));
   }
   input[aria-invalid='true'],
   select[aria-invalid='true'],
   textarea[aria-invalid='true'] {
     border-color: var(--red-text);
   }
-  .counter {
-    justify-self: end;
-    font-size: 0.8rem;
-    color: var(--muted);
+
+  /* ---- 03 The problem: the centerpiece ---- */
+  .stage--problem {
+    /* Above 04's divider, so the band's lower hairline draws over it. */
+    z-index: 1;
+    margin-inline: calc(-1 * var(--pad, 2rem));
+    padding-inline: var(--pad, 2rem);
+    isolation: isolate;
   }
+  .band {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(70% 90% at 22% 100%, color-mix(in srgb, var(--plum) 6%, transparent), transparent 72%),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--blue) 3.5%, transparent),
+        color-mix(in srgb, var(--red) 2.5%, transparent)
+      );
+    opacity: 0.45;
+    transition: opacity var(--ix-slow) var(--ix-ease);
+  }
+  .band::before,
+  .band::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--grad-h);
+    opacity: 0.75;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 900ms var(--ix-ease);
+  }
+  .band::before {
+    top: -1px;
+  }
+  .band::after {
+    bottom: -1px;
+  }
+  .stage--problem.is-active .band {
+    opacity: 1;
+  }
+  .stage--problem:focus-within .band::before,
+  .stage--problem:focus-within .band::after {
+    transform: scaleX(1);
+  }
+  .stage--problem textarea {
+    min-height: 11.5rem;
+    padding: 1rem 1.1rem;
+    font-size: 1.04rem;
+    line-height: 1.6;
+  }
+  .stage--problem textarea:focus-visible {
+    box-shadow: 0 12px 26px -20px rgba(135, 54, 98, 0.3);
+  }
+
+  /* Counter: the count, plus a hairline meter that fills toward the limit. */
+  .count {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .meter {
+    flex: 1;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .meter-fill {
+    display: block;
+    height: 100%;
+    background: var(--blue);
+    transform: scaleX(var(--fill, 0));
+    transform-origin: left center;
+    transition:
+      transform 320ms var(--ix-ease),
+      background-color var(--ix-base) ease;
+  }
+  .counter {
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    transition: color var(--ix-base) ease;
+  }
+  .count[data-level='near'] .meter-fill,
+  .count[data-level='max'] .meter-fill {
+    background: var(--red);
+  }
+  .count[data-level='near'] .counter,
+  .count[data-level='max'] .counter {
+    color: var(--red-text);
+  }
+  .count[data-level='max'] .counter {
+    font-weight: 500;
+  }
+  /* While typing, the count sits on the field's soft glow: a shade darker
+     keeps it at AA. */
+  .stage--problem:focus-within .counter {
+    color: var(--text-2);
+  }
+  .stage--problem:focus-within .count:is([data-level='near'], [data-level='max']) .counter {
+    color: #a82f2f;
+  }
+
   .hp {
     position: absolute;
     left: -9999px;
@@ -140,28 +485,69 @@ const timelines = [
     height: 1px;
     overflow: hidden;
   }
+
+  /* ---- 04 Let's talk: the final action ---- */
+  .send {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
   .submit {
-    justify-self: start;
+    display: inline-grid;
     font-family: var(--font-head);
     font-weight: 600;
     font-size: 1rem;
+    line-height: 1;
     color: #fff;
     background: var(--red-text);
     border: 0;
     border-radius: 999px;
-    padding: 0.9rem 1.8rem;
+    padding: 1rem 1.8rem;
     cursor: pointer;
+    overflow: hidden;
     box-shadow: 0 6px 18px rgba(194, 54, 54, 0.28);
     transition:
       background-color var(--ix-fast) ease,
       transform var(--ix-base) var(--ix-ease),
-      box-shadow var(--ix-base) var(--ix-ease);
+      box-shadow var(--ix-base) var(--ix-ease),
+      opacity var(--ix-fast) ease;
+  }
+  /* Label and "Sending…" share one cell, so the button never changes size. */
+  .submit > * {
+    grid-area: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    transition:
+      opacity 200ms ease,
+      translate 360ms var(--ix-ease);
+  }
+  .submit :global(.submit-arrow) {
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  .submit-busy {
+    opacity: 0;
+    translate: 0 0.6rem;
+  }
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+  }
+  .stage--talk.is-active .submit:not([disabled]) {
+    box-shadow: 0 12px 28px -8px rgba(194, 54, 54, 0.45);
   }
   .submit:hover {
     background: #a82f2f;
   }
   .submit:not([disabled]):hover {
     box-shadow: 0 10px 24px -4px rgba(194, 54, 54, 0.38);
+  }
+  .submit:not([disabled]):hover :global(.submit-arrow) {
+    transform: translateX(4px);
   }
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
     .submit:not([disabled]):hover {
@@ -175,6 +561,23 @@ const timelines = [
     opacity: 0.6;
     cursor: default;
   }
+  /* Sending: the label lifts away and "Sending…" rises into its place. */
+  .contact-form.is-sending .submit {
+    opacity: 1;
+    cursor: progress;
+  }
+  .contact-form.is-sending .submit-face {
+    opacity: 0;
+    translate: 0 -0.6rem;
+  }
+  .contact-form.is-sending .submit-busy {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .contact-form.is-sending .spinner {
+    animation: cf-spin 700ms linear infinite;
+  }
+
   .success,
   .error,
   .ns {
@@ -183,18 +586,318 @@ const timelines = [
     font-size: 0.95rem;
   }
   .success {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
     background: var(--blue-tint);
     color: var(--blue-text);
+    border: 1px solid var(--blue-edge);
+  }
+  .success[hidden] {
+    display: none;
+  }
+  .success.is-pending {
+    visibility: hidden;
+  }
+  .success:focus-visible {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 2px;
+  }
+  .success-tick {
+    flex: none;
+    margin-top: 0.1rem;
   }
   .error,
   .ns {
     background: var(--red-tint);
     color: var(--red-text);
   }
+  .error {
+    border: 1px solid var(--red-edge);
+  }
+  /* Confirmation and error panels settle in when shown (they toggle
+     `hidden`, so this runs each time one appears); the check draws itself. */
+  @media (prefers-reduced-motion: no-preference) {
+    .success:not([hidden], .is-pending),
+    .error:not([hidden]) {
+      animation: panel-in 520ms var(--ix-ease) both;
+    }
+    .success:not([hidden], .is-pending) .success-tick path {
+      stroke-dasharray: 24;
+      animation: cf-draw 700ms var(--ix-ease) 180ms both;
+    }
+    input[aria-invalid='true'],
+    select[aria-invalid='true'],
+    textarea[aria-invalid='true'] {
+      animation: cf-flag 900ms var(--ix-ease);
+    }
+  }
+  @keyframes panel-in {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+      scale: 0.985;
+    }
+  }
+  @keyframes cf-draw {
+    from {
+      stroke-dashoffset: 24;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes cf-flag {
+    from {
+      box-shadow: 0 0 0 5px rgba(194, 54, 54, 0.22);
+    }
+  }
+  @keyframes cf-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  /* ---- Compact step indicator ---- */
+  /* Sticks under the header while stages 01-03 scroll by (its box, .stages,
+     ends before 04). Decorative (aria-hidden) and never in the way: opaque,
+     and taps go through to the form. */
+  .strip {
+    position: sticky;
+    top: calc(var(--header-h) + 0.6rem);
+    z-index: 3;
+    justify-self: start;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: 100%;
+    min-width: 0;
+    height: 2.3rem;
+    margin-bottom: 1.4rem;
+    padding: 3px 0.95rem 3px 3px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: 0 8px 20px -12px rgba(13, 13, 13, 0.28);
+    font-family: var(--font-head);
+    font-size: 0.72rem;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+  /* Desktop: the step list beside the form is the indicator. The strip takes
+     no room and only appears (under the header) while that list is out of
+     view: on short screens, and once the side panel has let go. */
+  @media (min-width: 1024px) {
+    .strip {
+      margin-bottom: -2.3rem;
+      opacity: 0;
+      translate: 0 -6px;
+      transition:
+        opacity 300ms ease,
+        translate 420ms var(--ix-ease);
+    }
+    .strip.is-shown {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+  .strip-nums {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 2.1rem);
+    flex: none;
+  }
+  .strip-nums::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2.1rem;
+    border-radius: 999px;
+    background: var(--red-tint);
+    transform: translateX(calc(var(--i, 0) * 100%));
+    transition: transform 500ms var(--ix-ease);
+  }
+  .strip-n {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    transition: color var(--ix-base) ease;
+  }
+  .strip-n.is-done {
+    color: var(--ink);
+  }
+  .strip-n.is-active {
+    color: var(--red-text);
+  }
+  .strip-names {
+    display: grid;
+    min-width: 0;
+    overflow: hidden;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .strip-t {
+    grid-area: 1 / 1;
+    white-space: nowrap;
+    opacity: 0;
+    translate: 0 5px;
+    transition:
+      opacity 250ms ease,
+      translate 400ms var(--ix-ease);
+  }
+  .strip-t.is-active {
+    opacity: 1;
+    translate: 0 0;
+  }
 
   @media (max-width: 560px) {
     .row {
       grid-template-columns: 1fr;
+    }
+    .stage {
+      padding-block: 1.6rem;
+    }
+  }
+
+  /* Timeline under a styleable <select> (see the global block below): the
+     chevron sits at the field's edge and the check just before it, in line
+     with the other fields' checks. The native fallback keeps its own spacing. */
+  @supports (appearance: base-select) {
+    .control--select select {
+      padding-right: 0.95rem;
+    }
+    .control--select :global(.tick) {
+      right: calc(0.95rem + 16px + 0.5rem);
+    }
+    select:open,
+    select:open:hover {
+      border-color: var(--red);
+    }
+  }
+
+  /* Windows High Contrast / forced colors: no ring at rest, a clear one on
+     focus, and the current stage's rule stays visible. */
+  @media (forced-colors: active) {
+    input,
+    select,
+    textarea {
+      outline-style: none;
+    }
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid Highlight;
+      outline-offset: 2px;
+    }
+    .stage.is-active .stage-rule::after {
+      forced-color-adjust: none;
+      background: Highlight;
+    }
+  }
+</style>
+
+<style is:global>
+  /* Timeline: where the browser supports a styleable <select>
+     (appearance: base-select), its list opens as a soft panel under the
+     field and the chevron turns. Elsewhere it is the native control. Same
+     element, same options, same keyboard behavior either way. */
+  @supports (appearance: base-select) {
+    .contact-form select,
+    .contact-form select::picker(select) {
+      appearance: base-select;
+    }
+    .contact-form select {
+      display: flex;
+      align-items: center;
+    }
+    /* The site's chevron in place of the default triangle. */
+    .contact-form select::picker-icon {
+      content: '';
+      width: 16px;
+      height: 16px;
+      margin-inline-start: auto;
+      background: var(--text-2);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+      transition: rotate var(--ix-base) var(--ix-ease);
+    }
+    .contact-form select:open::picker-icon {
+      rotate: 180deg;
+    }
+    .contact-form select:open {
+      border-color: var(--red);
+      box-shadow: 0 0 0 4px rgba(217, 64, 64, 0.08);
+    }
+    .contact-form select::picker(select) {
+      margin-block: 6px;
+      padding: 0.35rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-m);
+      transform-origin: top center;
+      opacity: 0;
+      translate: 0 -6px;
+      scale: 0.985;
+      transition:
+        opacity 200ms ease,
+        translate 320ms var(--ix-ease),
+        scale 320ms var(--ix-ease),
+        display 320ms allow-discrete,
+        overlay 320ms allow-discrete;
+    }
+    .contact-form select::picker(select):popover-open {
+      opacity: 1;
+      translate: 0 0;
+      scale: 1;
+    }
+    @starting-style {
+      .contact-form select::picker(select):popover-open {
+        opacity: 0;
+        translate: 0 -6px;
+        scale: 0.985;
+      }
+    }
+    .contact-form option {
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.98rem;
+      color: var(--ink);
+      transition: background-color var(--ix-fast) ease;
+    }
+    .contact-form option:disabled {
+      color: var(--muted);
+    }
+    .contact-form option:not(:disabled):is(:hover, :focus-visible) {
+      background: var(--section);
+    }
+    .contact-form option:checked {
+      font-weight: 500;
+    }
+    .contact-form option::checkmark {
+      order: 1;
+      margin-inline-start: auto;
+      color: var(--red-text);
+    }
+    /* The site-wide reduced-motion rule (global.css) doesn't reach these
+       pseudo-elements. */
+    @media (prefers-reduced-motion: reduce) {
+      .contact-form select::picker(select),
+      .contact-form select::picker-icon {
+        transition: none;
+      }
+    }
+    @media (forced-colors: active) {
+      .contact-form select::picker-icon {
+        forced-color-adjust: none;
+        background: CanvasText;
+      }
     }
   }
 </style>
@@ -205,14 +908,148 @@ const timelines = [
     const endpoint = form.dataset.endpoint!;
     const challenge = form.querySelector<HTMLTextAreaElement>('#cf-challenge');
     const counter = form.querySelector<HTMLElement>('[data-counter]');
+    const count = form.querySelector<HTMLElement>('.count');
     const success = form.querySelector<HTMLElement>('.success');
     const error = form.querySelector<HTMLElement>('.error');
     const submit = form.querySelector<HTMLButtonElement>('.submit');
     const honeypot = form.querySelector<HTMLInputElement>('#cf-website');
+    const stages = [...form.querySelectorAll<HTMLElement>('.stage')];
+    const strip = form.querySelector<HTMLElement>('.strip');
+    const stripParts = strip ? [...strip.querySelectorAll<HTMLElement>('.strip-n, .strip-t')] : [];
+    type Control = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+    const controls = [...form.querySelectorAll<Control>('.stage :is(input, select, textarea)')];
 
-    challenge?.addEventListener('input', () => {
-      if (counter) counter.textContent = String(challenge.value.length);
+    /** "Sending…" shows this long before the confirmation (whose room is
+     *  already made at submit, so the length never moves the page). */
+    const SENDING_MS = 420;
+    const NEAR_LIMIT = 0.9;
+
+    let active = 1;
+    let sending = false;
+    let sent = false;
+    let last = '';
+
+    const filled = (c: Control) => c.value.trim() !== '' && c.checkValidity();
+    const stageDone = (stage: HTMLElement) => {
+      if (sent) return true; // the whole conversation is complete (the fields have reset)
+      const fields = [...stage.querySelectorAll<Control>('input, select, textarea')];
+      if (!fields.length) return false; // 04 Let's talk completes when the message is sent
+      return fields.every((c) => (c.required ? filled(c) : c.checkValidity()));
+    };
+
+    /** Reflect the current and completed stages, and tell the page. */
+    const publish = () => {
+      const done = stages.map(stageDone);
+      const state = `${active}:${done.join()}`;
+      if (state === last) return;
+      last = state;
+      stages.forEach((s, i) => {
+        s.classList.toggle('is-active', i + 1 === active);
+        s.classList.toggle('is-done', done[i]);
+      });
+      if (strip) {
+        strip.style.setProperty('--i', String(active - 1));
+        stripParts.forEach((el, n) => {
+          const i = n % stages.length;
+          el.classList.toggle('is-active', i + 1 === active);
+          el.classList.toggle('is-done', done[i]);
+        });
+      }
+      document.dispatchEvent(new CustomEvent('cf:stage', { detail: { active, done } }));
+    };
+    const setActive = (n: number) => {
+      if (n < 1 || n === active) return;
+      active = n;
+      publish();
+    };
+
+    // The current stage follows the reader: the last stage whose top has
+    // passed a line ~42% down the viewport (01 above the form, 04 below it).
+    // Focus pins it: the stage holding focus stays current through any scroll
+    // that focusing (or a step link) causes, until the visitor scrolls by hand
+    // or the stage, once seen, leaves the view.
+    const LINE = 0.42;
+    let pinned: { stage: HTMLElement; seen: boolean } | null = null;
+    const follow = () => {
+      if (pinned) {
+        const r = pinned.stage.getBoundingClientRect();
+        const inView = r.bottom > 0 && r.top < window.innerHeight;
+        if (inView || !pinned.seen) {
+          pinned.seen ||= inView;
+          return;
+        }
+        pinned = null;
+      }
+      const line = window.innerHeight * LINE;
+      const passed = stages.filter((s) => s.getBoundingClientRect().top <= line).length;
+      setActive(Math.min(stages.length, Math.max(1, passed)));
+    };
+    let queued = 0;
+    const onScroll = () => {
+      if (!queued) queued = requestAnimationFrame(() => ((queued = 0), follow()));
+    };
+    const release = () => {
+      if (!pinned) return;
+      pinned = null;
+      onScroll();
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    window.addEventListener('wheel', release, { passive: true });
+    window.addEventListener('touchmove', release, { passive: true });
+    const SCROLL_KEYS = new Set(['PageUp', 'PageDown', 'Home', 'End', ' ', 'ArrowUp', 'ArrowDown']);
+    window.addEventListener('keydown', (e) => {
+      const t = e.target as Element | null;
+      if (SCROLL_KEYS.has(e.key) && !t?.closest?.('input, select, textarea, button, a')) release();
     });
+    form.addEventListener('focusin', (e) => {
+      const stage = (e.target as HTMLElement).closest<HTMLElement>('.stage');
+      if (!stage) return;
+      const r = stage.getBoundingClientRect();
+      pinned = { stage, seen: r.bottom > 0 && r.top < window.innerHeight };
+      setActive(stages.indexOf(stage) + 1);
+    });
+    form.addEventListener('focusout', (e) => {
+      if (!form.contains(e.relatedTarget as Node | null)) release();
+    });
+
+    const updateCount = () => {
+      if (!challenge) return;
+      const n = challenge.value.length;
+      if (counter) counter.textContent = String(n);
+      if (count) {
+        count.style.setProperty('--fill', String(Math.min(1, n / challenge.maxLength)));
+        count.dataset.level =
+          n >= challenge.maxLength ? 'max' : n >= challenge.maxLength * NEAR_LIMIT ? 'near' : '';
+      }
+    };
+    const updateField = (c: Control) => {
+      c.closest('.field')?.classList.toggle('is-done', filled(c));
+      if (c.getAttribute('aria-invalid') === 'true' && c.checkValidity()) {
+        c.removeAttribute('aria-invalid');
+      }
+    };
+    const onEdit = (e: Event) => {
+      const c = e.target as Control;
+      if (!controls.includes(c)) return;
+      updateField(c);
+      if (c === challenge) updateCount();
+      publish();
+    };
+    form.addEventListener('input', onEdit);
+    form.addEventListener('change', onEdit);
+
+    // Restored form state starts out marked: now, and again at pageshow,
+    // since Chromium puts typed values back after load on a Back without the
+    // back/forward cache (and restores the whole page from it otherwise).
+    const sync = () => {
+      controls.forEach(updateField);
+      updateCount();
+      publish();
+      follow();
+    };
+    sync();
+    window.addEventListener('pageshow', sync);
 
     const showSuccess = () => {
       if (success) success.hidden = false;
@@ -222,19 +1059,53 @@ const timelines = [
       if (submit) submit.disabled = true;
     };
 
+    /** "Sending…" for a beat, then the confirmation (the request has already gone). */
+    const confirm = () => {
+      sending = true;
+      form.classList.add('is-sending');
+      if (submit) submit.disabled = true;
+      // The confirmation's room is made now, in the same task as the submit
+      // (inside every input's window, Space included), and it shows after the
+      // beat: nothing moves unannounced.
+      if (success) {
+        success.classList.add('is-pending');
+        success.hidden = false;
+      }
+      window.setTimeout(() => {
+        sending = false;
+        sent = true;
+        form.classList.remove('is-sending');
+        form.classList.add('is-sent');
+        success?.classList.remove('is-pending');
+        showSuccess();
+        controls.forEach((c) => {
+          c.removeAttribute('aria-invalid');
+          updateField(c);
+        });
+        updateCount();
+        setActive(stages.length);
+        publish();
+        success?.focus();
+      }, SENDING_MS);
+    };
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+      if (sending || sent) return;
       if (error) error.hidden = true;
 
       // Native validation for required fields.
       if (!form.checkValidity()) {
+        controls.forEach((c) =>
+          c.checkValidity() ? c.removeAttribute('aria-invalid') : c.setAttribute('aria-invalid', 'true')
+        );
         form.reportValidity();
         return;
       }
 
       // Honeypot filled → bot. Show success, send nothing.
       if (honeypot && honeypot.value.trim() !== '') {
-        showSuccess();
+        confirm();
         return;
       }
 
@@ -247,7 +1118,7 @@ const timelines = [
 
       // Fire-and-forget: Apps Script answers with an unreadable redirect.
       fetch(endpoint, { method: 'POST', body: params }).catch(() => {});
-      showSuccess();
+      confirm();
     });
   }
 </script>

@@ -1,0 +1,322 @@
+---
+/**
+ * Client reviews as a continuous reel: two rows drifting in opposite
+ * directions, endlessly, influenced by the visitor's scrolling (motion:
+ * src/scripts/scroll/reel.ts). Reviews are verbatim and attributed exactly
+ * (ReviewCard); each row repeats the same reviews to make the loop seamless.
+ * The repeats are hidden from assistive tech. Nothing is invented,
+ * shortened or reordered in meaning.
+ *
+ * Without JS, or with reduced motion, it is a still grid of the reviews.
+ * With motion there is a pause button (WCAG 2.2.2), hovering, touching or
+ * focusing a row slows it to a stop, and "Read full review" opens a long
+ * review in full in a dialog.
+ */
+import ReviewCard from './ReviewCard.astro';
+import type { Testimonial } from '../data/testimonials';
+
+interface Props {
+  testimonials: Testimonial[];
+  label?: string;
+}
+const { testimonials, label = 'Client testimonials' } = Astro.props;
+const n = testimonials.length;
+// Row 2 runs the list in reverse order, so the two streams never read the
+// same (with few reviews, any rotation would repeat row 1's sequence).
+const row2 = [...testimonials].reverse();
+---
+
+<div class="rr ix-light" data-rr role="region" aria-label={label}>
+  <div class="rr-rows">
+    <div class="rr-row" data-dir="-1">
+      <div class="rr-track" data-set={n}>
+        {testimonials.map((t) => <ReviewCard t={t} />)}
+        {testimonials.map((t) => <ReviewCard t={t} clone />)}
+      </div>
+    </div>
+    <div class="rr-row rr-row--2" data-dir="1" aria-hidden="true">
+      <div class="rr-track" data-set={n}>
+        {row2.map((t) => <ReviewCard t={t} clone />)}
+        {row2.map((t) => <ReviewCard t={t} clone />)}
+      </div>
+    </div>
+  </div>
+
+  <div class="rr-controls">
+    <button class="rr-pause" type="button" aria-pressed="false" aria-label="Pause the reviews">
+      <svg class="i-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="3" y="2" width="2.6" height="10" rx="1" fill="currentColor" /><rect x="8.4" y="2" width="2.6" height="10" rx="1" fill="currentColor" /></svg>
+      <svg class="i-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 2.2v9.6a.6.6 0 00.9.5l7.4-4.8a.6.6 0 000-1L4.9 1.7a.6.6 0 00-.9.5z" fill="currentColor" /></svg>
+    </button>
+  </div>
+
+  <dialog class="rr-dialog">
+    <div class="rr-dialog-body"></div>
+    <form method="dialog">
+      <button class="rr-close" type="submit">Close</button>
+    </form>
+  </dialog>
+</div>
+
+<style>
+  .rr {
+    --rr-card: clamp(280px, 25vw, 380px);
+    --rr-gap: 1.25rem;
+    --c: var(--red);
+    --ix-light-size: 460px;
+    position: relative;
+  }
+
+  /* ---- Still (no JS, reduced motion): the reviews as a grid ---- */
+  .rr-rows {
+    position: relative;
+    width: min(100% - 2 * var(--gutter), var(--wrap) - 2 * var(--gutter));
+    margin-inline: auto;
+  }
+  /* A soft TLS red / blue light behind the reviews. */
+  .rr-rows::before {
+    content: '';
+    position: absolute;
+    inset: 4% 6% 8%;
+    z-index: -1;
+    background:
+      radial-gradient(40% 55% at 12% 60%, rgba(217, 64, 64, 0.1), transparent 70%),
+      radial-gradient(40% 55% at 88% 40%, rgba(18, 136, 207, 0.1), transparent 70%);
+    pointer-events: none;
+  }
+  .rr-track {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: var(--rr-gap);
+    align-items: start;
+  }
+  .rr-row--2,
+  .rr :global(.rc[data-clone]),
+  .rr-controls {
+    display: none;
+  }
+
+  /* ---- The reel (JS, motion allowed) ---- */
+  @media screen and (prefers-reduced-motion: no-preference) {
+    :global(html.ix) .rr-rows {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: calc(var(--rr-gap) - 18px);
+      width: 100%;
+    }
+    :global(html.ix) .rr-row {
+      position: relative;
+      min-width: 0;
+      overflow: clip;
+      /* Room for the cards' hover lift and shadow inside the clip. */
+      padding-block: 8px 18px;
+      /* Cards arrive and leave through soft edges, not a hard frame. */
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    }
+    :global(html.ix) .rr-row--2 {
+      display: block;
+    }
+    :global(html.ix) .rr-track {
+      display: flex;
+      width: max-content;
+      gap: var(--rr-gap);
+      align-items: stretch;
+      will-change: transform;
+    }
+    :global(html.ix) .rr :global(.rc) {
+      flex: 0 0 var(--rr-card);
+    }
+    :global(html.ix) .rr :global(.rc[data-clone]) {
+      display: flex;
+    }
+    :global(html.ix) .rr-controls {
+      display: flex;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+  }
+  /* Phones: one row, cards a little narrower than the screen. */
+  @media (max-width: 767px) {
+    .rr {
+      --rr-card: min(82vw, 330px);
+      --rr-gap: 1rem;
+    }
+    :global(html.ix) .rr-row--2 {
+      display: none;
+    }
+  }
+
+  .rr-pause {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-2);
+    background: var(--surface);
+    color: var(--text-2);
+    cursor: pointer;
+    transition:
+      border-color var(--ix-fast) ease,
+      color var(--ix-fast) ease;
+  }
+  .rr-pause:hover {
+    border-color: var(--red-text);
+    color: var(--red-text);
+  }
+  .rr-pause .i-play,
+  .rr-pause[aria-pressed='true'] .i-pause {
+    display: none;
+  }
+  .rr-pause[aria-pressed='true'] .i-play {
+    display: block;
+  }
+
+  /* Full review. */
+  .rr-dialog {
+    width: min(720px, 100% - 2rem);
+    max-height: min(86vh, 900px);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 30px 80px -30px rgba(13, 13, 13, 0.45);
+  }
+  .rr-dialog::backdrop {
+    background: rgba(13, 13, 13, 0.45);
+  }
+  .rr-dialog :global(.rc-stars) {
+    display: flex;
+    gap: 3px;
+    color: var(--red);
+    margin-bottom: 1rem;
+  }
+  .rr-dialog :global(.rc-quote) {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.65;
+  }
+  .rr-dialog :global(.rc-quote p + p) {
+    margin-top: 0.8em;
+  }
+  .rr-dialog :global(.rc-who) {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-top: 1.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+  }
+  .rr-dialog :global(.rc-logo img) {
+    width: auto;
+    max-width: none;
+  }
+  .rr-dialog :global(.rc-avatar) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--section);
+    color: var(--text-2);
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.76rem;
+  }
+  .rr-dialog :global(.rc-id) {
+    display: grid;
+  }
+  .rr-dialog :global(.rc-name) {
+    font-family: var(--font-head);
+    font-weight: 700;
+  }
+  .rr-dialog :global(.rc-role) {
+    font-size: 0.9rem;
+    color: var(--text-2);
+  }
+  .rr-dialog form {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.25rem;
+  }
+  .rr-close {
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    background: var(--surface);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .rr-close:hover {
+    border-color: var(--red-text);
+    color: var(--red-text);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .rr-dialog[open] {
+      animation: rr-open 420ms var(--ix-ease);
+    }
+    .rr-dialog[open]::backdrop {
+      animation: rr-fade 300ms ease;
+    }
+  }
+  @keyframes rr-open {
+    from {
+      opacity: 0;
+      translate: 0 12px;
+      scale: 0.98;
+    }
+  }
+  @keyframes rr-fade {
+    from {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * The reel's controls (the motion itself is src/scripts/scroll/reel.ts):
+   * the pause button, and the full-review dialog. The reel reads
+   * [data-paused] and [data-open] on the root and eases to a stop for both.
+   */
+  for (const root of document.querySelectorAll<HTMLElement>('[data-rr]')) {
+    const pause = root.querySelector<HTMLButtonElement>('.rr-pause');
+    pause?.addEventListener('click', () => {
+      const paused = root.toggleAttribute('data-paused');
+      pause.setAttribute('aria-pressed', String(paused));
+      pause.setAttribute('aria-label', paused ? 'Play the reviews' : 'Pause the reviews');
+    });
+
+    const dialog = root.querySelector<HTMLDialogElement>('.rr-dialog');
+    const body = root.querySelector<HTMLElement>('.rr-dialog-body');
+    root.addEventListener('click', (e) => {
+      const more = (e.target as HTMLElement).closest('.rc-more');
+      if (!more || !dialog || !body) return;
+      const card = more.closest<HTMLElement>('.rc');
+      if (!card) return;
+      body.replaceChildren(
+        ...['.rc-stars', '.rc-quote', '.rc-who'].flatMap((sel) => {
+          const part = card.querySelector(sel);
+          return part ? [part.cloneNode(true)] : [];
+        })
+      );
+      const name = card.querySelector('.rc-name')?.textContent ?? '';
+      dialog.setAttribute('aria-label', name ? `Review from ${name}` : 'Review');
+      root.setAttribute('data-open', '');
+      dialog.showModal();
+    });
+    dialog?.addEventListener('close', () => root.removeAttribute('data-open'));
+    // A click on the backdrop (outside the dialog's box) closes it too.
+    dialog?.addEventListener('click', (e) => {
+      if (e.target !== dialog) return;
+      const r = dialog.getBoundingClientRect();
+      const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+      if (outside) dialog.close();
+    });
+  }
+</script>

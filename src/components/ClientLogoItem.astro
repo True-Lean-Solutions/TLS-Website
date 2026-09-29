@@ -1,0 +1,69 @@
+---
+/**
+ * One client logo, shown as the brand mark it is: the exact asset, its own
+ * colors (no filters, no fading, no recoloring), natural aspect ratio, never
+ * cropped or stretched. Every logo sits in the same visual zone, so a wide
+ * banner and a square mark read as equals; each logo's optical size comes from
+ * src/data/clients.ts (`displayHeight`).
+ *
+ * Used by ClientLogos in the static row and in the marquee. Motion (drift,
+ * marquee, hover) moves the item; nothing ever changes the logo's appearance.
+ * A `copy` is a repeat for a seamless marquee: hidden from assistive tech.
+ */
+import type { Client } from '../data/clients';
+import { href } from '../data/site';
+
+interface Props {
+  client: Client;
+  copy?: boolean;
+}
+const { client, copy = false } = Astro.props;
+/** The rail shows logos larger than their base optical size. */
+const RAIL_SCALE = 1.25;
+const h = Math.round(client.displayHeight * RAIL_SCALE);
+---
+
+<li class="cl-item" aria-hidden={copy ? 'true' : undefined}>
+  <img
+    class="cl-logo"
+    src={href(client.logo)}
+    alt={copy ? '' : client.name}
+    width={client.width}
+    height={client.height}
+    style={`height: ${h}px`}
+    loading="lazy"
+    decoding="async"
+  />
+</li>
+
+<style>
+  .cl-item {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: clamp(180px, 20vw, 250px);
+    height: 96px;
+    padding-inline: 1rem;
+  }
+  .cl-logo {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: scale var(--ix-base) var(--ix-ease);
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .cl-item:hover .cl-logo {
+      scale: 1.05;
+    }
+  }
+  @media (max-width: 560px) {
+    .cl-item {
+      width: min(42vw, 200px);
+      height: 80px;
+      padding-inline: 0.5rem;
+    }
+  }
+</style>

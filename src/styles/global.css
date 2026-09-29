@@ -181,8 +181,22 @@ a:hover {
 .hl {
   color: var(--red);
 }
+/* Gray bands ease in and out of the canvas over their padding instead of
+   starting on a hard line, so consecutive sections read as one flow. The
+   band that closes a page keeps a solid bottom: the footer (same gray) and
+   its rule follow it directly. */
 .section-alt {
-  background: var(--section);
+  --band-edge: 72px;
+  background: linear-gradient(
+    180deg,
+    var(--bg) 0,
+    var(--section) var(--band-edge),
+    var(--section) calc(100% - var(--band-edge)),
+    var(--bg) 100%
+  );
+}
+main > .section-alt:last-child {
+  background: linear-gradient(180deg, var(--bg) 0, var(--section) var(--band-edge));
 }
 .page-hero {
   padding-block: var(--space-7) var(--space-6);

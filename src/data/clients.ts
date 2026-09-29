@@ -7,13 +7,12 @@ export interface Client {
   logo: string;
   width: number;
   height: number;
-  /** Rendered height in px, tuned so marks of different shapes look balanced. */
-  displayHeight: number;
   /**
-   * Muted state before hover. 'grayscale' only where it doesn't damage the
-   * mark; 'fade' keeps the logo's own colors at reduced opacity.
+   * Base rendered height in px, tuned so marks of different shapes carry
+   * similar visual weight (the logo rail shows them 1.25x this). Logos are
+   * always shown in their own colors at full strength.
    */
-  muted: 'grayscale' | 'fade';
+  displayHeight: number;
 }
 
 export const clients: Client[] = [
@@ -23,16 +22,15 @@ export const clients: Client[] = [
     width: 400,
     height: 80,
     displayHeight: 34,
-    muted: 'grayscale',
   },
   {
     name: 'UV Concepts',
     logo: '/clients/uv-concepts.png',
     width: 66,
     height: 66,
+    // Source is 66 px square (the Drive original too): 52 x 1.25 = 65 keeps it
+    // at native size, so it stays crisp.
     displayHeight: 52,
-    // A pale mark whose only color is its blue center: grayscale would erase it.
-    muted: 'fade',
   },
 ];
 

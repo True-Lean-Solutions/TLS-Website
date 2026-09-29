@@ -64,4 +64,43 @@ const accents: Record<Accent, string> = {
     font-size: 0.95rem;
     line-height: 1.4;
   }
+  /* The number reacts: while it counts (motion.ts sets [data-counting] on the
+     group), its icon tile charges with light, lifts a touch, then settles as
+     the count lands. Replays with the count on every entry. */
+  @media screen and (prefers-reduced-motion: no-preference) {
+    :global([data-counting]) .icon {
+      animation: stat-charge 2400ms var(--ix-ease) both;
+    }
+    :global([data-counting]) .icon::before {
+      animation: stat-charge-light 2400ms var(--ix-ease) both;
+    }
+  }
+  @keyframes stat-charge {
+    0% {
+      translate: 0 0;
+      scale: 1;
+    }
+    22% {
+      translate: 0 -3px;
+      scale: 1.07;
+    }
+    100% {
+      translate: 0 0;
+      scale: 1;
+    }
+  }
+  @keyframes stat-charge-light {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    22% {
+      opacity: 1;
+      transform: translate(-3px, -3px) scale(1.35);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 </style>

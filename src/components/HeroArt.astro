@@ -1,93 +1,242 @@
 ---
 /**
- * Hero art — isometric platform with the TLS symbol, red/blue edge light, and
- * four floating "glass" label cards (06 / 05 direction; v2.3 §13 allows
- * isometric system art with edge light). No people, mountains, brains, or
+ * Hero art: the TLS system, isometric (06 / 05 direction; v2.3 §13 allows
+ * isometric system art with edge light). No people, mountains, brains or
  * circuit boards. Decorative: the whole graphic is aria-hidden.
+ *
+ * A living diagram of how TLS works. The platform is a colorful chip package
+ * (brand gradient sides, contact pins, a gradient-rimmed lid; no circuit
+ * traces, per v2.3 §13), and its four tiles are the four steps, in story
+ * order around it: Business Problem → Lean Thinking → Right
+ * Solution → Measurable Results.
+ *  - Arrival (first time in view): the slab rises, the tiles set, the mark
+ *    drops in and the four cards glide out to their places.
+ *  - Then a light travels the loop. At each step its tile lights, its
+ *    connector flows, its card lights and checks off, and the tile's own mark
+ *    moves: the problem ring pulses, the thinking diamond draws itself, the
+ *    solution cube slots in, the results bars rise, and a wave of light runs
+ *    along the chip's pins. After the last step a
+ *    halo passes under the TLS mark and the loop begins again.
+ *  - Desktop: hovering a card (or its tile) holds the story on that step.
+ * It runs only while on screen. With reduced motion, or without JS, it is a
+ * still picture of the finished system.
  */
 import { href } from '../data/site';
 
-const cards = [
-  { x: 12, y: 96, label1: 'Business', label2: 'Problem', c: '#d94040', cx: 232, cy: 214 },
-  { x: 386, y: 78, label1: 'Lean', label2: 'Thinking', c: '#1288cf', cx: 330, cy: 205 },
-  { x: 6, y: 300, label1: 'Right', label2: 'Solution', c: '#873662', cx: 232, cy: 286 },
-  { x: 392, y: 312, label1: 'Measurable', label2: 'Results', c: '#873662', cx: 330, cy: 292 },
+/** Unique per instance: the page can show this art twice (Approach, CTA band). */
+const uid = Math.random().toString(36).slice(2, 8);
+const id = (name: string) => `${name}-${uid}`;
+
+type Pt = [number, number];
+/** Tile centers, in loop order: west, north, east, south. */
+const centers: Pt[] = [
+  [190, 250],
+  [280, 200],
+  [370, 250],
+  [280, 300],
 ];
+const quads: Pt[][] = [
+  [[190, 200], [280, 250], [190, 300], [100, 250]],
+  [[280, 150], [370, 200], [280, 250], [190, 200]],
+  [[370, 200], [460, 250], [370, 300], [280, 250]],
+  [[280, 250], [370, 300], [280, 350], [190, 300]],
+];
+/** A quadrant pulled in toward its center, so the tiles read as four parts. */
+const tile = (pts: Pt[], [cx, cy]: Pt, k = 0.84) =>
+  'M' + pts.map(([x, y]) => `${(cx + k * (x - cx)).toFixed(1)} ${(cy + k * (y - cy)).toFixed(1)}`).join(' L') + ' Z';
+
+const steps = [
+  { l1: 'Business', l2: 'Problem', c: '#d94040', glow: 'red', x: 12, y: 96, ax: 174, ay: 156 },
+  { l1: 'Lean', l2: 'Thinking', c: '#1288cf', glow: 'blue', x: 386, y: 78, ax: 386, ay: 138 },
+  { l1: 'Right', l2: 'Solution', c: '#873662', glow: 'plum', x: 392, y: 312, ax: 392, ay: 312 },
+  { l1: 'Measurable', l2: 'Results', c: '#873662', glow: 'plum', x: 6, y: 300, ax: 168, ay: 330 },
+].map((s, i) => ({
+  ...s,
+  i,
+  // Cards glide out from the platform on arrival.
+  fx: ((280 - (s.x + 81)) * 0.3).toFixed(1),
+  fy: ((250 - (s.y + 30)) * 0.3).toFixed(1),
+}));
+const [w, n, e, s] = centers;
+
+/** Contact pins along the chip's two visible sides (a wave lights them per step). */
+const pinsOn = (a: Pt, b: Pt, side: number) =>
+  Array.from({ length: 9 }, (_, j) => {
+    const t = 0.1 + j * 0.1;
+    const dt = 0.035;
+    // Metal leads: from low on the side to just past the package's bottom edge.
+    const x1 = a[0] + t * (b[0] - a[0]);
+    const y1 = a[1] + t * (b[1] - a[1]) + 44;
+    const x2 = a[0] + (t + dt) * (b[0] - a[0]);
+    const y2 = a[1] + (t + dt) * (b[1] - a[1]) + 44;
+    const f = (v: number) => v.toFixed(1);
+    return { d: `M${f(x1)} ${f(y1)} L${f(x2)} ${f(y2)} L${f(x2)} ${f(y2 + 22)} L${f(x1)} ${f(y1 + 22)} Z`, k: side * 9 + j };
+  });
+const pins = [...pinsOn([100, 250], [280, 350], 0), ...pinsOn([280, 350], [460, 250], 1)];
+/** The lid's inner edge. */
+const lidInner = tile([[280, 150], [460, 250], [280, 350], [100, 250]], [280, 250], 0.93);
 ---
 
 <div class="hero-art" aria-hidden="true">
-  <svg viewBox="0 0 560 470" role="img" width="560" height="470">
+  <svg viewBox="0 0 560 470" width="560" height="470">
     <defs>
-      <linearGradient id="topFace" x1="0" y1="0" x2="0" y2="1">
+      <linearGradient id={id('top')} x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#ffffff" />
-        <stop offset="1" stop-color="#eef0f8" />
+        <stop offset="1" stop-color="#ebe9f6" />
       </linearGradient>
-      <linearGradient id="leftFace" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#e7e9f3" />
-        <stop offset="1" stop-color="#d7dae8" />
+      <!-- The package sides carry the brand gradient across the front: red → plum → blue. -->
+      <linearGradient id={id('left')} gradientUnits="userSpaceOnUse" x1="100" y1="0" x2="280" y2="0">
+        <stop offset="0" stop-color="#d94040" />
+        <stop offset="1" stop-color="#873662" />
       </linearGradient>
-      <linearGradient id="rightFace" x1="1" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#dfe2ef" />
-        <stop offset="1" stop-color="#cfd3e4" />
+      <linearGradient id={id('right')} gradientUnits="userSpaceOnUse" x1="280" y1="0" x2="460" y2="0">
+        <stop offset="0" stop-color="#873662" />
+        <stop offset="1" stop-color="#1288cf" />
       </linearGradient>
-      <radialGradient id="redGlow" cx="0.5" cy="0.5" r="0.5">
-        <stop offset="0" stop-color="#d94040" stop-opacity="0.45" />
-        <stop offset="1" stop-color="#d94040" stop-opacity="0" />
+      <radialGradient id={id('floor')} cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0" stop-color="#0d0d0d" stop-opacity="0.16" />
+        <stop offset="1" stop-color="#0d0d0d" stop-opacity="0" />
       </radialGradient>
-      <radialGradient id="blueGlow" cx="0.5" cy="0.5" r="0.5">
-        <stop offset="0" stop-color="#1288cf" stop-opacity="0.45" />
-        <stop offset="1" stop-color="#1288cf" stop-opacity="0" />
-      </radialGradient>
+      <linearGradient id={id('metal')} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffffff" />
+        <stop offset="1" stop-color="#aeb6c8" />
+      </linearGradient>
+      <linearGradient id={id('shade')} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffffff" stop-opacity="0.28" />
+        <stop offset="0.45" stop-color="#ffffff" stop-opacity="0" />
+        <stop offset="1" stop-color="#0d0d0d" stop-opacity="0.22" />
+      </linearGradient>
+      <linearGradient id={id('grad')} x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#d94040" />
+        <stop offset="0.5" stop-color="#873662" />
+        <stop offset="1" stop-color="#1288cf" />
+      </linearGradient>
+      {
+        [
+          ['red', '#d94040'],
+          ['blue', '#1288cf'],
+          ['plum', '#873662'],
+        ].map(([name, c]) => (
+          <radialGradient id={id(`glow-${name}`)} cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color={c} stop-opacity="0.45" />
+            <stop offset="1" stop-color={c} stop-opacity="0" />
+          </radialGradient>
+        ))
+      }
     </defs>
 
-    <ellipse cx="120" cy="330" rx="150" ry="110" fill="url(#redGlow)" />
-    <ellipse cx="450" cy="320" rx="150" ry="110" fill="url(#blueGlow)" />
+    <ellipse cx="120" cy="330" rx="150" ry="110" fill={`url(#${id('glow-red')})`} />
+    <ellipse cx="450" cy="320" rx="150" ry="110" fill={`url(#${id('glow-blue')})`} />
 
-    <!-- connectors from platform to each floating card -->
+    <!-- Platform: a chip package. Brand-gradient sides with contact pins, a
+         lid with a gradient rim, four tiles, the loop. -->
+    <g class="in in-slab">
+      <ellipse cx="280" cy="396" rx="210" ry="50" fill={`url(#${id('floor')})`} />
+      <path d="M100 250 L280 350 L280 410 L100 310 Z" fill={`url(#${id('left')})`} />
+      <path d="M460 250 L280 350 L280 410 L460 310 Z" fill={`url(#${id('right')})`} />
+      <path d="M100 250 L280 350 L280 410 L100 310 Z" fill={`url(#${id('shade')})`} />
+      <path d="M460 250 L280 350 L280 410 L460 310 Z" fill={`url(#${id('shade')})`} />
+      {pins.map((p) => <path class="pin" d={p.d} fill={`url(#${id('metal')})`} style={`--k: ${p.k}`} />)}
+      <path d="M280 350 L280 410" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1" />
+      <path d="M100 250 L280 350 L460 250" fill="none" stroke="#ffffff" stroke-opacity="0.75" stroke-width="1.5" />
+      <path d="M280 150 L460 250 L280 350 L100 250 Z" fill={`url(#${id('top')})`} stroke={`url(#${id('grad')})`} stroke-width="3" stroke-linejoin="round" />
+      <path d={lidInner} fill="none" stroke="#ffffff" stroke-width="1.5" />
+      <path d="M190 200 L370 300 M370 200 L190 300" stroke="#dcdbea" stroke-width="1" opacity="0.8" />
+    </g>
     {
-      cards.map((c) => (
-        <g>
-          <line x1="280" y1="250" x2={c.cx} y2={c.cy} stroke={c.c} stroke-opacity="0.4" stroke-width="1.5" />
-          <circle cx={c.cx} cy={c.cy} r="3" fill={c.c} />
+      steps.map((st) => (
+        <g class="in in-tile" style={`--d: ${120 + st.i * 90}ms`}>
+          <path class="tile" data-i={st.i} d={tile(quads[st.i], centers[st.i])} fill={st.c} stroke={st.c} />
+        </g>
+      ))
+    }
+    <g class="in in-loop">
+      <path
+        class="loop"
+        d={`M${w[0]} ${w[1]} L${n[0]} ${n[1]} L${e[0]} ${e[1]} L${s[0]} ${s[1]} Z`}
+        fill="none"
+        stroke="#b9c1d3"
+        stroke-width="1.25"
+        stroke-dasharray="3 5"
+      />
+    </g>
+
+    <!-- Each step's own mark on its tile. -->
+    <g class="in in-glyphs">
+      <g class="glyph g-problem" data-i="0">
+        <ellipse class="ring" cx={w[0]} cy={w[1]} rx="16" ry="9" fill="none" stroke="#d94040" stroke-width="1.5" />
+        <ellipse cx={w[0]} cy={w[1]} rx="16" ry="9" fill="none" stroke="#d94040" stroke-opacity="0.35" stroke-width="1.5" />
+        <ellipse cx={w[0]} cy={w[1]} rx="6.5" ry="3.7" fill="#d94040" fill-opacity="0.85" />
+      </g>
+      <g class="glyph g-thinking" data-i="1">
+        <path class="draw" d="M280 186 L305 200 L280 214 L255 200 Z" fill="#1288cf" stroke="#1288cf" stroke-width="1.5" pathLength="100" />
+        <path d="M280 194 L291 200 L280 206 L269 200 Z" fill="#1288cf" fill-opacity="0.8" />
+      </g>
+      <g class="glyph g-solution" data-i="2">
+        <g class="cube">
+          <path d="M370 222 L386 231 L370 240 L354 231 Z" fill="#873662" fill-opacity="0.45" />
+          <path d="M354 231 L370 240 L370 258 L354 249 Z" fill="#873662" fill-opacity="0.65" />
+          <path d="M386 231 L370 240 L370 258 L386 249 Z" fill="#873662" fill-opacity="0.9" />
+        </g>
+      </g>
+      <g class="glyph g-results" data-i="3">
+        <rect class="bar" x="267" y="296" width="6" height="12" rx="2" fill={`url(#${id('grad')})`} />
+        <rect class="bar" x="277" y="290" width="6" height="18" rx="2" fill={`url(#${id('grad')})`} />
+        <rect class="bar" x="287" y="282" width="6" height="26" rx="2" fill={`url(#${id('grad')})`} />
+      </g>
+    </g>
+
+    <!-- Connectors, tile to card. -->
+    {
+      steps.map((st) => (
+        <g class="in in-link" style={`--d: ${900 + st.i * 110}ms`}>
+          <line
+            class="link"
+            data-i={st.i}
+            x1={centers[st.i][0]}
+            y1={centers[st.i][1]}
+            x2={st.ax}
+            y2={st.ay}
+            stroke={st.c}
+            stroke-width="1.5"
+            stroke-dasharray="4 4"
+          />
+          <circle cx={st.ax} cy={st.ay} r="3" fill={st.c} />
         </g>
       ))
     }
 
-    <!-- platform slab -->
-    <g class="slab">
-      <path d="M100 250 L280 350 L280 410 L100 310 Z" fill="url(#leftFace)" />
-      <path d="M460 250 L280 350 L280 410 L460 310 Z" fill="url(#rightFace)" />
-      <path d="M100 250 L280 350 L280 410 L100 310 Z" fill="none" stroke="#d94040" stroke-opacity="0.55" stroke-width="2" />
-      <path d="M460 250 L280 350 L280 410 L460 310 Z" fill="none" stroke="#1288cf" stroke-opacity="0.55" stroke-width="2" />
-      <path d="M280 150 L460 250 L280 350 L100 250 Z" fill="url(#topFace)" stroke="#e2e2ee" stroke-width="1.5" />
-      <path d="M190 200 L370 300 M370 200 L190 300" stroke="#e2e2ee" stroke-width="1" opacity="0.7" />
+    <!-- The light that travels the loop (placed by the script). -->
+    <g class="pulse">
+      <circle r="10" fill="#1288cf" fill-opacity="0.18" />
+      <circle r="4" fill="#ffffff" stroke="#1288cf" stroke-width="2" />
     </g>
 
-    <!-- floating glass label cards -->
+    <!-- TLS symbol above the platform, with its shadow and completion halo. -->
+    <g class="in in-mark">
+      <ellipse cx="280" cy="250" rx="54" ry="20" fill="#0d0d0d" opacity="0.08" />
+      <ellipse class="halo" cx="280" cy="250" rx="54" ry="20" fill="none" stroke={`url(#${id('grad')})`} stroke-width="2" />
+      <g class="mark-float">
+        <image href={href('/brand/tls-mark.png')} x="228" y="58" width="104" height="104" />
+      </g>
+    </g>
+
+    <!-- The four step cards. -->
     {
-      cards.map((c) => (
-        <g class="card">
-          <rect x={c.x} y={c.y} width="162" height="60" rx="12" fill="#ffffff" fill-opacity="0.92" stroke={c.c} stroke-opacity="0.5" stroke-width="1.5" />
-          <rect x={c.x + 14} y={c.y + 15} width="30" height="30" rx="8" fill={c.c} fill-opacity="0.14" />
-          <circle cx={c.x + 29} cy={c.y + 30} r="6" fill="none" stroke={c.c} stroke-width="2" />
-          <text x={c.x + 56} y={c.y + 26} font-family="Montserrat, sans-serif" font-size="14" font-weight="700" fill="#0d0d0d">{c.label1}</text>
-          <text x={c.x + 56} y={c.y + 44} font-family="Montserrat, sans-serif" font-size="14" font-weight="700" fill="#0d0d0d">{c.label2}</text>
+      steps.map((st) => (
+        <g class="in in-card" style={`--d: ${560 + st.i * 110}ms; --fx: ${st.fx}px; --fy: ${st.fy}px`}>
+          <g class="card" data-i={st.i}>
+            <ellipse class="card-glow" cx={st.x + 81} cy={st.y + 30} rx="112" ry="50" fill={`url(#${id(`glow-${st.glow}`)})`} />
+            <rect class="card-box" x={st.x} y={st.y} width="162" height="60" rx="12" fill="#ffffff" fill-opacity="0.94" stroke={st.c} stroke-width="1.5" />
+            <rect class="card-icon" x={st.x + 14} y={st.y + 15} width="30" height="30" rx="8" fill={st.c} />
+            <circle class="dot" cx={st.x + 29} cy={st.y + 30} r="6" fill={st.c} stroke={st.c} stroke-width="2" />
+            <path class="check" d={`M${st.x + 25.6} ${st.y + 30.3} l2.3 2.3 l4.4 -4.8`} fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" pathLength="100" />
+            <text x={st.x + 56} y={st.y + 26} font-family="Montserrat, sans-serif" font-size="14" font-weight="700" fill="#0d0d0d">{st.l1}</text>
+            <text x={st.x + 56} y={st.y + 44} font-family="Montserrat, sans-serif" font-size="14" font-weight="700" fill="#0d0d0d">{st.l2}</text>
+          </g>
         </g>
       ))
     }
-
-    <!-- floating accent cubes -->
-    <g class="cube cube-a">
-      <path d="M300 96 L322 108 L322 132 L300 120 Z" fill="#1288cf" opacity="0.9" />
-      <path d="M300 96 L278 108 L278 132 L300 120 Z" fill="#1288cf" opacity="0.6" />
-      <path d="M300 96 L322 108 L300 120 L278 108 Z" fill="#1288cf" opacity="0.38" />
-    </g>
-
-    <!-- TLS symbol floating above the platform -->
-    <g class="mark-group">
-      <ellipse cx="280" cy="250" rx="66" ry="24" fill="#0d0d0d" opacity="0.08" />
-      <image href={href('/brand/tls-mark.png')} x="216" y="118" width="128" height="128" />
-    </g>
   </svg>
 </div>
 
@@ -98,30 +247,387 @@ const cards = [
     margin-inline: auto;
   }
   .hero-art svg {
+    display: block;
     width: 100%;
     height: auto;
     overflow: visible;
   }
-  .mark-group {
-    animation: float 6s ease-in-out infinite;
+  .hero-art :is(.tile, .glyph, .cube, .ring, .halo, .in-card) {
+    transform-box: fill-box;
     transform-origin: center;
   }
-  .card {
-    animation: float 7s ease-in-out infinite;
+  .hero-art .bar {
+    transform-box: fill-box;
+    transform-origin: bottom;
   }
-  .card:nth-of-type(2) {
-    animation-duration: 8s;
+
+  /* ---- At rest (no JS, reduced motion): the finished system, still ---- */
+  .tile {
+    fill-opacity: 0;
+    stroke-opacity: 0;
+    stroke-width: 1.25;
+    transition:
+      fill-opacity 500ms ease,
+      stroke-opacity 500ms ease;
   }
-  .cube-a {
-    animation: float 5.5s ease-in-out infinite reverse;
+  .glyph {
+    opacity: 0.9;
+    transition: opacity 400ms ease;
   }
-  @keyframes float {
+  .draw {
+    fill-opacity: 0.12;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+  .cube {
+    transition:
+      translate 700ms var(--ix-ease),
+      opacity 500ms ease;
+  }
+  .bar {
+    transition: scale 700ms var(--ix-ease);
+  }
+  .bar:nth-child(2) {
+    transition-delay: 70ms;
+  }
+  .bar:nth-child(3) {
+    transition-delay: 140ms;
+  }
+  .ring {
+    opacity: 0;
+  }
+  .link {
+    stroke-opacity: 0.32;
+    transition: stroke-opacity 400ms ease;
+  }
+  .card-glow {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 600ms ease;
+  }
+  .card-box {
+    stroke-opacity: 0.5;
+    transition:
+      stroke-opacity 400ms ease,
+      stroke-width 400ms ease;
+  }
+  .card-icon {
+    fill-opacity: 0.14;
+    transition: fill-opacity 400ms ease;
+  }
+  .dot {
+    fill-opacity: 0;
+    transition: fill-opacity 350ms ease;
+  }
+  .check {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    transition: stroke-dashoffset 450ms var(--ix-ease) 120ms;
+  }
+  .pulse {
+    opacity: 0;
+    transition:
+      translate 650ms cubic-bezier(0.45, 0, 0.25, 1),
+      opacity 300ms ease;
+  }
+  .halo {
+    opacity: 0;
+  }
+  .pin {
+    opacity: 0.8;
+  }
+
+  /* ---- The loop (the script arms it only with motion allowed) ---- */
+  /* Steps not yet reached this round wait: the cube hovers, the bars sit low,
+     the diamond is undrawn. */
+  .is-armed .glyph:not(.is-on, .is-done) {
+    opacity: 0.45;
+  }
+  .is-armed .g-solution:not(.is-on, .is-done) .cube {
+    translate: 0 -14px;
+    opacity: 0.5;
+  }
+  .is-armed .g-results:not(.is-on, .is-done) .bar {
+    scale: 1 0.35;
+  }
+  .is-armed .g-thinking:not(.is-on, .is-done) .draw {
+    stroke-dashoffset: 100;
+    fill-opacity: 0;
+  }
+  .is-armed .g-thinking .draw {
+    transition:
+      stroke-dashoffset 900ms var(--ix-ease),
+      fill-opacity 500ms ease 300ms;
+  }
+  .is-armed.is-running .pulse {
+    opacity: 1;
+  }
+
+  /* Done this round. */
+  .tile.is-done {
+    fill-opacity: 0.05;
+  }
+  .card.is-done .dot {
+    fill-opacity: 1;
+  }
+  .card.is-done .check {
+    stroke-dashoffset: 0;
+  }
+  .card.is-done .card-box {
+    stroke-opacity: 0.75;
+  }
+
+  /* The current step. */
+  .glyph.is-on {
+    opacity: 1;
+  }
+  .tile.is-on {
+    fill-opacity: 0.13;
+    stroke-opacity: 0.55;
+  }
+  .card.is-on .card-glow {
+    opacity: 1;
+  }
+  .card.is-on .card-box {
+    stroke-opacity: 1;
+    stroke-width: 2;
+  }
+  .card.is-on .card-icon {
+    fill-opacity: 0.24;
+  }
+  .card.is-on .dot {
+    fill-opacity: 1;
+  }
+  .card.is-on .check {
+    stroke-dashoffset: 0;
+  }
+  .link.is-on {
+    stroke-opacity: 0.9;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mark-float {
+      animation: ha-float 6s ease-in-out infinite paused;
+    }
+    .is-live .mark-float {
+      animation-play-state: running;
+    }
+    .link.is-on {
+      animation: ha-flow 900ms linear infinite;
+    }
+    .g-problem.is-on .ring {
+      animation: ha-ring 1400ms ease-out infinite;
+    }
+    .is-complete .halo {
+      animation: ha-halo 1300ms var(--ix-ease);
+    }
+    /* Each step sends a wave of light along the pins, front corner outward. */
+    .is-flow .pin {
+      animation: ha-pin 900ms ease-out calc(var(--k) * 40ms);
+    }
+
+    /* Arrival: pieces wait until the art first comes into view. */
+    .is-armed .in {
+      transition:
+        opacity 700ms ease var(--d, 0ms),
+        translate 900ms var(--ix-ease) var(--d, 0ms),
+        scale 800ms var(--ix-ease) var(--d, 0ms);
+    }
+    .is-armed:not(.is-in) .in-slab {
+      opacity: 0;
+      translate: 0 22px;
+    }
+    .is-armed:not(.is-in) .in-tile {
+      opacity: 0;
+      translate: 0 -12px;
+    }
+    .is-armed:not(.is-in) :is(.in-loop, .in-glyphs, .in-link) {
+      opacity: 0;
+    }
+    .is-armed:not(.is-in) .in-mark {
+      opacity: 0;
+      translate: 0 -30px;
+    }
+    .is-armed:not(.is-in) .in-card {
+      opacity: 0;
+      translate: var(--fx) var(--fy);
+      scale: 0.92;
+    }
+    .is-armed .in-loop {
+      --d: 500ms;
+    }
+    .is-armed .in-glyphs {
+      --d: 650ms;
+    }
+    .is-armed .in-mark {
+      --d: 380ms;
+    }
+  }
+
+  /* Hover (desktop): the step under the pointer. */
+  @media (hover: hover) and (pointer: fine) {
+    .is-armed :is(.card, .tile) {
+      cursor: default;
+    }
+  }
+
+  @keyframes ha-float {
     0%,
     100% {
-      transform: translateY(0);
+      translate: 0 0;
     }
     50% {
-      transform: translateY(-8px);
+      translate: 0 -8px;
+    }
+  }
+  @keyframes ha-flow {
+    to {
+      stroke-dashoffset: -16;
+    }
+  }
+  @keyframes ha-ring {
+    from {
+      opacity: 0.9;
+      scale: 1;
+    }
+    to {
+      opacity: 0;
+      scale: 1.9;
+    }
+  }
+  @keyframes ha-pin {
+    30% {
+      opacity: 1;
+      translate: 0 -2px;
+    }
+  }
+  @keyframes ha-halo {
+    from {
+      opacity: 0.9;
+      scale: 0.7;
+    }
+    to {
+      opacity: 0;
+      scale: 1.6;
     }
   }
 </style>
+
+<script>
+  /**
+   * Plays the TLS loop (see the component comment): arrival once, then one
+   * step every few seconds, only while the art is on screen and the tab is
+   * visible. Hovering a card or tile holds the story on that step.
+   */
+  const STEP_MS = 2400; // how long each step stays current
+  const TRAVEL_MS = 650; // the light's glide to the next tile (CSS matches)
+  const ARRIVAL_MS = 1500; // arrival choreography before the loop starts
+  const DONE_HOLD_MS = 1500; // the completed system, before the next round
+  const CENTERS: [number, number][] = [
+    [190, 250],
+    [280, 200],
+    [370, 250],
+    [280, 300],
+  ];
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  for (const root of document.querySelectorAll<HTMLElement>('.hero-art')) {
+    if (reduce.matches) continue;
+    const pulse = root.querySelector<SVGGElement>('.pulse');
+    const parts = (i: number) => [...root.querySelectorAll<SVGElement>(`[data-i="${i}"]`)];
+    const all = [...root.querySelectorAll<SVGElement>('[data-i]')];
+
+    let current = -1; // step now lit (-1: none yet this round)
+    let timer = 0;
+    let inView = false;
+    let held = false;
+    let arrived = false;
+
+    const running = () => inView && !held && !document.hidden;
+    const place = (i: number) => {
+      if (pulse) pulse.style.translate = `${CENTERS[i][0]}px ${CENTERS[i][1]}px`;
+    };
+    const light = (i: number) => {
+      all.forEach((el) => el.classList.remove('is-on'));
+      for (let k = 0; k < i; k++) parts(k).forEach((el) => el.classList.add('is-done'));
+      parts(i).forEach((el) => el.classList.add('is-on'));
+      current = i;
+      root.classList.remove('is-flow');
+      void root.getBoundingClientRect(); // restart the pin wave
+      root.classList.add('is-flow');
+    };
+    const reset = () => {
+      all.forEach((el) => el.classList.remove('is-on', 'is-done'));
+      current = -1;
+    };
+
+    /** Move to the next step: the light glides there, then the step lights. */
+    const advance = () => {
+      window.clearTimeout(timer);
+      if (!running()) return;
+      if (current === CENTERS.length - 1) {
+        // Round complete: everything checked off, a halo under the mark.
+        parts(current).forEach((el) => el.classList.add('is-done'));
+        all.forEach((el) => el.classList.remove('is-on'));
+        root.classList.add('is-complete');
+        timer = window.setTimeout(() => {
+          root.classList.remove('is-complete');
+          reset();
+          advance();
+        }, DONE_HOLD_MS);
+        return;
+      }
+      const next = current + 1;
+      root.classList.add('is-running');
+      place(next);
+      timer = window.setTimeout(() => {
+        light(next);
+        timer = window.setTimeout(advance, STEP_MS);
+      }, current === -1 ? 0 : TRAVEL_MS);
+    };
+    const resume = (delay: number) => {
+      window.clearTimeout(timer);
+      if (running()) timer = window.setTimeout(advance, delay);
+    };
+
+    root.classList.add('is-armed');
+    place(0); // the light waits, unseen, on the first tile
+    new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        root.classList.toggle('is-live', inView);
+        if (inView && !arrived) {
+          arrived = true;
+          root.classList.add('is-in');
+          resume(ARRIVAL_MS);
+        } else if (inView) {
+          resume(700);
+        } else {
+          window.clearTimeout(timer);
+        }
+      },
+      { threshold: 0.35 }
+    ).observe(root);
+    document.addEventListener('visibilitychange', () => (document.hidden ? window.clearTimeout(timer) : resume(700)));
+
+    // Hover holds the story on the step under the pointer (desktop).
+    for (const el of root.querySelectorAll<SVGElement>('.card[data-i], .tile[data-i]')) {
+      const i = Number(el.dataset.i);
+      el.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'mouse' || !arrived) return;
+        held = true;
+        window.clearTimeout(timer);
+        root.classList.remove('is-complete');
+        root.classList.add('is-running');
+        all.forEach((p) => p.classList.remove('is-done'));
+        place(i);
+        light(i);
+      });
+      el.addEventListener('pointerleave', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        held = false;
+        resume(1200);
+      });
+    }
+  }
+</script>

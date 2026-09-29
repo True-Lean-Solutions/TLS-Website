@@ -53,6 +53,24 @@ const {
 } = Astro.props;
 
 const accentVar: Record<Accent, string> = { red: 'var(--red)', blue: 'var(--blue)', plum: 'var(--plum)' };
+
+/**
+ * Motion graphic on arrival: a one-time light over the photo whose movement
+ * follows what the solution does. Keyed by the solution's icon, so every
+ * solution page gets its own without page changes. It plays once and is gone,
+ * so the settled hero is exactly as designed.
+ */
+const arrival: Partial<Record<IconName, string>> = {
+  ai: 'depth', // AI: light radiating out through the layers
+  software: 'modular', // Custom Software: panels slotting into place
+  integration: 'connect', // System Integration: two sides meeting
+  talent: 'human', // Technical Talent: a soft, unhurried glow
+  workflow: 'sequence', // Workflow Automation: one stage, then the next
+  compass: 'progress', // Technology Strategy: a directional sweep forward
+  analytics: 'flow', // Data & Analytics: light streaming across
+  security: 'scan', // Cyber Security: a layered scan, top to bottom
+};
+const fx = icon ? arrival[icon] : undefined;
 const style = [
   `--c: ${accentVar[accent]}`,
   `--pos-desktop: ${position.desktop ?? '60% 80%'}`,
@@ -71,6 +89,8 @@ const style = [
     fetchpriority="high"
     decoding="async"
   />
+  {fx && <span class:list={['sh-fx', `sh-fx--${fx}`]} aria-hidden="true"></span>}
+  <span class="sh-spot" aria-hidden="true"></span>
   <div class="wrap">
     <div class="sh-copy">
       {
@@ -86,7 +106,7 @@ const style = [
         )
       }
       <h1>
-        {title}{' '}{highlight && <span class="hl sh-hl">{highlight}</span>}
+        <span class="ml"><span>{title}</span></span>{' '}{highlight && <span class="ml"><span class="hl sh-hl">{highlight}</span></span>}
       </h1>
       {description && <p class="sh-lede">{description}</p>}
       <div class="sh-cta">
@@ -234,16 +254,319 @@ const style = [
     margin-top: 1.9rem;
   }
 
-  /* Entrance: eyebrow, headline, copy, CTAs in sequence. Image holds still. */
+  /* Entrance: the photo settles out of a slight zoom while the eyebrow, the
+     headline (line by line, out of a mask: motion.css .ml), the copy and the
+     CTAs arrive in sequence. The scroll layer then drifts the photo (its
+     transform composes with this `scale`). */
   @media screen and (prefers-reduced-motion: no-preference) {
-    .sh-copy > :global(*) {
+    .sh-bg {
+      animation: sh-settle 1600ms var(--ix-ease) backwards;
+    }
+    .sh-copy > :global(*:not(h1)) {
       --ix-rise: 20px;
       animation: ix-rise 700ms var(--ix-ease) backwards;
     }
     .sh-copy > :global(:nth-child(1)) { --ix-rise: 15px; animation-delay: 60ms; }
-    .sh-copy > :global(:nth-child(2)) { animation-delay: 200ms; }
-    .sh-copy > :global(:nth-child(3)) { animation-delay: 350ms; }
-    .sh-copy > :global(:nth-child(4)) { animation-delay: 500ms; }
+    .sh-copy h1 :global(.ml > span) { animation-delay: 160ms; }
+    .sh-copy h1 :global(.ml:nth-child(2) > span) { animation-delay: 270ms; }
+    .sh-copy > :global(:nth-child(3)) { animation-delay: 420ms; }
+    .sh-copy > :global(:nth-child(4)) { animation-delay: 560ms; }
+  }
+  @keyframes sh-settle {
+    from {
+      scale: 1.07;
+    }
+  }
+
+  /* Arrival motion graphic (see `arrival` above). Transform and opacity
+     only, over the photo and under the text; it fades in, moves once and
+     fades out. Nothing shows at rest, in print or with reduced motion. */
+  .sh-fx {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    /* Screen blending: the layer adds light to the photo rather than a film. */
+    mix-blend-mode: screen;
+    --fx-tint: color-mix(in srgb, var(--c) 26%, transparent);
+    --fx-glint: rgba(255, 255, 255, 0.22);
+  }
+  .sh-fx::before,
+  .sh-fx::after {
+    content: '';
+    position: absolute;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .sh-fx {
+      animation: sh-fx-life 2600ms ease 750ms backwards;
+    }
+    .sh-fx::before,
+    .sh-fx::after {
+      animation-duration: 2400ms;
+      animation-delay: 850ms;
+      animation-fill-mode: backwards;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+    }
+
+    /* Cyber Security: a band scans down the image, a fainter layer behind it. */
+    .sh-fx--scan::before,
+    .sh-fx--scan::after {
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 26%;
+      background: linear-gradient(
+        180deg,
+        transparent,
+        var(--fx-tint) 70%,
+        transparent 96.5%,
+        rgba(255, 255, 255, 0.7) 98%,
+        transparent
+      );
+      animation-name: sh-fx-scan;
+    }
+    .sh-fx--scan::after {
+      opacity: 0.5;
+      animation-delay: 1250ms;
+      animation-duration: 2000ms;
+    }
+
+    /* Data & Analytics: light streams across, a thinner stream following. */
+    .sh-fx--flow::before,
+    .sh-fx--flow::after {
+      top: -20%;
+      bottom: -20%;
+      left: 0;
+      width: 45%;
+      background: linear-gradient(105deg, transparent 20%, var(--fx-tint) 46%, var(--fx-glint) 52%, transparent 80%);
+      animation-name: sh-fx-flow;
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sh-fx--flow::after {
+      width: 28%;
+      opacity: 0.6;
+      animation-delay: 1200ms;
+    }
+
+    /* System Integration: light from each side, meeting in the middle. */
+    .sh-fx--connect::before,
+    .sh-fx--connect::after {
+      top: 0;
+      bottom: 0;
+      width: 38%;
+      background: linear-gradient(90deg, transparent, var(--fx-tint) 72%, var(--fx-glint) 96%, transparent);
+      animation-name: sh-fx-connect;
+      animation-duration: 2000ms;
+    }
+    .sh-fx--connect::before {
+      left: 0;
+      --fx-from: -100%;
+      --fx-to: 32%;
+    }
+    .sh-fx--connect::after {
+      right: 0;
+      scale: -1 1;
+      --fx-from: 100%;
+      --fx-to: -32%;
+    }
+
+    /* Workflow Automation: a light holds on each third of the image in turn. */
+    .sh-fx--sequence::before {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 33.34%;
+      background:
+        radial-gradient(60% 45% at 50% 55%, var(--fx-tint), transparent 75%),
+        linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+      animation-name: sh-fx-steps;
+      animation-timing-function: var(--ix-ease);
+    }
+
+    /* Technology Strategy: a directional fill with a bright leading edge. */
+    .sh-fx--progress::before {
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        var(--fx-tint),
+        color-mix(in srgb, var(--c) 8%, transparent) 70%,
+        var(--fx-glint) 99%,
+        transparent
+      );
+      transform-origin: left center;
+      animation-name: sh-fx-progress;
+      animation-timing-function: cubic-bezier(0.5, 0, 0.15, 1);
+    }
+
+    /* AI & Automation: rings of light radiating out from the scene. */
+    .sh-fx--depth::before,
+    .sh-fx--depth::after {
+      left: 64%;
+      top: 46%;
+      width: 70vmax;
+      height: 70vmax;
+      margin: -35vmax 0 0 -35vmax;
+      border-radius: 50%;
+      background: radial-gradient(
+        closest-side,
+        transparent 56%,
+        var(--fx-tint) 70%,
+        var(--fx-glint) 74%,
+        transparent 80%
+      );
+      animation-name: sh-fx-depth;
+      animation-timing-function: cubic-bezier(0.2, 0.6, 0.2, 1);
+    }
+    .sh-fx--depth::after {
+      opacity: 0.55;
+      animation-delay: 1250ms;
+      animation-duration: 2000ms;
+    }
+
+    /* Technical Talent: a soft glow over the people, breathing in once. */
+    .sh-fx--human::before {
+      inset: -10%;
+      background: radial-gradient(
+        40% 50% at 72% 58%,
+        var(--fx-tint),
+        rgba(255, 255, 255, 0.05) 45%,
+        transparent 75%
+      );
+      animation-name: sh-fx-breathe;
+      animation-duration: 2600ms;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+    }
+
+    /* Custom Software: two panels slot into place, one after the other. */
+    .sh-fx--modular::before,
+    .sh-fx--modular::after {
+      top: 0;
+      bottom: 0;
+      width: 22%;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.07), var(--fx-tint));
+      border-left: 1px solid rgba(255, 255, 255, 0.18);
+      animation-name: sh-fx-module;
+      animation-duration: 1500ms;
+      animation-timing-function: var(--ix-ease);
+    }
+    .sh-fx--modular::before {
+      right: 22%;
+      --fx-from: 210%;
+    }
+    .sh-fx--modular::after {
+      right: 0;
+      --fx-from: 110%;
+      animation-delay: 1050ms;
+    }
+  }
+  @media print {
+    .sh-fx {
+      display: none;
+    }
+  }
+  @keyframes sh-fx-life {
+    0% {
+      opacity: 0;
+    }
+    14%,
+    76% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes sh-fx-scan {
+    from {
+      translate: 0 -100%;
+    }
+    to {
+      translate: 0 385%;
+    }
+  }
+  @keyframes sh-fx-flow {
+    from {
+      translate: -110% 0;
+    }
+    to {
+      translate: 240% 0;
+    }
+  }
+  @keyframes sh-fx-connect {
+    from {
+      translate: var(--fx-from) 0;
+    }
+    to {
+      translate: var(--fx-to) 0;
+    }
+  }
+  @keyframes sh-fx-steps {
+    0%,
+    24% {
+      translate: 0 0;
+    }
+    34%,
+    58% {
+      translate: 100% 0;
+    }
+    68%,
+    100% {
+      translate: 200% 0;
+    }
+  }
+  @keyframes sh-fx-progress {
+    from {
+      scale: 0 1;
+    }
+    to {
+      scale: 1 1;
+    }
+  }
+  @keyframes sh-fx-depth {
+    from {
+      scale: 0.15;
+    }
+    to {
+      scale: 1.2;
+    }
+  }
+  @keyframes sh-fx-breathe {
+    from {
+      scale: 0.92;
+    }
+    to {
+      scale: 1.04;
+    }
+  }
+  @keyframes sh-fx-module {
+    from {
+      translate: var(--fx-from) 0;
+    }
+    to {
+      translate: 0 0;
+    }
+  }
+
+  /* Cursor spotlight (fine pointers; positioned by the scroll layer). */
+  .sh-spot {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 520px;
+    height: 520px;
+    margin: -260px 0 0 -260px;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--c) 16%, rgba(255, 255, 255, 0.07)),
+      transparent
+    );
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   /* Tablet: shorter, narrower copy, image shifted so the meeting sits clear
@@ -287,6 +610,10 @@ const style = [
       inset: auto 0 0 0;
       height: 400px;
       object-position: var(--pos-mobile);
+    }
+    .sh-fx {
+      inset: auto 0 0 0;
+      height: 400px;
     }
     .sh::before {
       background: linear-gradient(

@@ -87,10 +87,18 @@ const topicsAttr = data.topics.join('|');
   h3 a {
     color: var(--ink);
     text-decoration: none;
-    transition: color var(--ix-fast) ease;
+    /* Hovering the card draws an underline under its title, from the left. */
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition:
+      color var(--ix-fast) ease,
+      background-size var(--ix-base) var(--ix-ease);
   }
   h3 a:hover {
     color: var(--blue-text);
+  }
+  .insight-card:hover h3 a,
+  h3 a:focus-visible {
+    background-size: 100% 1px;
   }
   .excerpt {
     color: var(--text-2);

@@ -1,34 +1,60 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SectionHeading from '../components/SectionHeading.astro';
+import Eyebrow from '../components/Eyebrow.astro';
 import ContactForm from '../components/ContactForm.astro';
 import Button from '../components/Button.astro';
+import Icon from '../components/Icon.astro';
 import { site } from '../data/site';
+import { contactStages } from '../data/contact';
 
 // Meta — source: TLS: Website Pages (2026-09-27), 1w1w7ClLF7Ts7M-FSFJeopTP6Z_13FhXn_q9Qxy2hlT0
 const title = 'True Lean Solutions — Contact Us | Discuss Your Project';
 const description =
   "Tell us about the business problem you're solving, or send us a message.";
+
+/*
+ * Presentation (2026-09-29, Hemang's brief): the page reads as the start of a
+ * consulting conversation. The copy, form and contact details are unchanged;
+ * the form is shown in four stages, with a step indicator and the contact
+ * panel held beside it on desktop. See docs/decisions.md.
+ */
 ---
 
 <BaseLayout title={title} description={description} path="/contact/">
-  <section class="section">
+  <section class="section contact">
+    <div class="c-ambient" aria-hidden="true"></div>
     <div class="wrap">
-      <SectionHeading
-        eyebrow="Contact Us"
-        title="Tell us what you're "
-        accent="trying to solve."
-        as="h1"
-        lead="Share the business problem you're working on and we'll get back to you. Prefer to talk it through? Book a free 30-minute call."
-      />
+      <div class="c-hero" data-reveal="load">
+        <Eyebrow label="Contact Us" />
+        <h1><span class="ml"><span>Tell us what you're</span></span> <span class="ml"><span><span class="accent">trying to solve.</span></span></span></h1>
+        <p class="lead">
+          Share the business problem you're working on and we'll get back to you. Prefer to talk it through? Book a free 30-minute call.
+        </p>
+      </div>
 
-      <div class="contact-grid" data-reveal="stagger">
-        <div class="form-col">
+      <div class="contact-grid">
+        <div class="form-col" data-reveal="">
           <ContactForm />
         </div>
 
-        <aside class="side">
-          <div class="card">
+        <aside class="side" data-reveal="stagger">
+          <nav class="stepper" aria-label="Form steps" data-cf-stepper style="--i: 0">
+            <ol>
+              {
+                contactStages.map((s, i) => (
+                  <li>
+                    <a href={`#cf-stage-${i + 1}`} aria-current={i === 0 ? 'step' : undefined}>
+                      <span class="n">{s.n}</span>
+                      <span class="t">{s.name}</span>
+                      <Icon name="check" size={14} class="ok" />
+                    </a>
+                  </li>
+                ))
+              }
+            </ol>
+          </nav>
+
+          <div class="card talk">
             <h2>Prefer to talk?</h2>
             <p>Book a free 30-minute call — enough to figure out where to start.</p>
             <Button href={site.booking} variant="primary" arrow external>
@@ -41,16 +67,18 @@ const description =
             <ul class="details">
               <li>
                 <span class="k">Email</span>
-                <a href={`mailto:${site.email}`}>{site.email}</a>
+                <a href={`mailto:${site.email}`}>
+                  <span class="u">{site.email}</span><Icon name="arrow" size={14} class="go" />
+                </a>
               </li>
               <li>
                 <span class="k">Phone</span>
-                <a href={site.phoneHref}>{site.phone}</a>
+                <a href={site.phoneHref}><span class="u">{site.phone}</span></a>
               </li>
               <li>
                 <span class="k">LinkedIn</span>
                 <a href={site.social.linkedin} target="_blank" rel="noopener noreferrer">
-                  Company page
+                  <span class="u">Company page</span><Icon name="arrow" size={14} class="go" />
                 </a>
               </li>
             </ul>
@@ -62,29 +90,252 @@ const description =
 </BaseLayout>
 
 <style>
+  .contact {
+    position: relative;
+    isolation: isolate;
+    /* Clips the ambient light; unlike `hidden`, `clip` keeps sticky working. */
+    overflow: clip;
+    --side-w: 340px;
+    --col-gap: 3rem;
+  }
+  @media (max-width: 1179px) {
+    .contact {
+      --side-w: 300px;
+      --col-gap: 2rem;
+    }
+  }
+  /* Calm ambient depth: TLS blue, plum and red at a whisper, on the usual canvas. */
+  .c-ambient {
+    position: absolute;
+    /* Fixed offsets, so the form growing (the confirmation) never moves it. */
+    inset: -120px 0 -120px;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(42rem 30rem at 92% 14%, rgba(18, 136, 207, 0.08), transparent 70%),
+      radial-gradient(46rem 34rem at 4% 58%, rgba(135, 54, 98, 0.06), transparent 70%),
+      radial-gradient(34rem 24rem at 48% 96%, rgba(217, 64, 64, 0.045), transparent 70%);
+  }
+
+  /* ---- Hero: large and editorial ---- */
+  .c-hero {
+    display: grid;
+    margin-bottom: clamp(2.25rem, 4.5vw, 3.75rem);
+  }
+  .c-hero h1 {
+    font-size: clamp(2.5rem, 1.72rem + 3.36vw, 4.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.028em;
+  }
+  .accent {
+    color: var(--red);
+  }
+  /* The supporting line keeps SectionHeading's type (size, color, leading). */
+  .lead {
+    margin-top: 1rem;
+    max-width: calc(62ch / 1.1);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  @media (min-width: 1024px) {
+    /* The heading holds the form's column; the supporting line sits over the
+       contact panel, level with the heading's last line. */
+    .c-hero {
+      grid-template-columns: minmax(0, 1fr) var(--side-w);
+      column-gap: var(--col-gap);
+      align-items: end;
+    }
+    .c-hero > :global(.eyebrow) {
+      grid-column: 1 / -1;
+    }
+    .lead {
+      margin-top: 0;
+      padding-bottom: 0.4em;
+    }
+  }
+  /* The red phrase catches the light once, after its line has risen. */
+  @media screen and (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+    .accent {
+      background: linear-gradient(
+          100deg,
+          var(--red) 0 42%,
+          color-mix(in srgb, var(--red) 52%, #fff) 50%,
+          var(--red) 58% 100%
+        )
+        100% 0 / 260% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: c-sheen 1500ms var(--ix-ease) 1150ms both;
+    }
+  }
+  @keyframes c-sheen {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: 0% 0;
+    }
+  }
+
+  /* ---- The conversation ---- */
   .contact-grid {
     display: grid;
-    grid-template-columns: 1.4fr 0.6fr;
-    gap: 2.5rem;
+    gap: 2rem;
     align-items: start;
   }
-  .form-col {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    box-shadow: var(--shadow);
+  /* Columns may shrink below their content (320px, zoomed text). */
+  .contact-grid > * {
+    min-width: 0;
   }
+  @media (min-width: 1024px) {
+    .contact-grid {
+      grid-template-columns: minmax(0, 1fr) var(--side-w);
+      column-gap: var(--col-gap);
+    }
+  }
+  .form-col {
+    --pad: clamp(1.25rem, 3.4vw, 2.5rem);
+    padding: var(--pad);
+    border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in srgb, var(--border) 85%, #fff);
+    /* Nearly opaque, so the ambient light only just shows through. */
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.9));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 1px 2px rgba(13, 13, 13, 0.04),
+      0 28px 56px -36px rgba(13, 13, 13, 0.24);
+  }
+
+  /* ---- Support panel ---- */
   .side {
     display: grid;
     gap: 1.25rem;
   }
+  /* Desktop: held beside the form while the visitor works through it; it
+     lets go with the form's end, well before the footer. Only on screens
+     tall enough to show all of it. */
+  @media (min-width: 1024px) and (min-height: 760px) {
+    .side {
+      position: sticky;
+      top: calc(var(--header-h) + 1.5rem);
+    }
+  }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .side {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Step indicator (desktop). The marker slides to the current step. */
+  .stepper {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .stepper {
+      display: block;
+    }
+  }
+  .stepper ol {
+    position: relative;
+    display: grid;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .stepper ol::before,
+  .stepper ol::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2px;
+    border-radius: 2px;
+  }
+  .stepper ol::before {
+    bottom: 0;
+    background: var(--border);
+  }
+  .stepper ol::after {
+    height: 25%;
+    background: var(--red);
+    transform: translateY(calc(var(--i, 0) * 100%));
+    transition: transform 500ms var(--ix-ease);
+  }
+  .stepper a {
+    display: grid;
+    grid-template-columns: 2.1rem 1fr auto;
+    align-items: center;
+    min-height: 2.2rem;
+    padding-left: 1.1rem;
+    font-size: 0.92rem;
+    color: var(--text-2);
+    text-decoration: none;
+    transition: color var(--ix-fast) ease;
+  }
+  .stepper .n {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    transition: color var(--ix-base) var(--ix-ease);
+  }
+  .stepper .t {
+    transition: translate var(--ix-base) var(--ix-ease);
+  }
+  .stepper :global(.ok) {
+    color: var(--blue);
+    opacity: 0;
+    scale: 0.5;
+    transition:
+      opacity var(--ix-fast) ease,
+      scale var(--ix-base) var(--ix-ease);
+  }
+  .stepper a.is-done .n {
+    color: var(--ink);
+  }
+  .stepper a.is-done :global(.ok) {
+    opacity: 1;
+    scale: 1;
+  }
+  .stepper a[aria-current] {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .stepper a[aria-current] .n {
+    color: var(--red-text);
+  }
+  .stepper a:hover {
+    color: var(--ink);
+  }
+  .stepper a:hover .t {
+    translate: 3px 0;
+  }
+  @media (forced-colors: active) {
+    .stepper ol::before {
+      forced-color-adjust: none;
+      background: GrayText;
+    }
+    .stepper ol::after {
+      forced-color-adjust: none;
+      background: Highlight;
+    }
+  }
+
   .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
     padding: 1.6rem;
-    box-shadow: var(--shadow);
+    border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in srgb, var(--border) 85%, #fff);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      var(--shadow);
+    transition:
+      border-color var(--ix-slow) var(--ix-ease),
+      box-shadow var(--ix-slow) var(--ix-ease);
   }
   .card h2 {
     font-size: var(--step-1);
@@ -95,6 +346,21 @@ const description =
     font-size: 0.95rem;
     margin-bottom: 1.1rem;
   }
+  /* At "04 Let's talk", the call option comes forward a little. */
+  .talk.is-near {
+    border-color: color-mix(in srgb, var(--red) 26%, var(--border));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 18px 38px -20px rgba(194, 54, 54, 0.32);
+  }
+  /* Book a call: the arrow and background already move; add a soft glow. */
+  .talk :global(.btn.primary:hover) {
+    box-shadow:
+      0 10px 24px -4px rgba(194, 54, 54, 0.38),
+      0 0 0 5px rgba(217, 64, 64, 0.1),
+      0 0 30px -6px rgba(217, 64, 64, 0.45);
+  }
+
   .details {
     list-style: none;
     padding: 0;
@@ -104,6 +370,7 @@ const description =
   .details li {
     display: grid;
     gap: 0.15rem;
+    justify-items: start;
   }
   .k {
     font-family: var(--font-head);
@@ -112,18 +379,93 @@ const description =
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
+    transition: color var(--ix-fast) ease;
+  }
+  .details li:hover .k {
+    color: var(--text-2);
   }
   .details a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    max-width: 100%;
     color: var(--blue-text);
     text-decoration: none;
+    transition:
+      color var(--ix-fast) ease,
+      translate 160ms ease;
   }
-  .details a:hover {
-    text-decoration: underline;
+  /* Underline draws in from the left on hover and keyboard focus. */
+  .u {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    padding-bottom: 1px;
+    transition: background-size var(--ix-base) var(--ix-ease);
   }
-
-  @media (max-width: 900px) {
-    .contact-grid {
-      grid-template-columns: 1fr;
-    }
+  .details a:is(:hover, :focus-visible) .u {
+    background-size: 100% 1px;
+  }
+  .details :global(.go) {
+    opacity: 0;
+    translate: -4px 0;
+    transition:
+      opacity var(--ix-fast) ease,
+      translate var(--ix-base) var(--ix-ease);
+  }
+  .details a:is(:hover, :focus-visible) :global(.go) {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .details a:active {
+    translate: 0 1px;
+    color: var(--red-text);
   }
 </style>
+
+<script>
+  /**
+   * Step indicator beside the form (desktop). It mirrors the form's current
+   * and completed stages (ContactForm.astro announces changes as `cf:stage`)
+   * and glides to a stage when a step is chosen. At "04 Let's talk" the
+   * "Prefer to talk?" card comes forward a little.
+   */
+  const stepper = document.querySelector<HTMLElement>('[data-cf-stepper]');
+  const talk = document.querySelector<HTMLElement>('.side .talk');
+  const stages = [...document.querySelectorAll<HTMLElement>('.contact-form .stage')];
+  const links = stepper ? [...stepper.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')] : [];
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const sync = () => {
+    const active = stages.findIndex((s) => s.classList.contains('is-active'));
+    stepper?.style.setProperty('--i', String(Math.max(0, active)));
+    links.forEach((a, i) => {
+      if (i === active) a.setAttribute('aria-current', 'step');
+      else a.removeAttribute('aria-current');
+      a.classList.toggle('is-done', !!stages[i]?.classList.contains('is-done'));
+    });
+    talk?.classList.toggle('is-near', active === stages.length - 1);
+  };
+  document.addEventListener('cf:stage', sync);
+  sync();
+
+  // Desktop: while this step list is out of view (short screens, or once the
+  // panel has let go), the form's compact indicator stands in for it.
+  const strip = document.querySelector<HTMLElement>('.contact-form .strip');
+  const headerH = () => document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 72;
+  if (stepper && strip) {
+    new IntersectionObserver(([e]) => strip.classList.toggle('is-shown', !e.isIntersecting), {
+      rootMargin: `-${headerH()}px 0px 0px 0px`,
+    }).observe(stepper);
+  }
+
+  for (const a of links) {
+    a.addEventListener('click', (e) => {
+      const stage = document.querySelector<HTMLElement>(a.hash);
+      if (!stage) return;
+      e.preventDefault();
+      stage.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'start' });
+      stage.querySelector<HTMLElement>('input, select, textarea, button')?.focus({ preventScroll: true });
+    });
+  }
+</script>

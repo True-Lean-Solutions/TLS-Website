@@ -4,13 +4,19 @@
  *    get .is-in as they enter the viewport; items entering together stagger.
  *  - Cursor light: .ix-light surfaces track the pointer via --mx / --my.
  *  - Magnetic CTAs: [data-magnetic] buttons lean at most 3px toward the cursor.
- *  - Count-up metrics: [data-count-up] count from zero each time they scroll in.
+ *  - Count-up metrics: [data-count-up] count from zero each time they scroll in
+ *    (their group carries [data-counting] while the numbers run).
  * Everything is progressive. Without this script, or with reduced motion, the
  * page renders fully visible and static (the CSS only hides content once the
  * head script has set html.ix).
+ *
+ * The scroll layer (./scroll: GSAP + ScrollTrigger + Lenis) runs first and
+ * claims the headings, card groups and images it animates; the simple
+ * fade-up below is left with supporting text only (prose, steps, forms).
  */
 
 import { parseMetric, formatMetric, type Metric } from './metric';
+import { initScroll } from './scroll';
 
 declare global {
   interface Window {
@@ -36,7 +42,9 @@ function initReveal() {
   const targets: Element[] = [];
   for (const el of document.querySelectorAll<HTMLElement>('[data-reveal]')) {
     const mode = el.dataset.reveal;
-    if (mode === 'load') continue; // CSS-only, above the fold
+    // 'load' is CSS-only (above the fold); 'heading', 'cards', 'media' and
+    // 'track' belong to the scroll layer.
+    if (mode !== '' && mode !== 'stagger' && mode !== 'editorial') continue;
     if (mode === 'stagger') targets.push(...[...el.children].filter(rendered));
     else targets.push(el);
   }
@@ -121,7 +129,7 @@ function cubicBezier(x1: number, y1: number, x2: number, y2: number) {
  * One requestAnimationFrame loop per group, cancelled before any restart.
  */
 function initCountUp() {
-  const DURATION_MS = 3000;
+  const DURATION_MS = 2400;
   const ENTER_RATIO = 0.25;
   const ease = cubicBezier(0.22, 1, 0.36, 1);
 
@@ -151,12 +159,16 @@ function initCountUp() {
       cancelAnimationFrame(frame);
       frame = 0;
       counters.forEach((c) => show(c, 0));
+      delete (group as HTMLElement).dataset.counting;
       armed = true;
     };
 
     const play = () => {
       cancelAnimationFrame(frame); // never more than one loop
       armed = false;
+      // While the numbers run, the group carries [data-counting] (StatInline
+      // lights its icon tile for the duration).
+      (group as HTMLElement).dataset.counting = '';
       const t0 = performance.now();
       const tick = (now: number) => {
         let running = false;
@@ -171,6 +183,7 @@ function initCountUp() {
           }
         });
         frame = running ? requestAnimationFrame(tick) : 0;
+        if (!running) delete (group as HTMLElement).dataset.counting;
       };
       frame = requestAnimationFrame(tick);
     };
@@ -233,6 +246,7 @@ function initMagnetic() {
   }
 }
 
+if (root.classList.contains('ix')) initScroll();
 initReveal();
 // Reduced motion: leave the real values exactly as rendered, no counting.
 if (!reduceMotion) initCountUp();

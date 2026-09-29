@@ -58,6 +58,7 @@ Where the answer would not change what you build, proceed and state the assumpti
   - Insights search and topic filter;
   - the contact form;
   - the interaction layer (`src/scripts/motion.ts` + `src/styles/motion.css`: scroll reveals, cursor light, magnetic CTAs; see `docs/decisions.md`, 2026-09-28). Reuse its utilities (`.glass-icon`, `.ix-card`, `.ix-light`, `data-reveal`) rather than adding one-off animations.
+  - the scroll layer (`src/scripts/scroll/`: GSAP + ScrollTrigger + SplitText, Lenis smooth scrolling; see `docs/decisions.md`, 2026-09-29). It applies itself site-wide from existing hooks (`SectionHeading`, `data-reveal` groups, `.ix-card`, the hero components). New pages get it automatically; add a new *kind* of motion there, in the matching module, never inline on a page. Reveals use opacity only (never `visibility`), so content stays focusable.
   Everything else ships as static HTML.
 - **Commands:**
   - `npm run dev`: local server.
@@ -73,8 +74,8 @@ Where the answer would not change what you build, proceed and state the assumpti
 ```
 src/
   components/    Header, Lockup, NavDropdown, MobileNav, Footer, Button, SectionHeading, SolutionHero (every /services/ hero),
-                 CommonChallenges, ServiceCard, StatBlock, CaseStudyCard, StepRow, ValueCard, TestimonialCarousel,
-                 ClientLogos, CtaBand, TeamCard, ContactForm, InsightCard, TopicFilter
+                 CommonChallenges, ServiceCard, StatBlock, CaseStudyCard, StepRow, ValueCard, ReviewReel, ReviewCard,
+                 ClientLogos, ClientLogoItem, CtaBand, TeamCard, ContactForm, InsightCard, TopicFilter
   layouts/       BaseLayout.astro (head, SEO, header, footer), ArticleLayout.astro
   pages/         index, about-us, services/index, services/[4 detail pages], insights/index,
                  insights/[category], insights/[slug], contact, referral-partner-program,
@@ -129,7 +130,7 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
    - The three verified stats from the Home doc (11 layout, verified numbers only).
    - Optional case-study cards linking to the three service-page case studies, using their verbatim headlines.
 6. **Our Approach.** The four steps from the Home doc (01 Understanding, 02 Identifying, 03 Designing, 04 Implementing & Optimizing), in the 05 step-row layout.
-7. **Clients, then testimonials** (one section since 2026-09-29). "Our Clients / Teams we work with" with the client logo strip (`ClientLogos`: a static row until there are 6+ real logos, then a slow marquee), then "What our clients say" as one featured review at a time (`TestimonialCarousel`). The reviews sheet, verbatim. Mayank Pujara's position reads "CEO · TLS advisor"; keep it exactly as given.
+7. **Clients, then testimonials** (one section since 2026-09-29). "Our Clients / Teams we work with" with the client logo strip (`ClientLogos`: a static row until there are 6+ real logos, then a slow marquee), then "What our clients say" as a continuous review reel (`ReviewReel`, since 2026-09-29: two rows drifting in opposite directions, influenced by scrolling; a still grid with reduced motion). The reviews sheet, verbatim. Mayank Pujara's position reads "CEO · TLS advisor"; keep it exactly as given.
 8. **Closing CTA band.** "Not Sure Where to Start?" with both CTAs, in the 13 CTA band layout.
 
 ## Header, lockup, footer

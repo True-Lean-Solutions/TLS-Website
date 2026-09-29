@@ -136,8 +136,15 @@ const meetingFeatures = [
 </BaseLayout>
 
 <style>
+  /* Same soft-edged gray band as .section-alt (global.css). */
   .alt {
-    background: var(--section);
+    background: linear-gradient(
+      180deg,
+      var(--bg) 0,
+      var(--section) 72px,
+      var(--section) calc(100% - 72px),
+      var(--bg) 100%
+    );
   }
   .grid-2 {
     display: grid;

@@ -324,7 +324,7 @@ Entry format:
 
 **Status:** interim
 
-**Decision.** Home's testimonials and clients folds are one section, in this order: "Our Clients / Teams we work with" with a logo strip, then "What our clients say" as a single featured review in a glass card (large quote mark, 24 px text on desktop, real star rating, company logo + name + exact title; initials where there's no logo), with previous/next, dots, "01 / 03", and a pause button. Reviews switch with a 450 ms fade/slide; auto-advance every 7 s, paused on hover, focus, an open review, after the visitor navigates (12 s), when off-screen, or with the pause button; none under reduced motion. Long reviews clamp to five lines behind "Read full review" (the full verbatim text stays in the DOM). Without JS, all three reviews render in full. The logo strip is a static, muted row (grayscale only for NRI; UV Concepts keeps its colors); it becomes a 30 s seamless marquee automatically once there are six or more real logos. The UV Concepts PNG's white background was made transparent so it sits cleanly on the page. `TestimonialCard.astro` was removed (its behaviour moved into the carousel); logos now come from `src/data/clients.ts`.
+**Decision.** Home's testimonials and clients folds are one section, in this order: "Our Clients / Teams we work with" with a logo strip, then "What our clients say" as a single featured review in a glass card (large quote mark, 24 px text on desktop, real star rating, company logo + name + exact title; initials where there's no logo), with previous/next, dots, "01 / 03", and a pause button. Reviews switch with a 450 ms fade/slide; auto-advance every 7 s, paused on hover, focus, an open review, after the visitor navigates (12 s), when off-screen, or with the pause button; none under reduced motion. Long reviews clamp to five lines behind "Read full review" (the full verbatim text stays in the DOM). Without JS, all three reviews render in full. The logo strip is a static, muted row (grayscale only for NRI; UV Concepts keeps its colors; muting removed the same day, see "Client logos at full strength" below); it becomes a 30 s seamless marquee automatically once there are six or more real logos. The UV Concepts PNG's white background was made transparent so it sits cleanly on the page. `TestimonialCard.astro` was removed (its behaviour moved into the carousel); logos now come from `src/data/clients.ts`.
 
 **Why.** Hemang's direction (2026-09-29): stronger, more premium client proof. The marquee is gated because only two real client logos exist — a marquee would have to repeat them five or six times across the screen, which the brief itself rules out ("do not duplicate logos excessively… never create fake clients").
 
@@ -411,3 +411,160 @@ No JavaScript is involved. Text and card copy are unchanged.
 **Revisit when.** A purpose-made, wider or taller image arrives. The width formula (`--cc-img-w`, `--cc-img-x`) assumes the platform spans 0.203–0.855 of the image's width.
 
 **Where it lives.** `src/components/CommonChallenges.astro`, `public/home/challenges-visual.webp`, `docs/sources.md` §4.
+
+## 2026-09-29 — Site-wide scroll experience: GSAP + ScrollTrigger + Lenis
+
+**Status:** interim
+
+**Decision.** This is a motion-only upgrade across every page. Text, images, logos, colors, sections and structure are unchanged. The only markup additions are:
+- a decorative progress-line element;
+- the hero titles set as explicit line spans (same text, same look);
+- a decorative spotlight element in `SolutionHero`.
+
+**Dependencies.** `gsap` (3.15, free standard license; includes ScrollTrigger and SplitText) and `lenis` (1.3, MIT). Hemang named both in the brief (2026-09-29). Together with the site's own code they add about 58 KB gzipped of script.
+
+**Architecture.** `src/scripts/scroll/` has one entry point and one `gsap.matchMedia()`. It reverts to the authored page whenever conditions change.
+
+| Module | What it does |
+|---|---|
+| `core.ts` | Lenis, easing and timing scale. |
+| `text.ts` | Headings reveal line by line out of a mask. SplitText is reverted once each reveal finishes. |
+| `cards.ts` | Depth entrances for every card group, plus a faint per-column scroll drift on desktop. |
+| `media.ts` | Hero parallax and controlled exits, clip reveals for large images, the Solutions-hero spotlight, the logo drift. |
+| `story.ts` | The two scroll scenes. |
+| `chrome.ts` | The progress line, the compact header and the footer reveal. |
+
+**What moves, and where.**
+- **Everywhere:**
+  - smooth wheel/trackpad scrolling (touch stays native);
+  - a 2px red progress line;
+  - the header tucks 8px and gains a lift shadow after scrolling. It never hides, and stays solid ink: blur would cost the nav its subpixel text;
+  - masked heading reveals and card depth entrances in place of fade-ups;
+  - soft-edged gray section bands.
+- **Home:**
+  - the hero title rises line by line and the photo settles, then both exit with parallax;
+  - the Common Business Challenges scene (wide desktop, mouse/trackpad, screens ≥ 820px tall): the section is held and the four challenges activate in turn;
+  - the count-up now runs 2.4s (was 3s; the brief asks for 1.8–2.5s) and still replays on every entry;
+  - the logo row drifts sideways with scroll. With two logos a marquee would repeat them across the screen, so the marquee stays gated at 6+ logos;
+  - testimonials switch with a sequenced crossfade, and a sideways swipe changes review on touch screens (superseded the same day by the review reel, below).
+- **Solutions:** the eight cards run as one horizontal sequence driven by vertical scroll (desktop, mouse/trackpad, when the scene fits the screen).
+- **Solution pages:** parallax heroes, and a faint cursor spotlight on desktop.
+- **About:** the map is unveiled through a clip and its pins start pulsing.
+- **Insights:** covers ease out of a slight zoom and titles rise line by line as cards arrive; hovering a card draws an underline under its title.
+- **Articles:**
+  - the cover settles back as you read;
+  - sub-headings, pull quotes and images reveal;
+  - body text never moves.
+- **Contact:** fields ease their focus states, and the confirmation and error panels settle in.
+- **Page transitions:** about 550ms end to end.
+
+**Why the less obvious choices.**
+- *Scenes use native `position: sticky`, not ScrollTrigger pinning.* Fixed pinning registered as layout shift (CLS about 1.7 on Home). Transform pinning fixed CLS but cost roughly 300ms of main-thread work per screenful of scrolling. With sticky, the compositor holds the section, so there is no per-frame JS, no layout shift and no jitter.
+- *Reveals fade with opacity only, never `visibility`.* With `visibility`, content waiting to be revealed couldn't be focused by keyboard or read by screen readers. Focusing anything unrevealed also reveals it at once.
+- *The challenge story doesn't dim inactive cards with opacity.* That would pull their text below AA. Inactive cards go flatter, with a gray title and desaturated icon, at full contrast.
+- *Scenes are off on touch devices, phones, short screens and with reduced motion.* Those get the normal layouts. Reduced motion also turns off smooth scrolling, parallax and all scroll effects.
+
+**Verified.**
+- `astro check` 0 errors.
+- 102 page×width checks, all 31 pages at 1440–375: no overflow, nothing left hidden, no errors.
+- Text is identical with and without motion.
+- CLS 0.0006 while scrolling.
+- Steady 60fps once a page is warm.
+- Keyboard, anchors, and back/forward all work.
+
+**Revisit when.** Leadership wants more or less motion, a sixth client logo arrives (the marquee takes over), or a new section needs its own scene. Add it in `story.ts`, sticky-based.
+
+**Where it lives.** `src/scripts/scroll/*`, `src/scripts/motion.ts`, `src/styles/motion.css`, `src/styles/global.css`, `src/layouts/BaseLayout.astro`, `src/components/{Header,SolutionHero,CommonChallenges,TestimonialCarousel,ContactForm,GlobalDelivery,InsightCard}.astro`, `src/pages/{index,services/index,services/enterprise-ai}.astro`.
+
+## 2026-09-29 — Motion graphics: additive moments on top of the scroll experience
+
+**Status:** interim
+
+**Decision.** Hemang asked for motion graphics, adding to what exists and removing nothing. Each moment is a transient layer or a state that plays and then leaves the page exactly as designed. All of them are off with reduced motion and in print.
+- **Solution pages: an arrival motion graphic.** A one-time light passes over the hero photo, under the text, and its movement follows what the solution does. It is keyed by the solution's icon in `SolutionHero`:
+  - Cyber Security: a layered scan, top to bottom;
+  - Data & Analytics: light streaming across;
+  - System Integration: light from both sides meeting in the middle;
+  - Workflow Automation: a light holding on each third of the image in turn;
+  - Technology Strategy: a directional fill;
+  - AI & Automation: rings radiating from the scene;
+  - Technical Talent: a soft glow breathing in once;
+  - Custom Software: two panels slotting into place.
+  The Solutions overview hero is unchanged.
+- **Home hero.** Once the photo has settled, a band of the brand's red-to-blue edge light crosses it once (soft-light blend, so it tints the photo rather than filming it).
+- **The isometric illustration (`HeroArt`: Home › Our Approach, and the CTA band).** At Hemang's request it was replaced with an animated diagram of how TLS works, with the same four labels and the TLS mark.
+  - **The platform is a colorful chip package:** brand-gradient sides (red → plum → blue), metal leads and a gradient-rimmed lid. The brand guide rules out circuit-board imagery, so it has no circuit traces.
+  - **Its four tiles are the steps, in story order:** Business Problem → Lean Thinking → Right Solution → Measurable Results. Right Solution and Measurable Results swapped corners so the story runs clockwise.
+  - **The chip assembles as it arrives.** A light then travels the loop. Each step lights its tile, connector and card, which checks off. Each tile's mark moves: a target ring pulses, a diamond draws, a cube slots in, bars rise. A wave runs along the leads. A halo closes each round.
+  - **Hover (desktop):** hovering a card holds the story on that step.
+  - **Performance and fallback:** it runs only while on screen. With reduced motion or without JS it is a still picture of the finished system.
+- **Recent Results.** While each figure counts up, its icon tile charges with light, lifts a touch, and settles as the count lands. It replays with the count.
+- **Our Approach and the solution pages' steps.** Steps arrive in sequence (01, 02, 03, 04): marker, rule, then text. Previously all four faded up together.
+- **Insights cards.** Titles rise line by line as their card arrives. Hovering a card draws an underline under its title.
+- **Testimonials.** On touch screens, a sideways swipe changes review; vertical scrolling stays native. (Superseded the same day: the carousel became the review reel, below.)
+- **Fix.** The Insights card entrance left an inline transform on cover images, which cancelled their hover zoom, and the covers' own CSS transition fought the entrance. The entrance now pauses the transition and hands the cover back clean.
+
+**Not done, and why.** The brief asks for a continuous logo marquee. CLAUDE.md keeps the client logos a static row until there are 6+ real logos; with two, a loop would repeat them across the screen. The row keeps its scroll drift, and this is flagged for Hemang.
+
+**Where it lives.** `src/components/{SolutionHero,StatInline,InsightCard,TestimonialCarousel,HeroArt}.astro`, `src/pages/index.astro`, `src/scripts/motion.ts`, `src/scripts/scroll/{steps,cards,index}.ts`.
+
+## 2026-09-29 — Contact page presented as a four-stage conversation
+
+**Status:** interim
+
+**Decision.** Hemang's brief turned the Contact page from a form into the start of a consulting conversation, changing presentation only. The one form now reads as four stages: 01 About you (Name, Email, Company, Phone, two columns on desktop), 02 Timeline, 03 The problem (the textarea as the centerpiece), and 04 Let's talk (Send message).
+- **Unchanged:** every word of existing copy, every field (names, types, labels, required states, the 1000-character limit), validation, and the whole form contract. That covers the URLSearchParams POST, fire-and-forget sending, the honeypot, the success and error panels (role=status and role=alert), the noscript note, the booking link, email, phone and LinkedIn. A review confirmed the POST body is byte-identical to before, apart from the timestamp.
+- **New UI micro-copy, from the brief:** the stage labels (01–04, About you, Timeline, The problem, Let's talk), "Sending…" and the step list's accessible name "Form steps". Labels live in `src/data/contact.ts`.
+- **Hero:** a larger headline that rises line by line; the red phrase catches the light once. On desktop the supporting paragraph sits in the right-hand column, over the contact panel (Hemang confirmed this position), at its original size and color.
+- **States:** focus warms the field, and filled fields show a small check. The counter has a hairline meter that turns red near the limit. After a failed submit, invalid fields are marked (aria-invalid) as well as getting the browser's own message. Send shows "Sending…" for 420ms, then the existing confirmation, which takes focus. The confirmation's space is reserved at submit, so nothing shifts later.
+- **Timeline:** where the browser supports a styleable `<select>` (`appearance: base-select`, current Chrome and Edge), the list opens as a soft panel and the chevron turns. Elsewhere it is the native control. It is the same element with the same options.
+- **Step indicator:** it follows scroll position: the last stage whose top has passed 42% of the viewport. The stage holding focus stays current until the visitor scrolls by hand.
+  - Desktop: a step list at the top of the contact panel. The panel is sticky on screens at least 760px tall and releases at the end of the form.
+  - Phones and tablets, and desktop whenever that list is out of view: a compact pill that sticks under the header through stages 01–03 and lets go before 04. It is decorative (aria-hidden), and taps pass through it.
+- **Motion** (`src/scripts/scroll/contact.ts`): the card rises while its clip opens; each stage's head and fields arrive in turn; the panel settles in; the ambient light drifts. Entrances play once per page view, a resize or rotation never re-hides the form, and focusing the form finishes them at once. With reduced motion, everything is static and visible.
+
+**Verified.**
+- A 5-dimension review with adversarial verification (content and contract, accessibility, responsive, motion and performance, code). Its 21 confirmed findings were fixed and re-tested.
+- The step indicator is correct after step links, Home/End and wheel scrolling.
+- Shift+Tab never leaves focus under the header or strip (1366×768, 390×844).
+- The phone strip never covers Send, and short laptop screens get the strip.
+- A resize keeps the reader's place (a site-wide fix in `scroll/index.ts`).
+- Keyboard (Space) submit causes no layout shift.
+- Nothing is clipped at 320px, and focus stays clear in forced colors.
+
+**Revisit when.** Himanshu reviews the stage labels, or the form gains fields.
+
+**Where it lives.** `src/components/ContactForm.astro`, `src/pages/contact.astro`, `src/data/contact.ts`, `src/scripts/scroll/{contact,index,core}.ts`, `src/styles/motion.css` (scroll margins for focus).
+
+## 2026-09-29 — Client reviews become a continuous review reel
+
+**Status:** interim
+
+**Decision.** At Hemang's request, the Home "What our clients say" carousel (one featured review at a time) is replaced by a reel. Two rows of review cards drift in opposite directions, endlessly, and the visitor's scrolling influences them. The reviews are unchanged: the same three, verbatim, attributed exactly (Mayank Pujara's "CEO · TLS advisor" included), with the same logos or initials and star ratings.
+- **Loop.** Each row repeats its set of reviews to make the loop seamless: the offset wraps by exactly one set's width, and a copy always extends past both edges. Row 2 runs the list in reverse order, so the two streams never read the same. The repeats are hidden from assistive tech and the tab order; only the three originals are read.
+- **Speed.** Row 1 drifts left at 32 px/s and row 2 right at 40 px/s. Scrolling down carries them faster (at most 1.35x). Scrolling up counteracts them and, when fast, gently reverses them. The influence is smoothed, so the reel eases up and settles rather than jumping. The page's scroll is never taken over.
+- **Presence.** Cards are slightly more present in the middle of the screen (scale 0.96 to 1, opacity 0.88 to 1 at the edges). The rows enter from opposite sides and, on desktop, part slightly in depth as the page scrolls. A faint red cursor light shows on desktop.
+- **Control.** A pause button (WCAG 2.2.2) is provided. Hovering, pressing (touch) or focusing a row eases it to a stop, and a focused review glides to the middle.
+- **Long reviews.** Greg Hackbart's letter and Mayank Pujara's review are clamped in the card, never shortened: the full text stays in the page. "Read full review" opens the whole review in a dialog.
+- **Phones.** One row. With reduced motion, or without JS, the reviews are a still grid (full text without JS).
+
+**Known trade-off.** There are three reviews, so each appears more than once on screen at a time (in both rows). Showing one row on desktop too would reduce the repetition; a two-line change in `ReviewReel.astro`.
+
+**Verified.** Seamless loop (no gaps over 24s including a wrap, at 1024–2560); 60fps at 1440 and 1024; no horizontal overflow; three exposed reviews; dialog, pause and hover all work; still grid under reduced motion.
+
+**Where it lives.** `src/components/{ReviewReel,ReviewCard}.astro`, `src/scripts/scroll/reel.ts`, `src/pages/index.astro`. `TestimonialCarousel.astro` was removed.
+
+## 2026-09-29 — Client logos at full strength, in a clean rail
+
+**Status:** interim
+
+**Decision.** At Hemang's request, "Teams we work with" shows the client logos as bold brand marks, using the exact assets with no recoloring. The muted look is gone: no grayscale on NRI, no 65% opacity on either logo, and nothing ever filters or fades them, whether at rest, on hover or in motion.
+- **Sizing.** Each logo sits in the same visual zone (a reusable `ClientLogoItem`: about 250×96 px on desktop, 42vw×80 on phones), vertically centered, at its natural aspect ratio (`object-fit: contain`), never cropped or stretched. Optical size comes from `displayHeight` in `clients.ts`, shown 1.25× in the rail: NRI renders about 215×43, UV Concepts 65×65.
+- **Rail.** Hairlines above and below that fade at both ends, generous spacing, and a thin divider between logos.
+- **Hover (desktop).** A 1.05× lift and nothing else.
+- **Motion.** The row keeps its scroll drift. The marquee still switches on automatically at six or more real logos, and `ClientLogoItem` is used in both.
+- The unused `muted` field was removed from `clients.ts`.
+
+**Known limit.** The UV Concepts asset is a 66×66 px pale outlined mark with no wordmark, and the Drive original is the same size. So it stays at 65 px (native: larger would blur), and its pale gray is its real color. To make it as strong as NRI's, we need a larger or vector logo, ideally with the "UV Concepts" wordmark, from the client.
+
+**Where it lives.** `src/components/{ClientLogos,ClientLogoItem}.astro`, `src/data/clients.ts`.

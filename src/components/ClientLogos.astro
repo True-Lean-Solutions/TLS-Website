@@ -1,15 +1,15 @@
 ---
 /**
- * Client logo strip. Real logos only (src/data/clients.ts).
- * - Fewer than MARQUEE_MIN logos: a calm static row. A marquee needs the set
- *   repeated across the screen, and with a couple of genuine clients that
- *   repetition would look padded.
+ * Client logo rail. Real logos only (src/data/clients.ts), each shown at full
+ * strength in its own colors (ClientLogoItem): no grayscale, no fading.
+ * - Fewer than MARQUEE_MIN logos: a calm static row that drifts slightly with
+ *   scroll (scroll layer). A marquee needs the set repeated across the screen,
+ *   and with a couple of genuine clients that repetition would look padded.
  * - MARQUEE_MIN or more: a slow infinite marquee (30 s per loop, linear),
  *   faded at both edges, paused on hover/focus, static under reduced motion.
- * Logos are muted until hovered (opacity, plus grayscale where it's safe).
  */
 import { clients } from '../data/clients';
-import { href } from '../data/site';
+import ClientLogoItem from './ClientLogoItem.astro';
 
 interface Props {
   /** Override for testing/layout reuse; defaults to all clients. */
@@ -25,37 +25,13 @@ const marquee = items.length >= MARQUEE_MIN;
     marquee ? (
       <div class="logos-viewport">
         <ul class="logos-track">
-          {[0, 1].map((copy) =>
-            items.map((c) => (
-              <li class="logo" aria-hidden={copy === 1 ? 'true' : undefined}>
-                <img
-                  class:list={[c.muted]}
-                  src={href(c.logo)}
-                  alt={copy === 1 ? '' : c.name}
-                  width={c.width}
-                  height={c.height}
-                  style={`height: ${c.displayHeight}px`}
-                  loading="lazy"
-                />
-              </li>
-            ))
-          )}
+          {[0, 1].map((copy) => items.map((c) => <ClientLogoItem client={c} copy={copy === 1} />))}
         </ul>
       </div>
     ) : (
       <ul class="logos-row">
         {items.map((c) => (
-          <li class="logo">
-            <img
-              class:list={[c.muted]}
-              src={href(c.logo)}
-              alt={c.name}
-              width={c.width}
-              height={c.height}
-              style={`height: ${c.displayHeight}px`}
-              loading="lazy"
-            />
-          </li>
+          <ClientLogoItem client={c} />
         ))}
       </ul>
     )
@@ -63,10 +39,10 @@ const marquee = items.length >= MARQUEE_MIN;
 </div>
 
 <style>
-  /* A hairline band that frames the logos: fades out toward both ends. */
+  /* A clean rail: hairlines above and below that fade toward both ends. */
   .logos {
     position: relative;
-    padding-block: 1.6rem;
+    padding-block: 1.75rem;
   }
   .logos::before,
   .logos::after {
@@ -88,45 +64,27 @@ const marquee = items.length >= MARQUEE_MIN;
     margin: 0;
     padding: 0;
   }
-  .logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: none;
-  }
-  .logo img {
-    width: auto;
-    max-width: none;
-    object-fit: contain;
-    opacity: 0.65;
-    transition:
-      opacity var(--ix-base) var(--ix-ease),
-      filter var(--ix-base) var(--ix-ease),
-      transform var(--ix-base) var(--ix-ease);
-  }
-  .logo img.grayscale {
-    filter: grayscale(100%);
-  }
-  .logo img.fade {
-    opacity: 0.72;
-  }
-  .logo:hover img {
-    opacity: 1;
-    filter: none;
-  }
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .logo:hover img {
-      transform: scale(1.04);
-    }
-  }
 
-  /* Static row */
+  /* Static row: logos side by side, a hairline between neighbours. */
   .logos-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 1.5rem 4.5rem;
+    gap: 1rem 3rem;
+  }
+  .logos-row > :global(.cl-item + .cl-item) {
+    position: relative;
+  }
+  .logos-row > :global(.cl-item + .cl-item)::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 50%;
+    width: 1px;
+    height: 48px;
+    translate: 0 -50%;
+    background: linear-gradient(transparent, var(--border-2), transparent);
   }
 
   /* Marquee */
@@ -138,9 +96,9 @@ const marquee = items.length >= MARQUEE_MIN;
   .logos-track {
     display: flex;
     align-items: center;
-    gap: 4.5rem;
+    gap: 3rem;
     width: max-content;
-    padding-right: 4.5rem; /* the gap that joins the two copies */
+    padding-right: 3rem; /* the gap that joins the two copies */
   }
   @media (prefers-reduced-motion: no-preference) {
     .logos-track {
@@ -163,6 +121,16 @@ const marquee = items.length >= MARQUEE_MIN;
     }
     .logos-track > [aria-hidden='true'] {
       display: none;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .logos-row {
+      gap: 1rem;
+    }
+    .logos-row > :global(.cl-item + .cl-item)::before {
+      left: -0.5rem;
+      height: 40px;
     }
   }
 </style>

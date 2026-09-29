@@ -36,8 +36,38 @@
 }
 
 /* ---- Smooth in-page scrolling that clears the sticky header ---- */
-:where([id]) {
+/* Anchor targets, and anything that takes focus, scroll into view below the
+   sticky header rather than under it (WCAG 2.4.11). */
+:where([id], a, button, input, select, textarea, summary, [tabindex]) {
   scroll-margin-top: calc(var(--header-h) + 1.5rem);
+}
+/* Lenis drives the scroll position itself; native smooth scrolling on top of
+   it would fight every frame. */
+html.lenis {
+  scroll-behavior: auto;
+}
+
+/* ---- Scroll progress: 2px of TLS red across the very top ---- */
+.scroll-progress {
+  display: none;
+}
+html.ix .scroll-progress {
+  display: block;
+  position: fixed;
+  z-index: 200;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+@media print {
+  html.ix .scroll-progress {
+    display: none;
+  }
 }
 
 /* ==== 1. Glass icon ==================================================== */
@@ -176,9 +206,11 @@
 }
 
 /* ==== 2. Card hover ==================================================== */
+/* The lift uses the `translate` property, not `transform`: the scroll layer
+   drives cards' transforms (entrance, depth), and the two compose. */
 .ix-card {
   transition:
-    transform var(--ix-base) var(--ix-ease),
+    translate var(--ix-base) var(--ix-ease),
     box-shadow var(--ix-base) var(--ix-ease),
     border-color var(--ix-base) var(--ix-ease);
 }
@@ -190,10 +222,10 @@
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   :root .ix-card:hover {
-    transform: translateY(-5px);
+    translate: 0 -6px;
   }
   :root .ix-card--quiet:hover {
-    transform: translateY(-3px);
+    translate: 0 -4px;
   }
 }
 
@@ -244,6 +276,11 @@
     translate: 0 0;
   }
 }
+@keyframes ix-line {
+  from {
+    translate: 0 108%;
+  }
+}
 @keyframes ix-draw {
   from {
     transform: scaleX(0);
@@ -253,6 +290,13 @@
   from {
     opacity: 0;
   }
+}
+
+/* A title set as explicit lines: each line is its own block (the layout the
+   <br> used to give), with or without motion. */
+.ml,
+.ml > span {
+  display: block;
 }
 
 /* Hidden-until-revealed only applies on screen, with motion allowed, and once
@@ -273,6 +317,26 @@
   [data-reveal='load'] > * {
     --ix-rise: 16px;
     animation: ix-rise var(--ix-slow) var(--ix-ease) backwards;
+  }
+  /* Page titles rise out of a mask instead of fading. */
+  [data-reveal='load'] > h1,
+  [data-reveal='load'] > .head > h1 {
+    animation: ix-mask 1000ms var(--ix-ease) 60ms backwards;
+  }
+  /* Titles set as explicit lines (.ml > span) reveal line by line. */
+  .ml {
+    overflow: clip;
+    padding-bottom: 0.1em;
+    margin-bottom: -0.1em;
+  }
+  .ml > span {
+    animation: ix-line 1050ms var(--ix-ease) backwards;
+  }
+  .ml:nth-child(2) > span { animation-delay: 110ms; }
+  .ml:nth-child(3) > span { animation-delay: 220ms; }
+  :is([data-reveal='load'] > h1, [data-reveal='load'] > .head > h1):has(> .ml),
+  .sh h1:has(> .ml) {
+    animation: none;
   }
   [data-reveal='load'] > :nth-child(2) { animation-delay: calc(1 * var(--ix-stagger)); }
   [data-reveal='load'] > :nth-child(3) { animation-delay: calc(2 * var(--ix-stagger)); }
@@ -335,11 +399,14 @@
     navigation: auto;
   }
 }
+/* ~550ms end to end: the old page lifts away, the new one settles in just
+   behind it. The browser starts this once the new page is ready, so it never
+   holds navigation back. */
 ::view-transition-old(root) {
-  animation: 160ms ease-in both ix-page-out;
+  animation: 220ms cubic-bezier(0.4, 0, 1, 1) both ix-page-out;
 }
 ::view-transition-new(root) {
-  animation: 240ms var(--ix-ease) both ix-page-in;
+  animation: 420ms var(--ix-ease) 120ms both ix-page-in;
 }
 ::view-transition-group(ix-nav-indicator) {
   animation-duration: 250ms;
@@ -348,11 +415,12 @@
 @keyframes ix-page-out {
   to {
     opacity: 0;
+    transform: translateY(-10px);
   }
 }
 @keyframes ix-page-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(14px);
   }
 }

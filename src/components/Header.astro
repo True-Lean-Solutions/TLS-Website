@@ -175,6 +175,33 @@ const menuId = (label: string) => `menu-${label.toLowerCase().replace(/\s+/g, '-
     background: var(--ink);
     /* Gets view-transition-name: ix-header only during page transitions
        (head script in BaseLayout), so it holds still while the page swaps. */
+    transition:
+      transform var(--ix-base) var(--ix-ease),
+      box-shadow var(--ix-base) var(--ix-ease);
+  }
+  /* Scrolled (the scroll layer sets .is-compact): the bar tucks 8px up —
+     transform only, so nothing below it moves — its contents re-centre in
+     the 64px that stays in view, the lockup eases down a touch, and a soft
+     lift shadow defines its edge. Still solid ink: blur behind the nav would
+     cost its text subpixel rendering. */
+  .site-header.is-compact {
+    transform: translateY(-8px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.06),
+      0 12px 28px -16px rgba(0, 0, 0, 0.55);
+  }
+  .bar,
+  .bar :global(.header-lockup) {
+    transition:
+      translate var(--ix-base) var(--ix-ease),
+      scale var(--ix-base) var(--ix-ease);
+  }
+  .site-header.is-compact .bar {
+    translate: 0 4px;
+  }
+  .site-header.is-compact .bar :global(.header-lockup) {
+    scale: 0.94;
+    transform-origin: left center;
   }
   .bar {
     display: flex;
