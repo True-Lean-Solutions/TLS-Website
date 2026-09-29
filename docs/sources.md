@@ -98,6 +98,7 @@ Cover images in the sheet are Drive links. Download each one into `public/insigh
 | Advisor: Sanket Thakkar | `14EBqwO6Tq4h3wpUqsfyWyGy5gP4bBdKn` | `public/team/sanket-thakkar.png` |
 | Client logo: NRI | `1P70t_tSWD9Nxan-D1FuzjfYnxDOI7Jsh` | `public/clients/nri.png` |
 | Client logo: UV Concepts | `1zUc-91l43ndozxNQy_QriQVxRdBYfUib` | `public/clients/uv-concepts.png` (2026-09-29: white background made transparent, mark unchanged) |
+| About location skylines (6) | Hemang's location-card reference, supplied in session 2026-09-29 (`ChatGPT Image Sep 28, 2026, 04_47_49 AM.png`, AI-generated line art) | `public/about/skylines/{dfw,india,uk,uae,australia,mexico}.webp`: each skyline cropped from its card, the white card background made transparent; the "Prosper, Texas" text above the DFW skyline removed |
 
 The TLS logo files are already in `public/brand/`:
 

@@ -20,6 +20,7 @@ import { initChrome, initFooterReveal } from './chrome';
 import { initContact } from './contact';
 import { initStepSequences } from './steps';
 import { initReviewReels } from './reel';
+import { initPlaceCards } from './places';
 
 /**
  * Reveals only ever fade (opacity), never hide (visibility): content waiting
@@ -94,6 +95,7 @@ export function initScroll() {
       if (c.desktop) cleanups.push(initCardDepth(skip));
       cleanups.push(initStepSequences());
       cleanups.push(initReviewReels({ desktop: c.desktop }));
+      cleanups.push(initPlaceCards({ desktop: c.desktop }));
       cleanups.push(initHeroes({ home: c.homeHero, solution: c.solutionHero, pageHero: c.tablet }));
       cleanups.push(initMediaReveals(c.desktop));
       if (c.story && c.fine) cleanups.push(initChallengeStory());

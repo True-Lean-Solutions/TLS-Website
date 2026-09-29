@@ -16,19 +16,32 @@ interface Location {
   city: string;
   status: Status;
   desc: string;
+  /** Skyline drawing on the card: public/about/skylines/<name>.webp. */
+  skyline: keyof typeof skylines;
   x: number;
   y: number;
 }
 
 // Pin coordinates are in the map's 1000×520 viewBox (roughly geographic).
 const locations: Location[] = [
-  { n: '01', city: 'Dallas–Fort Worth', status: 'Headquarters', desc: 'Global Headquarters · Prosper, Texas', x: 232, y: 214 },
-  { n: '02', city: 'India', status: 'Active', desc: 'Technology & Delivery', x: 686, y: 250 },
-  { n: '03', city: 'United Kingdom', status: 'Active', desc: 'UK Presence', x: 494, y: 168 },
-  { n: '04', city: 'United Arab Emirates', status: 'Expanding', desc: 'Expanding Capabilities', x: 612, y: 236 },
-  { n: '05', city: 'Australia', status: 'Expanding', desc: 'Expanding Capabilities', x: 838, y: 372 },
-  { n: '06', city: 'Mexico', status: 'Expanding', desc: 'Expanding Capabilities · Guadalajara', x: 214, y: 262 },
+  { n: '01', city: 'Dallas–Fort Worth', status: 'Headquarters', desc: 'Global Headquarters · Prosper, Texas', skyline: 'dfw', x: 232, y: 214 },
+  { n: '02', city: 'India', status: 'Active', desc: 'Technology & Delivery', skyline: 'india', x: 686, y: 250 },
+  { n: '03', city: 'United Kingdom', status: 'Active', desc: 'UK Presence', skyline: 'uk', x: 494, y: 168 },
+  { n: '04', city: 'United Arab Emirates', status: 'Expanding', desc: 'Expanding Capabilities', skyline: 'uae', x: 612, y: 236 },
+  { n: '05', city: 'Australia', status: 'Expanding', desc: 'Expanding Capabilities', skyline: 'australia', x: 838, y: 372 },
+  { n: '06', city: 'Mexico', status: 'Expanding', desc: 'Expanding Capabilities · Guadalajara', skyline: 'mexico', x: 214, y: 262 },
 ];
+
+// Skyline line drawings, cut from Hemang's location-card reference (2026-09-29;
+// see docs/sources.md). Width and height of each file, for layout stability.
+const skylines = {
+  dfw: [443, 234],
+  india: [441, 176],
+  uk: [444, 228],
+  uae: [443, 183],
+  australia: [441, 148],
+  mexico: [444, 175],
+} as const;
 
 const statusAccent: Record<Status, Accent> = {
   Headquarters: 'red',
@@ -38,6 +51,12 @@ const statusAccent: Record<Status, Accent> = {
 const accentVar: Record<Accent, string> = {
   red: 'var(--red)',
   blue: 'var(--blue)',
+  plum: 'var(--plum)',
+};
+/** Small text in each status color (AA on white). */
+const accentText: Record<Accent, string> = {
+  red: 'var(--red-text)',
+  blue: 'var(--blue-text)',
   plum: 'var(--plum)',
 };
 
@@ -98,13 +117,23 @@ const advantages = [
         locations.map((l) => {
           const acc = statusAccent[l.status];
           return (
-            <li class="loc" style={`--c: ${accentVar[acc]};`}>
+            <li class:list={['loc', 'ix-card', `loc--${acc}`]} style={`--c: ${accentVar[acc]}; --c-text: ${accentText[acc]};`}>
               <div class="loc-head">
                 <span class="num">{l.n}</span>
                 <span class="badge">{l.status}</span>
               </div>
               <h3>{l.city}</h3>
               <p>{l.desc}</p>
+              <div class="skyline" aria-hidden="true">
+                <img
+                  src={href(`/about/skylines/${l.skyline}.webp`)}
+                  alt=""
+                  width={skylines[l.skyline][0]}
+                  height={skylines[l.skyline][1]}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
               <span class="rule" aria-hidden="true" />
             </li>
           );
@@ -191,11 +220,6 @@ const advantages = [
     :global(html.ix) .map:not(.is-in) .pin {
       animation-play-state: paused;
     }
-    /* Each location's accent bar draws in as its card arrives. */
-    :global(html.ix) .loc:global(.is-in) .rule {
-      transform-origin: left center;
-      animation: ix-draw 900ms var(--ix-ease) calc(var(--ix-d, 0ms) + 180ms) backwards;
-    }
   }
   @keyframes pin-pulse {
     0% {
@@ -216,48 +240,103 @@ const advantages = [
     padding: 0;
     margin: 3rem 0 0;
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 1.25rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.1rem;
   }
+  /* Location card: number, status, place, then its skyline along the bottom
+     and a bar in the status color (red headquarters, blue active, plum
+     expanding). */
   .loc {
-    padding-top: 1rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.1rem 1.15rem 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow:
+      0 1px 2px rgba(13, 13, 13, 0.04),
+      0 18px 34px -24px color-mix(in srgb, var(--c) 55%, transparent);
+    overflow: hidden;
   }
   .loc-head {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.7rem;
   }
   .num {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    border: 1.5px solid color-mix(in srgb, var(--c) 45%, #fff);
     font-family: var(--font-head);
     font-weight: 800;
-    font-size: 0.85rem;
-    color: var(--muted);
+    font-size: 0.82rem;
+    color: var(--c-text);
   }
   .badge {
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--c) 13%, #fff);
     font-family: var(--font-head);
     font-weight: 700;
-    font-size: 0.62rem;
-    letter-spacing: 0.08em;
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--c);
+    color: var(--c-text);
+  }
+  .loc--red .badge {
+    background: var(--red-text);
+    color: #fff;
   }
   .loc h3 {
-    font-size: 1.05rem;
+    font-size: clamp(1.1rem, 0.95rem + 0.45vw, 1.35rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
   }
   .loc p {
-    color: var(--text-2);
-    font-size: 0.85rem;
     margin-top: 0.25rem;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: var(--text-2);
+  }
+  /* Skyline: full bleed along the bottom, ground lines level across cards. */
+  .skyline {
+    height: clamp(84px, 7.5vw, 112px);
+    margin: auto -1.15rem 0;
+    padding-top: 0.8rem;
+    box-sizing: content-box;
+  }
+  .skyline img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+    transform-origin: center bottom;
+    transition: scale 600ms var(--ix-ease);
   }
   .loc .rule {
     display: block;
-    height: 3px;
-    width: 100%;
-    border-radius: 999px;
-    background: var(--c);
-    margin-top: 1rem;
-    opacity: 0.85;
+    height: 4px;
+    margin: 0 -1.15rem;
+    background: linear-gradient(90deg, var(--c), color-mix(in srgb, var(--c) 65%, #fff));
+    transition: box-shadow var(--ix-base) var(--ix-ease);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .loc:hover .rule {
+      box-shadow: 0 -4px 16px -2px color-mix(in srgb, var(--c) 55%, transparent);
+    }
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .loc:hover .skyline img {
+      scale: 1.03;
+    }
   }
 
   .advantage {
@@ -310,8 +389,8 @@ const advantages = [
 
   @media (max-width: 1024px) {
     .locations {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem 1.25rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
     }
   }
   @media (max-width: 860px) {
@@ -322,9 +401,19 @@ const advantages = [
       grid-template-columns: 1fr;
     }
   }
-  @media (max-width: 560px) {
+  @media (max-width: 640px) {
     .locations {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
+    }
+    .loc {
+      padding: 1rem 1rem 0;
+    }
+    .skyline {
+      height: 96px;
+      margin-inline: -1rem;
+    }
+    .loc .rule {
+      margin-inline: -1rem;
     }
   }
 </style>

@@ -568,3 +568,22 @@ No JavaScript is involved. Text and card copy are unchanged.
 **Known limit.** The UV Concepts asset is a 66×66 px pale outlined mark with no wordmark, and the Drive original is the same size. So it stays at 65 px (native: larger would blur), and its pale gray is its real color. To make it as strong as NRI's, we need a larger or vector logo, ideally with the "UV Concepts" wordmark, from the client.
 
 **Where it lives.** `src/components/{ClientLogos,ClientLogoItem}.astro`, `src/data/clients.ts`.
+
+## 2026-09-29 — About › Global Delivery: location cards with skylines
+
+**Status:** interim
+
+**Decision.** The six location cards follow Hemang's reference design: a 3 × 2 grid (2 columns on tablets, 1 on phones) of compact white cards, each with:
+- a numbered circle, and a status pill (solid Action Red for Headquarters, blue tint for Active, plum tint for Expanding);
+- the place name and its line;
+- a line-art skyline of the place along the bottom, over a bar in the status color.
+
+Expanding uses the brand's Bridge Plum rather than the reference image's violet, to stay on-palette. Hemang asked for the cards to be smaller after the first pass; the compact sizes are the result.
+- **Text unchanged.** Hemang chose to keep the current text over the reference image's: "Dallas–Fort Worth" (not "USA") with "Global Headquarters · Prosper, Texas", and Mexico keeps "· Guadalajara". Status words, order and the CTA are unchanged.
+- **Skylines** are cut from the reference image itself (AI-generated line art: Reunion Tower and Dallas; India Gate; Westminster, Big Ben and the London Eye; the Burj Khalifa and Burj Al Arab; the Sydney Opera House and Harbour Bridge; Mexico City's cathedral and the Angel of Independence). See `docs/sources.md`. They are decorative (`alt=""`); the place names are real HTML.
+- **Motion** (`scroll/places.ts`): each skyline rises out of a mask from the ground up as its card arrives, the status and name settle, and the bar draws across. On desktop the skylines drift slightly with scroll. On hover the card lifts, the skyline eases forward and the bar glows. With reduced motion the cards are still and complete.
+
+**Considered and set aside.** An earlier pass from Hemang's brief drew each place as a real geographic silhouette instead: Natural Earth outlines of Texas, India (official boundary), the UK, UAE, Australia and Mexico, with markers. They were animated SVG. Shown the skyline reference, Hemang chose skylines.
+
+**Where it lives.** `src/components/GlobalDelivery.astro`, `src/scripts/scroll/places.ts`, `public/about/skylines/`.
+
