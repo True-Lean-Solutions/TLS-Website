@@ -1,192 +1,373 @@
 ---
+/**
+ * Site footer, in five columns separated by hairlines: the TLS brand
+ * statement, Quick Links (the header's own navigation), Solutions (all eight),
+ * Latest Insights (the three newest posts with their covers), and Contact.
+ * Then the legal bar with a back-to-top button. Everything comes from existing
+ * sources (site.ts, nav.ts, services.ts, the Insights collection); nothing is
+ * duplicated. No newsletter capture in v1 (CLAUDE.md): Contact leads to the
+ * primary CTA instead.
+ */
 import Lockup from './Lockup.astro';
-import { site, href as withBase } from '../data/site';
-import { quickLinks, services, legalLinks } from '../data/nav';
+import Icon from './Icon.astro';
+import FooterLinks from './FooterLinks.astro';
+import FooterInsights, { type FooterPost } from './FooterInsights.astro';
+import FooterSocials from './FooterSocials.astro';
+import { site, cta, href as withBase } from '../data/site';
+import { primaryNav, legalLinks } from '../data/nav';
+import { solutions } from '../data/services';
 
 interface Props {
-  /** Three newest published posts; column is hidden when empty. */
-  latestPosts?: { title: string; href: string }[];
+  /** Three newest published posts; the column is hidden when empty. */
+  latestPosts?: FooterPost[];
 }
 const { latestPosts = [] } = Astro.props;
 const year = new Date().getFullYear();
+const quick = primaryNav.map(({ label, href }) => ({ label, href }));
+const solutionLinks = solutions.map((s) => ({ label: s.title, href: s.href }));
 ---
 
 <footer class="site-footer">
   <div class="wrap">
     <div class="top">
-      <div class="brand">
+      <div class="fcol fcol--brand">
         <Lockup variant="light" />
+        <p class="statement">Solve the Right Problem. Build <span class="accent">the Right Solution.</span></p>
         <p class="positioning">{site.positioning}</p>
-        <ul class="social" aria-label="Social media">
-          <li>
-            <a class="glass-icon glass-icon--neutral" href={site.social.linkedin} aria-label="TLS on LinkedIn" target="_blank" rel="noopener noreferrer">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21H19v-5.4c0-1.3 0-2.96-1.8-2.96-1.8 0-2.08 1.4-2.08 2.86V21H9z"/></svg>
-            </a>
-          </li>
-          <li>
-            <a class="glass-icon glass-icon--neutral" href={site.social.facebook} aria-label="TLS on Facebook" target="_blank" rel="noopener noreferrer">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6c-.29-.04-1.27-.12-2.42-.12-2.4 0-4.05 1.47-4.05 4.16v2.32H7.5V13h2.7v8z"/></svg>
-            </a>
-          </li>
-        </ul>
+        <FooterSocials />
       </div>
 
-      <nav class="col" aria-label="Quick links">
-        <h2 class="col-head">Quick Links</h2>
-        <ul>
-          {quickLinks.map((l) => (
-            <li><a href={withBase(l.href)}>{l.label}</a></li>
-          ))}
-        </ul>
-      </nav>
+      <div class="fcol fcol--quick">
+        <FooterLinks title="Quick Links" label="Quick links" links={quick} />
+      </div>
 
-      <nav class="col" aria-label="Solutions">
-        <h2 class="col-head">Solutions</h2>
-        <ul>
-          {services.map((l) => (
-            <li><a href={withBase(l.href)}>{l.label}</a></li>
-          ))}
-        </ul>
-      </nav>
+      <div class="fcol fcol--solutions">
+        <FooterLinks title="Solutions" label="Solutions" links={solutionLinks} />
+      </div>
 
       {
         latestPosts.length > 0 && (
-          <nav class="col" aria-label="Latest insights">
-            <h2 class="col-head">Latest Insights</h2>
-            <ul>
-              {latestPosts.map((p) => (
-                <li><a href={p.href}>{p.title}</a></li>
-              ))}
-            </ul>
-          </nav>
+          <div class="fcol fcol--insights">
+            <FooterInsights posts={latestPosts} />
+          </div>
         )
       }
 
-      <div class="col">
-        <h2 class="col-head">Contact</h2>
-        <ul class="contact">
-          <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
-          <li><a href={site.phoneHref}>{site.phone}</a></li>
+      <div class="fcol fcol--contact">
+        <h2 class="fhead">Contact</h2>
+        <ul class="fc">
+          <li>
+            <a href={`mailto:${site.email}`}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1z" /><path d="M4.9 8L12 13.1 19.1 8" /></svg>
+              <span>{site.email}</span>
+            </a>
+          </li>
+          <li>
+            <a href={site.phoneHref}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h3.2l1.6 4-2 1.3a11 11 0 005 5l1.3-2 4 1.6V17a2 2 0 01-2 2A15 15 0 013 6a2 2 0 012-2z" /></svg>
+              <span>{site.phone}</span>
+            </a>
+          </li>
         </ul>
+        <a class="fc-cta" href={withBase(cta.primary.href)}>
+          <span>{cta.primary.label}</span>
+          <span class="fc-go" aria-hidden="true"><Icon name="arrow" size={16} /></span>
+        </a>
       </div>
     </div>
 
     <div class="bottom">
-      <p class="copyright">© {year} {site.name}. All rights reserved.</p>
       <ul class="legal">
-        {legalLinks.map((l) => (
-          <li><a href={withBase(l.href)}>{l.label}</a></li>
-        ))}
+        {
+          legalLinks.map((l) => (
+            <li>
+              <a href={withBase(l.href)}>{l.label}</a>
+            </li>
+          ))
+        }
       </ul>
+      <p class="copyright">© {year} {site.name}. All rights reserved.</p>
+      <button class="to-top" type="button" aria-label="Back to top">
+        <Icon name="arrow" size={18} />
+      </button>
     </div>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    background: var(--section);
-    color: var(--text-2);
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
     padding-block: var(--space-6) var(--space-4);
+    background:
+      radial-gradient(60% 90% at 0% 0%, rgba(255, 255, 255, 0.75), transparent 70%),
+      var(--section);
+    color: var(--text-2);
     border-top: 1px solid var(--border);
   }
+  /* A faint technical dot grid, fading out from the left. */
+  .site-footer::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 42%;
+    z-index: -1;
+    background-image: radial-gradient(color-mix(in srgb, var(--text-2) 28%, transparent) 1px, transparent 1.3px);
+    background-size: 18px 18px;
+    -webkit-mask-image: linear-gradient(90deg, #000, transparent 90%);
+    mask-image: linear-gradient(90deg, #000, transparent 90%);
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
   .top {
     display: grid;
-    grid-template-columns: 1.6fr repeat(3, 1fr);
-    gap: 2.5rem;
+    grid-template-columns:
+      minmax(0, 1.36fr) minmax(0, 0.7fr) minmax(0, 1fr)
+      minmax(0, 1.45fr) minmax(0, 1.4fr);
+  }
+  .fcol {
+    padding-inline: 1.35rem;
+  }
+  .fcol:first-child {
+    padding-left: 0;
+  }
+  .fcol:last-child {
+    padding-right: 0;
+  }
+  .fcol + .fcol {
+    border-left: 1px solid color-mix(in srgb, var(--border-2) 70%, transparent);
+  }
+
+  /* Column headings: bold, with a hairline underneath. */
+  .site-footer :global(.fhead) {
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.1rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--border-2) 70%, transparent);
+    font-family: var(--font-head);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  /* Brand */
+  .statement {
+    margin-top: 1.4rem;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 1.3rem;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .accent {
+    color: var(--red);
   }
   .positioning {
-    margin-top: 1rem;
+    margin: 0.75rem 0 1.4rem;
     max-width: 34ch;
-    font-size: 0.95rem;
+    font-size: 0.93rem;
+    line-height: 1.6;
     color: var(--text-2);
   }
-  .social {
-    display: flex;
-    gap: 0.5rem;
+
+  /* Contact */
+  .fc {
+    display: grid;
+    gap: 0.75rem;
     list-style: none;
+    margin: 0 0 1.25rem;
     padding: 0;
-    margin-top: 1.25rem;
   }
-  .social a {
+  .fc a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.88rem;
+    color: var(--text-2);
+    text-decoration: none;
+    overflow-wrap: break-word;
+    transition: color 250ms ease;
+  }
+  .fc a svg {
+    flex: none;
+    color: var(--red-text);
+  }
+  .fc a:is(:hover, :focus-visible) {
+    color: var(--red-text);
+  }
+  /* The primary CTA, shaped like the reference's email field: a rounded
+     pill with a red circular arrow. */
+  .fc-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.35rem 0.35rem 0.35rem 1.1rem;
+    border: 1px solid var(--border-2);
+    border-radius: 999px;
+    background: var(--surface);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.86rem;
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      border-color 250ms ease,
+      box-shadow 300ms var(--ix-ease);
+  }
+  .fc-go {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: var(--radius);
-    color: var(--ink);
-    --gi-hover: var(--red);
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--red-text);
+    color: #fff;
+    transition:
+      background-color 250ms ease,
+      translate 300ms var(--ix-ease);
   }
-  /* Surface, rim and hover light: .glass-icon--neutral (motion.css). */
-  .social a:hover {
-    color: var(--red-text);
+  .fc-cta:is(:hover, :focus-visible) {
+    border-color: var(--red-text);
+    box-shadow: 0 10px 22px -14px rgba(194, 54, 54, 0.55);
   }
-
-  .col-head {
-    font-family: var(--font-head);
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 0.9rem;
-  }
-  .col ul {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    gap: 0.6rem;
-  }
-  .col a {
-    color: var(--text-2);
-    text-decoration: none;
-    font-size: 0.95rem;
-  }
-  .col a:hover {
-    color: var(--blue-text);
-    text-decoration: underline;
+  .fc-cta:is(:hover, :focus-visible) .fc-go {
+    background: #a82f2f;
+    translate: 2px 0;
   }
 
+  /* Legal bar */
   .bottom {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: 1rem 1.5rem;
     margin-top: var(--space-5);
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-  }
-  .copyright {
-    font-size: 0.85rem;
-    color: var(--muted);
+    padding-top: 1.4rem;
+    border-top: 1px solid color-mix(in srgb, var(--border-2) 70%, transparent);
   }
   .legal {
     display: flex;
-    gap: 1.25rem;
+    flex-wrap: wrap;
     list-style: none;
+    margin: 0;
     padding: 0;
   }
-  .legal a {
-    color: var(--text-2);
-    font-size: 0.85rem;
-    text-decoration: none;
+  .legal li + li::before {
+    content: '|';
+    margin-inline: 0.85rem;
+    color: var(--border-2);
   }
-  .legal a:hover {
-    color: var(--blue-text);
-    text-decoration: underline;
+  .legal a {
+    font-size: 0.86rem;
+    color: var(--text-2);
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition:
+      color 250ms ease,
+      background-size 300ms var(--ix-ease);
+  }
+  .legal a:is(:hover, :focus-visible) {
+    color: var(--red-text);
+    background-size: 100% 1px;
+  }
+  .copyright {
+    margin-left: auto;
+    font-size: 0.86rem;
+    color: var(--text-2);
+  }
+  .to-top {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--red-edge);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    transition:
+      border-color 250ms ease,
+      scale 300ms var(--ix-ease),
+      box-shadow 300ms var(--ix-ease);
+  }
+  .to-top :global(svg) {
+    rotate: -90deg;
+    transition: translate 300ms var(--ix-ease);
+  }
+  .to-top:is(:hover, :focus-visible) {
+    border-color: var(--red-text);
+    box-shadow: 0 10px 20px -12px rgba(194, 54, 54, 0.55);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .to-top:hover {
+      scale: 1.05;
+    }
+    .to-top:hover :global(svg) {
+      translate: 0 -2px;
+    }
   }
 
-  @media (max-width: 768px) {
+  /* Tablet: brand, Quick Links, Solutions; then Insights and Contact. */
+  @media (max-width: 1179px) {
     .top {
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr);
+      row-gap: 2.5rem;
     }
-    .brand {
-      grid-column: 1 / -1;
+    .fcol--insights {
+      grid-column: 1 / 3;
+      padding-left: 0;
+      border-left: 0 !important;
+    }
+    .fcol--contact {
+      padding-right: 0;
+    }
+    .fcol--solutions {
+      padding-right: 0;
     }
   }
-  @media (max-width: 480px) {
+  /* Phones: brand; Quick Links beside Solutions; Insights; Contact. */
+  @media (max-width: 720px) {
     .top {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      row-gap: 2.25rem;
+    }
+    .fcol {
+      padding-inline: 0;
+      border-left: 0 !important;
+    }
+    .fcol--brand,
+    .fcol--insights,
+    .fcol--contact {
+      grid-column: 1 / -1;
+    }
+    .fcol--solutions {
+      padding-left: 1rem;
+      border-left: 1px solid color-mix(in srgb, var(--border-2) 70%, transparent) !important;
+    }
+    .bottom {
+      justify-content: space-between;
+    }
+    .copyright {
+      order: 3;
+      width: 100%;
+      margin-left: 0;
     }
   }
 </style>
+
+<script>
+  // Back to top: a smooth return (instant with reduced motion); keyboard focus
+  // goes back to the start of the page.
+  const top = document.querySelector<HTMLButtonElement>('.site-footer .to-top');
+  top?.addEventListener('click', () => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    document.querySelector<HTMLElement>('.site-header a')?.focus({ preventScroll: true });
+  });
+</script>

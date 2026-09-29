@@ -143,7 +143,7 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
   - One Action Red button, "Discuss Your Project" → `/contact/`.
   - Nav links are Border Gray. Hover and current page are white with a 2 px Execution Red underline.
   - Dropdowns must work by keyboard: arrow keys, Esc to close, focus returns to the trigger. On touch, a tap toggles the menu without navigating.
-- **Solutions menu:** AI & Automation, Custom Software, System Integration, Technical Talent, Workflow Automation, Technology Strategy, Data & Analytics, Cyber Security, plus "All Solutions" (8 solutions since 2026-09-28; Home and the footer list the first four).
+- **Solutions menu:** AI & Automation, Custom Software, System Integration, Technical Talent, Workflow Automation, Technology Strategy, Data & Analytics, Cyber Security, plus "All Solutions" (8 solutions since 2026-09-28; Home lists the first four, the footer all eight).
 - **Insights menu.**
   - Explore All, Perspectives, Case Studies, Guides and News, each with its one-line description.
   - Browse by Topic: topics from post front matter.
@@ -158,7 +158,7 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
   - Lockup in its light-surface variant: TLS in Ink Black, name in Execution Red.
   - Tagline.
   - The positioning statement "We help organizations turn business needs into practical technology solutions."
-  - Columns: Quick Links, Services, Latest Insights (three newest posts), Contact.
+  - Columns (since 2026-09-29, Hemang's footer reference), separated by hairlines: brand (lockup, the approved statement "Solve the Right Problem. Build the Right Solution.", positioning, social circles), Quick Links (the header's navigation), Solutions (all eight), Latest Insights (three newest posts with their covers and categories, from the Insights collection), Contact (email, phone, the "Discuss Your Project" CTA). A back-to-top button sits in the legal bar.
   - Contact column: email `success@trueleansolutions.com`, phone (848) 777-5326, LinkedIn `https://www.linkedin.com/company/108455615/`, Facebook `https://www.facebook.com/profile.php?id=61585073567371`.
   - © with the build year computed at build time, alongside links to Privacy Policy (`/privacy-policy/`) and Terms of Service (`/terms-of-service/`).
   - No YouTube and no newsletter/"Stay Connected" capture in v1.

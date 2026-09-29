@@ -1,0 +1,136 @@
+---
+/**
+ * Footer › Latest Insights: the three newest posts, each with its own cover
+ * as a thumbnail, its exact title and its category. The data comes from the
+ * same content collection as the Insights pages (BaseLayout), so a new post
+ * appears here automatically.
+ */
+import Icon from './Icon.astro';
+import { href as withBase } from '../data/site';
+
+export interface FooterPost {
+  title: string;
+  href: string;
+  cover?: string;
+  category: string;
+}
+interface Props {
+  posts: FooterPost[];
+}
+const { posts } = Astro.props;
+---
+
+<nav class="fi" aria-label="Latest insights">
+  <h2 class="fhead">Latest Insights</h2>
+  <ul>
+    {
+      posts.map((p) => (
+        <li>
+          <a class="fi-item" href={p.href}>
+            <span class="fi-thumb">
+              {p.cover ? <img src={p.cover} alt="" width="900" height="600" loading="lazy" decoding="async" /> : <span class="fi-ph" />}
+            </span>
+            <span class="fi-body">
+              <span class="fi-title">{p.title}</span>
+              <span class="fi-cat">
+                {p.category}
+                <Icon name="arrow" size={13} class="fi-arrow" />
+              </span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <a class="fi-all" href={withBase('/insights/')}>
+    View All Insights
+    <Icon name="arrow" size={16} class="fi-arrow" />
+  </a>
+</nav>
+
+<style>
+  ul {
+    display: grid;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .fi-item {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 0.85rem;
+    align-items: center;
+    text-decoration: none;
+  }
+  .fi-thumb {
+    display: block;
+    aspect-ratio: 4 / 3;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--border);
+    box-shadow: 0 6px 14px -8px rgba(13, 13, 13, 0.35);
+  }
+  .fi-thumb img,
+  .fi-ph {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: scale 500ms var(--ix-ease);
+  }
+  .fi-ph {
+    background: var(--grad);
+  }
+  .fi-body {
+    display: grid;
+    gap: 0.3rem;
+  }
+  .fi-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.84rem;
+    line-height: 1.35;
+    color: var(--ink);
+    transition: color 250ms ease;
+  }
+  .fi-cat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--text-2);
+  }
+  .fi-item :global(.fi-arrow),
+  .fi-all :global(.fi-arrow) {
+    flex: none;
+    transition: translate 300ms var(--ix-ease);
+  }
+  .fi-item:is(:hover, :focus-visible) .fi-title {
+    color: var(--red-text);
+  }
+  .fi-item:is(:hover, :focus-visible) :global(.fi-arrow),
+  .fi-all:is(:hover, :focus-visible) :global(.fi-arrow) {
+    translate: 4px 0;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .fi-item:hover .fi-thumb img {
+      scale: 1.04;
+    }
+  }
+  .fi-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1.1rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--red-text);
+    text-decoration: none;
+  }
+</style>

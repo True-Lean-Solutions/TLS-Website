@@ -1,0 +1,82 @@
+---
+/**
+ * A footer link column: a heading, then links that grow a small arrow on
+ * hover. The page you're on is marked (TLS red, arrow shown, aria-current).
+ */
+import Icon from './Icon.astro';
+import { href as withBase } from '../data/site';
+import type { NavLink } from '../data/nav';
+
+interface Props {
+  title: string;
+  /** Accessible name for the nav landmark. */
+  label: string;
+  links: NavLink[];
+}
+const { title, label, links } = Astro.props;
+const here = Astro.url.pathname;
+const current = (path: string) => {
+  const url = withBase(path);
+  return path === '/' ? here === url : here.startsWith(url);
+};
+---
+
+<nav class="fl" aria-label={label}>
+  <h2 class="fhead">{title}</h2>
+  <ul>
+    {
+      links.map((l) => (
+        <li>
+          <a href={withBase(l.href)} aria-current={current(l.href) ? 'page' : undefined}>
+            <span>{l.label}</span>
+            <Icon name="arrow" size={15} class="fl-arrow" />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  ul {
+    display: grid;
+    gap: 0.7rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.92rem;
+    color: var(--text-2);
+    text-decoration: none;
+    transition: color 250ms ease;
+  }
+  /* The arrow sits just past the label and takes no room, so it never
+     pushes a long name onto two lines. */
+  a :global(.fl-arrow) {
+    position: absolute;
+    left: calc(100% + 0.4rem);
+    top: 50%;
+    margin-top: -7.5px;
+    opacity: 0;
+    translate: -4px 0;
+    transition:
+      opacity 250ms ease,
+      translate 300ms var(--ix-ease);
+  }
+  a:is(:hover, :focus-visible),
+  a[aria-current='page'] {
+    color: var(--red-text);
+  }
+  a:is(:hover, :focus-visible) :global(.fl-arrow),
+  a[aria-current='page'] :global(.fl-arrow) {
+    opacity: 1;
+    translate: 0 0;
+  }
+  a:is(:hover, :focus-visible) :global(.fl-arrow) {
+    translate: 3px 0;
+  }
+</style>

@@ -3,7 +3,7 @@
  *  - Scroll progress: a 2px TLS-red line across the top of the viewport.
  *  - Header: after the first scroll it becomes a little more compact and
  *    more defined (a lift shadow); back to full at the top. It never hides.
- *  - Footer: its columns settle in as the visitor reaches the end.
+ *  - Footer: its columns settle in, one by one, as the visitor reaches the end.
  */
 import { gsap, ScrollTrigger, EASE, T } from './core';
 
@@ -40,17 +40,30 @@ export function initChrome(): Cleanup {
 export function initFooterReveal(): Cleanup {
   const footer = document.querySelector<HTMLElement>('.site-footer');
   if (!footer) return () => {};
-  const parts = [...footer.querySelectorAll<HTMLElement>('.top > *, .bottom')];
-  gsap.set(parts, { opacity: 0, y: 22 });
+  // Columns settle in one after another, each revealed top-down through a
+  // clip (its hairline divider with it); then the legal bar. Not a fade-up.
+  const cols = [...footer.querySelectorAll<HTMLElement>('.top > *')];
+  const bottom = footer.querySelector<HTMLElement>('.bottom');
+  gsap.set(cols, { clipPath: 'inset(0% 0% 100% 0%)', y: 10 });
+  if (bottom) gsap.set(bottom, { opacity: 0 });
+  const done = () => {
+    gsap.set(cols, { clearProps: 'clipPath,transform' });
+    if (bottom) gsap.set(bottom, { clearProps: 'opacity' });
+  };
   const st = ScrollTrigger.create({
     trigger: footer,
     start: 'top 92%',
     once: true,
-    onEnter: () =>
-      gsap.to(parts, { opacity: 1, y: 0, duration: T.section, ease: EASE, stagger: T.stagger, clearProps: 'transform' }),
+    onEnter: () => {
+      gsap.to(cols, { clipPath: 'inset(0% 0% 0% 0%)', y: 0, duration: T.section, ease: EASE, stagger: T.stagger, clearProps: 'clipPath,transform' });
+      if (bottom) gsap.to(bottom, { opacity: 1, duration: T.section, ease: EASE, delay: 0.35, clearProps: 'opacity' });
+    },
   });
+  // Keyboard users never wait for it.
+  footer.addEventListener('focusin', done, { once: true });
   return () => {
     st.kill();
-    gsap.set(parts, { clearProps: 'all' });
+    footer.removeEventListener('focusin', done);
+    done();
   };
 }

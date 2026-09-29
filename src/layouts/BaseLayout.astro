@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site, href as withBase, canonicalUrl } from '../data/site';
+import { categoryMeta } from '../data/insights';
 import '../styles/global.css';
 
 interface Props {
@@ -33,11 +34,17 @@ const cleanPath = path.startsWith(import.meta.env.BASE_URL)
   : path;
 const canonical = canonicalUrl(cleanPath);
 
-// Footer: three newest published posts.
+// Footer: three newest published posts, from the same collection as Insights
+// (title, link, cover and category exactly as the post has them).
 const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3)
-  .map((p) => ({ title: p.data.title, href: withBase(`/insights/${p.id}/`) }));
+  .map((p) => ({
+    title: p.data.title,
+    href: withBase(`/insights/${p.id}/`),
+    cover: p.data.cover ? withBase(p.data.cover) : undefined,
+    category: categoryMeta[p.data.category].label,
+  }));
 ---
 
 <!doctype html>

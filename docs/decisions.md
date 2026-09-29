@@ -587,3 +587,25 @@ Expanding uses the brand's Bridge Plum rather than the reference image's violet,
 
 **Where it lives.** `src/components/GlobalDelivery.astro`, `src/scripts/scroll/places.ts`, `public/about/skylines/`.
 
+## 2026-09-29 — Footer restructured after Hemang's reference
+
+**Status:** interim
+
+**Decision.** The footer follows Hemang's reference: five columns separated by hairlines, bold column headings with a rule beneath, a faint dot grid fading in from the left, and a clean legal bar. Every item comes from an existing source:
+- **Brand:** the TLS lockup (with "Lean Thinking. Real Results."); the approved positioning line "Solve the Right Problem. Build the Right Solution." (the Home H1, red accent); `site.positioning`; and circular social links for LinkedIn, Facebook and email.
+- **Quick Links:** the header's own navigation (`primaryNav`, which now includes Solutions). The current page is shown in red with its arrow.
+- **Solutions:** all eight, from `services.ts`, linking to their pages (previously the first four).
+- **Latest Insights:** the three newest posts from the Insights collection, each with its own cover as a thumbnail, its exact title (clamped to three lines) and its category. Then "View All Insights", which updates automatically with new posts.
+- **Contact:** email, phone, and the primary CTA "Discuss Your Project" as a rounded pill with a red circular arrow.
+- **Legal bar:** Privacy Policy | Terms of Service, "© {build year} True Lean Solutions. All rights reserved.", and a back-to-top button (smooth, or instant with reduced motion, returning focus to the top).
+
+**Differences from the reference, and why.**
+- The reference's slogan "Practical Solutions. Real Business Impact." is not approved copy. The only tagline is "Lean Thinking. Real Results.", which stays in the lockup, so the column uses the approved H1 line instead.
+- There is no YouTube account (CLAUDE.md), so the social links are LinkedIn, Facebook and email.
+- The newsletter / "Stay Connected" capture was dropped from v1 (CLAUDE.md), so no fake form was built. The Contact column leads to the real CTA, in the same visual shape.
+- "Site Map" was left out: the site only has an XML sitemap for search engines, not a page for people.
+
+**Motion.** The columns settle in one after another, each revealed top-down through a clip. Links grow a small arrow on hover; thumbnails ease forward; social circles lift slightly; the back-to-top arrow lifts.
+
+**Where it lives.** `src/components/{Footer,FooterLinks,FooterInsights,FooterSocials}.astro`, `src/layouts/BaseLayout.astro` (post data), `src/scripts/scroll/chrome.ts` (reveal).
+
