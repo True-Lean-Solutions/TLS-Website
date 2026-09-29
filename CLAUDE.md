@@ -126,11 +126,11 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
    - Four challenge cards, each linking to the solution that answers it.
    - Visual: the TLS isometric platform image Hemang supplied (not the reference image, and no new image). See `docs/decisions.md`.
 4. **What We Do.** Four service cards with icons (09), from the Home doc's "What We Do" section. Each card links to its service page.
-5. **Recent Results.**
+5. **Recent Results.** *Hidden since 2026-09-30 (Hemang): `SHOW_RESULTS = false` in `src/pages/index.astro`; set it to `true` to bring it back.*
    - The three verified stats from the Home doc (11 layout, verified numbers only).
    - Optional case-study cards linking to the three service-page case studies, using their verbatim headlines.
 6. **Our Approach.** The four steps from the Home doc (01 Understanding, 02 Identifying, 03 Designing, 04 Implementing & Optimizing), in the 05 step-row layout.
-7. **Clients, then testimonials** (one section since 2026-09-29). "Our Clients / Teams we work with" with the client logo strip (`ClientLogos`: a static row until there are 6+ real logos, then a slow marquee), then "What our clients say" as a continuous review reel (`ReviewReel`, since 2026-09-29: two rows drifting in opposite directions, influenced by scrolling; a still grid with reduced motion). The reviews sheet, verbatim. Mayank Pujara's position reads "CEO · TLS advisor"; keep it exactly as given.
+7. **Clients, then testimonials** (one section since 2026-09-29). "Our Clients / Who are our clients" (heading changed from "Teams we work with", Hemang 2026-09-30) with the client logo strip (`ClientLogos`: a static row until there are 6+ real logos, then a slow marquee; twelve logos since 2026-09-30), then "What our clients say" as a continuous review reel (`ReviewReel`, since 2026-09-29: one row drifting continuously (one row since 2026-09-30), influenced by scrolling; a still grid with reduced motion). The reviews sheet, verbatim. The Excel-VBA review is Dharmesh Thakkar's (Founder, J Sterling's Wellness Spa): the sheet had it under Mayank Pujara by mistake, corrected by Hemang 2026-09-30.
 8. **Closing CTA band.** "Not Sure Where to Start?" with both CTAs, in the 13 CTA band layout.
 
 ## Header, lockup, footer
@@ -138,7 +138,7 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
 - **Header.**
   - Full-width Ink Black bar, sticky.
   - Lockup at left.
-  - Nav: Home, About Us, Solutions ▾, Insights ▾, Contact Us. ("Solutions" replaced "Services" as the label on 2026-09-28; see `docs/decisions.md`.)
+  - Nav: Home, Solutions ▾, Insights ▾, About Us, Contact Us (About Us moved before Contact Us, Hemang 2026-09-30). ("Solutions" replaced "Services" as the label on 2026-09-28; see `docs/decisions.md`.)
   - Search icon, which opens Insights search.
   - One Action Red button, "Discuss Your Project" → `/contact/`.
   - Nav links are Border Gray. Hover and current page are white with a 2 px Execution Red underline.

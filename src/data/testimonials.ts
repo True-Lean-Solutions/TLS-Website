@@ -1,12 +1,19 @@
 /**
  * Client testimonials — verbatim from the reviews sheet, attributed exactly.
- * source: 14l3c8EBTcWbMgiaQrEG1iVOcNndLP1iXntZTG2-hDp8 (TLS Client Reviews 2026-09-27)
- * Do not edit wording. Do not invent. Mayank's position reads exactly
- * "CEO · TLS advisor" (CLAUDE.md decision 6).
+ * source: 14l3c8EBTcWbMgiaQrEG1iVOcNndLP1iXntZTG2-hDp8 (TLS Client Reviews 2026-09-27);
+ * Ketul Thakker (KSR Group), Aditya Mehta (ACUVI Technology Solutions) and
+ * Avinash Upadhyay (Dwibros): text, 5 stars and date sent by Hemang, 2026-09-30.
+ * Do not edit wording. Do not invent.
+ * Correction (Hemang, 2026-09-30): the Excel-VBA stock tracker review is
+ * Dharmesh Thakkar's (Founder, J Sterling's Wellness Spa); the reviews sheet
+ * had it under Mayank Pujara by mistake. Text, date and rating unchanged.
  */
 export interface Testimonial {
   name: string;
   company?: string;
+  /** The client logo to show, when the company is written differently from
+      its name in clients.ts (e.g. "Dwibros"). Defaults to `company`. */
+  logo?: string;
   position: string;
   initials: string;
   date: string; // ISO
@@ -36,12 +43,44 @@ export const testimonials: Testimonial[] = [
       'We truly appreciate the opportunity to work with the TLS team.\n\nWe’ve been very pleased with the strong engagement and the consistent efforts your team has made to be a thoughtful and reliable partner throughout our collaboration.',
   },
   {
-    name: 'Mayank Pujara',
-    position: 'CEO · TLS advisor',
-    initials: 'M.P.',
+    name: 'Dharmesh Thakkar',
+    company: "J Sterling's Wellness Spa",
+    position: 'Founder',
+    initials: 'D.T.',
     date: '2026-03-11',
     stars: 5,
     quote:
       'I had been using a stock tracking application built in Microsoft Excel and VBA for years, but it had been broken for over 1.5 years and no one was able to fix it. The file was critical for tracking my trades and monitoring performance, and its failure significantly disrupted my workflow.\n\nHemang from True Lean Solutions quickly understood the Excel-VBA system, identified the root cause, and fixed the application in a matter of hours. Within the same timeframe, he also added new functionality that improved trade tracking and overall usability.\n\nI now have a fully functional, stable, and enhanced system, and I highly recommend True Lean Solutions for solving complex technical problems quickly and efficiently.',
+  },
+  {
+    name: 'Ketul Thakker',
+    company: 'KSR Group',
+    position: 'CEO',
+    initials: 'K.T.',
+    date: '2026-09-01',
+    stars: 5,
+    quote:
+      'True Lean Solutions has been a dependable technology partner for KSR Group. Their team brings a practical, solution-oriented approach, understands business requirements quickly, and consistently focuses on delivering the right outcomes. We appreciate their responsiveness, flexibility, and commitment to supporting our technology needs.',
+  },
+  {
+    name: 'Aditya Mehta',
+    company: 'ACUVI Technology Solutions',
+    position: 'CEO',
+    initials: 'A.M.',
+    date: '2026-09-01',
+    stars: 5,
+    quote:
+      'We initially came to True Lean Solutions with a need for experienced technology resources. Hemang quickly understood our requirements and assigned one of his experts from their India team to support us across multiple areas on a fractional basis.\n\nWhat we value most about True Lean Solutions is that they do not simply take a requirement and execute it. They take the time to understand the underlying business problem and then build the right capabilities around it. We have been extremely happy with the quality, flexibility, and commitment of their team.',
+  },
+  {
+    name: 'Avinash Upadhyay',
+    company: 'Dwibros',
+    logo: 'Dwibros Infracon Private Limited',
+    position: 'Chief Business Officer',
+    initials: 'A.U.',
+    date: '2026-09-01',
+    stars: 5,
+    quote:
+      'True Lean Solutions understood our business quickly and delivered a professional website we are proud to share with prospects. They also support and continuously enhance the custom CRM that runs our operations, bringing client records, project documents, and approval workflows into one system designed around how our solar infrastructure business actually works. Their communication is straightforward, they are responsive, and the work gets done without us having to chase it.',
   },
 ];

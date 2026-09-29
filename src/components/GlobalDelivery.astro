@@ -186,7 +186,7 @@ const advantages = [
   }
   .intro p {
     color: var(--text-2);
-    margin: 1rem 0 1.75rem;
+    margin: var(--gap-lead) 0 1.75rem;
     max-width: 46ch;
     line-height: 1.6;
   }
@@ -349,7 +349,7 @@ const advantages = [
   }
   .adv-intro p {
     color: var(--text-2);
-    margin-top: 1rem;
+    margin-top: var(--gap-lead);
     max-width: 60ch;
     line-height: 1.6;
   }
@@ -396,6 +396,7 @@ const advantages = [
   @media (max-width: 860px) {
     .top {
       grid-template-columns: 1fr;
+      gap: var(--gap-block);
     }
     .adv-grid {
       grid-template-columns: 1fr;

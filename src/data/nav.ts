@@ -57,7 +57,6 @@ const servicesMenu: NavMenu = {
  */
 export const primaryNav: NavItem[] = [
   { label: 'Home', href: '/' },
-  { label: 'About Us', href: '/about-us/' },
   { label: 'Solutions', href: '/services/', menu: servicesMenu },
   {
     label: 'Insights',
@@ -71,6 +70,7 @@ export const primaryNav: NavItem[] = [
       },
     },
   },
+  { label: 'About Us', href: '/about-us/' },
   { label: 'Contact Us', href: '/contact/' },
 ];
 

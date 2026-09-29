@@ -686,21 +686,12 @@ const [s1, s2, s3, s4] = contactStages.map((s, i) => ({
     text-transform: uppercase;
     pointer-events: none;
   }
-  /* Desktop: the step list beside the form is the indicator. The strip takes
-     no room and only appears (under the header) while that list is out of
-     view: on short screens, and once the side panel has let go. */
+  /* Desktop shows no step indicator (the side step list was removed at
+     Hemang's request, 2026-09-30): the stages read on their own. Tablets and
+     phones keep this compact strip. */
   @media (min-width: 1024px) {
     .strip {
-      margin-bottom: -2.3rem;
-      opacity: 0;
-      translate: 0 -6px;
-      transition:
-        opacity 300ms ease,
-        translate 420ms var(--ix-ease);
-    }
-    .strip.is-shown {
-      opacity: 1;
-      translate: 0 0;
+      display: none;
     }
   }
   .strip-nums {

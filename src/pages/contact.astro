@@ -5,7 +5,6 @@ import ContactForm from '../components/ContactForm.astro';
 import Button from '../components/Button.astro';
 import Icon from '../components/Icon.astro';
 import { site } from '../data/site';
-import { contactStages } from '../data/contact';
 
 // Meta — source: TLS: Website Pages (2026-09-27), 1w1w7ClLF7Ts7M-FSFJeopTP6Z_13FhXn_q9Qxy2hlT0
 const title = 'True Lean Solutions — Contact Us | Discuss Your Project';
@@ -15,8 +14,9 @@ const description =
 /*
  * Presentation (2026-09-29, Hemang's brief): the page reads as the start of a
  * consulting conversation. The copy, form and contact details are unchanged;
- * the form is shown in four stages, with a step indicator and the contact
- * panel held beside it on desktop. See docs/decisions.md.
+ * the form is shown in four stages, with the contact panel ("Prefer to
+ * talk?" first; the side step list was removed 2026-09-30) held beside it on
+ * desktop. See docs/decisions.md.
  */
 ---
 
@@ -38,22 +38,6 @@ const description =
         </div>
 
         <aside class="side" data-reveal="stagger">
-          <nav class="stepper" aria-label="Form steps" data-cf-stepper style="--i: 0">
-            <ol>
-              {
-                contactStages.map((s, i) => (
-                  <li>
-                    <a href={`#cf-stage-${i + 1}`} aria-current={i === 0 ? 'step' : undefined}>
-                      <span class="n">{s.n}</span>
-                      <span class="t">{s.name}</span>
-                      <Icon name="check" size={14} class="ok" />
-                    </a>
-                  </li>
-                ))
-              }
-            </ol>
-          </nav>
-
           <div class="card talk">
             <h2>Prefer to talk?</h2>
             <p>Book a free 30-minute call — enough to figure out where to start.</p>
@@ -132,7 +116,7 @@ const description =
   }
   /* The supporting line keeps SectionHeading's type (size, color, leading). */
   .lead {
-    margin-top: 1rem;
+    margin-top: var(--gap-lead);
     max-width: calc(62ch / 1.1);
     font-size: 1.1rem;
     line-height: 1.6;
@@ -225,103 +209,6 @@ const description =
   @media (min-width: 640px) and (max-width: 1023px) {
     .side {
       grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  /* Step indicator (desktop). The marker slides to the current step. */
-  .stepper {
-    display: none;
-  }
-  @media (min-width: 1024px) {
-    .stepper {
-      display: block;
-    }
-  }
-  .stepper ol {
-    position: relative;
-    display: grid;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .stepper ol::before,
-  .stepper ol::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 2px;
-    border-radius: 2px;
-  }
-  .stepper ol::before {
-    bottom: 0;
-    background: var(--border);
-  }
-  .stepper ol::after {
-    height: 25%;
-    background: var(--red);
-    transform: translateY(calc(var(--i, 0) * 100%));
-    transition: transform 500ms var(--ix-ease);
-  }
-  .stepper a {
-    display: grid;
-    grid-template-columns: 2.1rem 1fr auto;
-    align-items: center;
-    min-height: 2.2rem;
-    padding-left: 1.1rem;
-    font-size: 0.92rem;
-    color: var(--text-2);
-    text-decoration: none;
-    transition: color var(--ix-fast) ease;
-  }
-  .stepper .n {
-    font-family: var(--font-head);
-    font-weight: 700;
-    font-size: 0.75rem;
-    letter-spacing: 0.06em;
-    font-variant-numeric: tabular-nums;
-    color: var(--muted);
-    transition: color var(--ix-base) var(--ix-ease);
-  }
-  .stepper .t {
-    transition: translate var(--ix-base) var(--ix-ease);
-  }
-  .stepper :global(.ok) {
-    color: var(--blue);
-    opacity: 0;
-    scale: 0.5;
-    transition:
-      opacity var(--ix-fast) ease,
-      scale var(--ix-base) var(--ix-ease);
-  }
-  .stepper a.is-done .n {
-    color: var(--ink);
-  }
-  .stepper a.is-done :global(.ok) {
-    opacity: 1;
-    scale: 1;
-  }
-  .stepper a[aria-current] {
-    color: var(--ink);
-    font-weight: 500;
-  }
-  .stepper a[aria-current] .n {
-    color: var(--red-text);
-  }
-  .stepper a:hover {
-    color: var(--ink);
-  }
-  .stepper a:hover .t {
-    translate: 3px 0;
-  }
-  @media (forced-colors: active) {
-    .stepper ol::before {
-      forced-color-adjust: none;
-      background: GrayText;
-    }
-    .stepper ol::after {
-      forced-color-adjust: none;
-      background: Highlight;
     }
   }
 
@@ -425,47 +312,15 @@ const description =
 
 <script>
   /**
-   * Step indicator beside the form (desktop). It mirrors the form's current
-   * and completed stages (ContactForm.astro announces changes as `cf:stage`)
-   * and glides to a stage when a step is chosen. At "04 Let's talk" the
-   * "Prefer to talk?" card comes forward a little.
+   * At "04 Let's talk" (ContactForm.astro announces stage changes as
+   * `cf:stage`), the "Prefer to talk?" card comes forward a little.
    */
-  const stepper = document.querySelector<HTMLElement>('[data-cf-stepper]');
   const talk = document.querySelector<HTMLElement>('.side .talk');
   const stages = [...document.querySelectorAll<HTMLElement>('.contact-form .stage')];
-  const links = stepper ? [...stepper.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')] : [];
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-
   const sync = () => {
     const active = stages.findIndex((s) => s.classList.contains('is-active'));
-    stepper?.style.setProperty('--i', String(Math.max(0, active)));
-    links.forEach((a, i) => {
-      if (i === active) a.setAttribute('aria-current', 'step');
-      else a.removeAttribute('aria-current');
-      a.classList.toggle('is-done', !!stages[i]?.classList.contains('is-done'));
-    });
     talk?.classList.toggle('is-near', active === stages.length - 1);
   };
   document.addEventListener('cf:stage', sync);
   sync();
-
-  // Desktop: while this step list is out of view (short screens, or once the
-  // panel has let go), the form's compact indicator stands in for it.
-  const strip = document.querySelector<HTMLElement>('.contact-form .strip');
-  const headerH = () => document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 72;
-  if (stepper && strip) {
-    new IntersectionObserver(([e]) => strip.classList.toggle('is-shown', !e.isIntersecting), {
-      rootMargin: `-${headerH()}px 0px 0px 0px`,
-    }).observe(stepper);
-  }
-
-  for (const a of links) {
-    a.addEventListener('click', (e) => {
-      const stage = document.querySelector<HTMLElement>(a.hash);
-      if (!stage) return;
-      e.preventDefault();
-      stage.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'start' });
-      stage.querySelector<HTMLElement>('input, select, textarea, button')?.focus({ preventScroll: true });
-    });
-  }
 </script>

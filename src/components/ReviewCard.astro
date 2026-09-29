@@ -19,7 +19,7 @@ interface Props {
   clone?: boolean;
 }
 const { t, clone = false } = Astro.props;
-const client = clientFor(t.company);
+const client = clientFor(t.logo ?? t.company);
 const role = [t.position, t.company].filter(Boolean).join(', ');
 const long = t.quote.length > 300;
 ---

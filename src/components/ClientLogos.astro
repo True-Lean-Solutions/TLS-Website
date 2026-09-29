@@ -5,7 +5,8 @@
  * - Fewer than MARQUEE_MIN logos: a calm static row that drifts slightly with
  *   scroll (scroll layer). A marquee needs the set repeated across the screen,
  *   and with a couple of genuine clients that repetition would look padded.
- * - MARQUEE_MIN or more: a slow infinite marquee (30 s per loop, linear),
+ * - MARQUEE_MIN or more: a slow infinite marquee (SECONDS_PER_LOGO per logo
+ *   per loop, linear: ~37 px/s on desktop, calm enough to read every logo),
  *   faded at both edges, paused on hover/focus, static under reduced motion.
  */
 import { clients } from '../data/clients';
@@ -17,10 +18,11 @@ interface Props {
 }
 const { items = clients } = Astro.props;
 const MARQUEE_MIN = 6;
+const SECONDS_PER_LOGO = 8;
 const marquee = items.length >= MARQUEE_MIN;
 ---
 
-<div class:list={['logos', marquee ? 'logos--marquee' : 'logos--static']}>
+<div class:list={['logos', marquee ? 'logos--marquee' : 'logos--static']} style={`--loop: ${items.length * SECONDS_PER_LOGO}s`}>
   {
     marquee ? (
       <div class="logos-viewport">
@@ -102,7 +104,7 @@ const marquee = items.length >= MARQUEE_MIN;
   }
   @media (prefers-reduced-motion: no-preference) {
     .logos-track {
-      animation: logos-scroll 30s linear infinite;
+      animation: logos-scroll var(--loop) linear infinite;
     }
     .logos--marquee:is(:hover, :focus-within) .logos-track {
       animation-play-state: paused;
@@ -119,7 +121,7 @@ const marquee = items.length >= MARQUEE_MIN;
       justify-content: center;
       width: auto;
     }
-    .logos-track > [aria-hidden='true'] {
+    .logos-track > :global([aria-hidden='true']) {
       display: none;
     }
   }

@@ -66,6 +66,17 @@
   --space-6: 4rem;
   --space-7: 6rem;
 
+  /* Heading rhythm: the same gaps after every label and headline, site-wide.
+     tag  -> headline:            --gap-tag
+     headline -> intro paragraph: --gap-lead
+     heading block -> its content: --gap-block
+     copy -> buttons:              --gap-actions
+     Sections are separated by .section's padding (global.css). */
+  --gap-tag: 1rem;
+  --gap-lead: 1rem;
+  --gap-block: 2rem;
+  --gap-actions: 1.75rem; /* copy -> its row of buttons */
+
   /* Chrome */
   --header-h: 72px;
 }

@@ -1,8 +1,9 @@
 /**
  * Review reel (ReviewReel.astro): client reviews as a continuous stream.
- *  - Two rows drift in opposite directions (one on phones), slowly, each at
- *    its own speed, and loop seamlessly: a row's track repeats its set of
- *    reviews, and the offset wraps by exactly one set's width.
+ *  - Each row (ReviewReel has one since 2026-09-30; the engine takes any
+ *    number, alternating direction) drifts slowly and loops seamlessly: a
+ *    row's track repeats its set of reviews, and the offset wraps by exactly
+ *    one set's width.
  *  - Scrolling influences them: scrolling down carries both rows a little
  *    faster (up to 1.35x), scrolling up counteracts and, when fast, gently
  *    reverses them. The influence is smoothed, so the reel has momentum:

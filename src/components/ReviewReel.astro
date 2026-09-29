@@ -1,15 +1,16 @@
 ---
 /**
- * Client reviews as a continuous reel: two rows drifting in opposite
- * directions, endlessly, influenced by the visitor's scrolling (motion:
- * src/scripts/scroll/reel.ts). Reviews are verbatim and attributed exactly
- * (ReviewCard); each row repeats the same reviews to make the loop seamless.
+ * Client reviews as a continuous reel: one row drifting endlessly to the
+ * right, against the client logos above it (which drift left),
+ * influenced by the visitor's scrolling (motion: src/scripts/scroll/reel.ts;
+ * one row since 2026-09-30, Hemang). Reviews are verbatim and attributed
+ * exactly (ReviewCard); the row repeats the reviews to make the loop seamless.
  * The repeats are hidden from assistive tech. Nothing is invented,
  * shortened or reordered in meaning.
  *
  * Without JS, or with reduced motion, it is a still grid of the reviews.
  * With motion there is a pause button (WCAG 2.2.2), hovering, touching or
- * focusing a row slows it to a stop, and "Read full review" opens a long
+ * focusing the row slows it to a stop, and "Read full review" opens a long
  * review in full in a dialog.
  */
 import ReviewCard from './ReviewCard.astro';
@@ -21,23 +22,14 @@ interface Props {
 }
 const { testimonials, label = 'Client testimonials' } = Astro.props;
 const n = testimonials.length;
-// Row 2 runs the list in reverse order, so the two streams never read the
-// same (with few reviews, any rotation would repeat row 1's sequence).
-const row2 = [...testimonials].reverse();
 ---
 
 <div class="rr ix-light" data-rr role="region" aria-label={label}>
   <div class="rr-rows">
-    <div class="rr-row" data-dir="-1">
+    <div class="rr-row" data-dir="1">
       <div class="rr-track" data-set={n}>
         {testimonials.map((t) => <ReviewCard t={t} />)}
         {testimonials.map((t) => <ReviewCard t={t} clone />)}
-      </div>
-    </div>
-    <div class="rr-row rr-row--2" data-dir="1" aria-hidden="true">
-      <div class="rr-track" data-set={n}>
-        {row2.map((t) => <ReviewCard t={t} clone />)}
-        {row2.map((t) => <ReviewCard t={t} clone />)}
       </div>
     </div>
   </div>
@@ -89,7 +81,6 @@ const row2 = [...testimonials].reverse();
     gap: var(--rr-gap);
     align-items: start;
   }
-  .rr-row--2,
   .rr :global(.rc[data-clone]),
   .rr-controls {
     display: none;
@@ -113,9 +104,6 @@ const row2 = [...testimonials].reverse();
       -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
       mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
     }
-    :global(html.ix) .rr-row--2 {
-      display: block;
-    }
     :global(html.ix) .rr-track {
       display: flex;
       width: max-content;
@@ -135,14 +123,11 @@ const row2 = [...testimonials].reverse();
       margin-top: 0.5rem;
     }
   }
-  /* Phones: one row, cards a little narrower than the screen. */
+  /* Phones: cards a little narrower than the screen. */
   @media (max-width: 767px) {
     .rr {
       --rr-card: min(82vw, 330px);
       --rr-gap: 1rem;
-    }
-    :global(html.ix) .rr-row--2 {
-      display: none;
     }
   }
 

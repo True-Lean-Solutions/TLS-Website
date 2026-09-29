@@ -443,7 +443,7 @@ No JavaScript is involved. Text and card copy are unchanged.
   - soft-edged gray section bands.
 - **Home:**
   - the hero title rises line by line and the photo settles, then both exit with parallax;
-  - the Common Business Challenges scene (wide desktop, mouse/trackpad, screens ≥ 820px tall): the section is held and the four challenges activate in turn;
+  - the Common Business Challenges scene (wide desktop, mouse/trackpad, screens ≥ 880px tall since 2026-09-30; 820px before): the section is held and the four challenges activate in turn;
   - the count-up now runs 2.4s (was 3s; the brief asks for 1.8–2.5s) and still replays on every entry;
   - the logo row drifts sideways with scroll. With two logos a marquee would repeat them across the screen, so the marquee stays gated at 6+ logos;
   - testimonials switch with a sequenced crossfade, and a sideways swipe changes review on touch screens (superseded the same day by the review reel, below).
@@ -609,3 +609,66 @@ Expanding uses the brand's Bridge Plum rather than the reference image's violet,
 
 **Where it lives.** `src/components/{Footer,FooterLinks,FooterInsights,FooterSocials}.astro`, `src/layouts/BaseLayout.astro` (post data), `src/scripts/scroll/chrome.ts` (reveal).
 
+
+## 2026-09-29 — Common Business Challenges: desktop scene restyled after Hemang's reference
+
+**Status:** interim
+
+**Decision.** On desktop (≥ 1280px) the Challenges fold now follows Hemang's second reference, a full composition of the same section. Copy, cards, links and the scroll story are unchanged.
+- **The platform** stands beside the whole copy column, level with the heading. It is centered on the section's height and fills the room from 40px right of the copy to the screen edge, then runs off it. Before, it sat centered on the cards and was capped at 920px; the cap is now 1360px.
+- **Atmosphere.** The same platform image, blurred and lifted, sits behind as a haze in its own colors. It carries the scene up toward the top of the section. No new image. (Bokeh lights drifting above the platform were tried and removed the same day at Hemang's request.)
+- **Cards.** The cards are frosted glass (backdrop blur) over the haze. In the scroll story, the active card now lights up in place: accent border, glow, faint tint, a 1% lift. It no longer slides 12px right, matching the reference.
+- **Contrast.** The image's left fade is set in pixels from the platform's edge, not in percentages. Behind the copy column it stays a faint tint at every width. Lede contrast measured ≥ 4.6:1 at 1280–2560px.
+
+Tablet and phone keep the stacked layout: intro, image band, cards.
+
+**Where it lives.** `src/components/CommonChallenges.astro`.
+
+## 2026-09-30 — Short positioning line shortened
+
+**Status:** interim
+
+**Decision.** At Hemang's request, the line that sits under the Home hero and in the About page's closing CTA now reads "Others build what you ask for, we build what you actually need." It was Brand Guide v2.3's "Short Version": "Others build what you ask for. We help make sure you're building what you actually need — then we deliver it."
+
+**Open.** The brand guide still has the longer line. If the shorter one is the new approved short version, update v2.3 (or the next guide) so the two agree.
+
+**Where it lives.** `src/pages/index.astro`, `src/pages/about-us.astro`.
+
+## 2026-09-30 — One spacing rhythm for headings and sections
+
+**Status:** settled
+
+**Decision.** At Hemang's request, every label and headline is followed by the same space on every page, and sections sit the same distance apart. The values are tokens in `src/styles/tokens.css`:
+- `--gap-tag` (1rem): eyebrow label → headline.
+- `--gap-lead` (1rem): headline → intro paragraph (section headings, page heroes, solution heroes, the Challenges intro, About › Global Delivery, the CTA band, Contact).
+- `--gap-block` (2rem): heading block → the content it introduces.
+- `--gap-actions` (1.75rem): copy → its row of buttons (heroes, CTA band, 404, Insights search).
+- Sections: `.section` padding (96px, 64px at ≤768px), so the gap between sections is 192px on desktop and 128px on tablets and phones. The Home Challenges section now uses the same padding (it was 64px); its desktop scroll story needs a screen at least 880px tall (was 820px) so the taller section still fits below the header.
+
+Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the page-hero lede's 1.25rem, the solution-hero lede's 1.25rem and button gap's 1.9rem, the Challenges intro's 1.75rem. Measured after the change at 1440/768/390 on every page type: label → headline 16px everywhere; headline → lead 16px everywhere; heading → content 32px everywhere, except where a layout deliberately differs (side-by-side headers, the Contact header above the form, and the Challenges image band on tablets and phones, whose own fade is the gap).
+
+**Where it lives.** `src/styles/tokens.css`, `Eyebrow`, `SectionHeading`, `SolutionHero`, `CtaBand`, `GlobalDelivery`, `CommonChallenges`, `global.css`, `index`, `contact`, `404`, `insights/index`, `scripts/scroll/index.ts`.
+
+## 2026-09-30 — Solutions page: all eight cards as a grid
+
+**Status:** interim
+
+**Decision.** At Hemang's request the Solutions page shows all eight solution cards together, four across on desktop (two on tablets, one on phones), instead of the horizontal track driven by vertical scroll. The cards now rise into place with vertical scroll: each is tied to the scrollbar, coming up as the visitor scrolls down and easing back as they scroll up, and the columns trail one another slightly so each row arrives as a wave. With reduced motion the grid is still. The track's code stays behind `SOLUTIONS_TRACK` in `src/scripts/scroll/index.ts` if it's wanted again.
+
+**Where it lives.** `src/pages/services/index.astro`, `src/scripts/scroll/story.ts` (`initSolutionsGrid`), `src/scripts/scroll/index.ts`.
+
+## 2026-09-30 — Contact: the side step list removed
+
+**Status:** interim
+
+**Decision.** At Hemang's request, the "01 About you · 02 Timeline · 03 The problem · 04 Let's talk" step list beside the Contact form is gone; the "Prefer to talk?" card (Book a call) takes its place at the top of the side panel, above "Reach us directly". On desktop the form shows no separate step indicator (its compact strip only ever stood in for the list); each stage keeps its own numbered heading inside the form. Tablets and phones keep the compact strip at the top of the form. The "Prefer to talk?" card still comes forward at stage 04. The form contract is untouched (tested: same fields posted, success shown).
+
+**Where it lives.** `src/pages/contact.astro`, `src/components/ContactForm.astro`.
+
+## 2026-09-30 — Review attribution corrected: Dharmesh Thakkar
+
+**Status:** settled
+
+**Decision.** Hemang confirmed that the Excel-VBA stock tracker review ("I had been using a stock tracking application built in Microsoft Excel and VBA…") was written by Dharmesh Thakkar, Founder of J Sterling's Wellness Spa, and that the reviews sheet listed it under Mayank Pujara by mistake. The review is now attributed to Dharmesh Thakkar, Founder, J Sterling's Wellness Spa (his card shows the J Sterling's logo). The text, date (2026-03-11) and five-star rating are unchanged. The reviews sheet (`14l3c8EBTcWbMgiaQrEG1iVOcNndLP1iXntZTG2-hDp8`) should be corrected to match.
+
+**Where it lives.** `src/data/testimonials.ts`, CLAUDE.md (Home fold 7).

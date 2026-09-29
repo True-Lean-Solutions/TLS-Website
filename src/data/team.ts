@@ -1,7 +1,9 @@
 /**
  * Core team and advisors. Verbatim from the About doc.
  * source: 17QpMfSbas3gC4XwfamL8SgRRytEN6Sj6UGkkwsEunKg (About Us 2026-09-27)
- * Photos downloaded into public/team/ (never Drive hotlinks).
+ * Photos downloaded into public/team/ (never Drive hotlinks). Since 2026-09-29
+ * all but Sanket's are the office portraits Hemang supplied, cropped to a
+ * shared eye line and head size (docs/sources.md §4).
  */
 export interface Person {
   name: string;

@@ -15,12 +15,15 @@ import { gsap, ScrollTrigger, MQ, initSmoothScroll, refreshWhenSettled, scrollPo
 import { initHeadingReveals } from './text';
 import { initCardEntrances, initCardDepth } from './cards';
 import { initHeroes, initMediaReveals, initSpotlights, initLogoDrift } from './media';
-import { initChallengeStory, initSolutionsTrack } from './story';
+import { initChallengeStory, initSolutionsTrack, initSolutionsGrid } from './story';
 import { initChrome, initFooterReveal } from './chrome';
 import { initContact } from './contact';
 import { initStepSequences } from './steps';
 import { initReviewReels } from './reel';
 import { initPlaceCards } from './places';
+
+/** Solutions page: horizontal card track (off: the cards show as a grid). */
+const SOLUTIONS_TRACK = false;
 
 /**
  * Reveals only ever fade (opacity), never hide (visibility): content waiting
@@ -70,7 +73,8 @@ export function initScroll() {
       tablet: MQ.tablet,
       desktop: MQ.desktop,
       // Scenes need room: a pin taller than the screen would hide its own content.
-      story: '(min-width: 1280px) and (min-height: 820px)',
+      // 880px: the Challenges section (section padding) fits below the header.
+      story: '(min-width: 1280px) and (min-height: 880px)',
       track: '(min-width: 1024px) and (min-height: 680px)',
       homeHero: '(min-width: 901px)',
       solutionHero: '(min-width: 641px)',
@@ -83,11 +87,17 @@ export function initScroll() {
       const skip = new Set<HTMLElement>();
 
       // Scenes run with Lenis (mouse/trackpad) only; tablets and phones keep
-      // the normal layouts.
-      if (c.track && c.fine) {
+      // the normal layouts. The Solutions page's horizontal track is off since
+      // 2026-09-30 (Hemang: all cards visible together, as a grid); set
+      // SOLUTIONS_TRACK to bring it back.
+      if (SOLUTIONS_TRACK && c.track && c.fine) {
         const t = initSolutionsTrack();
         if (t.group) skip.add(t.group);
         cleanups.push(t.cleanup);
+      } else {
+        const g = initSolutionsGrid();
+        if (g.group) skip.add(g.group);
+        cleanups.push(g.cleanup);
       }
       cleanups.push(initContact({ desktop: c.desktop }));
       cleanups.push(initHeadingReveals());

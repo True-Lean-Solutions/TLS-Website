@@ -49,6 +49,9 @@ const values = [
   },
 ];
 
+/** Recent Results fold: hidden for now (Hemang, 2026-09-30). Set to true to show it again. */
+const SHOW_RESULTS = false;
+
 const stats = [
   { value: '$3M', label: 'annual savings from a six-platform integration', icon: 'chart' as const, accent: 'red' as const },
   { value: '15 hrs', label: 'of manual work removed every week by a custom workflow system', icon: 'clock' as const, accent: 'blue' as const },
@@ -86,8 +89,7 @@ const steps = [
           solutions.
         </p>
         <p class="sub">
-          Others build what you ask for. We help make sure you&rsquo;re building
-          what you actually need — then we deliver it.
+          Others build what you ask for, we build what you actually need.
         </p>
         <div class="hero-cta">
           <Button href={cta.primary.href} variant="primary" arrow>
@@ -122,7 +124,7 @@ const steps = [
   <section class="section">
     <div class="wrap">
       <SectionHeading
-        eyebrow="What We Do"
+        eyebrow="Solutions"
         title="The tools we use to solve "
         accent="business problems."
         lead="AI, software engineering, integrations, automation, and technical talent — put to work on the problems that actually slow your business down."
@@ -133,19 +135,19 @@ const steps = [
     </div>
   </section>
 
-  <!-- 5. Recent Results -->
-  <section class="section">
-    <div class="wrap">
-      <SectionHeading
-        eyebrow="Recent Results"
-        title="Real problems, "
-        accent="measurable outcomes."
-      />
-      <div class="grid-3 stat-row" data-reveal="stagger" data-count-group>
-        {stats.map((s) => <StatInline {...s} />)}
-      </div>
-    </div>
-  </section>
+  <!-- 5. Recent Results (hidden while SHOW_RESULTS is false) -->
+  {
+    SHOW_RESULTS && (
+      <section class="section">
+        <div class="wrap">
+          <SectionHeading eyebrow="Recent Results" title="Real problems, " accent="measurable outcomes." />
+          <div class="grid-3 stat-row" data-reveal="stagger" data-count-group>
+            {stats.map((s) => <StatInline {...s} />)}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   <!-- 6. Our Approach -->
   <section class="section">
@@ -168,7 +170,7 @@ const steps = [
   <!-- 7. Client proof: who we work with, then what they say. -->
   <section class="section proof">
     <div class="wrap">
-      <SectionHeading eyebrow="Our Clients" title="Teams we work with" align="center" />
+      <SectionHeading eyebrow="Our Clients" title="Who are our clients" align="center" />
       <div class="proof-logos" data-reveal><ClientLogos /></div>
 
       <div class="proof-voices">
@@ -312,7 +314,7 @@ const steps = [
     display: flex;
     flex-wrap: wrap;
     gap: 0.9rem;
-    margin-top: 1.75rem;
+    margin-top: var(--gap-actions);
   }
 
   /* Grids */
@@ -357,14 +359,8 @@ const steps = [
   .proof {
     overflow-x: clip; /* the card's soft glow may spread past narrow screens */
   }
-  .proof :global(.section-heading) {
-    margin-bottom: 1.5rem;
-  }
   .proof-voices {
     margin-top: var(--space-6);
-  }
-  .proof-voices :global(.section-heading) {
-    margin-bottom: 2.25rem;
   }
 
   @media (max-width: 1024px) {

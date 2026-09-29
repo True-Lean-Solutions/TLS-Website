@@ -169,4 +169,51 @@ export function initSolutionsTrack(): { cleanup: Cleanup; group: HTMLElement | n
   };
 }
 
+/**
+ * Solutions page grid (since 2026-09-30, replacing the horizontal track): all
+ * eight cards visible together, rising into place with vertical scroll. Each
+ * card is tied to the scrollbar (scrub), so it comes up as the visitor scrolls
+ * down and eases back as they scroll up; columns trail one another slightly,
+ * so each row arrives as a wave from left to right.
+ */
+export function initSolutionsGrid(): { cleanup: Cleanup; group: HTMLElement | null } {
+  const grid = document.querySelector<HTMLElement>('.sol-intro .cards');
+  if (!grid) return { cleanup: () => {}, group: null };
+  claim(grid, 'cards');
+  const cards = [...grid.children] as HTMLElement[];
+  const cols = () => getComputedStyle(grid).gridTemplateColumns.split(' ').length || 1;
+
+  const tweens = cards.map((card, i) =>
+    gsap.fromTo(
+      card,
+      { y: () => 90 + (i % cols()) * 36, opacity: 0.25, scale: 0.96 },
+      {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: card,
+          start: () => `top ${100 - (i % cols()) * 4}%`,
+          end: () => `top ${62 - (i % cols()) * 4}%`,
+          scrub: 0.6,
+          invalidateOnRefresh: true,
+        },
+      }
+    )
+  );
+
+  return {
+    group: grid,
+    cleanup: () => {
+      tweens.forEach((t) => {
+        t.scrollTrigger?.kill();
+        t.kill();
+      });
+      gsap.set(cards, { clearProps: 'transform,opacity' });
+      unclaim(grid);
+    },
+  };
+}
+
 export { ScrollTrigger };
