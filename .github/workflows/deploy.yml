@@ -19,9 +19,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      # GitHub Pages serves this project from /<repo>/ until a custom domain
-      # is attached. Remove/blank this once www.trueleansolutions.com points here.
-      SITE_BASE: /TLS-Website/
+      # The custom domain (trueleansolutions.com) serves the site from the root.
+      # Set this back to /TLS-Website/ only if the custom domain is removed.
+      SITE_BASE: /
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

@@ -114,7 +114,7 @@ Entry format:
 
 ## 2026-09-28 — Deploy base defaults to "/" until the repo name is known
 
-**Status:** interim
+**Status:** superseded 2026-09-29 (custom domain serves from the root; see below)
 
 **Decision.** `astro.config.mjs` reads `base` from `SITE_BASE` (default `/`). Every internal link/asset goes through `href()` in `src/data/site.ts`, so switching the base later needs no code changes. `site` is the production canonical.
 
@@ -672,3 +672,13 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 **Decision.** Hemang confirmed that the Excel-VBA stock tracker review ("I had been using a stock tracking application built in Microsoft Excel and VBA…") was written by Dharmesh Thakkar, Founder of J Sterling's Wellness Spa, and that the reviews sheet listed it under Mayank Pujara by mistake. The review is now attributed to Dharmesh Thakkar, Founder, J Sterling's Wellness Spa (his card shows the J Sterling's logo). The text, date (2026-03-11) and five-star rating are unchanged. The reviews sheet (`14l3c8EBTcWbMgiaQrEG1iVOcNndLP1iXntZTG2-hDp8`) should be corrected to match.
 
 **Where it lives.** `src/data/testimonials.ts`, CLAUDE.md (Home fold 7).
+
+## 2026-09-29 — Deploy base set to the root for the custom domain
+
+**Status:** settled
+
+**Decision.** `trueleansolutions.com` is attached as the GitHub Pages custom domain, so the site serves from `/`. The deploy workflow now builds with `SITE_BASE: /` instead of `/TLS-Website/`. The first deploy after the domain was attached still used `/TLS-Website/`, so every stylesheet, script and image 404ed and the site rendered unstyled.
+
+**Open.** The Pages custom domain is the apex, while canonical URLs use `https://www.trueleansolutions.com`. Either the custom domain moves to `www` (GitHub then redirects the apex to it), or the canonicals move to the apex. Hemang to decide. Enforce HTTPS once GitHub finishes issuing the certificate.
+
+**Where it lives.** `.github/workflows/deploy.yml`, `astro.config.mjs`.

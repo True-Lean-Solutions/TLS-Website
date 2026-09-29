@@ -66,7 +66,7 @@ Where the answer would not change what you build, proceed and state the assumpti
   - `npm run preview`: serve the build.
   - `npx astro check`: type and template check.
   Run `astro check` and `build` before every commit. Both must pass.
-- **Deploy:** GitHub Actions with the official `withastro/action`, deploying to GitHub Pages on push to `main`. Until DNS moves, the site serves from the `*.github.io` project path. Set `site` and `base` in `astro.config.mjs` so every internal link and asset respects `base`. Canonical URLs always use `https://www.trueleansolutions.com`.
+- **Deploy:** GitHub Actions with the official `withastro/action`, deploying to GitHub Pages on push to `main`. The custom domain `trueleansolutions.com` is attached in GitHub Pages (2026-09-29), so the site serves from the root and the workflow builds with `SITE_BASE: /`. Keep every internal link and asset going through `href()` so `base` can still change. Canonical URLs always use `https://www.trueleansolutions.com`.
 - **Frontend design:** if the `frontend-design` skill is available, apply it to every visual build step.
 
 ## Target structure
