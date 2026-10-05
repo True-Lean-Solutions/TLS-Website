@@ -1,0 +1,1124 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import Button from '../../components/Button.astro';
+import Icon from '../../components/Icon.astro';
+import type { IconName } from '../../components/iconTypes';
+import { href } from '../../data/site';
+
+/*
+ * AI Visibility Growth Team product page (2026-10-02), opened from "Learn
+ * More" on the AI Visibility Growth Team card in Enterprise AI › Featured AI
+ * Solutions. Copy: Hemang's AI Visibility brief, verbatim. Visual direction:
+ * his reference set (docs/references/pages/services/ai-visibility-growth-team/);
+ * the photos are crops of those references. The references' testimonials,
+ * "70%+" statistic, blog cards, FAQ answers, form and footer are not used
+ * (no source / out of v1). Interface panels are illustrations, labeled as such.
+ * Pricing is not shown here until confirmed as approved page content.
+ * See docs/decisions.md.
+ */
+const title = 'True Lean Solutions — AI Visibility Growth Team';
+const description =
+  'Help your brand become more visible, credible and discoverable across ChatGPT, Google AI, Gemini, Perplexity and other AI-driven discovery platforms.';
+
+const img = (p: string) => href(`/solutions/ai-visibility/${p}`);
+const logo = (p: string) => href(`/brand/platforms/${p}`);
+
+const shift: { title: string; text: string; icon: IconName }[] = [
+  { title: 'AI-Powered Discovery', text: 'Customers are using AI assistants to explore options and find recommendations.', icon: 'ai' },
+  { title: 'Brand Visibility', text: 'Make your business information easier for AI-driven platforms to understand and surface.', icon: 'search' },
+  { title: 'Trust and Citations', text: 'Strengthen the signals that help support credible recommendations and relevant citations.', icon: 'shield' },
+];
+
+const capabilities: { title: string; text: string; icon: IconName }[] = [
+  { title: 'AI Search Optimization (AIO)', text: 'Improve how your website and brand information can be understood by AI-driven search experiences.', icon: 'search' },
+  { title: 'Technical and Content Optimization', text: 'Strengthen website structure, content clarity, and discoverability.', icon: 'gear' },
+  { title: 'Entity and Authority Building', text: "Improve the consistency and credibility of your brand's digital presence.", icon: 'shield' },
+  { title: 'AI-Targeted Content Creation', text: 'Develop useful, structured content aligned with the questions your audience asks.', icon: 'document' },
+  { title: 'Citation and Digital PR Support', text: 'Support credible mentions and references across relevant digital sources.', icon: 'megaphone' },
+  { title: 'Analytics, Reporting and Ongoing Optimization', text: 'Track progress, identify opportunities, and refine the strategy over time.', icon: 'analytics' },
+];
+const [featured, ...supporting] = capabilities;
+
+// Platform tiles: logos are the files already in public/brand/platforms/.
+const platforms = [
+  { name: 'ChatGPT', file: 'openai-chatgpt-mark.svg', line: 'Conversational answers and recommendations.' },
+  { name: 'Google AI', file: 'google-g.png', line: 'AI-generated overviews alongside search results.' },
+  { name: 'Gemini', file: 'google-gemini.svg', line: "Google's AI assistant for questions and research." },
+  { name: 'Perplexity', file: 'perplexity.svg', line: 'An answer engine that cites its sources.' },
+];
+
+const stages = [
+  { title: 'Discover', text: 'Understand your business, audience, current digital presence, and visibility goals.' },
+  { title: 'Establish Your Baseline', text: 'Review your current AI discovery presence, content, technical foundations, and opportunities.' },
+  { title: 'Optimize and Build', text: 'Apply prioritized improvements across content, technical structure, brand authority, and discoverability.' },
+  { title: 'Measure and Refine', text: 'Review progress, identify gaps, and adapt the strategy as AI search experiences evolve.' },
+];
+
+const deliverables = [
+  'AI visibility baseline',
+  'Technical and content opportunity review',
+  'AI search optimization recommendations',
+  'Content and topic strategy',
+  'Entity and authority-building recommendations',
+  'Citation and digital PR support',
+  'Analytics and reporting',
+  'Ongoing optimization guidance',
+];
+
+const reasons: { title: string; text: string; icon: IconName }[] = [
+  { title: 'Expert Strategy', text: 'A practical plan tailored to your business, audience, and goals.', icon: 'compass' },
+  { title: 'Dedicated Support', text: 'Work with a team focused on your visibility and ongoing improvement.', icon: 'users' },
+  { title: 'Measurable Progress', text: 'Use reporting and analysis to understand what is changing and where to focus next.', icon: 'analytics' },
+];
+---
+
+<BaseLayout title={title} description={description} path="/services/ai-visibility-growth-team/">
+  <!-- 1. Hero -->
+  <section class="av-hero">
+    <div class="av-hero-glow" aria-hidden="true"></div>
+    <figure class="av-hero-media">
+      <img
+        src={img('hero.webp')}
+        alt="A professional reviews AI search visibility on a laptop, beside panels for ChatGPT, Google AI, Gemini and Perplexity, a “Your brand recommended by AI” search bar, an AI overview and citations."
+        width="844"
+        height="803"
+        fetchpriority="high"
+        decoding="async"
+        data-hero-photo
+      />
+    </figure>
+    <div class="wrap">
+      <div class="av-hero-copy" data-reveal="load">
+        <nav class="av-crumbs" aria-label="Breadcrumb">
+          <a href={href('/services/enterprise-ai/')}>AI &amp; Automation</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">AI Visibility Growth Team</span>
+        </nav>
+        <Eyebrow label="AI Visibility Growth Team" />
+        <h1>Get Found. Get Cited. <span class="accent">Get Recommended by AI.</span></h1>
+        <p class="av-lede">Your customers are increasingly asking AI before they visit your website. We help your brand become more visible, credible, and discoverable across ChatGPT, Google AI, Gemini, Perplexity, and other AI-driven discovery platforms.</p>
+        <div class="av-actions">
+          <Button href="/contact/" variant="primary" arrow>Get Your AI Visibility Baseline</Button>
+          <Button href="#approach" variant="secondary" class="glide">Explore Our Approach</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. The AI discovery shift -->
+  <section class="section av-shift">
+    <div class="wrap av-shift-grid">
+      <SectionHeading
+        eyebrow="The Search Landscape Is Changing"
+        title="Your Next Customer May Ask AI "
+        accent="Before They Search."
+        lead="AI-powered discovery is changing how people research, compare, and choose businesses. Your brand needs to be understandable, credible, and discoverable wherever those conversations happen."
+      />
+      <div class="av-shift-cards" data-reveal="stagger">
+        {shift.map((c, i) => (
+          <article class="av-card ix-card ix-card--quiet" style={`--c: ${i === 1 ? 'var(--blue)' : 'var(--av-violet)'}`}>
+            <span class="glass-icon av-icon" aria-hidden="true"><Icon name={c.icon} size={22} /></span>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Our approach -->
+  <section class="section av-approach" id="approach">
+    <div class="av-wash" aria-hidden="true"></div>
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Our Approach"
+        title="A Practical System for "
+        accent="AI Visibility Growth."
+        lead="We bring together technical optimization, content strategy, authority building, and ongoing measurement to help improve how your brand appears across AI-driven discovery platforms."
+      />
+      <ol class="av-caps" data-reveal="stagger">
+        <li class="av-cap av-cap--lead ix-card ix-card--quiet" style="--c: var(--av-violet)">
+          <span class="av-num">01</span>
+          <span class="glass-icon av-icon" aria-hidden="true"><Icon name={featured.icon} size={24} /></span>
+          <h3>{featured.title}</h3>
+          <p>{featured.text}</p>
+          <div class="av-mini" aria-hidden="true">
+            <div class="av-mini-search">
+              <Icon name="search" size={16} />
+              <span>Your brand recommended by AI</span>
+              <Icon name="ai" size={16} class="av-spark" />
+            </div>
+            <div class="av-mini-logos">
+              {platforms.map((p) => <span><img src={logo(p.file)} alt="" width="22" height="22" loading="lazy" /></span>)}
+            </div>
+          </div>
+        </li>
+        {supporting.map((c, i) => (
+          <li class:list={['av-cap ix-card ix-card--quiet', { 'av-cap--wide': i === supporting.length - 1 }]} style={`--c: ${i % 2 ? 'var(--blue)' : 'var(--av-violet)'}`}>
+            <span class="av-num">{String(i + 2).padStart(2, '0')}</span>
+            <span class="glass-icon av-icon" aria-hidden="true"><Icon name={c.icon} size={22} /></span>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+            {i === supporting.length - 1 && (
+              <span class="av-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- 4. Where your brand appears -->
+  <section class="section av-surfaces">
+    <div class="wrap">
+      <SectionHeading eyebrow="AI Discovery Surfaces" title="Be Present Where Your Customers " accent="Ask Questions." />
+      <div class="av-surfaces-grid">
+        <ul class="av-platforms" data-reveal="stagger">
+          {platforms.map((p) => (
+            <li class="av-platform ix-card ix-card--quiet" style="--c: var(--av-violet)">
+              <span class="av-logo"><img src={logo(p.file)} alt="" width="32" height="32" loading="lazy" /></span>
+              <h3>{p.name}</h3>
+              <p>{p.line}</p>
+            </li>
+          ))}
+        </ul>
+        <figure class="av-answer" data-float="1">
+          <div class="av-ask">
+            <Icon name="search" size={18} />
+            <span>Which solutions should I consider?</span>
+            <span class="av-ask-go" aria-hidden="true"><Icon name="arrow" size={16} /></span>
+          </div>
+          <div class="av-reply" data-search>
+            <p class="av-reply-head"><Icon name="ai" size={16} /> AI response</p>
+            <ul>
+              <li class="av-rec">
+                <span class="av-rec-mark" aria-hidden="true"><Icon name="check" size={14} /></span>
+                <span><strong>Your brand</strong><span class="av-lines" aria-hidden="true"><i></i><i></i></span></span>
+              </li>
+              <li><span class="av-dot" aria-hidden="true"></span><span class="av-lines" aria-hidden="true"><i></i><i></i></span></li>
+              <li><span class="av-dot" aria-hidden="true"></span><span class="av-lines" aria-hidden="true"><i></i><i></i></span></li>
+              <li class="av-cites"><span>Sources</span><b>1</b><b>2</b><b>3</b></li>
+            </ul>
+          </div>
+          <figcaption>Illustrative interface. Not a real search result.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. How we work -->
+  <section class="section av-process">
+    <div class="wrap">
+      <SectionHeading eyebrow="From Baseline to Growth" title="A Clear Process. " accent="Continuous Improvement." align="center" />
+      <div class="av-track" data-progress>
+        <span class="av-track-line" aria-hidden="true"><span class="av-track-fill"></span></span>
+        <ol class="av-stages">
+          {stages.map((s, i) => (
+            <li data-step>
+              <span class="av-stage-dot" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+              <h3><span class="visually-hidden">{String(i + 1).padStart(2, '0')} — </span>{s.title}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Deliverables -->
+  <section class="section av-deliver">
+    <div class="wrap av-deliver-grid">
+      <div>
+        <SectionHeading eyebrow="What You Get" title="Focused Expertise. " accent="Practical Deliverables." />
+        <ul class="av-list" data-reveal="stagger">
+          {deliverables.map((d) => (
+            <li><span class="av-check" aria-hidden="true"><Icon name="check" size={14} /></span>{d}</li>
+          ))}
+        </ul>
+      </div>
+      <figure class="av-photo av-photo--panel">
+        <img
+          src={img('panel.webp')}
+          alt="An AI overview panel with numbered citations and a rising bar chart, in front of a laptop."
+          width="768"
+          height="811"
+          loading="lazy"
+          decoding="async"
+          data-float="1.5"
+        />
+      </figure>
+    </div>
+  </section>
+
+  <!-- 7. Why a growth team -->
+  <section class="section av-why">
+    <div class="av-wash av-wash--b" aria-hidden="true"></div>
+    <div class="wrap av-why-grid">
+      <figure class="av-photo av-photo--team">
+        <img
+          src={img('team.webp')}
+          alt="A smiling professional works on a laptop, surrounded by ChatGPT, Google AI, Gemini and Perplexity tiles and a visibility growth chart."
+          width="730"
+          height="540"
+          loading="lazy"
+          decoding="async"
+          data-float="1"
+        />
+      </figure>
+      <div>
+        <SectionHeading eyebrow="A Practical Partnership" title="Strategy, Execution, and Measurement — " accent="Working Together." />
+        <div class="av-reasons" data-reveal="stagger">
+          {reasons.map((r, i) => (
+            <article class="av-reason ix-card ix-card--quiet" style={`--c: ${i === 1 ? 'var(--blue)' : 'var(--av-violet)'}`}>
+              <span class="glass-icon av-icon" aria-hidden="true"><Icon name={r.icon} size={22} /></span>
+              <div>
+                <h3>{r.title}</h3>
+                <p>{r.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Final CTA -->
+  <section class="section av-close">
+    <div class="wrap">
+      <div class="av-band" data-reveal="">
+        <svg class="av-band-waves" viewBox="0 0 1200 320" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 230 C 220 150, 420 300, 640 210 S 1020 120, 1200 190" />
+          <path d="M0 262 C 260 190, 460 320, 700 240 S 1040 170, 1200 230" />
+          <path d="M0 196 C 200 120, 440 260, 660 176 S 1000 80, 1200 150" />
+        </svg>
+        <div class="av-band-copy">
+          <Eyebrow label="Let's Grow Your AI Visibility" />
+          <h2>Ready to Improve How AI Finds Your Brand?</h2>
+          <p>Start with a clear view of your current visibility and discover practical opportunities to strengthen your brand's presence across AI-driven search.</p>
+        </div>
+        <div class="av-band-cta">
+          <Button href="/contact/" variant="primary" arrow>Get Your AI Visibility Baseline</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Page accents: TLS red leads; violet and blue carry AI discovery. */
+  :global(:root) {
+    --av-violet: #6a4bd6;
+  }
+  .accent {
+    color: var(--red);
+  }
+  h2 {
+    font-size: clamp(2rem, 1.35rem + 2.1vw, 2.85rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .glass-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 46px;
+    height: 46px;
+    border-radius: var(--radius);
+  }
+  .av-icon {
+    color: var(--c);
+  }
+  /* Soft lavender and pink light behind light sections. */
+  .av-wash {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(40% 50% at 92% 18%, rgba(106, 75, 214, 0.1), transparent 70%),
+      radial-gradient(36% 44% at 4% 86%, rgba(232, 121, 249, 0.1), transparent 72%);
+  }
+  .av-wash--b {
+    background:
+      radial-gradient(42% 56% at 6% 40%, rgba(232, 121, 249, 0.12), transparent 70%),
+      radial-gradient(36% 46% at 96% 80%, rgba(18, 136, 207, 0.08), transparent 72%);
+  }
+  .av-approach,
+  .av-why {
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* ---------- 1. Hero ----------
+     Desktop: the photo sits at the right edge of the screen, fading into the
+     page at its left, top and bottom. Tablets and phones: copy, then the
+     photo as its own band. */
+  .av-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: clamp(560px, 46vw, 820px);
+    padding-block: clamp(2.5rem, 5vw, 4.5rem) clamp(3.5rem, 7vw, 6rem);
+    background: var(--bg);
+  }
+  .av-hero-glow {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(46% 60% at 10% 92%, rgba(232, 121, 249, 0.2), transparent 70%),
+      radial-gradient(40% 50% at 36% 8%, rgba(106, 75, 214, 0.1), transparent 70%),
+      radial-gradient(50% 70% at 70% 50%, rgba(167, 139, 250, 0.16), transparent 72%),
+      linear-gradient(180deg, #fff, var(--bg));
+    /* No seam where the hero meets the next section. */
+    mask-image: linear-gradient(180deg, #000 70%, transparent);
+    -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent);
+  }
+  .av-hero-media {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(56vw, 980px);
+    z-index: -1;
+    margin: 0;
+    --fade-x: linear-gradient(90deg, transparent 0, #000 30%);
+    --fade-y: linear-gradient(180deg, transparent 0, #000 5%, #000 80%, transparent 100%);
+    mask-image: var(--fade-x), var(--fade-y);
+    mask-composite: intersect;
+    -webkit-mask-image: var(--fade-x), var(--fade-y);
+    -webkit-mask-composite: source-in;
+  }
+  .av-hero-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 30% 0%;
+  }
+  .av-hero-copy {
+    max-width: 38rem;
+  }
+  .av-crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--text-2);
+  }
+  .av-crumbs a {
+    color: var(--blue-text);
+    text-decoration: none;
+  }
+  .av-crumbs a:hover {
+    text-decoration: underline;
+  }
+  .av-hero h1 {
+    font-size: clamp(2.3rem, 1.5rem + 2.4vw, 3.35rem);
+    line-height: 1.04;
+    letter-spacing: -0.028em;
+  }
+  .av-hero h1 .accent {
+    display: block;
+  }
+  .av-lede {
+    margin-top: var(--gap-lead);
+    max-width: 52ch;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .av-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: var(--gap-actions);
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .av-hero-media {
+      animation: av-settle 1400ms var(--ix-ease) 80ms backwards;
+    }
+  }
+  @keyframes av-settle {
+    from { opacity: 0; transform: translateX(24px); }
+  }
+  @media (max-width: 960px) {
+    .av-hero {
+      min-height: 0;
+      padding-bottom: 0;
+    }
+    .av-hero-media {
+      position: relative;
+      inset: auto;
+      order: 2;
+      width: 100%;
+      max-width: 720px;
+      margin: 1.5rem auto 0;
+      aspect-ratio: 844 / 803;
+      max-height: 620px;
+      --fade-x: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+      --fade-y: linear-gradient(180deg, transparent 0, #000 14%, #000 80%, transparent 100%);
+    }
+    .av-hero-media img {
+      object-position: 50% 40%;
+    }
+  }
+
+  /* ---------- 2. The shift ---------- */
+  .av-shift-grid {
+    display: grid;
+  }
+  .av-shift-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .av-card,
+  .av-cap,
+  .av-platform,
+  .av-reason {
+    border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in srgb, var(--border) 85%, #fff);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--shadow);
+  }
+  .av-card {
+    padding: 1.4rem 1.25rem;
+  }
+  .av-card .av-icon {
+    margin-bottom: 1rem;
+  }
+  :is(.av-card, .av-cap, .av-platform, .av-reason) h3 {
+    font-size: 1.1rem;
+    line-height: 1.25;
+    margin-bottom: 0.4rem;
+  }
+  :is(.av-card, .av-cap, .av-platform, .av-reason) p {
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  @media (max-width: 680px) {
+    .av-shift-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 3. Approach: one lead capability, five supporting ---------- */
+  .av-caps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .av-cap {
+    position: relative;
+    padding: 1.4rem 1.3rem;
+  }
+  .av-cap .av-icon {
+    margin-bottom: 0.9rem;
+  }
+  .av-num {
+    position: absolute;
+    top: 1.15rem;
+    right: 1.25rem;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .av-cap--lead {
+    grid-row: span 2;
+    display: flex;
+    flex-direction: column;
+    padding: 1.9rem 1.75rem;
+    border-color: color-mix(in srgb, var(--av-violet) 22%, var(--border));
+    background:
+      radial-gradient(80% 60% at 100% 0%, rgba(106, 75, 214, 0.1), transparent 70%),
+      radial-gradient(70% 50% at 0% 100%, rgba(232, 121, 249, 0.1), transparent 70%),
+      #fff;
+  }
+  .av-cap--lead h3 {
+    font-size: var(--step-2);
+  }
+  .av-cap--lead p {
+    font-size: 1.02rem;
+  }
+  .av-cap--lead .glass-icon {
+    width: 56px;
+    height: 56px;
+  }
+  .av-mini {
+    margin-top: auto;
+    padding-top: 1.75rem;
+    display: grid;
+    gap: 0.9rem;
+  }
+  .av-mini-search {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid color-mix(in srgb, var(--av-violet) 20%, var(--border));
+    box-shadow: 0 12px 28px -18px rgba(106, 75, 214, 0.55);
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .av-mini-search > :global(svg:first-child) {
+    color: var(--blue);
+  }
+  .av-mini-search :global(.av-spark) {
+    margin-left: auto;
+    color: var(--av-violet);
+  }
+  .av-mini-logos {
+    display: flex;
+    gap: 0.6rem;
+  }
+  .av-mini-logos span {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .av-mini-logos img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+  }
+  .av-cap--wide {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    column-gap: 1rem;
+    align-items: center;
+  }
+  .av-cap--wide .av-icon {
+    margin: 0;
+    grid-row: span 2;
+  }
+  .av-cap--wide h3 {
+    margin-right: 2rem;
+  }
+  .av-cap--wide h3,
+  .av-cap--wide p {
+    grid-column: 2;
+  }
+  .av-bars {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    height: 54px;
+    padding-top: 0.75rem;
+  }
+  .av-bars i {
+    width: 10px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, var(--av-violet), var(--blue));
+    opacity: 0.85;
+  }
+  .av-bars i:nth-child(1) { height: 30%; opacity: 0.4; }
+  .av-bars i:nth-child(2) { height: 42%; opacity: 0.5; }
+  .av-bars i:nth-child(3) { height: 38%; opacity: 0.6; }
+  .av-bars i:nth-child(4) { height: 60%; opacity: 0.7; }
+  .av-bars i:nth-child(5) { height: 72%; opacity: 0.8; }
+  .av-bars i:nth-child(6) { height: 100%; }
+  @media (max-width: 1024px) {
+    .av-caps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .av-cap--lead {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+  }
+  @media (max-width: 640px) {
+    .av-caps {
+      grid-template-columns: 1fr;
+    }
+    .av-cap--lead,
+    .av-cap--wide {
+      grid-column: auto;
+    }
+    .av-cap--wide {
+      display: block;
+    }
+    .av-cap--wide .av-icon {
+      margin-bottom: 0.9rem;
+    }
+    .av-bars {
+      display: none;
+    }
+  }
+
+  /* ---------- 4. Discovery surfaces ---------- */
+  .av-surfaces-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: center;
+  }
+  .av-platforms {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .av-platform {
+    padding: 1.3rem 1.2rem;
+  }
+  .av-logo {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 0.9rem;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 20px -14px rgba(13, 13, 13, 0.4);
+  }
+  .av-logo img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+  }
+  .av-answer {
+    position: relative;
+    margin: 0;
+    padding: clamp(1.1rem, 2.5vw, 1.6rem);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(70% 60% at 100% 0%, rgba(106, 75, 214, 0.14), transparent 70%),
+      radial-gradient(60% 50% at 0% 100%, rgba(232, 121, 249, 0.14), transparent 70%),
+      rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 30px 60px -40px rgba(70, 40, 140, 0.45);
+  }
+  .av-ask {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.85rem 0.9rem 0.85rem 1.1rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    font-weight: 500;
+  }
+  .av-ask > :global(svg:first-child) {
+    flex: none;
+    color: var(--blue);
+  }
+  .av-ask-go {
+    margin-left: auto;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--av-violet);
+    color: #fff;
+  }
+  .av-reply {
+    margin-top: 1rem;
+    padding: 1.1rem 1.2rem;
+    border-radius: var(--radius-lg);
+    background: #fff;
+    border: 1px solid var(--border);
+  }
+  .av-reply-head {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--av-violet);
+    margin-bottom: 0.8rem;
+  }
+  .av-reply ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.65rem;
+  }
+  .av-reply li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+  .av-rec {
+    padding: 0.7rem 0.8rem;
+    border-radius: var(--radius);
+    background: linear-gradient(90deg, rgba(106, 75, 214, 0.1), rgba(18, 136, 207, 0.06));
+    border: 1px solid color-mix(in srgb, var(--av-violet) 30%, transparent);
+  }
+  .av-rec > span:last-child {
+    flex: 1;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .av-rec strong {
+    font-family: var(--font-head);
+    font-size: 0.95rem;
+  }
+  .av-rec-mark {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--av-violet);
+    color: #fff;
+  }
+  .av-dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin: 0.3rem 0.45rem 0 0.4rem;
+    border-radius: 50%;
+    background: #d4d0ea;
+  }
+  .av-lines {
+    flex: 1;
+    display: grid;
+    gap: 5px;
+  }
+  .av-lines i {
+    display: block;
+    height: 7px;
+    border-radius: 4px;
+    background: #ebe9f5;
+  }
+  .av-lines i:last-child {
+    width: 64%;
+  }
+  .av-cites {
+    align-items: center;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--text-2);
+  }
+  .av-cites b {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 0.72rem;
+    color: #fff;
+    background: var(--blue-text);
+  }
+  .av-cites b:nth-of-type(2) { background: var(--av-violet); }
+  .av-cites b:nth-of-type(3) { background: var(--plum); }
+  .av-answer figcaption {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-2);
+  }
+  @media (max-width: 900px) {
+    .av-surfaces-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 420px) {
+    .av-platforms {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 5. Process: a line that fills as you scroll ---------- */
+  .av-track {
+    --p: 1;
+    position: relative;
+  }
+  .av-track-line {
+    position: absolute;
+    left: 12.5%;
+    right: 12.5%;
+    top: 27px;
+    height: 2px;
+    background: var(--border);
+  }
+  .av-track-fill {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--red), var(--av-violet), var(--blue));
+    transform-origin: left center;
+    transform: scaleX(var(--p));
+  }
+  .av-stages {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+    position: relative;
+  }
+  .av-stages li {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+  .av-stage-dot {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 1.1rem;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--av-violet);
+    color: var(--av-violet);
+    font-family: var(--font-head);
+    font-weight: 700;
+    box-shadow: 0 0 0 6px var(--bg), 0 14px 30px -16px rgba(106, 75, 214, 0.6);
+    transition:
+      background-color var(--ix-base) var(--ix-ease),
+      color var(--ix-base) var(--ix-ease),
+      border-color var(--ix-base) var(--ix-ease),
+      transform var(--ix-base) var(--ix-ease);
+  }
+  .av-stages li.is-on .av-stage-dot {
+    background: var(--av-violet);
+    color: #fff;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    html.ix .av-stages li:not(.is-on) .av-stage-dot {
+      border-color: var(--border-2);
+      color: var(--muted);
+      transform: scale(0.9);
+      box-shadow: 0 0 0 6px var(--bg);
+    }
+  }
+  .av-stages h3 {
+    font-size: var(--step-1);
+    margin-bottom: 0.45rem;
+  }
+  .av-stages p {
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    max-width: 30ch;
+  }
+  @media (max-width: 860px) {
+    .av-track-line {
+      left: 27px;
+      right: auto;
+      top: 28px;
+      bottom: 28px;
+      width: 2px;
+      height: auto;
+    }
+    .av-track-fill {
+      background: linear-gradient(180deg, var(--red), var(--av-violet), var(--blue));
+      transform-origin: center top;
+      transform: scaleY(var(--p));
+    }
+    .av-stages {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      max-width: 560px;
+    }
+    .av-stages li {
+      grid-template-columns: auto 1fr;
+      justify-items: start;
+      text-align: left;
+      column-gap: 1.25rem;
+    }
+    .av-stage-dot {
+      grid-row: span 2;
+      margin: 0;
+    }
+    .av-stages h3 {
+      align-self: end;
+    }
+  }
+
+  /* ---------- 6. Deliverables ---------- */
+  .av-deliver-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .av-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1.5rem;
+  }
+  .av-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--border);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .av-check {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    margin-top: 1px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--av-violet) 14%, #fff);
+    color: var(--av-violet);
+  }
+  .av-photo {
+    margin: 0;
+    position: relative;
+  }
+  .av-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* The photos' own soft backgrounds melt into the page: every edge fades. */
+    --fx: linear-gradient(90deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+    --fy: linear-gradient(180deg, transparent 0, #000 14%, #000 84%, transparent 100%);
+    mask-image: var(--fx), var(--fy);
+    mask-composite: intersect;
+    -webkit-mask-image: var(--fx), var(--fy);
+    -webkit-mask-composite: source-in;
+  }
+  .av-photo--panel {
+    max-width: 520px;
+    justify-self: end;
+  }
+  @media (max-width: 960px) {
+    .av-deliver-grid {
+      grid-template-columns: 1fr;
+    }
+    .av-photo--panel {
+      justify-self: center;
+      max-width: 460px;
+    }
+  }
+  @media (max-width: 560px) {
+    .av-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 7. Why a growth team ---------- */
+  .av-why-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .av-reasons {
+    display: grid;
+    gap: 0.9rem;
+  }
+  .av-reason {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.2rem 1.3rem;
+  }
+  @media (max-width: 960px) {
+    .av-why-grid {
+      grid-template-columns: 1fr;
+    }
+    .av-photo--team {
+      order: 2;
+      max-width: 560px;
+      justify-self: center;
+    }
+  }
+
+  /* ---------- 8. Closing band ---------- */
+  .av-band {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2rem;
+    align-items: center;
+    padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3.5rem);
+    border-radius: var(--radius-xl);
+    color: #fff;
+    background:
+      radial-gradient(60% 90% at 0% 0%, rgba(232, 121, 249, 0.35), transparent 70%),
+      linear-gradient(120deg, #5a2f7d 0%, #4b3db8 48%, #0e6dad 100%);
+    box-shadow: 0 40px 80px -50px rgba(60, 40, 140, 0.7);
+  }
+  .av-band-waves {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+  }
+  .av-band-waves path {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.16);
+    stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
+  }
+  .av-band h2 {
+    color: #fff;
+  }
+  .av-band :global(.eyebrow) {
+    color: #ece8ff;
+  }
+  .av-band :global(.eyebrow .rule) {
+    background: #fff;
+  }
+  .av-band p {
+    margin-top: var(--gap-lead);
+    max-width: 58ch;
+    color: #ece8ff;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .av-band-waves {
+      animation: av-drift 18s ease-in-out infinite alternate;
+    }
+  }
+  @keyframes av-drift {
+    to { transform: translateX(-4%) scaleY(1.08); }
+  }
+  @media (max-width: 860px) {
+    .av-band {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

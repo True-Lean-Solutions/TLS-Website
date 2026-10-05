@@ -98,6 +98,8 @@ Every data file and every Markdown post records where its content came from, as 
 | `/about-us/` | About Us (2026-09-27) | **Ask** | Reorder per decision 14: hero → Core Team → Advisors → What We Believe → Our Story → How We Evolved → TLS and Tech Transpire (settled: keep) → Today → CTA |
 | `/services/` | Services - Overview | 09 (or 08) | Labeled **Solutions** on the site (2026-09-28). Four solutions, in the order AI & Automation (formerly Enterprise AI), Custom Software, System Integration, Technical Talent. URLs stay `/services/…` |
 | `/services/enterprise-ai/` | Services - Enterprise AI | **Ask** | Wisebric partnership is approved for public use |
+| `/services/meeting-intelligence/` | Hemang's brief (2026-10-02) + Services - Enterprise AI | `pages/services/meeting-intelligence/` | Product page behind "Learn More" on the Meeting Intelligence card. Not in the menus. See `docs/decisions.md` 2026-10-02 |
+| `/services/ai-visibility-growth-team/` | Hemang's brief (2026-10-02) | `pages/services/ai-visibility-growth-team/` | Product page behind "Learn More" on the AI Visibility Growth Team card. Not in the menus. No pricing on the page until approved. See `docs/decisions.md` 2026-10-02 |
 | `/services/software/` | Services - Custom Software Dev | **Ask** | |
 | `/services/integrations/` | Services - System Integration | **Ask** | |
 | `/services/technical-talent/` | Services - Technical Talent | **Ask** | |

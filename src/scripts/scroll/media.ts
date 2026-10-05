@@ -139,6 +139,29 @@ export function initMediaReveals(parallax: boolean): Cleanup {
     cleanups.push(() => st.kill());
   }
 
+  // Featured AI product illustrations: restrained depth across the section.
+  if (parallax) {
+    for (const visual of document.querySelectorAll<HTMLElement>('[data-feature-parallax]')) {
+      const layers = [...visual.querySelectorAll<HTMLElement>('[data-parallax]')];
+      const drifts = layers.map((layer) => {
+        const speed = layer.dataset.parallax;
+        const range = speed === 'fast' ? 18 : speed === 'slow' ? 10 : 5;
+        return scrub(layer, { y: range }, { y: -range }, {
+          trigger: visual,
+          start: 'top bottom',
+          end: 'bottom top',
+        });
+      });
+      cleanups.push(() => {
+        drifts.forEach((drift) => {
+          drift.scrollTrigger?.kill();
+          drift.kill();
+        });
+        gsap.set(layers, { y: 0 });
+      });
+    }
+  }
+
   return () => cleanups.forEach((c) => c());
 }
 

@@ -5,6 +5,7 @@ import InfoCard from '../../components/InfoCard.astro';
 import SolutionHero from '../../components/SolutionHero.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import Button from '../../components/Button.astro';
+import FeaturedAISolutions from '../../components/FeaturedAISolutions.astro';
 import { cta } from '../../data/site';
 
 // Meta — source: TLS: Website Pages (2026-09-27)
@@ -68,6 +69,8 @@ const meetingFeatures = [
     </div>
   </section>
 
+  <FeaturedAISolutions />
+
   <!-- Who It's For -->
   <section class="section alt">
     <div class="wrap">
@@ -99,7 +102,7 @@ const meetingFeatures = [
   </section>
 
   <!-- Meeting Intelligence -->
-  <section class="section">
+  <section class="section" id="meeting-intelligence">
     <div class="wrap">
       <SectionHeading
         eyebrow="Start Here: Meeting Intelligence"

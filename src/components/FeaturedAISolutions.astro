@@ -1,0 +1,928 @@
+---
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import { href } from '../data/site';
+
+const meetingFeatures = [
+  'Automatic meeting recording (Teams, Zoom, Google Meet)',
+  'Professional Minutes of Meeting',
+  'Action items and follow-ups',
+  'Ask AI about any meeting',
+  'Search years of meeting history',
+  'Enterprise-grade security and private deployment',
+];
+
+const visibilityFeatures = [
+  'AI search optimization (AIO)',
+  'Technical and content optimization',
+  'Entity and authority building',
+  'AI-targeted content creation',
+  'Citation and digital PR support',
+  'Analytics, reporting and ongoing optimization',
+];
+---
+
+<section class="section featured-ai" aria-labelledby="featured-ai-title">
+  <div class="wrap">
+    <div class="featured-heading" data-reveal="editorial">
+      <div class="heading-copy">
+        <h2 id="featured-ai-title">Featured <span>AI Solutions</span></h2>
+        <div class="prose">
+          <p>Practical AI products and services to help your business move faster, work smarter, and get discovered by AI.</p>
+        </div>
+      </div>
+      <p class="heading-aside" data-reveal="">Start Small. Scale What Works.</p>
+    </div>
+
+    <div class="solution-grid" data-reveal="stagger">
+      <article class="solution-card meeting-card ix-card" style="--solution-accent: var(--blue);">
+        <div class="solution-copy">
+          <div class="solution-kicker">
+            <span class="solution-icon glass-icon" aria-hidden="true"><Icon name="ai" size={25} /></span>
+            <span class="category">Enterprise AI</span>
+          </div>
+          <h3>Meeting Intelligence</h3>
+          <h4>Turn every meeting into secure, searchable knowledge.</h4>
+          <p class="solution-description">Automatically captures, transcribes and organizes your Teams, Zoom and Google Meet meetings — with professional minutes, action items and searchable summaries.</p>
+
+          <p class="price"><strong>$5,000</strong> <span>/ year</span></p>
+          <p class="supporting-line">Simple. Secure. Productive.</p>
+
+          <ul class="feature-list">
+            {meetingFeatures.map((feature) => (
+              <li><span class="check" aria-hidden="true"><Icon name="check" size={15} /></span><span>{feature}</span></li>
+            ))}
+          </ul>
+
+          <Button href="/services/meeting-intelligence/" variant="primary" arrow class="solution-cta">Learn More</Button>
+
+        </div>
+
+        <div class="meeting-showcase">
+          <figure class="product-visual meeting-visual">
+            <img
+              class="meeting-illustration"
+              src={href('/solutions/meeting-intelligence-dashboard.png')}
+              alt="Laptop dashboard showing a video meeting, AI meeting summary, action items, and connected workflow icons."
+              width="1536"
+              height="1024"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+          <aside class="security-callout">
+            <span class="security-icon" aria-hidden="true"><Icon name="security" size={23} /></span>
+            <div>
+              <h4>Enterprise Security</h4>
+              <p>Private deployment. Your data stays in your environment. No public AI exposure. Complete ownership and control.</p>
+            </div>
+          </aside>
+        </div>
+      </article>
+
+      <article class="solution-card visibility-card ix-card" style="--solution-accent: #873662;">
+        <div class="solution-copy">
+          <div class="solution-kicker">
+            <span class="solution-icon glass-icon" aria-hidden="true"><Icon name="analytics" size={25} /></span>
+            <span class="category">AI Search Visibility</span>
+          </div>
+          <h3>AI Visibility Growth Team</h3>
+          <h4>Get found. Get cited. Get recommended.</h4>
+          <p class="solution-description">Your customers are increasingly asking AI before they visit your website. We optimize your brand for AI search — similar to SEO, but built for ChatGPT, Gemini, Perplexity, Google AI and other AI-driven discovery platforms.</p>
+
+          <p class="price"><strong>$4,500</strong> <span>/ month</span></p>
+          <p class="capacity">100 hours of expert capacity</p>
+
+          <ul class="feature-list">
+            {visibilityFeatures.map((feature) => (
+              <li><span class="check" aria-hidden="true"><Icon name="check" size={15} /></span><span>{feature}</span></li>
+            ))}
+          </ul>
+
+          <p class="rate">$45/hr effective blended rate</p>
+          <Button href="/services/ai-visibility-growth-team/" variant="primary" arrow class="solution-cta">Learn More</Button>
+        </div>
+
+        <figure class="product-visual visibility-visual" aria-hidden="true" data-feature-parallax>
+          <span class="visual-orbit orbit-one" data-parallax="slow"></span>
+          <span class="visual-orbit orbit-two" data-parallax="fast"></span>
+          <div class="platform-label" data-parallax="slow">AI discovery surfaces</div>
+          <div class="platform-tiles" data-parallax="fast">
+            <span>
+              <img src={href('/brand/platforms/openai-chatgpt-mark.svg')} alt="" aria-hidden="true" width="40" height="40" />
+              <span class="platform-name">ChatGPT</span>
+            </span>
+            <span>
+              <img src={href('/brand/platforms/google-g.png')} alt="" aria-hidden="true" width="40" height="40" />
+              <span class="platform-name">Google AI</span>
+            </span>
+            <span>
+              <img src={href('/brand/platforms/google-gemini.svg')} alt="" aria-hidden="true" width="40" height="40" />
+              <span class="platform-name">Gemini</span>
+            </span>
+            <span>
+              <img src={href('/brand/platforms/perplexity.svg')} alt="" aria-hidden="true" width="40" height="40" />
+              <span class="platform-name">Perplexity</span>
+            </span>
+          </div>
+          <div class="discovery-search" data-parallax="base">
+            <span class="search-glyph"></span>
+            <span>Your brand<br />recommended by AI</span>
+            <span class="sparkle-glyph">✦</span>
+          </div>
+          <div class="insight-panels" data-parallax="slow">
+            <div class="overview-panel">
+              <strong>AI Overview</strong><i></i><i></i><i class="short-line"></i><span class="quote-mark">✦</span>
+            </div>
+            <div class="citation-panel">
+              <strong>Citations</strong><i></i><i></i><i class="short-line"></i>
+              <div class="chart-bars"><b></b><b></b><b></b><b></b><b></b><b></b></div>
+            </div>
+          </div>
+        </figure>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .featured-ai {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      radial-gradient(48% 58% at 7% 46%, rgba(18, 136, 207, 0.08), transparent 72%),
+      radial-gradient(42% 58% at 94% 62%, rgba(135, 54, 98, 0.07), transparent 73%),
+      var(--bg);
+    /* Tighter than a full .section (96px): beside the dense two-card block,
+       the standard 192px gap to the neighbouring sections read as too much
+       (Hemang, 2026-10-03). Gaps: 144px desktop, 104px tablet/phone. */
+    padding-block: var(--space-5);
+  }
+  @media (max-width: 768px) {
+    .featured-ai {
+      padding-block: 2.5rem;
+    }
+  }
+  .featured-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  .heading-copy {
+    max-width: 78ch;
+  }
+  .heading-copy h2 {
+    position: relative;
+    padding-left: 4.2rem;
+    font-size: var(--step-4);
+  }
+  .heading-copy h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.53em;
+    width: 3.2rem;
+    height: 3px;
+    background: var(--grad-h);
+  }
+  .heading-copy h2 span {
+    color: var(--red);
+  }
+  .heading-copy > p {
+    margin: 0.75rem 0 0 4.2rem;
+    color: var(--text-2);
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+  .heading-aside {
+    flex: 0 0 auto;
+    padding-bottom: 0.3rem;
+    color: var(--blue-text);
+    font-family: var(--font-head);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  .solution-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .solution-card {
+    --c: var(--solution-accent);
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+    gap: 0.35rem;
+    min-width: 0;
+    padding: clamp(1.25rem, 2.1vw, 1.8rem);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--solution-accent) 14%, var(--border));
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(76% 54% at 91% 35%, color-mix(in srgb, var(--solution-accent) 8%, transparent), transparent 72%),
+      rgba(255, 255, 255, 0.94);
+    box-shadow: var(--shadow);
+  }
+  .meeting-card {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    background:
+      radial-gradient(58% 55% at 84% 40%, rgba(18, 136, 207, 0.12), transparent 73%),
+      radial-gradient(35% 35% at 92% 82%, rgba(18, 136, 207, 0.07), transparent 76%),
+      rgba(255, 255, 255, 0.94);
+  }
+  .visibility-card {
+    grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+    background:
+      radial-gradient(54% 50% at 84% 38%, rgba(135, 54, 98, 0.11), transparent 72%),
+      radial-gradient(35% 38% at 94% 75%, rgba(18, 136, 207, 0.08), transparent 76%),
+      rgba(255, 255, 255, 0.94);
+  }
+  .solution-copy {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .solution-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+  }
+  .solution-icon {
+    display: grid;
+    width: 2.65rem;
+    height: 2.65rem;
+    place-items: center;
+    border-radius: 10px;
+    color: var(--solution-accent);
+  }
+  .category {
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--solution-accent) 9%, white);
+    color: var(--text-2);
+    font-family: var(--font-head);
+    font-size: 0.67rem;
+    font-weight: 700;
+    letter-spacing: 0.055em;
+    line-height: 1.25;
+    text-transform: uppercase;
+  }
+  .solution-card h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.55rem;
+    line-height: 1.18;
+  }
+  .solution-card h4 {
+    margin-bottom: 0.6rem;
+    color: var(--text-2);
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.42;
+  }
+  .solution-description {
+    margin-bottom: 0.7rem;
+    color: var(--text-2);
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+  .price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    margin-top: 0.2rem;
+    color: var(--ink);
+    font-family: var(--font-head);
+    line-height: 1.1;
+  }
+  .price strong {
+    color: var(--red);
+    font-size: 2.25rem;
+    font-weight: 800;
+  }
+  .price span {
+    font-size: 0.92rem;
+    font-weight: 700;
+  }
+  .supporting-line {
+    margin-top: 0.25rem;
+    color: var(--text-2);
+    font-size: 0.9rem;
+  }
+  .capacity {
+    margin-top: 0.2rem;
+    color: #702e40;
+    font-family: var(--font-head);
+    font-size: 0.84rem;
+    font-weight: 700;
+  }
+  .feature-list {
+    display: grid;
+    gap: 0.43rem;
+    width: 100%;
+    padding: 0;
+    margin: 0.9rem 0 1rem;
+    list-style: none;
+  }
+  .feature-list li {
+    display: grid;
+    grid-template-columns: 1.1rem minmax(0, 1fr);
+    align-items: start;
+    gap: 0.48rem;
+    color: var(--text-2);
+    font-size: 0.77rem;
+    line-height: 1.4;
+  }
+  .check {
+    display: grid;
+    width: 1.05rem;
+    height: 1.05rem;
+    place-items: center;
+    margin-top: 0.02rem;
+    border-radius: 50%;
+    background: var(--solution-accent);
+    color: #fff;
+  }
+  .solution-cta {
+    width: fit-content;
+    max-width: 100%;
+    min-height: 2.9rem;
+    margin-top: auto;
+    padding: 0.78rem 1rem;
+    font-size: 0.76rem;
+    line-height: 1.25;
+    text-align: center;
+  }
+  .solution-copy > :global(.solution-cta) {
+    margin-top: auto;
+  }
+  .security-callout {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.6rem;
+    width: 100%;
+    max-width: 24rem;
+    padding: 0.75rem;
+    margin-top: 0.8rem;
+    border: 1px solid rgba(18, 136, 207, 0.11);
+    border-radius: 10px;
+    background: rgba(18, 136, 207, 0.055);
+  }
+  .security-icon {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(18, 136, 207, 0.13);
+    color: var(--blue-text);
+  }
+  .security-callout h4 {
+    margin: 0 0 0.15rem;
+    color: var(--ink);
+    font-size: 0.75rem;
+  }
+  .security-callout p {
+    color: var(--text-2);
+    font-size: 0.67rem;
+    line-height: 1.45;
+  }
+  .rate {
+    width: 100%;
+    padding-top: 0.45rem;
+    margin: 0 0 0.75rem;
+    border-top: 1px solid var(--border);
+    color: var(--ink);
+    font-family: var(--font-head);
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+  .product-visual {
+    position: relative;
+    align-self: center;
+    min-width: 0;
+    height: clamp(22rem, 39vw, 31rem);
+    isolation: isolate;
+  }
+  .meeting-showcase {
+    display: flex;
+    min-width: 0;
+    width: calc(100% + 1.5rem);
+    margin-right: -1.5rem;
+    flex-direction: column;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  .visual-orbit {
+    position: absolute;
+    z-index: -1;
+    display: block;
+    border: 1px dashed color-mix(in srgb, var(--solution-accent) 24%, transparent);
+    border-radius: 50%;
+  }
+  .orbit-one {
+    inset: 10% 4% 19% 2%;
+    transform: rotate(-24deg);
+  }
+  .orbit-two {
+    inset: 18% -7% 9% 10%;
+    transform: rotate(25deg);
+    opacity: 0.65;
+  }
+  .meeting-visual {
+    --solution-accent: var(--blue);
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    margin: 0;
+    background:
+      radial-gradient(ellipse at 52% 39%, rgba(18, 136, 207, 0.18), transparent 56%),
+      radial-gradient(ellipse at 82% 38%, rgba(135, 54, 98, 0.1), transparent 48%),
+      radial-gradient(ellipse at 82% 72%, rgba(18, 136, 207, 0.07), transparent 65%);
+  }
+  .meeting-illustration {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    -webkit-mask-image: radial-gradient(ellipse 92% 94% at 50% 50%, #000 88%, transparent 100%);
+    mask-image: radial-gradient(ellipse 92% 94% at 50% 50%, #000 88%, transparent 100%);
+  }
+  @media (min-width: 1151px) {
+    .meeting-illustration { transform: translateX(1.375rem) scale(1.18); }
+  }
+  .meeting-connections {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+    pointer-events: none;
+  }
+  .meeting-connections path {
+    fill: none;
+    stroke: url(#meeting-path-blue);
+    stroke-width: 1.3;
+    stroke-dasharray: 2.4 6;
+    vector-effect: non-scaling-stroke;
+  }
+  .meeting-connections circle {
+    fill: #56b6ee;
+    filter: drop-shadow(0 0 3px rgba(18, 136, 207, 0.55));
+  }
+  .connection-tablet,
+  .connection-mobile { display: none; }
+  .meeting-visual .float-tile {
+    width: 3.2rem;
+    border-color: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 11px 24px rgba(18, 74, 130, 0.16), 0 0 0 1px rgba(18, 136, 207, 0.12);
+  }
+  .meeting-visual .float-document { top: 8%; left: 12%; }
+  .meeting-visual .float-task { top: 8%; right: 12%; }
+  .meeting-visual .float-video { top: 26%; left: 12%; }
+  .meeting-visual .float-search { top: 26%; right: 12%; }
+  .meeting-visual .mini-icon {
+    display: grid;
+    width: 1.35rem;
+    height: 1.35rem;
+    place-items: center;
+    color: var(--blue-text);
+  }
+  .meeting-visual .mini-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .meeting-visual .float-task .mini-icon,
+  .meeting-visual .float-search .mini-icon { color: var(--plum); }
+  .meeting-core {
+    position: absolute;
+    z-index: 4;
+    top: 0;
+    left: 50%;
+    display: grid;
+    width: 4.5rem;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.88);
+    border-radius: 15px;
+    background: linear-gradient(145deg, #2498e3, #0872bd 72%);
+    box-shadow: 0 9px 24px rgba(18, 100, 172, 0.28), 0 0 0 5px rgba(18, 136, 207, 0.08), 0 0 26px rgba(18, 136, 207, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.62);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .meeting-core > svg { width: 2.5rem; height: 2.5rem; overflow: visible; }
+  .meeting-core > svg path:not(.core-sparkle) {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .meeting-core > svg .core-sparkle { fill: #fff; }
+  .meeting-showcase .security-callout {
+    width: 100%;
+    max-width: none;
+    margin: 0.35rem 0 0;
+    background: rgba(18, 136, 207, 0.07);
+    box-shadow: 0 7px 18px rgba(18, 74, 130, 0.06);
+  }
+  .visibility-visual {
+    --solution-accent: #873662;
+    background:
+      radial-gradient(ellipse at 56% 45%, rgba(135, 54, 98, 0.12), transparent 64%),
+      radial-gradient(ellipse at 28% 67%, rgba(18, 136, 207, 0.1), transparent 62%),
+      radial-gradient(ellipse at 84% 74%, rgba(217, 64, 64, 0.06), transparent 66%);
+  }
+  .float-tile {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    width: 2.8rem;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.93);
+    box-shadow: 0 8px 18px rgba(18, 74, 130, 0.12), 0 0 0 1px rgba(18, 136, 207, 0.1);
+  }
+  .float-video { top: 20%; left: 0; }
+  .float-document { top: 9%; left: 39%; color: var(--blue); }
+  .float-task { top: 16%; right: 0; color: var(--plum); }
+  .float-search { top: 37%; right: -2%; color: var(--plum); }
+  .mini-icon {
+    position: relative;
+    width: 1rem;
+    height: 1rem;
+    color: var(--blue-text);
+  }
+  .laptop {
+    position: absolute;
+    z-index: 1;
+    top: var(--laptop-y, 38%);
+    left: 0;
+    width: 100%;
+    filter: drop-shadow(0 15px 11px rgba(13, 34, 59, 0.17));
+  }
+  .laptop-screen {
+    position: relative;
+    aspect-ratio: 1.5;
+    padding: 3.5%;
+    border: 5px solid #17243a;
+    border-bottom-width: 7px;
+    border-radius: 12px 12px 5px 5px;
+    background: linear-gradient(145deg, #101b2f, #1d2e4b);
+  }
+  .meeting-window {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 3%;
+    height: 100%;
+    padding: 3%;
+    border-radius: 4px;
+    background: #fbfcff;
+  }
+  .participant-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 3%;
+    min-width: 0;
+  }
+  .participant {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    background: linear-gradient(145deg, #d9eaf1, #a1bfcb);
+  }
+  .participant:nth-child(2) { background: linear-gradient(145deg, #e8dfd8, #a3b3b7); }
+  .participant:nth-child(3) { background: linear-gradient(145deg, #dce4f1, #96abc1); }
+  .participant:nth-child(4) { background: linear-gradient(145deg, #f0e3db, #c4aaa2); }
+  .participant::before {
+    content: '';
+    position: absolute;
+    top: 18%;
+    left: 37%;
+    width: 26%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #475b6a;
+  }
+  .participant::after {
+    content: '';
+    position: absolute;
+    bottom: -19%;
+    left: 17%;
+    width: 66%;
+    height: 64%;
+    border-radius: 50% 50% 0 0;
+    background: #718995;
+  }
+  .participant:nth-child(even)::before { background: #644f4c; }
+  .participant:nth-child(even)::after { background: #65788a; }
+  .meeting-notes {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4%;
+    padding: 2% 0;
+    color: #26344b;
+    font-family: var(--font-body);
+    font-size: 0.52rem;
+    line-height: 1.25;
+  }
+  .meeting-notes strong { font-size: 1.05em; }
+  .notes-tab { padding-bottom: 3%; border-bottom: 1px solid #d7e0ed; color: #476183; }
+  .meeting-notes b { font-size: 0.9em; }
+  .meeting-notes i,
+  .overview-panel i,
+  .citation-panel i {
+    display: block;
+    width: 92%;
+    height: 3px;
+    border-radius: 9px;
+    background: #dce4ef;
+  }
+  .meeting-notes .short-line,
+  .overview-panel .short-line,
+  .citation-panel .short-line { width: 63%; }
+  .meeting-notes .action-label { margin-top: 4%; color: #137c58; }
+  .call-controls {
+    position: absolute;
+    right: 10%;
+    bottom: 8%;
+    left: 10%;
+    display: flex;
+    justify-content: center;
+    gap: 7%;
+  }
+  .call-controls span { width: 0.42rem; aspect-ratio: 1; border-radius: 50%; background: #c6d4e3; }
+  .call-controls .end-call { background: #d94040; }
+  .laptop-base {
+    height: 0.5rem;
+    margin: 0 -8%;
+    border-radius: 0 0 60% 60%;
+    background: linear-gradient(#dae3ec, #7e8c9a 65%, #cbd3dc);
+  }
+  .meeting-platforms {
+    position: absolute;
+    top: 84%;
+    right: -5%;
+    left: -5%;
+    display: flex;
+    justify-content: space-around;
+    gap: 0.25rem;
+    padding: 0.5rem 0.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 5px 16px rgba(33, 84, 133, 0.1);
+    color: var(--text-2);
+    font-size: 0.61rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .visual-caption {
+    position: absolute;
+    right: 0;
+    bottom: 1%;
+    left: 0;
+    color: var(--muted);
+    font-size: 0.64rem;
+    text-align: center;
+  }
+  .platform-label {
+    position: absolute;
+    top: 3%;
+    right: 0;
+    left: 0;
+    color: var(--text-2);
+    font-family: var(--font-head);
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-align: center;
+  }
+  .platform-tiles {
+    position: absolute;
+    top: 8%;
+    right: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+  .platform-tiles > span {
+    display: grid;
+    min-height: 4.5rem;
+    grid-template-rows: 2.25rem auto;
+    align-content: center;
+    justify-items: center;
+    gap: 0.25rem;
+    padding: 0.4rem 0.35rem;
+    border: 1px solid rgba(135, 54, 98, 0.12);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 7px 17px rgba(67, 49, 91, 0.08);
+    transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+  }
+  .platform-tiles img {
+    display: block;
+    width: 2.25rem;
+    height: 2.25rem;
+    object-fit: contain;
+  }
+  .platform-name {
+    color: #303248;
+    font-family: var(--font-head);
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.15;
+    text-align: center;
+    white-space: nowrap;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .platform-tiles > span:hover {
+      transform: translateY(-2px);
+      border-color: rgba(135, 54, 98, 0.2);
+      box-shadow: 0 11px 22px rgba(67, 49, 91, 0.13);
+    }
+  }
+  .discovery-search {
+    position: absolute;
+    z-index: 2;
+    top: 46%;
+    right: -8%;
+    left: -8%;
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr) 1.25rem;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 4.1rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid rgba(135, 54, 98, 0.22);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 9px 22px rgba(63, 39, 93, 0.12), 0 0 0 4px rgba(135, 54, 98, 0.045);
+    color: #34354c;
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+  .search-glyph {
+    position: relative;
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.1rem;
+    border: 3px solid var(--blue-text);
+    border-radius: 50%;
+  }
+  .search-glyph::after {
+    content: '';
+    position: absolute;
+    right: -0.42rem;
+    bottom: -0.22rem;
+    width: 0.5rem;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--blue-text);
+    transform: rotate(45deg);
+  }
+  .sparkle-glyph { color: #873662; font-size: 1.3rem; text-align: center; }
+  .insight-panels {
+    position: absolute;
+    top: 64%;
+    right: -4%;
+    left: 3%;
+    display: grid;
+    grid-template-columns: 1fr 0.8fr;
+    gap: 0.45rem;
+  }
+  .overview-panel,
+  .citation-panel {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 6.5rem;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.65rem;
+    border: 1px solid rgba(135, 54, 98, 0.1);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.91);
+    box-shadow: 0 8px 18px rgba(63, 39, 93, 0.08);
+    color: #303248;
+    font-size: 0.58rem;
+  }
+  .overview-panel strong,
+  .citation-panel strong { font-family: var(--font-head); font-size: 0.65rem; }
+  .overview-panel i,
+  .citation-panel i { height: 3px; background: #e5e4ef; }
+  .overview-panel .quote-mark { color: #873662; font-size: 0.9rem; }
+  .chart-bars {
+    display: flex;
+    align-items: end;
+    gap: 0.2rem;
+    height: 1.6rem;
+    margin-top: auto;
+  }
+  .chart-bars b {
+    flex: 1;
+    height: 35%;
+    border-radius: 2px 2px 0 0;
+    background: #58a9cf;
+  }
+  .chart-bars b:nth-child(2) { height: 55%; }
+  .chart-bars b:nth-child(3) { height: 43%; background: #a36ac0; }
+  .chart-bars b:nth-child(4) { height: 72%; background: #a36ac0; }
+  .chart-bars b:nth-child(5) { height: 62%; background: #c34f9e; }
+  .chart-bars b:nth-child(6) { height: 94%; background: #c34f9e; }
+
+  @media (max-width: 1150px) {
+    .solution-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+    .solution-card { grid-template-columns: minmax(0, 1.1fr) minmax(15rem, 0.9fr); }
+    .product-visual { height: clamp(22rem, 43vw, 30rem); }
+    .meeting-visual { height: auto; aspect-ratio: 3 / 2; }
+    .meeting-card { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }
+    .meeting-showcase { width: calc(100% + 1rem); margin-right: -1rem; }
+    .visibility-card { grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr); }
+    .platform-tiles > span { min-height: 4rem; }
+    .discovery-search { top: 52%; right: -2%; left: -2%; }
+    .insight-panels { top: 72%; }
+    .overview-panel, .citation-panel { min-height: 5.5rem; }
+  }
+  @media (max-width: 760px) {
+    .featured-heading { align-items: flex-start; flex-direction: column; gap: 0.8rem; }
+    .heading-aside { padding-left: 4.2rem; }
+    .solution-card { grid-template-columns: minmax(0, 1fr); }
+    .product-visual { width: min(100%, 22rem); height: 24rem; margin: 0.25rem auto 0; }
+    .meeting-visual { height: auto; aspect-ratio: 3 / 2; }
+    .meeting-showcase { width: min(100%, 22rem); margin: 0.25rem auto 0; }
+    .meeting-showcase .security-callout { max-width: none; }
+    .solution-copy > :global(.solution-cta) { margin-top: 0.35rem; }
+    .platform-tiles > span { min-height: 3.9rem; }
+    .platform-tiles img { width: 2rem; height: 2rem; }
+    .discovery-search { top: 56%; right: -4%; left: -4%; }
+    .insight-panels { top: 76%; }
+    .overview-panel, .citation-panel { min-height: 4.7rem; }
+  }
+  @media (max-width: 480px) {
+    .featured-heading { margin-bottom: 1.4rem; }
+    .heading-copy h2 { padding-left: 0; font-size: 1.9rem; }
+    .heading-copy h2::before { display: none; }
+    .heading-copy > p, .heading-aside { margin-left: 0; padding-left: 0; }
+    .solution-card { padding: 1.1rem; }
+    .solution-card h3 { font-size: 1.35rem; }
+    .price strong { font-size: 1.9rem; }
+    .solution-description { font-size: 0.88rem; }
+    .feature-list li { font-size: 0.82rem; }
+    .product-visual { height: 21rem; }
+    .meeting-visual { height: auto; aspect-ratio: 3 / 2; }
+    .platform-tiles img { width: 1.875rem; height: 1.875rem; }
+    .discovery-search { top: 54%; }
+    .insight-panels { top: 76%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .solution-card, .solution-icon, .solution-cta, .platform-tiles > span { transition: none; }
+    .meeting-visual .float-tile, .meeting-core, .meeting-connections path { animation: none !important; }
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    @keyframes meeting-icon-drift {
+      50% { translate: 0 -3px; }
+    }
+    @keyframes meeting-core-glow {
+      50% {
+        box-shadow: 0 10px 28px rgba(18, 100, 172, 0.34), 0 0 0 6px rgba(18, 136, 207, 0.1), 0 0 31px rgba(18, 136, 207, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.68);
+      }
+    }
+    @keyframes meeting-path-flow {
+      to { stroke-dashoffset: -34; }
+    }
+    .meeting-visual .float-document { animation: meeting-icon-drift 5.2s ease-in-out infinite; }
+    .meeting-visual .float-task { animation: meeting-icon-drift 6s ease-in-out -1.8s infinite; }
+    .meeting-visual .float-video { animation: meeting-icon-drift 5.7s ease-in-out -0.9s infinite; }
+    .meeting-visual .float-search { animation: meeting-icon-drift 6.4s ease-in-out -2.4s infinite; }
+    .meeting-core { animation: meeting-core-glow 5s ease-in-out infinite; }
+    .meeting-connections path { animation: meeting-path-flow 15s linear infinite; }
+    @keyframes featured-phrase-in {
+      from { opacity: 0; translate: 12px 0; }
+    }
+    :global(html.ix) .heading-aside[data-reveal=''].is-in {
+      animation: featured-phrase-in 760ms var(--ix-ease) 180ms backwards;
+    }
+  }
+</style>

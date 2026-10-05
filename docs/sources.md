@@ -30,6 +30,8 @@ Folder: `Website Update (2026-09-27)` (`18fb6Mq1jyC9Mpy5AfMFC9yC2XVekz_oQ`)
 | Technical Talent | Services - Technical Talent (2026-09-27) | `1nBusfLbQynnlO0-Eo2UBoPQCd7yEJSjLTQFaPwA4R-0` |
 | Page titles and meta descriptions | TLS: Website Pages (2026-09-27), a sheet | `1w1w7ClLF7Ts7M-FSFJeopTP6Z_13FhXn_q9Qxy2hlT0` |
 | Testimonials | TLS Client Reviews (2026-09-27), a sheet | `14l3c8EBTcWbMgiaQrEG1iVOcNndLP1iXntZTG2-hDp8` |
+| Meeting Intelligence page | Hemang's Meeting Intelligence brief and full-page reference (2026-10-02, in chat; reference saved to `docs/references/pages/services/meeting-intelligence/`). Image folder (downloaded 2026-10-02) | `1Ke8D0YLnLABkVWS2SmSTDBaW_66xj7OY` |
+| AI Visibility Growth Team page | Hemang's AI Visibility brief (2026-10-02, in chat) and reference images, saved to `docs/references/pages/services/ai-visibility-growth-team/` | `1QPB3crwJfK8spU34tSknnnmocDJC_ND4` |
 
 Two pages have no 2026-09-27 version. For those, the only source is the file below:
 

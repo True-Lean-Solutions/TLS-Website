@@ -10,6 +10,7 @@
  *   story     parallax, pinned + horizontal scenes . media.ts, story.ts, reel.ts
  *   signature heroes, Challenges, Solutions ........ media.ts, story.ts
  *   page      the Contact conversation ............. contact.ts
+ *             product pages (Meeting Intelligence) .. product.ts
  */
 import { gsap, ScrollTrigger, MQ, initSmoothScroll, refreshWhenSettled, scrollPosition, scrollToY } from './core';
 import { initHeadingReveals } from './text';
@@ -21,6 +22,7 @@ import { initContact } from './contact';
 import { initStepSequences } from './steps';
 import { initReviewReels } from './reel';
 import { initPlaceCards } from './places';
+import { initProductPage } from './product';
 
 /** Solutions page: horizontal card track (off: the cards show as a grid). */
 const SOLUTIONS_TRACK = false;
@@ -106,6 +108,7 @@ export function initScroll() {
       cleanups.push(initStepSequences());
       cleanups.push(initReviewReels({ desktop: c.desktop }));
       cleanups.push(initPlaceCards({ desktop: c.desktop }));
+      cleanups.push(initProductPage({ desktop: c.desktop }));
       cleanups.push(initHeroes({ home: c.homeHero, solution: c.solutionHero, pageHero: c.tablet }));
       cleanups.push(initMediaReveals(c.desktop));
       if (c.story && c.fine) cleanups.push(initChallengeStory());

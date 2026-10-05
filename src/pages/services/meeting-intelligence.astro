@@ -1,0 +1,1761 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import Button from '../../components/Button.astro';
+import Icon from '../../components/Icon.astro';
+import type { IconName } from '../../components/iconTypes';
+import { href } from '../../data/site';
+
+/*
+ * Meeting Intelligence product page (2026-10-02), opened from "Learn More" on
+ * the Meeting Intelligence card in Enterprise AI › Featured AI Solutions.
+ * Copy: Hemang's Meeting Intelligence brief and full-page reference
+ * (docs/references/pages/services/meeting-intelligence/), checked against
+ * Services - Enterprise AI (2026-09-27), 1rUpXq5cu9aQArbtCwNOTdeIRuthGTUAMBx-LxWCy1J4.
+ * Interface panels are illustrations: labels and placeholder lines, no data.
+ * The reference's "brain" visual is replaced with a knowledge network (the
+ * brand guide rules out AI brains and holograms). See docs/decisions.md.
+ */
+const title = 'True Lean Solutions — Meeting Intelligence';
+const description =
+  'Capture, preserve and search the knowledge in your Teams, Zoom and Google Meet meetings — deployed in an environment you control.';
+
+const img = (n: number) => href(`/solutions/meeting-intelligence/participant-${n}.webp`);
+
+const challenges = [
+  {
+    num: '01',
+    kicker: 'Data Control',
+    title: 'Where Does Your Meeting Data Live?',
+    text: 'Sensitive conversations need enterprise control. Meeting recordings and transcripts can contain confidential customer, employee and business information.',
+    point: 'Keep meeting intelligence within your enterprise-controlled environment.',
+    icon: 'lock' as IconName,
+  },
+  {
+    num: '02',
+    kicker: 'Knowledge Continuity',
+    title: 'What Happens When the Meeting Ends?',
+    text: "The meeting ends. The knowledge shouldn't. Important conversations shouldn't disappear into old recordings, transcripts or meeting notes.",
+    point: 'Preserve meeting knowledge so it remains searchable and useful over time.',
+    icon: 'database' as IconName,
+  },
+];
+
+// Knowledge network (decorative): satellites around the organization's memory.
+const nodes: { icon: IconName; label: string; x: number; y: number }[] = [
+  { icon: 'video', label: 'Meetings', x: 13, y: 26 },
+  { icon: 'document', label: 'Minutes', x: 15, y: 76 },
+  { icon: 'users', label: 'People', x: 50, y: 9 },
+  { icon: 'checklist', label: 'Decisions', x: 86, y: 24 },
+  { icon: 'search', label: 'Search', x: 87, y: 74 },
+  { icon: 'message', label: 'Context', x: 50, y: 93 },
+];
+
+const steps: { title: string; text: string; icon: IconName }[] = [
+  { title: 'Capture', text: 'Automatically join and record meetings from Microsoft Teams, Zoom and Google Meet.', icon: 'video' },
+  { title: 'Understand', text: 'Transcribe conversations and create structured summaries and professional minutes.', icon: 'document' },
+  { title: 'Extract', text: 'Identify key discussion points, decisions, commitments, action items and important topics.', icon: 'checklist' },
+  { title: 'Preserve', text: 'Turn individual meetings into persistent organizational knowledge.', icon: 'database' },
+  { title: 'Search & Ask', text: 'Find information across all your meetings or ask AI a question to retrieve relevant context.', icon: 'search' },
+];
+
+const strip: { label: string; icon: IconName }[] = [
+  { label: 'Meetings', icon: 'message' },
+  { label: 'Decisions', icon: 'document' },
+  { label: 'Actions', icon: 'checklist' },
+  { label: 'Knowledge', icon: 'database' },
+];
+
+const capabilities: { title: string; text: string; icon: IconName }[] = [
+  { title: 'Automatic Meeting Capture', text: 'Works with Teams, Zoom and Google Meet — no manual setup.', icon: 'video' },
+  { title: 'Professional Minutes', text: 'Generate clear, searchable and actionable meeting minutes.', icon: 'document' },
+  { title: 'Decisions & Actions', text: 'Capture decisions, commitments, action items and follow-ups.', icon: 'checklist' },
+  { title: 'AI Meeting Search', text: 'Ask questions across historical meetings and retrieve the context behind decisions.', icon: 'search' },
+  { title: 'Persistent Knowledge', text: 'Preserve meeting intelligence so it remains available over time.', icon: 'database' },
+  { title: 'Enterprise Control', text: 'Deploy within your own environment — on-premises, private cloud or hybrid.', icon: 'lock' },
+];
+
+const contextTags = ['Requirements', 'Concerns', 'Commitments', 'Decisions', 'Follow-ups'];
+const handover: { label: string; icon: IconName }[] = [
+  { label: 'CRM', icon: 'database' },
+  { label: 'Emails', icon: 'mail' },
+  { label: 'Documents', icon: 'document' },
+  { label: 'Handover', icon: 'users' },
+  { label: 'Individual Memory', icon: 'user' },
+];
+const gaps = ['Fragmented Context', 'Time-Consuming Handover', 'Knowledge Gaps'];
+
+const results: { label: string; icon: IconName; tone: string }[] = [
+  { label: 'Customer Context', icon: 'users', tone: 'blue' },
+  { label: 'Key Decisions', icon: 'target', tone: 'red' },
+  { label: 'Open Commitments', icon: 'checklist', tone: 'green' },
+  { label: 'Outstanding Issues', icon: 'alert', tone: 'plum' },
+  { label: 'Next Actions', icon: 'arrow', tone: 'amber' },
+];
+
+const teams: { title: string; text: string; icon: IconName }[] = [
+  { title: 'Sales', text: 'Preserve customer conversations and commercial context.', icon: 'chart' },
+  { title: 'Customer Success', text: 'Understand customer history, open issues and follow-ups.', icon: 'users' },
+  { title: 'Projects', text: 'Retain decisions, requirements and project commitments.', icon: 'workflow' },
+  { title: 'Leadership', text: 'Search strategic discussions and historical decisions.', icon: 'compass' },
+  { title: 'Internal Teams', text: 'Keep important knowledge accessible as roles and teams change.', icon: 'briefcase' },
+];
+
+const deployments: { title: string; text: string; icon: IconName }[] = [
+  { title: 'On-Premises', text: 'Deploy within your own infrastructure.', icon: 'server' },
+  { title: 'Private Cloud / VPC', text: "Operate inside your organization's controlled cloud environment.", icon: 'cloud' },
+  { title: 'Hybrid', text: 'Support enterprise architectures that span environments.', icon: 'integration' },
+];
+const trust: { label: string; icon: IconName }[] = [
+  { label: 'No Public AI Exposure', icon: 'lock' },
+  { label: 'Complete Ownership and Control', icon: 'shield' },
+  { label: 'Persistent Organizational Knowledge', icon: 'database' },
+];
+
+const chain: { label: string; text: string; icon: IconName }[] = [
+  { label: 'Conversations', text: 'What was discussed.', icon: 'message' },
+  { label: 'Decisions', text: 'What was agreed.', icon: 'document' },
+  { label: 'Commitments', text: 'What was promised.', icon: 'checklist' },
+  { label: 'Actions', text: 'What needs to happen.', icon: 'rocket' },
+  { label: 'Knowledge', text: 'What the organization retains.', icon: 'database' },
+];
+---
+
+<BaseLayout title={title} description={description} path="/services/meeting-intelligence/">
+  <!-- 1. Hero: the enterprise meeting challenge -->
+  <section class="mi-hero">
+    <figure class="mi-hero-media">
+      <img
+        src={href('/solutions/meeting-intelligence/hero.webp')}
+        srcset={`${href('/solutions/meeting-intelligence/hero-900.webp')} 900w, ${href('/solutions/meeting-intelligence/hero.webp')} 1774w`}
+        sizes="100vw"
+        alt="A professional follows a video meeting on a laptop that shows its meeting summary, key discussion points, action items and decisions, joined from Teams, Zoom and Google Meet."
+        width="1774"
+        height="887"
+        fetchpriority="high"
+        decoding="async"
+        data-hero-photo
+      />
+    </figure>
+    <div class="wrap mi-hero-grid">
+      <div class="mi-hero-copy" data-reveal="load">
+        <nav class="mi-crumbs" aria-label="Breadcrumb">
+          <a href={href('/services/enterprise-ai/')}>AI &amp; Automation</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Meeting Intelligence</span>
+        </nav>
+        <Eyebrow label="The Enterprise Meeting Challenge" />
+        <h1>Your Meetings Contain <span class="accent">Valuable Enterprise Knowledge.</span></h1>
+        <div class="mi-hero-text">
+          <p>Every day, important business context is created in meetings — customer requirements, decisions, commitments, actions and follow-ups.</p>
+          <p>But when the meeting ends, much of that knowledge becomes fragmented across recordings, transcripts, notes and individual memory.</p>
+        </div>
+        <div class="mi-actions">
+          <Button href="#capabilities" variant="primary" arrow class="glide">Explore Meeting Intelligence</Button>
+          <Button href="/contact/" variant="secondary">Discuss Your Requirements</Button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 2. The two enterprise challenges -->
+  <section class="mi-why" aria-labelledby="mi-why-title">
+    <div class="wrap">
+      <h2 id="mi-why-title" class="visually-hidden">Two questions every organization should ask</h2>
+      <div class="mi-why-grid" data-reveal="stagger">
+        {challenges.map((c) => (
+          <article class="mi-why-card ix-card ix-card--quiet">
+            <div class="mi-why-top">
+              <span class="mi-num">{c.num}</span>
+              <span class="mi-kicker">{c.kicker}</span>
+              <span class="glass-icon mi-why-icon" aria-hidden="true"><Icon name={c.icon} size={24} /></span>
+            </div>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+            <p class="mi-point">{c.point}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Brand statement: organizational memory -->
+  <section class="mi-memory" aria-labelledby="mi-memory-title">
+    <div class="mi-memory-bg" aria-hidden="true"></div>
+    <div class="wrap mi-memory-grid">
+      <div class="mi-memory-copy" data-reveal="">
+        <Eyebrow label="Don't Just Record Meetings." />
+        <h2 id="mi-memory-title">Build Organizational <span class="accent">Memory.</span></h2>
+      </div>
+      <div class="mi-network" aria-hidden="true">
+        <svg class="mi-links" viewBox="0 0 100 100" preserveAspectRatio="none">
+          {nodes.map((n) => (
+            <path
+              d={`M50 50 Q ${(50 + n.x) / 2 + (n.y - 50) * 0.25} ${(50 + n.y) / 2 - (n.x - 50) * 0.25} ${n.x} ${n.y}`}
+              pathLength="1"
+            />
+          ))}
+        </svg>
+        <span class="mi-core"><span class="mi-core-tile"><Icon name="database" size={44} /></span></span>
+        {nodes.map((n) => (
+          <span class="mi-node" style={`left: ${n.x}%; top: ${n.y}%`}>
+            <span class="mi-node-in">
+              <Icon name={n.icon} size={20} />
+              <small>{n.label}</small>
+            </span>
+          </span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. How it works -->
+  <section class="section mi-flow" id="how-it-works">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="From Conversation to Knowledge"
+        title="Capture the Meeting. Preserve the Knowledge. "
+        accent="Retrieve the Context."
+        lead="Turn your meeting conversations into structured, searchable knowledge — automatically."
+        align="center"
+      />
+      <ol class="mi-steps" data-reveal="stagger">
+        {steps.map((s, i) => (
+          <li class="step">
+            <div class="marker">
+              <span class="mi-step-num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="glass-icon mi-step-icon" aria-hidden="true"><Icon name={s.icon} size={24} /></span>
+            </div>
+            {i < steps.length - 1 && <span class="rule" aria-hidden="true"></span>}
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+      <ul class="mi-strip" data-chain aria-label="Meetings become decisions, actions and knowledge">
+        {strip.map((s, i) => (
+          <li class="chain-item">
+            {i > 0 && <span class="chain-arrow" aria-hidden="true"><Icon name="arrow" size={18} /></span>}
+            <span class="mi-strip-label"><Icon name={s.icon} size={20} />{s.label}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5. Capabilities -->
+  <section class="section mi-caps" id="capabilities">
+    <div class="mi-caps-bg" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="mi-caps-top">
+        <SectionHeading
+          eyebrow="Meeting Intelligence"
+          title="Everything Your Teams Need. "
+          accent="One Intelligent Knowledge Layer."
+          lead="Purpose-built capabilities to capture, understand, preserve and unlock the value of your meetings — all under your control."
+        />
+        <div class="split-art mi-app-art" data-reveal="">
+          <div class="mi-app" role="img" aria-label="Illustration: a video meeting beside its meeting summary, with key discussion points, action items and decisions.">
+            <div class="mi-app-bar"><i></i><i></i><i></i><span>Meeting Intelligence</span></div>
+            <div class="mi-app-body">
+              <div class="mi-call">
+                <div class="mi-tiles">
+                  {[1, 2, 3, 4].map((n) => <img src={img(n)} alt="" width="212" height="168" loading="lazy" decoding="async" />)}
+                </div>
+                <div class="mi-controls"><i></i><i></i><i></i><i></i><i class="end"></i></div>
+              </div>
+              <div class="mi-summary">
+                <strong>Meeting Summary</strong>
+                <div class="mi-tabs"><span class="on">Summary</span><span>Transcript</span><span>Action Items</span></div>
+                <div class="mi-block">
+                  <b><span class="dot blue"><Icon name="ai" size={12} /></span>Key Discussion Points</b>
+                  <i style="--w: 92%"></i><i style="--w: 78%"></i><i style="--w: 64%"></i>
+                </div>
+                <div class="mi-block">
+                  <b><span class="dot green"><Icon name="check" size={12} /></span>Action Items</b>
+                  <span class="mi-todo done"><i style="--w: 70%"></i></span>
+                  <span class="mi-todo"><i style="--w: 56%"></i></span>
+                </div>
+                <div class="mi-block">
+                  <b><span class="dot plum"><Icon name="checklist" size={12} /></span>Decisions</b>
+                  <i style="--w: 84%"></i><i style="--w: 52%"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mi-cap-grid" data-reveal="stagger">
+        {capabilities.map((c) => (
+          <article class="mi-cap ix-card ix-card--quiet">
+            <span class="glass-icon mi-cap-icon" aria-hidden="true"><Icon name={c.icon} size={24} /></span>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Knowledge continuity -->
+  <section class="section mi-cont">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Knowledge Continuity"
+        title="What Happens When Your "
+        accent="Key Account Manager Leaves?"
+        lead="Over time, your account manager builds valuable customer context through hundreds of conversations."
+      />
+      <ul class="mi-tags" aria-label="Customer context built in meetings">
+        {contextTags.map((t) => <li>{t}</li>)}
+      </ul>
+      <div class="mi-cont-grid" data-cont>
+        <div class="mi-before">
+          <h3>Then the account manager leaves.</h3>
+          <ol class="mi-frag" aria-label="Where the context is left">
+            {handover.map((h) => (
+              <li><span class="mi-frag-icon" aria-hidden="true"><Icon name={h.icon} size={20} /></span>{h.label}</li>
+            ))}
+          </ol>
+          <ul class="mi-gaps">
+            {gaps.map((g) => <li>{g}</li>)}
+          </ul>
+        </div>
+        <span class="mi-cont-arrow" aria-hidden="true"><Icon name="arrow" size={26} /></span>
+        <div class="mi-after">
+          <h3>With Meeting Intelligence, the Knowledge Stays.</h3>
+          <p>Meeting knowledge has already been captured and preserved within the organization.</p>
+          <figure class="mi-ask">
+            <figcaption>Example question</figcaption>
+            <div class="mi-ask-row">
+              <span class="mi-ask-icon" aria-hidden="true"><Icon name="ai" size={20} /></span>
+              <blockquote>Brief me on these 10 customers. What have we discussed, what commitments have we made, what issues remain open, and what should I know before the next meeting?</blockquote>
+              <span class="mi-ask-go" aria-hidden="true"><Icon name="arrow" size={18} /></span>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Search & discover + organizational memory -->
+  <section class="section mi-discover">
+    <div class="wrap mi-discover-grid">
+      <div class="mi-col">
+        <div class="mi-col-head" data-reveal="">
+          <Eyebrow label="Search & Discover" />
+          <h2>Years of Meeting Knowledge. <span class="accent">Searchable When You Need It.</span></h2>
+          <p>Find the context—not just the document. Ask questions and get clear, structured answers from all your meeting history.</p>
+        </div>
+        <div class="mi-search" role="img" aria-label="Illustration: the question “What were the key decisions from Project Alpha?” answered as customer context, key decisions, open commitments, outstanding issues and next actions." data-search>
+          <div class="mi-search-q">
+            <Icon name="search" size={18} />
+            <span>What were the key decisions from Project Alpha?</span>
+            <span class="mi-search-go"><Icon name="arrow" size={16} /></span>
+          </div>
+          <ul>
+            {results.map((r) => (
+              <li class={`tone-${r.tone}`}>
+                <span class="mi-r-icon"><Icon name={r.icon} size={15} /></span>
+                <span class="mi-r-label">{r.label}</span>
+                <span class="mi-r-bars"><i></i><i></i></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div class="mi-col">
+        <div class="mi-col-head" data-reveal="">
+          <Eyebrow label="Organizational Memory" />
+          <h2>One Meeting Intelligence Layer. <span class="accent">Across Your Enterprise.</span></h2>
+          <p>The same organizational memory can extend beyond account management to every team and function.</p>
+        </div>
+        <div class="mi-teams" data-reveal="stagger">
+          {teams.map((t) => (
+            <article class="mi-team ix-card ix-card--quiet">
+              <span class="mi-team-icon" aria-hidden="true"><Icon name={t.icon} size={22} /></span>
+              <h3>{t.title}</h3>
+              <p>{t.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Enterprise control -->
+  <section class="mi-control" aria-labelledby="mi-control-title">
+    <div class="mi-control-bg" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="mi-control-grid">
+        <div class="mi-control-copy" data-reveal="">
+          <Eyebrow label="Enterprise AI. Under Enterprise Control." />
+          <h2 id="mi-control-title">
+            <span class="ln">Your Meetings.</span>
+            <span class="ln">Your Knowledge.</span>
+            <span class="ln accent">Your Control.</span>
+          </h2>
+          <p>Your meeting data can contain sensitive customer, employee and business information. Deploy meeting intelligence within an environment you control and maintain complete oversight.</p>
+        </div>
+        <div class="mi-deploy" data-reveal="stagger">
+          {deployments.map((d) => (
+            <article class="mi-deploy-card ix-card ix-card--quiet">
+              <span class="glass-icon glass-icon--dark mi-deploy-icon" aria-hidden="true"><Icon name={d.icon} size={26} /></span>
+              <h3>{d.title}</h3>
+              <p>{d.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+      <ul class="mi-trust" data-chain>
+        {trust.map((t) => (
+          <li class="chain-item"><Icon name={t.icon} size={20} />{t.label}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 9. Summary and CTA -->
+  <section class="section mi-future">
+    <div class="wrap">
+      <div class="mi-future-top">
+        <div class="mi-future-copy" data-reveal="">
+          <Eyebrow label="From Productivity to Enterprise Intelligence" />
+          <h2>Meeting Intelligence Today. <span class="accent">Enterprise Intelligence Tomorrow.</span></h2>
+          <p>Meeting Intelligence creates a foundation of searchable organizational context — turning everyday conversations into knowledge that can support people, teams and future AI capabilities.</p>
+        </div>
+        <div class="mi-actions mi-future-actions" data-reveal="">
+          <Button href="/contact/" variant="primary" arrow>Discuss Meeting Intelligence</Button>
+          <Button href="/services/enterprise-ai/#featured-ai-title" variant="secondary">Back to AI Solutions</Button>
+        </div>
+      </div>
+      <ol class="mi-chain" data-chain aria-label="From conversations to knowledge">
+        {chain.map((c, i) => (
+          <li class="chain-item">
+            {i > 0 && <span class="chain-arrow" aria-hidden="true"><Icon name="arrow" size={18} /></span>}
+            <span class="glass-icon mi-chain-icon" aria-hidden="true"><Icon name={c.icon} size={24} /></span>
+            <strong>{c.label}</strong>
+            <span>{c.text}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------- Shared ---------- */
+  .accent {
+    color: var(--red);
+  }
+  .mi-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  h2 {
+    font-size: clamp(2rem, 1.35rem + 2.1vw, 2.85rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  /* Icon tiles (glass: motion.css). */
+  .glass-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius);
+  }
+  /* Two-line headings: the red phrase takes its own line. */
+  :is(.mi-caps, .mi-cont) :global(.section-heading .accent),
+  :is(.mi-col-head, .mi-future-copy) .accent {
+    display: block;
+  }
+
+  /* ---------- 1. Hero ----------
+     Desktop: the photo fills the hero behind the copy. Its left side is
+     already soft light, so the copy sits there; the photo fades out at the
+     top (under the header), the bottom and the far left into the page, and a
+     light veil keeps the copy at full contrast. Tablets and phones: copy
+     first, then the photo as its own band, faded at its edges. */
+  .mi-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: clamp(560px, 50vw, 860px);
+    padding-block: clamp(2.5rem, 5vw, 4.5rem) clamp(3.5rem, 7vw, 6rem);
+    background: var(--bg);
+  }
+  .mi-hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    margin: 0;
+    --fade-y: linear-gradient(180deg, transparent 0, #000 9%, #000 72%, transparent 100%);
+    --fade-x: linear-gradient(90deg, transparent 0, #000 18%);
+    mask-image: var(--fade-y), var(--fade-x);
+    mask-composite: intersect;
+    -webkit-mask-image: var(--fade-y), var(--fade-x);
+    -webkit-mask-composite: source-in;
+  }
+  .mi-hero-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 62% 50%;
+  }
+  /* Veil: page light behind the copy, clearing well before the laptop. */
+  .mi-hero-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      var(--bg) 0%,
+      rgba(248, 248, 252, 0.92) 28%,
+      rgba(248, 248, 252, 0.7) 41%,
+      rgba(248, 248, 252, 0) 54%
+    );
+  }
+  .mi-hero-grid {
+    display: grid;
+  }
+  .mi-hero-copy {
+    max-width: 40rem;
+  }
+  .mi-crumbs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--text-2);
+  }
+  .mi-crumbs a {
+    color: var(--blue-text);
+    text-decoration: none;
+  }
+  .mi-crumbs a:hover {
+    text-decoration: underline;
+  }
+  .mi-hero h1 {
+    font-size: clamp(2.3rem, 1.55rem + 2.5vw, 3.6rem);
+    line-height: 1.04;
+    letter-spacing: -0.028em;
+  }
+  .mi-hero-text {
+    margin-top: var(--gap-lead);
+    max-width: 52ch;
+    display: grid;
+    gap: 0.75rem;
+    font-size: 1.075rem;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .mi-hero .mi-actions {
+    margin-top: var(--gap-actions);
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .mi-hero-media {
+      animation: mi-settle 1400ms var(--ix-ease) 80ms backwards;
+    }
+  }
+  @keyframes mi-settle {
+    from { opacity: 0; transform: scale(1.03); }
+  }
+  @media (max-width: 960px) {
+    .mi-hero {
+      min-height: 0;
+      padding-bottom: 0;
+    }
+    .mi-hero-media {
+      position: relative;
+      inset: auto;
+      order: 2;
+      z-index: 0;
+      margin-top: 1.5rem;
+      aspect-ratio: 16 / 10;
+      --fade-y: linear-gradient(180deg, transparent 0, #000 16%, #000 78%, transparent 100%);
+      --fade-x: linear-gradient(90deg, transparent 0, #000 10%, #000 94%, transparent 100%);
+    }
+    .mi-hero-media img {
+      object-position: 80% 50%;
+    }
+    .mi-hero-media::after {
+      display: none;
+    }
+  }
+  @media (max-width: 520px) {
+    .mi-hero-media {
+      aspect-ratio: 5 / 4;
+    }
+    .mi-hero-media img {
+      object-position: 76% 50%;
+    }
+  }
+
+  /* ---------- 2. Challenges ---------- */
+  .mi-why {
+    padding-bottom: var(--space-7);
+  }
+  .mi-why-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+  .mi-why-card {
+    --c: var(--red);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in srgb, var(--border) 80%, #fff);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.86));
+    backdrop-filter: blur(10px);
+    box-shadow:
+      inset 0 1px 0 #fff,
+      var(--shadow);
+  }
+  .mi-why-top {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1.25rem;
+  }
+  .mi-num {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .mi-kicker {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--red-text);
+  }
+  .mi-why-icon {
+    --c: var(--red);
+    margin-left: auto;
+    color: var(--red);
+  }
+  .mi-why-card h3 {
+    font-size: var(--step-2);
+    margin-bottom: 0.6rem;
+  }
+  .mi-why-card p {
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .mi-why-card .mi-point {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--red-text);
+    font-weight: 500;
+  }
+  @media (max-width: 760px) {
+    .mi-why-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 3. Organizational memory (dark) ---------- */
+  .mi-memory {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    background: #070a14;
+    color: #fff;
+    padding-block: clamp(4rem, 8vw, 6.5rem);
+  }
+  .mi-memory-bg {
+    position: absolute;
+    inset: -20% 0;
+    z-index: -1;
+    background:
+      radial-gradient(36% 60% at 76% 50%, rgba(217, 64, 64, 0.28), transparent 70%),
+      radial-gradient(30% 50% at 92% 18%, rgba(18, 136, 207, 0.18), transparent 70%),
+      radial-gradient(40% 70% at 0% 100%, rgba(135, 54, 98, 0.22), transparent 70%),
+      linear-gradient(110deg, #05070d 0%, #0b1020 55%, #120a14 100%);
+  }
+  .mi-memory-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: center;
+  }
+  .mi-memory h2 {
+    color: #fff;
+    font-size: clamp(2.4rem, 1.5rem + 3vw, 4rem);
+  }
+  .mi-memory :global(.eyebrow) {
+    color: #c9d1e0;
+  }
+  .mi-network {
+    position: relative;
+    aspect-ratio: 13 / 9;
+    width: 100%;
+  }
+  .mi-links {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .mi-links path {
+    fill: none;
+    stroke: rgba(217, 64, 64, 0.55);
+    stroke-width: 1.25;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 0.012 0.018;
+  }
+  /* Core and satellites are zero-size anchors at their points (GSAP scales
+     them about that point); the visible tile is centered on the anchor. */
+  .mi-core,
+  .mi-node {
+    position: absolute;
+    width: 0;
+    height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mi-core {
+    left: 50%;
+    top: 50%;
+  }
+  .mi-core-tile {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: clamp(96px, 12vw, 128px);
+    aspect-ratio: 1;
+    border-radius: 28px;
+    color: #ff8f8f;
+    border: 1px solid rgba(255, 143, 143, 0.45);
+    background:
+      radial-gradient(circle at 50% 40%, rgba(217, 64, 64, 0.35), rgba(217, 64, 64, 0.08) 70%),
+      rgba(10, 14, 26, 0.85);
+    box-shadow:
+      0 0 0 10px rgba(217, 64, 64, 0.06),
+      0 0 60px -6px rgba(217, 64, 64, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+  .mi-node-in {
+    flex: none;
+    display: grid;
+    justify-items: center;
+    gap: 0.35rem;
+    color: #e2e2ee;
+  }
+  .mi-node-in :global(svg) {
+    box-sizing: content-box;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.7);
+  }
+  .mi-node small {
+    font-family: var(--font-head);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #aeb6c8;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .mi-links path {
+      animation: mi-flowline 6s linear infinite;
+    }
+    .mi-core-tile {
+      animation: mi-breathe 5s ease-in-out infinite;
+    }
+  }
+  @keyframes mi-flowline {
+    to { stroke-dashoffset: -0.3; }
+  }
+  @keyframes mi-breathe {
+    50% {
+      box-shadow:
+        0 0 0 14px rgba(217, 64, 64, 0.04),
+        0 0 80px -4px rgba(217, 64, 64, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+  }
+  @media (max-width: 860px) {
+    .mi-memory-grid {
+      grid-template-columns: 1fr;
+    }
+    .mi-network {
+      max-width: 520px;
+      margin-inline: auto;
+    }
+  }
+  @media (max-width: 480px) {
+    .mi-node small {
+      display: none;
+    }
+    .mi-node-in :global(svg) {
+      padding: 9px;
+    }
+  }
+
+  /* ---------- 4. How it works ---------- */
+  .mi-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2rem;
+  }
+  .step {
+    position: relative;
+    padding: 1.4rem 1.25rem 1.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    transition:
+      translate var(--ix-base) var(--ix-ease),
+      box-shadow var(--ix-base) var(--ix-ease),
+      border-color var(--ix-base) var(--ix-ease);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .step:hover {
+      border-color: color-mix(in srgb, var(--red) 24%, var(--border));
+      box-shadow: var(--ix-shadow-lift);
+    }
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .step:hover {
+      translate: 0 -4px;
+    }
+  }
+  .marker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .mi-step-num {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--red-text);
+    letter-spacing: 0.04em;
+  }
+  .mi-step-icon {
+    --c: var(--red);
+    color: var(--red);
+  }
+  .step h3 {
+    font-size: var(--step-1);
+    margin-bottom: 0.4rem;
+  }
+  .step p {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+  /* Connector to the next step: a thin red line with an arrowhead. */
+  .rule {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: 2rem;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(217, 64, 64, 0.25), var(--red));
+  }
+  .rule::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-top: 2px solid var(--red);
+    border-right: 2px solid var(--red);
+    transform: translate(1px, -50%) rotate(45deg);
+  }
+  @media (max-width: 1100px) {
+    .mi-steps {
+      grid-template-columns: 1fr;
+      max-width: 560px;
+      margin-inline: auto;
+      gap: 2.25rem;
+    }
+    .rule {
+      top: 100%;
+      left: 50%;
+      width: 2px;
+      height: 2.25rem;
+      margin-left: -1px;
+      background: linear-gradient(180deg, rgba(217, 64, 64, 0.25), var(--red));
+    }
+    .rule::after {
+      right: auto;
+      left: 50%;
+      top: auto;
+      bottom: 0;
+      transform: translate(-50%, 1px) rotate(135deg);
+    }
+    .step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 1.1rem;
+      align-items: start;
+    }
+    .marker {
+      grid-row: span 2;
+      flex-direction: column-reverse;
+      gap: 0.5rem;
+      margin: 0;
+    }
+  }
+
+  .mi-strip {
+    list-style: none;
+    margin: 2.5rem auto 0;
+    padding: 1rem 1.5rem;
+    max-width: 920px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 0;
+    border-radius: 999px;
+    border: 1px solid var(--red-edge);
+    background: linear-gradient(90deg, rgba(217, 64, 64, 0.05), rgba(255, 255, 255, 0.9), rgba(217, 64, 64, 0.05));
+  }
+  .mi-strip .chain-item {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 3vw, 2.5rem);
+    flex: 1 1 auto;
+    justify-content: flex-end;
+  }
+  .mi-strip .chain-item:first-child {
+    flex: 0 0 auto;
+  }
+  .mi-strip-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .mi-strip-label :global(svg) {
+    color: var(--red);
+  }
+  .chain-arrow {
+    display: inline-flex;
+    color: var(--red);
+  }
+  @media (max-width: 640px) {
+    .mi-strip {
+      border-radius: var(--radius-lg);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+    }
+    .mi-strip .chain-item,
+    .mi-strip .chain-item:first-child {
+      justify-content: flex-start;
+      gap: 0.6rem;
+    }
+    .mi-strip .chain-arrow :global(svg) {
+      rotate: 90deg;
+    }
+  }
+
+  /* ---------- 5. Capabilities ---------- */
+  .mi-caps {
+    position: relative;
+    isolation: isolate;
+  }
+  .mi-caps-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(40% 50% at 86% 24%, rgba(18, 136, 207, 0.1), transparent 72%),
+      radial-gradient(34% 40% at 6% 90%, rgba(217, 64, 64, 0.06), transparent 72%);
+  }
+  .mi-caps-top {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: center;
+    margin-bottom: var(--gap-block);
+  }
+  .mi-caps-top :global(.section-heading) {
+    margin-bottom: 0;
+  }
+  .mi-app {
+    border-radius: 18px;
+    padding: 10px;
+    background: linear-gradient(160deg, #1b2233, #0b0f1a);
+    box-shadow:
+      0 40px 70px -40px rgba(13, 20, 40, 0.55),
+      0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  }
+  .mi-app-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px 10px;
+  }
+  .mi-app-bar i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3a4256;
+  }
+  .mi-app-bar i:first-child { background: #ff6159; }
+  .mi-app-bar i:nth-child(2) { background: #ffbd2e; }
+  .mi-app-bar i:nth-child(3) { background: #28c941; }
+  .mi-app-bar span {
+    margin-left: 8px;
+    font-size: 0.72rem;
+    color: #8f99ad;
+    font-family: var(--font-head);
+    font-weight: 600;
+  }
+  .mi-app-body {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 10px;
+  }
+  .mi-call {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+  }
+  .mi-tiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .mi-tiles img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 212 / 168;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+  }
+  .mi-controls {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 4px 0 2px;
+  }
+  .mi-controls i {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #2a3245;
+  }
+  .mi-controls .end {
+    background: #e5484d;
+    width: 30px;
+    border-radius: 999px;
+  }
+  .mi-summary {
+    border-radius: 10px;
+    background: #fff;
+    padding: 12px 14px;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    color: var(--ink);
+  }
+  .mi-summary > strong {
+    font-family: var(--font-head);
+    font-size: 0.9rem;
+  }
+  .mi-tabs {
+    display: flex;
+    gap: 12px;
+    font-size: 0.68rem;
+    color: var(--text-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .mi-tabs span {
+    padding-bottom: 6px;
+  }
+  .mi-tabs .on {
+    color: var(--blue-text);
+    box-shadow: inset 0 -2px 0 var(--blue);
+  }
+  .mi-block {
+    display: grid;
+    gap: 5px;
+  }
+  .mi-block b {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-family: var(--font-head);
+  }
+  .mi-block > i,
+  .mi-todo i {
+    display: block;
+    height: 6px;
+    width: var(--w);
+    border-radius: 3px;
+    background: #e6e9f2;
+  }
+  .mi-todo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mi-todo::before {
+    content: '';
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    border: 1.5px solid #c3c9d8;
+  }
+  .mi-todo.done::before {
+    background: var(--blue);
+    border-color: var(--blue);
+  }
+  .mi-todo i {
+    flex: none;
+  }
+  .dot {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    color: #fff;
+  }
+  .dot.blue { background: var(--blue); }
+  .dot.green { background: #1f9d55; }
+  .dot.plum { background: var(--plum); }
+
+  .mi-cap-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .mi-cap {
+    --c: var(--red);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: var(--shadow);
+  }
+  .mi-cap-icon {
+    --c: var(--red);
+    color: var(--red);
+    margin-bottom: 1rem;
+  }
+  .mi-cap h3 {
+    font-size: var(--step-1);
+    margin-bottom: 0.4rem;
+  }
+  .mi-cap p {
+    color: var(--text-2);
+    font-size: 0.97rem;
+    line-height: 1.55;
+  }
+  @media (max-width: 1024px) {
+    .mi-caps-top {
+      grid-template-columns: 1fr;
+    }
+    .mi-app-art {
+      max-width: 640px;
+    }
+    .mi-cap-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 640px) {
+    .mi-cap-grid {
+      grid-template-columns: 1fr;
+    }
+    .mi-app-body {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 6. Knowledge continuity ---------- */
+  .mi-cont {
+    background: linear-gradient(180deg, var(--bg) 0, var(--section) 72px, var(--section) calc(100% - 72px), var(--bg) 100%);
+  }
+  .mi-tags {
+    list-style: none;
+    padding: 0;
+    margin: calc(var(--gap-block) * -0.5) 0 var(--gap-block);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .mi-tags li {
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    background: var(--red-tint);
+    color: var(--red-text);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .mi-cont-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: center;
+  }
+  .mi-before,
+  .mi-after {
+    border-radius: var(--radius-lg);
+    padding: clamp(1.4rem, 3vw, 2rem);
+  }
+  .mi-before {
+    border: 1px dashed rgba(194, 54, 54, 0.4);
+    background: linear-gradient(180deg, rgba(217, 64, 64, 0.06), rgba(255, 255, 255, 0.7));
+  }
+  .mi-before h3 {
+    font-size: var(--step-1);
+    color: var(--red-text);
+    margin-bottom: 1.25rem;
+  }
+  .mi-frag {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .mi-frag li {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.45rem;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-2);
+    line-height: 1.3;
+  }
+  .mi-frag li + li::before {
+    content: '';
+    position: absolute;
+    top: 22px;
+    right: calc(50% + 28px);
+    width: calc(100% - 56px + 0.5rem);
+    border-top: 1.5px dashed rgba(194, 54, 54, 0.45);
+  }
+  .mi-frag-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--ink);
+  }
+  .mi-gaps {
+    list-style: none;
+    padding: 1rem 0 0;
+    margin: 1.25rem 0 0;
+    border-top: 1px solid rgba(194, 54, 54, 0.2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    font-size: 0.85rem;
+    color: var(--red-text);
+    font-weight: 500;
+  }
+  .mi-gaps li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .mi-gaps li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+  }
+  .mi-cont-arrow {
+    align-self: center;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--blue-edge);
+    color: var(--blue);
+    box-shadow: var(--shadow);
+  }
+  .mi-after {
+    border: 1px solid var(--blue-edge);
+    background:
+      radial-gradient(80% 60% at 100% 0%, rgba(18, 136, 207, 0.12), transparent 70%),
+      rgba(255, 255, 255, 0.92);
+    box-shadow: 0 24px 50px -32px rgba(14, 109, 173, 0.45);
+  }
+  .mi-after h3 {
+    font-size: var(--step-1);
+    color: var(--blue-text);
+    margin-bottom: 0.5rem;
+  }
+  .mi-after > p {
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .mi-ask {
+    margin: 1.25rem 0 0;
+  }
+  .mi-ask figcaption {
+    font-family: var(--font-head);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: 0.5rem;
+  }
+  .mi-ask-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: var(--radius);
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .mi-ask-icon {
+    flex: none;
+    color: var(--blue);
+  }
+  .mi-ask blockquote {
+    margin: 0;
+    font-size: 0.97rem;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .mi-ask-go {
+    flex: none;
+    align-self: center;
+    color: var(--blue-text);
+  }
+  @media (max-width: 960px) {
+    .mi-cont-grid {
+      grid-template-columns: 1fr;
+    }
+    .mi-cont-arrow {
+      justify-self: center;
+    }
+    .mi-cont-arrow :global(svg) {
+      rotate: 90deg;
+    }
+  }
+  @media (max-width: 520px) {
+    .mi-frag {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      row-gap: 1rem;
+    }
+    .mi-frag li::before {
+      display: none;
+    }
+  }
+
+  /* ---------- 7. Search & discover / organizational memory ---------- */
+  .mi-discover-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+  }
+  .mi-discover-grid > .mi-col + .mi-col {
+    position: relative;
+  }
+  .mi-discover-grid > .mi-col + .mi-col::before {
+    content: '';
+    position: absolute;
+    left: calc(clamp(2rem, 5vw, 4.5rem) / -2);
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, var(--border-2) 15%, var(--border-2) 85%, transparent);
+  }
+  .mi-col-head {
+    margin-bottom: var(--gap-block);
+  }
+  .mi-col-head h2 {
+    font-size: clamp(1.7rem, 1.25rem + 1.3vw, 2.2rem);
+  }
+  .mi-col-head p {
+    margin-top: var(--gap-lead);
+    color: var(--text-2);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  .mi-search {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-m);
+    padding: 1.1rem;
+  }
+  .mi-search-q {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.8rem 0.9rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-2);
+    font-size: 0.95rem;
+    color: var(--ink);
+  }
+  .mi-search-q > :global(svg) {
+    flex: none;
+    color: var(--text-2);
+  }
+  .mi-search-go {
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--red-text);
+    color: #fff;
+  }
+  .mi-search ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.9rem 0 0;
+    display: grid;
+  }
+  .mi-search li {
+    display: grid;
+    grid-template-columns: auto 9.5rem 1fr;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.4rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .mi-search li:last-child {
+    border-bottom: 0;
+  }
+  .mi-r-icon {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    color: #fff;
+    background: var(--tone);
+  }
+  .tone-blue { --tone: var(--blue-text); }
+  .tone-red { --tone: var(--red-text); }
+  .tone-green { --tone: #1a7f47; }
+  .tone-plum { --tone: var(--plum); }
+  .tone-amber { --tone: #b0640a; }
+  .mi-r-bars {
+    display: grid;
+    gap: 5px;
+  }
+  .mi-r-bars i {
+    display: block;
+    height: 6px;
+    border-radius: 3px;
+    background: #e9ecf3;
+    transform-origin: left center;
+  }
+  .mi-r-bars i:last-child {
+    width: 62%;
+  }
+  .mi-teams {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+  .mi-team {
+    grid-column: span 2;
+  }
+  .mi-team:nth-child(n + 4) {
+    grid-column: span 3;
+  }
+  .mi-team {
+    --c: var(--red);
+    padding: 1.1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .mi-team-icon {
+    display: inline-flex;
+    color: var(--red);
+    margin-bottom: 0.6rem;
+  }
+  .mi-team h3 {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+  .mi-team p {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--text-2);
+  }
+  @media (max-width: 1024px) {
+    .mi-discover-grid {
+      grid-template-columns: 1fr;
+    }
+    .mi-discover-grid > .mi-col + .mi-col::before {
+      left: 0;
+      right: 0;
+      top: calc(clamp(2rem, 5vw, 4.5rem) / -2);
+      bottom: auto;
+      width: auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-2) 15%, var(--border-2) 85%, transparent);
+    }
+  }
+  @media (max-width: 640px) {
+    .mi-teams {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .mi-team,
+    .mi-team:nth-child(n + 4) {
+      grid-column: auto;
+    }
+    .mi-search li {
+      grid-template-columns: auto 1fr;
+    }
+    .mi-r-bars {
+      display: none;
+    }
+  }
+  @media (max-width: 400px) {
+    .mi-teams {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 8. Enterprise control (dark) ---------- */
+  .mi-control {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    color: #fff;
+    background: #070a14;
+    padding-block: var(--space-7);
+  }
+  .mi-control-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(40% 60% at 0% 0%, rgba(217, 64, 64, 0.22), transparent 70%),
+      radial-gradient(40% 60% at 100% 100%, rgba(18, 136, 207, 0.16), transparent 70%),
+      linear-gradient(160deg, #0b1020, #05070d);
+  }
+  .mi-control-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .mi-control h2 {
+    color: #fff;
+  }
+  .mi-control .ln {
+    display: block;
+  }
+  .mi-control :global(.eyebrow) {
+    color: #c9d1e0;
+  }
+  .mi-control-copy p {
+    margin-top: var(--gap-lead);
+    color: #c9d1e0;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 48ch;
+  }
+  .mi-deploy {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .mi-deploy-card {
+    --c: var(--red);
+    padding: 1.5rem 1.25rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+    backdrop-filter: blur(10px);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    :root .mi-deploy-card:hover {
+      border-color: rgba(255, 143, 143, 0.4);
+      box-shadow: 0 20px 40px -24px rgba(217, 64, 64, 0.5);
+    }
+  }
+  .mi-deploy-icon {
+    color: #ff8f8f;
+    margin-bottom: 1.1rem;
+  }
+  .mi-deploy-card h3 {
+    color: #fff;
+    font-size: var(--step-1);
+    margin-bottom: 0.4rem;
+  }
+  .mi-deploy-card p {
+    color: #c9d1e0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  .mi-trust {
+    list-style: none;
+    margin: 3rem 0 0;
+    padding: 1.1rem 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 2.5rem;
+  }
+  .mi-trust li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: #e2e2ee;
+  }
+  .mi-trust li :global(svg) {
+    color: #ff8f8f;
+  }
+  @media (max-width: 1024px) {
+    .mi-control-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .mi-deploy {
+      grid-template-columns: 1fr;
+    }
+    .mi-trust {
+      justify-content: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  /* ---------- 9. Summary and CTA ---------- */
+  .mi-future {
+    background:
+      radial-gradient(40% 70% at 100% 100%, rgba(18, 136, 207, 0.07), transparent 70%),
+      radial-gradient(40% 70% at 0% 0%, rgba(217, 64, 64, 0.05), transparent 70%);
+  }
+  .mi-future-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--gap-actions) 3rem;
+    align-items: end;
+    margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+  }
+  .mi-future-copy {
+    max-width: 44rem;
+  }
+  .mi-future-copy p {
+    margin-top: var(--gap-lead);
+    max-width: 60ch;
+    color: var(--text-2);
+    font-size: 1.075rem;
+    line-height: 1.6;
+  }
+  .mi-chain {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+  .mi-chain .chain-item {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 0.35rem;
+  }
+  .mi-chain-icon {
+    --c: var(--red);
+    color: var(--red);
+    margin-bottom: 0.5rem;
+  }
+  .mi-chain strong {
+    font-family: var(--font-head);
+    font-size: 1rem;
+  }
+  .mi-chain .chain-item > span:last-child {
+    font-size: 0.9rem;
+    color: var(--text-2);
+  }
+  .mi-chain .chain-arrow {
+    position: absolute;
+    top: 14px;
+    left: -0.75rem;
+    margin-left: -9px;
+    color: var(--red);
+  }
+  @media (max-width: 860px) {
+    .mi-future-top {
+      grid-template-columns: 1fr;
+    }
+    .mi-chain {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .mi-chain .chain-item {
+      grid-template-columns: auto 1fr;
+      justify-items: start;
+      text-align: left;
+      column-gap: 1rem;
+      row-gap: 0.15rem;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .mi-chain-icon {
+      grid-row: span 2;
+      margin: 0;
+    }
+    .mi-chain .chain-arrow {
+      display: none;
+    }
+  }
+</style>

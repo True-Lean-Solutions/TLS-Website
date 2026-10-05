@@ -85,6 +85,16 @@ export function scrollToY(y: number) {
 }
 
 /**
+ * Glide to an element (in-page links that ask for it), clearing the sticky
+ * header. Lenis when it runs; the browser's own smooth scroll otherwise.
+ */
+export function glideTo(el: HTMLElement) {
+  const y = el.getBoundingClientRect().top + window.scrollY - headerH() - 24;
+  if (lenis) lenis.scrollTo(y, { duration: 1.2 });
+  else window.scrollTo({ top: y, behavior: 'smooth' });
+}
+
+/**
  * Layout can change after first paint (web fonts, lazy images); recompute
  * every trigger once those settle so pins and scrubs start in the right place.
  */

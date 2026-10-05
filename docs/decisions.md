@@ -683,6 +683,49 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 
 **Where it lives.** `.github/workflows/deploy.yml`, `astro.config.mjs`.
 
+## 2026-10-02 — Meeting Intelligence product page
+
+**Status:** interim (awaiting Hemang's review and the Drive images)
+
+**Decision.** "Learn More" on the Meeting Intelligence card (Enterprise AI › Featured AI Solutions) now opens a dedicated page, `/services/meeting-intelligence/`, built from Hemang's brief and full-page reference (`docs/references/pages/services/meeting-intelligence/01-full-page.png`). Nine folds: hero (the meeting challenge), the two enterprise challenges, "Build Organizational Memory" (dark), the five-step workflow, capabilities with an app illustration, knowledge continuity (before/after), search & discover + organizational memory, enterprise control (dark), and the closing summary with CTAs ("Discuss Meeting Intelligence" → `/contact/`, "Back to AI Solutions" → Enterprise AI's Featured AI Solutions). Copy is the brief's, verbatim. The Solutions nav item stays current (the route sits under `/services/`). It is not added to the Solutions menu or footer.
+
+**Deviations from the reference.**
+- The "hand holding a glowing AI brain" visual is replaced by a knowledge network (TLS icons around a core, links softly flowing): v2.3 §13 rules out AI brains and holograms.
+- Hero photo (Hemang, 2026-10-02): the meeting-workspace image he supplied (`docs/references/pages/services/meeting-intelligence/hero-image-original.png` → `public/solutions/meeting-intelligence/hero.webp`, 1774×887, plus a 900w copy). On desktop it fills the hero behind the copy, fading out at the top, bottom and far left, with a light veil behind the copy for contrast; on tablets and phones it follows the copy as its own band, faded at its edges. It replaces the reference's four floating chips (Conversations / Decisions / Commitments / Actions), which would crowd the photo's own Teams / Zoom / Google Meet tiles. The Teams, Zoom and Google Meet marks appear only as part of Hemang's image.
+- The app illustration (capabilities) reuses the four participant tiles from the Meeting Intelligence dashboard art (`public/solutions/meeting-intelligence-dashboard.png`). The Drive folder (`1Ke8D0YLnLABkVWS2SmSTDBaW_66xj7OY`) is downloaded (12 reference images) but not yet used.
+- Interface panels show labels and placeholder lines, not invented data. The example questions ("Brief me on these 10 customers…", "What were the key decisions from Project Alpha?") are labeled as examples.
+
+**Claims to confirm (Hemang).** Checked against Services - Enterprise AI (2026-09-27): Teams/Zoom/Google Meet capture, minutes, action items, conversational search, private/on-premises deployment, data staying in the client's environment and no public AI exposure are all sourced. **"Private Cloud / VPC" and "Hybrid" deployment are not in that doc**; they ship as written in the brief, pending confirmation.
+
+**Motion.** Site-wide reveals apply automatically (headings, cards, the step sequence with drawing connectors, the app illustration). `src/scripts/scroll/product.ts` adds: the hero photo drifting down and in as the page scrolls (desktop); the network gathering around its core; `[data-chain]` stages arriving in turn; the handover landing scattered, then the answer sliding in; search results filling row by row; and a smooth glide for "Explore Meeting Intelligence". Nothing runs with reduced motion.
+
+**Where it lives.** `src/pages/services/meeting-intelligence.astro`, `src/scripts/scroll/product.ts`, `src/scripts/scroll/core.ts` (`glideTo`), `src/scripts/scroll/index.ts`, `src/components/FeaturedAISolutions.astro` (Learn More link), `src/components/Icon.astro` + `iconTypes.ts` (video, document, checklist, server, message, user, mail), `public/solutions/meeting-intelligence/`.
+
+## 2026-10-02 — AI Visibility Growth Team product page
+
+**Status:** interim (awaiting Hemang's review)
+
+**Decision.** "Learn More" on the AI Visibility Growth Team card (Enterprise AI › Featured AI Solutions) now opens `/services/ai-visibility-growth-team/` (it went to `/contact/`). Built from Hemang's brief, copy verbatim, in his eight folds: hero, the AI discovery shift, our approach (six capabilities, AIO as the lead card), discovery surfaces (platform tiles + an illustrative AI answer), how we work (four stages on a line that fills as you scroll), deliverables, why a growth team, and a closing band. CTAs: "Get Your AI Visibility Baseline" → `/contact/` (hero and close), "Explore Our Approach" → glides to the approach. Visual direction from his reference set (`docs/references/pages/services/ai-visibility-growth-team/`). Not added to the Solutions menu or footer.
+
+**Content handling.**
+- Photos are crops of his reference images 02 (hero), 03 (AI overview and citations panel) and 06 (professional with platform tiles), each faded into the page. No baked-in text or logo survives the crops.
+- Platform logos (ChatGPT, Google, Gemini, Perplexity) are the files already in `public/brand/platforms/`; the one-line platform descriptions are neutral descriptions of those products, not claims about TLS.
+- The AI answer panel is labeled "Illustrative interface. Not a real search result." and shows placeholder lines, not results.
+- Not used from the references: invented testimonials, the "70%+" statistic, blog cards, FAQ answers, the consultation form ("Get Started"), and the newsletter / X / YouTube footer.
+- **Pricing is not on this page.** The card's "$4,500 / month · 100 hours of expert capacity · $45/hr effective blended rate" stays on the card unchanged; it can be added here once Hemang confirms it as approved page content.
+
+**Motion.** Site-wide reveals (headings, card groups, the closing band) plus `src/scripts/scroll/product.ts`, now driven by hooks shared with Meeting Intelligence: `[data-hero-photo]` (hero drift), `a.glide` (smooth in-page links), `[data-float]` (depth layers), `[data-progress]` (the process line fills with scroll; each stage lights as it is reached; vertical on phones) and `[data-search]` (the answer rows fill in). The closing band's wave lines drift slowly. Nothing runs with reduced motion; every stage shows as complete.
+
+**Where it lives.** `src/pages/services/ai-visibility-growth-team.astro`, `src/scripts/scroll/product.ts`, `src/components/FeaturedAISolutions.astro` (Learn More link), `src/pages/services/meeting-intelligence.astro` (moved to the shared hooks), `public/solutions/ai-visibility/`.
+
+## 2026-10-03 — Enterprise AI: tighter spacing around Featured AI Solutions
+
+**Status:** settled (Hemang)
+
+**Decision.** The Featured AI Solutions section uses 48px top and bottom padding (40px at ≤768px) instead of the standard section's 96px (64px), so the gap to "What It Is" above and "Who It's For" below is about 144px on desktop and 100px on tablets and phones, instead of 192px / 128px. Beside its dense two-card block, the standard gap read as too much. An intended exception to the site-wide spacing rhythm (2026-09-30).
+
+**Where it lives.** `src/components/FeaturedAISolutions.astro` (`.featured-ai`).
+
 ## 2026-10-05 — Redirects from the old site's URLs
 
 **Status:** settled (Hemang); revises "Launch service URLs clean, no redirects" (2026-09-28)

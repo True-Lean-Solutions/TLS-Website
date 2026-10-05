@@ -37,6 +37,8 @@ const cloud = 'M7 18a4 4 0 010-8 5 5 0 019.6-1.4A3.6 3.6 0 0117.5 18z';
 const rocket = 'M9 15l-3-3c2-6 6-8 11-8 0 5-2 9-8 11z';
 const page = 'M12 6.8c1.7-1.5 4.1-2.3 8-2.3v13.2c-3.9 0-6.3.8-8 2.3z';
 const horn = 'M4 10.2v3.6A1.2 1.2 0 005.2 15H7l7 4V5L7 9H5.2A1.2 1.2 0 004 10.2z';
+const doc = 'M14 3.5H7.5a2 2 0 00-2 2v13a2 2 0 002 2h9a2 2 0 002-2V8z';
+const bubble = 'M5.5 5h13A1.5 1.5 0 0120 6.5v8a1.5 1.5 0 01-1.5 1.5H10l-4.5 3.5V16A1.5 1.5 0 014 14.5v-8A1.5 1.5 0 015.5 5z';
 const case_ = 'M3.5 9A1.5 1.5 0 015 7.5h14A1.5 1.5 0 0120.5 9v9a2 2 0 01-2 2h-13a2 2 0 01-2-2z';
 ---
 
@@ -68,3 +70,10 @@ const case_ = 'M3.5 9A1.5 1.5 0 015 7.5h14A1.5 1.5 0 0120.5 9v9a2 2 0 01-2 2h-13
 {name === 'compass' && (<svg {...common}><circle cx="12" cy="12" r="8.5" /><path {...tone} d="M15.5 8.5l-2 5-5 2 2-5z" /><path d="M15.5 8.5l-2 5-5 2 2-5z" /><circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none" /></svg>)}
 {name === 'analytics' && (<svg {...common}><path {...tone} d="M7.5 14.5l3.5-4 3 2.5 4.5-5.5V17H7.5z" /><path d="M4 4v16h16" /><path d="M7.5 14.5l3.5-4 3 2.5 4.5-5.5" /><circle cx="18.5" cy="7.5" r="1.1" fill="currentColor" stroke="none" /></svg>)}
 {name === 'security' && (<svg {...common}><path {...tone} d={shield} /><path d={shield} /><rect x="9.5" y="11" width="5" height="4.2" rx="1" /><path d="M10.6 11V9.9a1.4 1.4 0 012.8 0V11" /></svg>)}
+{name === 'video' && (<svg {...common}><rect {...tone} x="3" y="6.5" width="12.5" height="11" rx="2.2" /><rect x="3" y="6.5" width="12.5" height="11" rx="2.2" /><path d="M15.5 10.5l5-3v9l-5-3" /></svg>)}
+{name === 'document' && (<svg {...common}><path {...tone} d={doc} /><path d={doc} /><path d="M14 3.5V8h4.5" /><path d="M8.75 12.5h6.5M8.75 16h4.5" /></svg>)}
+{name === 'checklist' && (<svg {...common}><rect {...tone} x="4" y="4" width="16" height="16" rx="2.5" /><rect x="4" y="4" width="16" height="16" rx="2.5" /><path d="M7.5 9.5l1.5 1.5 2.5-2.5" /><path d="M13.5 9.5h3" /><path d="M7.5 15l1.5 1.5 2.5-2.5" /><path d="M13.5 15h3" /></svg>)}
+{name === 'server' && (<svg {...common}><rect {...tone} x="4" y="4" width="16" height="6.5" rx="1.8" /><rect x="4" y="4" width="16" height="6.5" rx="1.8" /><rect x="4" y="13.5" width="16" height="6.5" rx="1.8" /><path d="M7.5 7.25h.01M7.5 16.75h.01" /><path d="M11 7.25h5.5M11 16.75h5.5" /></svg>)}
+{name === 'message' && (<svg {...common}><path {...tone} d={bubble} /><path d={bubble} /><path d="M8 9.5h8M8 12.5h5" /></svg>)}
+{name === 'user' && (<svg {...common}><circle {...tone} cx="12" cy="8" r="3.6" /><circle cx="12" cy="8" r="3.6" /><path d="M5 20a7 7 0 0114 0" /></svg>)}
+{name === 'mail' && (<svg {...common}><rect {...tone} x="3.5" y="5.5" width="17" height="13" rx="2.2" /><rect x="3.5" y="5.5" width="17" height="13" rx="2.2" /><path d="M4.5 7l7.5 6 7.5-6" /></svg>)}
