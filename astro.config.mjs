@@ -13,9 +13,26 @@ const SITE = 'https://www.trueleansolutions.com';
 // so it respects this base.
 const BASE = process.env.SITE_BASE ?? '/';
 
+// The old Google Sites URLs, from its page manifest (see docs/decisions.md,
+// 2026-10-05). GitHub Pages can't send a 301, so each becomes a page with a
+// canonical link and an instant meta refresh to the new URL.
+const OLD_SERVICES = ['enterprise-ai', 'integrations', 'software', 'technical-talent'];
+const redirects = {
+  '/home': '/',
+  '/solutions': '/services/',
+  '/contact-us': '/contact/',
+  ...Object.fromEntries(
+    OLD_SERVICES.flatMap((s) => [
+      [`/${s}`, `/services/${s}/`],
+      [`/solutions/${s}`, `/services/${s}/`],
+    ]),
+  ),
+};
+
 export default defineConfig({
   site: SITE,
   base: BASE,
   trailingSlash: 'always',
+  redirects,
   integrations: [sitemap()],
 });

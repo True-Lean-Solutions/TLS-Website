@@ -682,3 +682,13 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 **Open.** The Pages custom domain is the apex, while canonical URLs use `https://www.trueleansolutions.com`. Either the custom domain moves to `www` (GitHub then redirects the apex to it), or the canonicals move to the apex. Hemang to decide. Enforce HTTPS once GitHub finishes issuing the certificate.
 
 **Where it lives.** `.github/workflows/deploy.yml`, `astro.config.mjs`.
+
+## 2026-10-05 — Redirects from the old site's URLs
+
+**Status:** settled (Hemang); revises "Launch service URLs clean, no redirects" (2026-09-28)
+
+**Decision.** Now that `trueleansolutions.com` serves this site, the old Google Sites addresses 404ed (Hemang found `/home/`). Every slug in the old site's manifest (`TLS: Website Pages (old manifest)`, `1J6tAMJzNRuoA8Eeajj6ZZ0uN6Q--bDRIK0SEmf7doko`) that has no page here now redirects to its new page: `/home/` → `/`, `/solutions/` → `/services/`, and `/enterprise-ai/`, `/integrations/`, `/software/`, `/technical-talent/` → `/services/<same slug>/`. The service pages are also covered under `/solutions/<slug>/`, where Google Sites nested them, and `/contact-us/` → `/contact/`. `about-us`, `insights` and `contact` kept their URLs.
+
+**How.** Astro `redirects` in `astro.config.mjs`. GitHub Pages cannot send a server 301, so each old URL is a small page with a canonical link to the new URL and an immediate meta refresh; search engines treat that as a permanent redirect.
+
+**Where it lives.** `astro.config.mjs`.
