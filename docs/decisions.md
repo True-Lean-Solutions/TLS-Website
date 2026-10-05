@@ -735,3 +735,13 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 **How.** Astro `redirects` in `astro.config.mjs`. GitHub Pages cannot send a server 301, so each old URL is a small page with a canonical link to the new URL and an immediate meta refresh; search engines treat that as a permanent redirect.
 
 **Where it lives.** `astro.config.mjs`.
+
+## 2026-10-05 — Tali goes live (brought forward from v1.1)
+
+**Status:** settled (Hemang); reverses project-history decision 8 ("Tali ships in v1.1")
+
+**Decision.** Hemang asked for Tali, the True Lean AI assistant, to ship on `main` with the Meeting Intelligence and AI Visibility pages, not on a separate `feature/tali` branch as first planned. It appears on every page. How it works, what it may say and its open items are in `docs/tali.md`.
+
+**Cost we are accepting.** Himanshu and Mack have not reviewed Tali before launch. It quotes the prices the site already publishes on the Featured AI Solutions cards.
+
+**Where it lives.** `src/components/Tali.astro` (included in `src/layouts/BaseLayout.astro`), `src/scripts/tali/`, `src/pages/tali/insights.json.ts`, `public/tali/`, `docs/tali.md`; decision 8 in `docs/project-history.md`, CLAUDE.md (imagery rule, out-of-scope list), `docs/references/README.md`.

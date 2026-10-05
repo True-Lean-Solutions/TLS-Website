@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import Tali from '../components/Tali.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site, href as withBase, canonicalUrl } from '../data/site';
@@ -113,6 +114,7 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
       <slot />
     </main>
     <Footer latestPosts={latestPosts} />
+    <Tali />
     <script>
       import '../scripts/motion.ts';
     </script>

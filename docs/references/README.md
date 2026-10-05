@@ -40,7 +40,7 @@ Brand Guide v2.3 overrides the mock-ups on all of these:
 | 12-why-choose-us.png | 2×2 value cards plus art | **Home: Why TLS** layout |
 | 13-cta-band-and-footer.png | CTA band and full footer | **Home: closing CTA band** and **site footer** |
 
-`tali-v1.1/` holds the assistant designs. They are out of scope for v1. Do not build Tali, and do not reserve UI space for it.
+`tali-v1.1/` holds the assistant designs. Tali is live since 2026-10-05 (Hemang brought it forward from v1.1); see `docs/tali.md`.
 
 ## Pages without a reference
 

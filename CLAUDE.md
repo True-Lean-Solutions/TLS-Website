@@ -30,7 +30,7 @@ When sources conflict, the brand guide wins on tagline, color, imagery and claim
 - **Imagery follows v2.3 §13, with one reversal.**
   - Isometric system art, as in mock-ups 05 and 06, is allowed.
   - Real team photos are allowed on About.
-  - **AI-generated people are now allowed on the website** (Himanshu, 2026-09-28), reversing decision 9 / v2.3 §13. Match the mock-ups, including their people imagery (e.g. the mock-up 01 hero photo, now shipped). See `docs/decisions.md`. Mountains, robots (Tali is v1.1 only), brains and circuit boards are still out.
+  - **AI-generated people are now allowed on the website** (Himanshu, 2026-09-28), reversing decision 9 / v2.3 §13. Match the mock-ups, including their people imagery (e.g. the mock-up 01 hero photo, now shipped). See `docs/decisions.md`. Mountains, robots (Tali, the site assistant, is the only one), brains and circuit boards are still out.
 - **US spelling throughout.**
 - **Brand strings, contact details and URLs are defined once** in `src/data/site.ts` and imported everywhere.
 
@@ -237,7 +237,7 @@ Keep this mechanism exactly. It was debugged three times in Phase 1, and replaci
 - Record deliberately temporary choices in `docs/decisions.md`. That includes every page built without a reference image.
 - Keep `docs/references/README.md` current when references are added.
 - Out of scope for v1:
-  - Tali (v1.1);
+  - (Tali, the site assistant, is now **live**, brought forward from v1.1 by Hemang on 2026-10-05 — see `docs/tali.md`.)
   - newsletter / "Stay Connected" capture (dropped 2026-09-28);
   - dark mode;
   - **Referral Partner Program / FAQ pages (dropped 2026-09-28** — handled externally at akhani.us, the referral partner portal).

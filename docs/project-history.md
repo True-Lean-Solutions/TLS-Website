@@ -19,7 +19,7 @@ This file is loaded with every session through CLAUDE.md. It records how the red
 5. **No Google Docs or Sheets behind the site.** Content is hardcoded in the repo. Pages are Astro components. Articles are a Markdown content collection, so a CMS can be added later without rewriting pages. A CMS for articles will be evaluated after v1.
 6. **New repo, Astro, static output, GitHub Pages.** It does not branch from the Phase 1 repo.
 7. **Himanshu owns the website end to end.** Hemang (Technical Lead) and Mack guide. Himanshu shows progress every few hours, so keep work in small, demoable steps.
-8. **Tali, the "True Lean AI Assistant", ships in v1.1.** It is not part of v1. Designs are in `docs/references/tali-v1.1/`.
+8. **Tali, the "True Lean AI Assistant", is live** (brought forward from v1.1 by Hemang, 2026-10-05; see `docs/decisions.md` and `docs/tali.md`). Designs are in `docs/references/tali-v1.1/`.
 9. **Visual rules follow the v2.3 hybrid.**
    - Tali is the only illustrated character.
    - Isometric system visuals may carry a restrained red/blue edge light.

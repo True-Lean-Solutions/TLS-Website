@@ -1,0 +1,711 @@
+---
+/**
+ * Tali — Your True Lean AI Assistant (built 2026-10-03 on a branch; see
+ * docs/decisions.md). The launcher, welcome bubble and chat panel. Markup and
+ * styles only: behavior lives in src/scripts/tali/ui.ts, understanding and
+ * answers in engine.ts, approved content in knowledge.ts.
+ *
+ * Tali answers from the site's own approved copy, in the browser: no AI
+ * service, no personal data collected, nothing sent anywhere. Handoff is to
+ * the Contact page and the booking link.
+ * Artwork: docs/references/tali-v1.1/tali-character-hero.png (cut out to
+ * public/tali/).
+ */
+import { href } from '../data/site';
+
+const face = href('/tali/tali-face.webp');
+const wave = href('/tali/tali-wave.webp');
+---
+
+<div class="tali" data-tali data-pagefind-ignore="all" data-base={import.meta.env.BASE_URL} data-face={face}>
+  <div class="tali-nudge" data-nudge role="group" aria-labelledby="tali-nudge-title" hidden>
+    <button type="button" class="tali-nudge-x" data-nudge-close aria-label="Dismiss Tali's message">
+      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+    </button>
+    <p class="tali-nudge-title" id="tali-nudge-title" data-nudge-title></p>
+    <p class="tali-nudge-text" data-nudge-text></p>
+    <div class="tali-nudge-chips" data-nudge-chips></div>
+  </div>
+
+  <button type="button" class="tali-launcher" data-launcher aria-label="Chat with Tali" aria-expanded="false" aria-controls="tali-panel">
+    <img src={face} alt="" width="256" height="256" decoding="async" />
+  </button>
+
+  <section id="tali-panel" class="tali-panel" data-panel role="dialog" aria-modal="false" aria-labelledby="tali-title" hidden>
+    <header class="tali-head">
+      <span class="tali-avatar"><img src={face} alt="" width="256" height="256" /></span>
+      <div class="tali-id">
+        <h2 id="tali-title">Tali</h2>
+        <p>True Lean AI Assistant</p>
+      </div>
+      <div class="tali-tools">
+        <button type="button" data-restart aria-label="Start a new conversation" title="New conversation">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </button>
+        <button type="button" data-minimize aria-label="Minimize chat" title="Minimize">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        </button>
+        <button type="button" data-close aria-label="Close chat and clear the conversation" title="Close">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="tali-log" data-log role="log" aria-live="polite" aria-label="Conversation with Tali" data-lenis-prevent>
+      <div class="tali-hello" data-hello>
+        <img src={wave} alt="" width="360" height="393" decoding="async" />
+        <p class="tali-hello-title">Hi, I'm <span>Tali!</span> <span aria-hidden="true">👋</span></p>
+        <p>Your True Lean AI Assistant.<br />What are you trying to solve?</p>
+      </div>
+    </div>
+
+    <div class="tali-suggest" data-suggest aria-label="Suggested questions"></div>
+
+    <form class="tali-composer" data-composer>
+      <label class="visually-hidden" for="tali-input">Message Tali</label>
+      <textarea id="tali-input" data-input rows="1" maxlength="500" placeholder="Type your question…" autocomplete="off"></textarea>
+      <button type="submit" data-send aria-label="Send message">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 12h14M13 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </button>
+    </form>
+    <p class="tali-foot">Tali answers from the True Lean Solutions website. Please don't share personal or confidential information here.</p>
+  </section>
+</div>
+
+<script>
+  import { initTali } from '../scripts/tali/ui';
+  initTali();
+</script>
+
+<style>
+  .tali {
+    --tali-z: 900;
+    --tali-gap: max(16px, env(safe-area-inset-right));
+    --tali-bottom: max(16px, env(safe-area-inset-bottom));
+    --tali-lift: 0px;
+    position: relative;
+    z-index: var(--tali-z);
+    font-family: var(--font-body);
+  }
+
+  /* ---------- Launcher ---------- */
+  .tali-launcher {
+    position: fixed;
+    right: var(--tali-gap);
+    bottom: calc(var(--tali-bottom) + var(--tali-lift));
+    z-index: var(--tali-z);
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 40%, #fff 0%, #eef0fb 62%, #dfe3f6 100%);
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 255, 0.9),
+      0 0 0 4px rgba(18, 136, 207, 0.22),
+      0 10px 26px -8px rgba(13, 13, 13, 0.35),
+      -6px 6px 22px -10px rgba(217, 64, 64, 0.55),
+      6px -4px 22px -10px rgba(18, 136, 207, 0.55);
+    transition:
+      transform 260ms var(--ix-ease),
+      box-shadow 260ms var(--ix-ease),
+      bottom 300ms var(--ix-ease),
+      opacity 200ms ease;
+  }
+  .tali-launcher img {
+    display: block;
+    width: 112%;
+    height: 112%;
+    margin: -2% 0 0 -6%;
+    object-fit: cover;
+  }
+  .tali-launcher:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow:
+      0 0 0 2px #fff,
+      0 0 0 5px rgba(18, 136, 207, 0.3),
+      0 14px 30px -8px rgba(13, 13, 13, 0.38),
+      -8px 8px 28px -10px rgba(217, 64, 64, 0.65),
+      8px -6px 28px -10px rgba(18, 136, 207, 0.65);
+  }
+  .tali-launcher:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+  }
+  .tali.is-open .tali-launcher {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8);
+  }
+
+  /* ---------- Proactive bubble (welcome, then the scroll prompt) ---------- */
+  .tali-nudge {
+    position: fixed;
+    right: calc(var(--tali-gap) + 4px);
+    bottom: calc(var(--tali-bottom) + var(--tali-lift) + 80px);
+    z-index: var(--tali-z);
+    width: max-content;
+    max-width: min(300px, calc(100vw - 32px));
+    padding: 0.85rem 0.9rem 0.9rem 1rem;
+    border-radius: 18px 18px 6px 18px;
+    background: rgba(255, 255, 255, 0.88);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    backdrop-filter: blur(16px) saturate(1.5);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow:
+      0 0 0 1px rgba(13, 13, 13, 0.05),
+      0 18px 40px -16px rgba(13, 13, 13, 0.32),
+      -10px 12px 32px -22px rgba(217, 64, 64, 0.45),
+      10px -6px 32px -22px rgba(18, 136, 207, 0.45);
+    color: var(--ink);
+  }
+  .tali-nudge[hidden] {
+    display: none;
+  }
+  /* Pointer toward the avatar. */
+  .tali-nudge::after {
+    content: '';
+    position: absolute;
+    right: 22px;
+    bottom: -7px;
+    width: 14px;
+    height: 14px;
+    background: inherit;
+    border-right: 1px solid rgba(13, 13, 13, 0.06);
+    border-bottom: 1px solid rgba(13, 13, 13, 0.06);
+    transform: rotate(45deg);
+    border-bottom-right-radius: 3px;
+  }
+  .tali-nudge-title {
+    padding-right: 1.6rem;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.98rem;
+    line-height: 1.3;
+  }
+  .tali-nudge-text {
+    margin-top: 0.15rem;
+    padding-right: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--text-2);
+  }
+  .tali-nudge-text:empty {
+    display: none;
+  }
+  .tali-nudge-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.65rem;
+  }
+  .tali-nudge-chips :global(button) {
+    padding: 0.38rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    background: #fff;
+    color: var(--ink);
+    font: 500 0.8rem/1.25 var(--font-body);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      border-color 160ms ease,
+      background-color 160ms ease,
+      color 160ms ease,
+      transform 120ms ease;
+  }
+  .tali-nudge-chips :global(button:hover) {
+    border-color: var(--red-text);
+    color: var(--red-text);
+    background: var(--red-tint);
+  }
+  .tali-nudge-chips :global(button:active) {
+    transform: scale(0.97);
+  }
+  .tali-nudge-chips :global(button:focus-visible),
+  .tali-nudge-x:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+  }
+  .tali-nudge-x {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-2);
+    cursor: pointer;
+  }
+  .tali-nudge-x:hover {
+    background: rgba(13, 13, 13, 0.06);
+    color: var(--ink);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tali-nudge.is-in {
+      animation: tali-pop 420ms var(--ix-ease) both;
+    }
+    .tali-nudge.is-out {
+      animation: tali-leave 220ms ease both;
+    }
+    .tali.is-greeting .tali-launcher {
+      animation: tali-float 1.6s ease-in-out 2;
+    }
+    /* Available: a slow, soft breathing of the ring (no movement). */
+    .tali:not(.is-open) .tali-launcher::after {
+      animation: tali-breathe 4.5s ease-in-out infinite;
+    }
+  }
+  .tali-launcher::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 2px rgba(18, 136, 207, 0.25);
+    pointer-events: none;
+  }
+  @keyframes tali-pop {
+    from { opacity: 0; transform: translate(6px, 10px) scale(0.97); }
+  }
+  @keyframes tali-leave {
+    to { opacity: 0; transform: translateY(6px); }
+  }
+  @keyframes tali-float {
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes tali-breathe {
+    50% { box-shadow: inset 0 0 0 2px rgba(217, 64, 64, 0.35); }
+  }
+
+  /* ---------- Panel ---------- */
+  .tali-panel {
+    position: fixed;
+    right: var(--tali-gap);
+    bottom: var(--tali-bottom);
+    z-index: calc(var(--tali-z) + 1);
+    display: flex;
+    flex-direction: column;
+    width: min(400px, calc(100vw - 32px));
+    height: min(640px, calc(100dvh - var(--header-h) - 40px));
+    border-radius: 22px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(226, 226, 238, 0.9);
+    box-shadow:
+      0 30px 70px -24px rgba(13, 13, 13, 0.38),
+      -16px 18px 50px -34px rgba(217, 64, 64, 0.5),
+      16px -10px 50px -34px rgba(18, 136, 207, 0.5);
+    transform-origin: 100% 100%;
+  }
+  .tali-panel[hidden] {
+    display: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tali-panel.is-in {
+      animation: tali-open 320ms var(--ix-ease) both;
+    }
+  }
+  @keyframes tali-open {
+    from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  }
+
+  .tali-head {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 0.75rem 0.85rem 1rem;
+    color: #fff;
+    background:
+      radial-gradient(70% 140% at 0% 0%, rgba(217, 64, 64, 0.38), transparent 70%),
+      radial-gradient(70% 140% at 100% 100%, rgba(18, 136, 207, 0.4), transparent 70%),
+      #0d0f18;
+  }
+  .tali-avatar {
+    flex: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 40%, #fff, #e3e6f6);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 0 18px -2px rgba(18, 136, 207, 0.7);
+  }
+  .tali-avatar img {
+    width: 112%;
+    height: 112%;
+    margin: -2% 0 0 -6%;
+    object-fit: cover;
+    display: block;
+  }
+  .tali-id {
+    flex: 1;
+    min-width: 0;
+  }
+  .tali-id h2 {
+    font-size: 1.05rem;
+    line-height: 1.2;
+    color: #fff;
+  }
+  .tali-id p {
+    font-size: 0.78rem;
+    color: #c9d1e0;
+  }
+  .tali-tools {
+    display: flex;
+    gap: 0.15rem;
+  }
+  .tali-tools button {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #e2e2ee;
+    cursor: pointer;
+  }
+  .tali-tools button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+  .tali-tools button:focus-visible,
+  .tali-composer button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 1px;
+  }
+
+  /* ---------- Conversation ---------- */
+  .tali-log {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1rem 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background:
+      radial-gradient(60% 40% at 100% 0%, rgba(18, 136, 207, 0.05), transparent 70%),
+      radial-gradient(60% 40% at 0% 100%, rgba(217, 64, 64, 0.04), transparent 70%);
+  }
+  .tali-hello {
+    text-align: center;
+    padding: 0.25rem 0.5rem 0.5rem;
+  }
+  .tali-hello img {
+    width: 112px;
+    height: auto;
+    margin: 0 auto 0.4rem;
+    display: block;
+  }
+  .tali-hello-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--ink);
+  }
+  .tali-hello-title span:first-child {
+    background: linear-gradient(90deg, var(--red), var(--plum), var(--blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .tali-hello p:last-child {
+    color: var(--text-2);
+    font-size: 0.92rem;
+    margin-top: 0.2rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tali-hello img {
+      animation: tali-float 3.2s ease-in-out infinite;
+    }
+  }
+
+  /* Messages are rendered by ui.ts: scoped styles need :global. */
+  .tali-log :global(.tm) {
+    display: flex;
+    gap: 0.5rem;
+    max-width: 100%;
+  }
+  .tali-log :global(.tm-user) {
+    justify-content: flex-end;
+  }
+  .tali-log :global(.tm-face) {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #eef0fb;
+    margin-top: 2px;
+  }
+  .tali-log :global(.tm-face img) {
+    width: 112%;
+    height: 112%;
+    margin: -2% 0 0 -6%;
+    object-fit: cover;
+    display: block;
+  }
+  .tali-log :global(.tm-body) {
+    min-width: 0;
+    max-width: calc(100% - 36px);
+    display: grid;
+    gap: 0.5rem;
+  }
+  .tali-log :global(.tm-bubble) {
+    padding: 0.65rem 0.85rem;
+    border-radius: 4px 16px 16px 16px;
+    background: #fff;
+    border: 1px solid var(--border);
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .tali-log :global(.tm-bubble p + p) {
+    margin-top: 0.5rem;
+  }
+  .tali-log :global(.tm-bubble ul) {
+    margin: 0.45rem 0 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.25rem;
+  }
+  .tali-log :global(.tm-user .tm-bubble) {
+    max-width: 85%;
+    border-radius: 16px 4px 16px 16px;
+    background: var(--red-text);
+    border-color: var(--red-text);
+    color: #fff;
+  }
+  .tali-log :global(.tm-cards) {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .tali-log :global(.tm-card) {
+    display: block;
+    padding: 0.6rem 0.75rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, #fff, #fafaff);
+    text-decoration: none;
+    color: var(--ink);
+    transition:
+      border-color 160ms ease,
+      transform 160ms ease;
+  }
+  .tali-log :global(.tm-card:hover) {
+    border-color: color-mix(in srgb, var(--blue) 40%, var(--border));
+    transform: translateY(-1px);
+  }
+  .tali-log :global(.tm-card strong) {
+    display: block;
+    font-family: var(--font-head);
+    font-size: 0.88rem;
+  }
+  .tali-log :global(.tm-card span) {
+    display: block;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--text-2);
+    margin-top: 0.15rem;
+  }
+  .tali-log :global(.tm-links) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .tali-log :global(.tm-link) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-decoration: none;
+    color: var(--blue-text);
+    background: var(--blue-tint);
+    border: 1px solid var(--blue-edge);
+  }
+  .tali-log :global(.tm-link.is-primary) {
+    color: #fff;
+    background: var(--red-text);
+    border-color: var(--red-text);
+  }
+  .tali-log :global(.tm-link:hover) {
+    filter: brightness(0.95);
+  }
+  .tali-log :global(.tm-chips),
+  .tali-suggest {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .tali-log :global(.tm-chip),
+  .tali-suggest :global(button) {
+    padding: 0.42rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    background: #fff;
+    color: var(--ink);
+    font-size: 0.82rem;
+    line-height: 1.3;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      border-color 160ms ease,
+      background-color 160ms ease,
+      color 160ms ease;
+  }
+  .tali-log :global(.tm-chip:hover),
+  .tali-suggest :global(button:hover),
+  .tali-suggest :global(button.is-active) {
+    border-color: var(--red-text);
+    color: var(--red-text);
+    background: var(--red-tint);
+  }
+  .tali-log :global(.tm-chips[aria-disabled='true']) {
+    display: none;
+  }
+  .tali-log :global(.tm-typing) {
+    display: inline-flex;
+    gap: 4px;
+    padding: 0.8rem 0.9rem;
+    border-radius: 4px 16px 16px 16px;
+    background: #fff;
+    border: 1px solid var(--border);
+  }
+  .tali-log :global(.tm-typing i) {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tali-log :global(.tm-typing i) {
+      animation: tali-dot 1s ease-in-out infinite;
+    }
+    .tali-log :global(.tm-typing i:nth-child(2)) { animation-delay: 0.15s; }
+    .tali-log :global(.tm-typing i:nth-child(3)) { animation-delay: 0.3s; }
+    .tali-log :global(.tm.is-new) {
+      animation: tali-pop 300ms var(--ix-ease) both;
+    }
+  }
+  @keyframes tali-dot {
+    50% { transform: translateY(-3px); opacity: 0.5; }
+  }
+  .tali-log :global(.tm-error .tm-bubble) {
+    border-color: var(--red-edge);
+    background: #fff7f7;
+  }
+
+  /* ---------- Suggestions and composer ---------- */
+  .tali-suggest {
+    flex: none;
+    padding: 0 1rem 0.5rem;
+  }
+  .tali-suggest:empty {
+    display: none;
+  }
+  .tali-composer {
+    flex: none;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    margin: 0 0.75rem;
+    padding: 0.35rem 0.35rem 0.35rem 0.9rem;
+    border-radius: 18px;
+    border: 1px solid var(--border-2);
+    background: #fff;
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+  .tali-composer:focus-within {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(18, 136, 207, 0.15);
+  }
+  .tali-composer textarea {
+    flex: 1;
+    min-width: 0;
+    max-height: 120px;
+    padding: 0.5rem 0;
+    border: 0;
+    outline: none;
+    resize: none;
+    background: transparent;
+    font: inherit;
+    font-size: 16px; /* 16px: no zoom-on-focus on iOS */
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .tali-composer button {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--red-text);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 160ms ease;
+  }
+  .tali-composer button:hover {
+    background: #a82f2f;
+  }
+  .tali-composer button:disabled {
+    background: var(--border-2);
+    cursor: default;
+  }
+  .tali-foot {
+    flex: none;
+    padding: 0.45rem 1rem 0.7rem;
+    font-size: 0.72rem;
+    line-height: 1.4;
+    color: var(--text-2);
+    text-align: center;
+  }
+
+  /* ---------- Phones: near full screen, above the keyboard ---------- */
+  @media (max-width: 560px) {
+    .tali-panel {
+      right: 0;
+      bottom: 0;
+      left: 0;
+      top: auto;
+      width: 100%;
+      height: var(--tali-vh, 100dvh);
+      border-radius: 0;
+      border: 0;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .tali-launcher {
+      width: 56px;
+      height: 56px;
+    }
+    .tali-nudge {
+      bottom: calc(var(--tali-bottom) + var(--tali-lift) + 70px);
+      max-width: min(264px, calc(100vw - 32px));
+    }
+    .tali-nudge-chips :global(button:nth-child(n + 3)) {
+      display: none;
+    }
+  }
+  @media print {
+    .tali {
+      display: none;
+    }
+  }
+</style>
