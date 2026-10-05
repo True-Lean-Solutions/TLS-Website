@@ -5,7 +5,6 @@
  * cards, and the "One Team. Global Capability." advantage row.
  */
 import Eyebrow from './Eyebrow.astro';
-import Button from './Button.astro';
 import Icon from './Icon.astro';
 import { href } from '../data/site';
 import type { Accent } from '../data/services';
@@ -89,7 +88,6 @@ const advantages = [
           with a growing international delivery network designed to bring
           together the right talent, expertise, and capabilities for our clients.
         </p>
-        <Button href="#global-presence" variant="primary" arrow>Our Global Presence</Button>
       </div>
 
       <div class="map" data-reveal>
@@ -186,7 +184,7 @@ const advantages = [
   }
   .intro p {
     color: var(--text-2);
-    margin: var(--gap-lead) 0 1.75rem;
+    margin: var(--gap-lead) 0 0;
     max-width: 46ch;
     line-height: 1.6;
   }
