@@ -1,8 +1,8 @@
 /**
  * Client logos. Real clients only — never add a logo without a source.
  * source: Drive IDs in docs/sources.md §4 (Client logo: NRI, UV Concepts; the
- * "Final Logos" folder for the rest; KSR Group's green logo from Hemang,
- * 2026-09-29). Tech Transpire's logo is in that folder but never shown
+ * "Final Logos" folder for the rest; KSR Group's updated logo from Hemang,
+ * 2026-10-05). Tech Transpire's logo is in that folder but never shown
  * (CLAUDE.md: no Tech Transpire branding).
  */
 export interface Client {
@@ -38,9 +38,10 @@ export const clients: Client[] = [
   {
     name: 'KSR Group',
     logo: '/clients/ksr-group.webp',
-    width: 1026,
-    height: 160,
-    displayHeight: 27,
+    width: 594,
+    height: 320,
+    // Stacked mark (since 2026-10-05): tall enough that "GROUP LLC" reads.
+    displayHeight: 48,
   },
   {
     name: 'Mudra Health',
