@@ -1,19 +1,33 @@
 /**
- * Tali's conversation engine: understanding, context and answers, with no UI
- * and no network. It runs entirely in the browser over knowledge.ts (approved
- * site copy), so it is instant, free, works on static hosting, and cannot
- * invent a claim. The chat UI (ui.ts) only renders what this returns.
+ * Tali's conversation manager: decides how to answer each message, keeps the
+ * conversation's context, and composes the reply. No DOM; no network unless
+ * an optional general-AI provider is configured (provider.ts).
  *
- *   understand ... normalize → typo-correct → intents, entities, facets
- *   context ...... the current topic (from the page, then the conversation),
- *                  so "how much is it?" follows on from what came before
- *   respond ...... small talk, company, solutions, guided discovery, an
- *                  entity facet, insights, contact handoff, or a fallback
- *   suggest ...... page starters and as-you-type suggestions (local index)
+ *   understand.ts ... what the visitor meant (social, TLS, general, action,
+ *                     problem, injection; topic switches, "that"/"it")
+ *   route (here) .... the response strategy, in this order:
+ *                     memory      — answers to Tali's own question
+ *                     social      — greetings, thanks, bye, Tali itself  (smalltalk.ts)
+ *                     guards      — instructions, guarantees, unconfirmed facts
+ *                     actions     — a person, contact, demo, getting started
+ *                     general     — definitions, comparisons             (general.ts)
+ *                     discovery   — a described business problem          (discovery.ts)
+ *                     TLS         — solutions, facets, company, pricing   (knowledge.ts)
+ *                     fallback    — honest "I don't know", or the provider
+ *   memory .......... topic, last concept, discovery state, visitor goal,
+ *                     recent messages (bounded, this tab only)
  *
- * An LLM can replace `respond` later behind the same Reply shape.
+ * TLS facts only ever come from knowledge.ts; general explanations never
+ * claim anything about TLS beyond pointing to the matching solution.
  */
 import { CONTACT, COMPANY, ENTITIES, NEEDS, byId, type Entity, type Link } from './knowledge';
+import { RX, facetOf, understand, type Facet, type Understanding } from './understand';
+import { conceptById, type Concept } from './general';
+import { problemById, problemOf, type Problem, type ProblemId } from './discovery';
+import { socialReply, variant } from './smalltalk';
+import { askProvider, type GeneralAI } from './provider';
+export { endpointProvider } from './provider';
+import { STOP, clean, correct, has, norm, protect, words } from './language';
 
 export interface Insight {
   title: string;
@@ -32,6 +46,8 @@ export interface Card {
 export interface Reply {
   text: string;
   points?: string[];
+  /** A closing line, shown after the points. */
+  note?: string;
   cards?: Card[];
   links?: Link[];
   /** Follow-up questions offered as chips. */
@@ -42,134 +58,36 @@ export interface Reply {
   intent: string;
 }
 
+/** What the visitor seems to be trying to do. */
+export type Goal = 'learn' | 'explore' | 'solve' | 'evaluate' | 'contact';
+
 export interface EngineState {
-  topic?: string;
-  awaiting?: 'need';
   turns: number;
+  /** The TLS solution being discussed (knowledge.ts id). */
+  topic?: string;
+  /** The general concept just explained, for "does TLS do that?". */
+  concept?: string;
+  /** Tali asked something and is waiting for the answer. */
+  awaiting?: 'need' | 'problem' | 'pricing';
+  /** The business problem being discussed. */
+  problem?: ProblemId;
+  /** Solutions recommended for that problem. */
+  recommended?: string[];
+  /** The answer chips Tali just offered (any of them counts as an answer). */
+  offered?: string[];
+  goal?: Goal;
+  lastIntent?: string;
+  /** The visitor's last few messages (for the optional provider). */
+  recent: string[];
 }
 
-type Facet = 'pricing' | 'process' | 'details' | 'audience' | 'control';
-
-/* ---------------------------------------------------------------- text */
-
-const norm = (s: string) =>
-  s
-    .toLowerCase()
-    .replace(/[’']/g, '')
-    .replace(/&/g, ' and ')
-    .replace(/[^a-z0-9.+\-\s]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-const STOP = new Set('a an the i im me my we our you your to of for and or is are be can do does did it this that what how who which in on at with about any some please want need would like could should tell show give get have has'.split(' '));
-
-/** Damerau–Levenshtein distance, capped (early exit above `max`). */
-function dist(a: string, b: string, max: number) {
-  if (Math.abs(a.length - b.length) > max) return max + 1;
-  const d: number[][] = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
-  for (let j = 1; j <= b.length; j++) d[0][j] = j;
-  for (let i = 1; i <= a.length; i++) {
-    let best = Infinity;
-    for (let j = 1; j <= b.length; j++) {
-      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
-      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
-      best = Math.min(best, d[i][j]);
-    }
-    if (best > max) return max + 1;
-  }
-  return d[a.length][b.length];
-}
-
-/* Words the engine knows, for typo correction ("meting" → "meeting"). */
-const LEXICON = new Set<string>();
-const learn = (s: string) => norm(s).split(' ').forEach((w) => w.length >= 3 && LEXICON.add(w));
-ENTITIES.forEach((e) => [e.name, ...e.aliases].forEach(learn));
-'price pricing cost costs much fee rate budget process steps work works started start include includes included features details security secure private privacy data controlled control deploy deployment premises who what fit right suitable solutions services offer company team founder founded history story clients customers insights articles blog case studies contact email phone call book demo discuss project help choose recommend thanks hello goodbye human person expert talk automation automate integration software meeting visibility assessment baseline'
-  .split(' ')
-  .forEach(learn);
-'service solution article insight project process'.split(' ').forEach(learn);
-
-function correct(word: string) {
-  if (word.length < 4 || LEXICON.has(word) || /\d/.test(word)) return word;
-  const max = word.length >= 7 ? 2 : 1;
-  let best = word;
-  let bestD = max + 1;
-  for (const w of LEXICON) {
-    if (Math.abs(w.length - word.length) > max || w[0] !== word[0]) continue;
-    const d = dist(word, w, max);
-    if (d < bestD) (best = w), (bestD = d);
-  }
-  return best;
-}
-
-const clean = (raw: string) => norm(raw).split(' ').map(correct).join(' ');
-const has = (t: string, re: RegExp) => re.test(t);
-const wordIn = (t: string, phrase: string) => new RegExp(`(^|\\s)${phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|\\s)`).test(t);
-
-/* ------------------------------------------------------------- understanding */
-
-const RX = {
-  reset: /^(reset|start over|restart|clear( chat)?|new chat)$/,
-  greeting: /^(hi+|hello+|hey+|hiya|howdy|yo|good (morning|afternoon|evening)|greetings)( there| tali)?$/,
-  howAreYou: /\b(how are you|how r u|hows it going|how is it going|whats up|sup)\b/,
-  thanks: /\b(thanks|thank you|thx|ty|cheers|appreciate it|great thanks|perfect)\b/,
-  bye: /\b(bye|goodbye|see you|see ya|thats all|that is all|no thanks|nothing else|im done)\b/,
-  identity: /\b(who are you|what are you|your name|who is tali|what is tali|are you (a )?(bot|robot|human|real|ai|person)|are you chatgpt)\b/,
-  human: /\b(human|real person|talk to (a |an |the |your |our )?(person|expert|someone|team|sales|people)|speak (to|with) (a |an |the |your |our )?(person|someone|expert|team)|live agent|representative)\b/,
-  getStarted: /\b(get started|getting started|how (do|can|should) (i|we) (start|begin)|first step|next step)\b/,
-  prepare: /\b(what should i prepare|prepare|what do you need from (me|us)|what information do you need|what should (i|we) (bring|have ready))\b/,
-  contact: /\b(contact|get in touch|reach (you|out|the team)|email|e-mail|phone|call you|your number|address)\b/,
-  project: /\b(discuss|start a conversation|start a project|new project|my project|a project|work with you|hire you|engage|proposal|quote|consultation|book|schedule|demo|call)\b/,
-  assessment: /\b(assessment|baseline|audit)\b/,
-  discovery: /\b(which (solution|service|one)|what (solution|service) (fits|is right|should)|fits? my business|right for (me|us|my business)|help (me )?(choose|chose|decide|pick|find)|choosing|recommend|not sure (where|what|which)|where (do i|to|should i) (start|begin)|what should i)\b/,
-  services: /\b(services|solutions|offerings|what do you (do|offer)|what (can|could) you (do|help)|what you do|capabilities|explore|how (can|could) you help|help my business)\b/,
-  company: /\b(what do you (guys|all|folks|people) do|about (you|tls|the company|true lean)|who (are|is) (you guys|tls|true lean)|your company|the company|what is (tls|true lean)|what does (tls|true lean)( solutions)? do|true lean solutions|tls do)\b/,
-  approach: /\b(your approach|approach|how do you work|how you work|how we work|methodology|way you work|lean thinking|why (tls|true lean|you|choose you|work with you))\b/,
-  story: /\b(founded|founder|history|your story|began|how did .* start|when did .* start|origin|who owns|owner|ceo|president)\b/,
-  team: /\b(team|who works|people behind|leadership|leaders|employees|staff)\b/,
-  clients: /\b(clients|customers|who have you worked|worked with|references|portfolio|testimonials|reviews)\b/,
-  insights: /\b(insights?|blog|articles?|posts?|read|resources?|guides?|case stud(y|ies)|news)\b/,
-  location: /\b(where are you|located|location|office|offices|based|headquarter)\b/,
-  generalPricing: /\b(your (price|prices|pricing|rate|rates|fee|fees)|do you charge|how do you (charge|price)|what do you charge)\b/,
-  pricing: /\b(price|prices|pricing|cost|costs|how much|fee|fees|rate|rates|budget|charge|expensive|cheap|afford|per month|per year|subscription)\b/,
-  process: /\b(how (does|do|would|will) [a-z ]*\b(work|works|run|runs|go|goes)|how it works|process|steps|stages|get started|getting started|onboard\w*|timeline|what happens|preserved|preserve)\b/,
-  details: /\b(include|includes|included|features?|what (does|do) (it|the service|you) (do|offer|include|build)|what (kind|kinds|type|types) of|what do you (build|place)|roles|deliverables|tell me more|more (details|info|information)|in detail|capabilit)/,
-  audience: /\b(who (is it|is this|its|it is) for|who should|right for|good fit|a fit|suitable|do i need|signs|when (do|should) (i|we))\b/,
-  control: /\b(secur\w*|privacy|private|data control|controlled|control (my|our|the) data|on.?prem\w*|deploy\w*|where .* data|data (stay|live|stored)|safe|confidential|compliance|ownership|lock-?in)\b/,
-  more: /^(more|tell me more|go on|and|continue|details|more details|explain|elaborate|yes|yes please|sure|ok|okay)$/,
-  offtopic: /\b(weather|joke|recipe|movie|song|sports?|score|stock price|bitcoin|crypto|politic\w*|election|translate|poem|essay|homework|math|capital of|girlfriend|boyfriend|date me|meaning of life)\b/,
-};
-
-function detectEntities(t: string): { e: Entity; score: number }[] {
-  const found: { e: Entity; score: number }[] = [];
-  for (const e of ENTITIES) {
-    let score = 0;
-    for (const a of [e.name, ...e.aliases]) {
-      const n = norm(a);
-      if (n && wordIn(t, n)) score = Math.max(score, n.length);
-    }
-    if (score) found.push({ e, score });
-  }
-  return found.sort((a, b) => b.score - a.score);
-}
-
-function facetOf(t: string): Facet | null {
-  if (has(t, RX.pricing)) return 'pricing';
-  if (has(t, RX.control)) return 'control';
-  if (has(t, RX.audience)) return 'audience';
-  if (has(t, RX.details)) return 'details';
-  if (has(t, RX.process)) return 'process';
-  return null;
-}
+/* ------------------------------------------------------------- page context */
 
 /** The page's own topic, so questions asked on a product page answer about it. */
 export function topicForPath(path: string): string | undefined {
   const p = path.replace(/^\/[^/]*TLS-Website/i, '');
   return ENTITIES.find((e) => p.startsWith(e.url))?.id;
 }
-
-/* ------------------------------------------------------------- starters */
 
 const STARTERS: [string, string[]][] = [
   ['/services/meeting-intelligence/', ['How does Meeting Intelligence work?', 'How is meeting knowledge preserved?', 'How is enterprise data controlled?', 'Can I request a demo?']],
@@ -211,15 +129,21 @@ const SUGGESTIONS = [
     'I need to hire technical talent',
     'Do you have case studies?',
     'Who is on the team?',
+    'What is workflow automation?',
+    'What is an API?',
+    'What is AI visibility?',
+    "What's the difference between custom software and system integration?",
+    "Our systems don't talk to each other",
+    'We need to automate approvals',
   ]),
 ].map((q) => ({ q, words: norm(q).split(' ').filter((w) => !STOP.has(w)) }));
 
 export function suggestFor(partial: string, limit = 3): string[] {
   const t = norm(partial);
   if (t.length < 2) return [];
-  const words = t.split(' ');
-  const last = words.pop()!;
-  const full = words.map(correct).filter((w) => !STOP.has(w));
+  const ws = t.split(' ');
+  const last = ws.pop()!;
+  const full = ws.map(correct).filter((w) => !STOP.has(w));
   const scored = SUGGESTIONS.map((s) => {
     let score = 0;
     for (const w of full) if (s.words.some((sw) => sw === w || (w.length > 3 && sw.startsWith(w.slice(0, -1))))) score += 2;
@@ -230,27 +154,44 @@ export function suggestFor(partial: string, limit = 3): string[] {
   return scored.sort((a, b) => b.score - a.score || a.q.length - b.q.length).slice(0, limit).map((s) => s.q);
 }
 
-/* ------------------------------------------------------------- replies */
+/* ------------------------------------------------------------- TLS answers */
+
+/** Tools a visitor may name that the site never mentions: never confirmed. */
+// Product names only, never everyday words ("sage" would swallow "safe" as a typo).
+const UNCONFIRMED_TOOLS = 'hubspot sap netsuite oracle shopify jira servicenow workday xero asana airtable pipedrive zoho stripe woocommerce mailchimp freshdesk zendesk sharepoint trello odoo procore'.split(' ');
+protect(UNCONFIRMED_TOOLS.join(' '));
+const TOOL_NAMES: Record<string, string> = { hubspot: 'HubSpot', sap: 'SAP', netsuite: 'NetSuite', servicenow: 'ServiceNow', woocommerce: 'WooCommerce', sharepoint: 'SharePoint', zendesk: 'Zendesk' };
+
+/** The core team (COMPANY.team), findable by first or last name. */
+const TEAM = COMPANY.team.map((line) => {
+  const [name, role] = line.split(' — ');
+  const keys = norm(name).split(' ').filter((w) => w.length >= 4);
+  protect(keys.join(' '));
+  return { name, role, keys };
+});
 
 const contactLinks = (cta?: Link): Link[] => [cta ?? CONTACT.page, CONTACT.booking];
+/** "the AI Visibility Growth Team", but plain "Workflow Automation". */
+const the = (e: Entity) => (/ team$/i.test(e.name) ? `the ${e.name}` : e.name);
+const pageLink = (e: Entity): Link => ({ label: `Read more about ${e.name}`, href: e.url });
+const card = (e: Entity): Card => ({ title: e.name, text: firstSentence(e.overview), href: e.url });
 function firstSentence(s: string) {
   const m = s.match(/^.*?[.!?](\s|$)/);
   return (m ? m[0] : s).trim();
 }
 /** Follow-ups for an entity, minus what was just asked or just answered. */
 const followFor = (e: Entity, asked?: string, answered?: Facet | null) =>
-  (e.follow ?? [])
-    .filter((q) => norm(q) !== asked && !(answered && facetOf(clean(q)) === answered))
-    .slice(0, 3);
+  (e.follow ?? []).filter((q) => norm(q) !== asked && !(answered && facetOf(clean(q)) === answered)).slice(0, 3);
 
 function entityReply(e: Entity, facet: Facet | null, asked: string): Reply {
-  const page: Link = { label: `Read more about ${e.name}`, href: e.url };
   const chips = followFor(e, asked, facet);
-  const base = { links: [page, ...(e.cta ? [e.cta] : [])], chips, mood: 'solution' as const };
+  // Help first: the solution's page, not a sales button. Contact comes with
+  // pricing, or when the visitor asks for it.
+  const base = { links: [pageLink(e)], chips, mood: 'solution' as const };
   switch (facet) {
     case 'pricing':
       return e.pricing
-        ? { ...base, intent: 'entity.pricing', text: `${e.pricing} For anything specific to your situation, the team can walk you through it.`, links: [e.cta ?? CONTACT.page, page] }
+        ? { ...base, intent: 'entity.pricing', text: `${e.pricing} For anything specific to your situation, the team can walk you through it.`, links: [e.cta ?? CONTACT.page, pageLink(e)] }
         : { ...base, intent: 'entity.pricing.none', text: `${e.name} is scoped to the work, so there's no published price — everything we do is scoped and priced for the constraints you work under. The quickest way to an estimate is a short call with the team.`, links: contactLinks(e.cta) };
     case 'control':
       if (e.control) return { ...base, intent: 'entity.control', text: e.control };
@@ -281,27 +222,53 @@ function contactReply(e?: Entity): Reply {
   };
 }
 
-export function createEngine(opts: { path: string; insights?: Insight[]; state?: EngineState }) {
-  let state: EngineState = opts.state ?? { turns: 0 };
+const APPROACH: Omit<Reply, 'intent'> = {
+  text: 'Lean thinking, a consulting mindset, and technical execution. Every engagement follows the same four steps:',
+  points: COMPANY.approach,
+  chips: ['Which solution fits my business?', 'I want to discuss a project'],
+};
+
+const UNKNOWN: Omit<Reply, 'intent'> = {
+  text: "I don't have a confirmed answer to that yet. I can help with what I do know about TLS, or you can connect with the team for a more specific answer.",
+  links: [CONTACT.page],
+  chips: ['What does TLS do?', 'Explore TLS solutions'],
+};
+
+const OUT_OF_SCOPE = "That's outside what I specialize in, but I can help with questions about TLS, technology, AI, or the business problem you're trying to solve.";
+
+/* ------------------------------------------------------------- the engine */
+
+export function createEngine(opts: {
+  path: string;
+  insights?: Insight[];
+  state?: Partial<EngineState>;
+  provider?: GeneralAI;
+  providerTimeoutMs?: number;
+}) {
+  const hydrate = (s?: Partial<EngineState>): EngineState => ({ ...s, turns: s?.turns ?? 0, recent: Array.isArray(s?.recent) ? s!.recent.slice(-6) : [] });
+  let state = hydrate(opts.state);
   let insights = opts.insights ?? [];
   const pageTopic = topicForPath(opts.path);
+  const v = <T>(list: T[]) => variant(list, state.turns);
 
-  const fallback = (): Reply => ({
-    intent: 'fallback',
-    text: "I don't have a confident answer to that from our website. I can help you explore our solutions, find the right fit, or connect you with the team.",
-    chips: ['Explore TLS solutions', 'Which solution fits my business?', 'Talk to a person'],
-    links: [CONTACT.page],
-  });
+  /** The solution in play: a concept just explained, the conversation's topic, or the page's. */
+  const current = (): Entity | undefined => byId(conceptById(state.concept)?.entity ?? state.topic ?? pageTopic ?? '');
+  const setTopic = (e: Entity) => {
+    state.topic = e.id;
+    state.concept = undefined;
+  };
+
+  /* ---------------------------------------------------- composed replies */
 
   function insightReply(t: string, explicit = true): Reply | null {
     if (!insights.length) return null;
     const wantCases = has(t, /case stud/);
-    const words = t.split(' ').filter((w) => w.length > 3 && !STOP.has(w) && !/^(insights?|blog|articles?|posts?|read|resources?|guides?|recent|latest|show|case|studies|study|news)$/.test(w));
+    const ws = t.split(' ').filter((w) => w.length > 3 && !STOP.has(w) && !/^(insights?|blog|articles?|posts?|read|resources?|guides?|recent|latest|show|case|studies|study|news)$/.test(w));
     let list = insights;
     if (wantCases) list = insights.filter((i) => i.category === 'case-studies');
-    if (words.length) {
+    if (ws.length) {
       const scored = list
-        .map((i) => ({ i, s: words.filter((w) => norm(`${i.title} ${i.excerpt} ${i.topics.join(' ')}`).includes(w)).length }))
+        .map((i) => ({ i, s: ws.filter((w) => norm(`${i.title} ${i.excerpt} ${i.topics.join(' ')}`).includes(w)).length }))
         .filter((x) => x.s > 0)
         .sort((a, b) => b.s - a.s);
       if (scored.length) list = scored.map((x) => x.i);
@@ -318,56 +285,222 @@ export function createEngine(opts: { path: string; insights?: Insight[]; state?:
     };
   }
 
-  function respond(raw: string): Reply {
-    const t = clean(raw);
-    if (!t) return fallback();
-    const topic = state.topic ?? pageTopic;
-    const topicEntity = topic ? byId(topic) : undefined;
-    const found = detectEntities(t);
-    const facet = facetOf(t);
+  /** A general explanation, with a light pointer to TLS where it applies. */
+  function conceptReply(c: Concept): Reply {
+    state.concept = c.id;
+    state.goal = 'learn';
+    const e = byId(c.entity ?? '');
+    const bridge = e
+      ? v([`If it's useful, TLS works on this through ${the(e)}.`, `TLS also helps businesses with this through ${the(e)}.`, `This is also something TLS works on, through ${the(e)}.`])
+      : c.company === 'approach'
+        ? 'It is also at the core of how True Lean Solutions works.'
+        : '';
+    return {
+      intent: 'general.concept',
+      text: bridge ? `${c.def}\n\n${bridge}` : c.def,
+      chips: e ? ['How does TLS help with this?'] : c.company ? ['How does TLS work?'] : undefined,
+    };
+  }
 
-    if (RX.reset.test(t)) return { intent: 'reset', text: "Fresh start. What are you trying to solve?", chips: startersFor(opts.path) };
+  /** "What is X, and does TLS do it?": the explanation, then TLS's answer. */
+  function hybridReply(c: Concept, onPage = false): Reply {
+    if (c.company === 'approach') {
+      state.concept = undefined;
+      return { ...APPROACH, intent: 'hybrid', text: `${c.def}\n\nIt's also at the core of how True Lean Solutions works — ${APPROACH.text.charAt(0).toLowerCase()}${APPROACH.text.slice(1)}` };
+    }
+    const e = byId(c.entity ?? '');
+    if (!e) return conceptReply(c);
+    setTopic(e);
+    state.goal = 'explore';
+    if (onPage) return { ...entityReply(e, null, ''), text: `${c.def}\n\n${e.overview}` };
+    return {
+      intent: 'hybrid',
+      mood: 'solution',
+      text: `${c.def}\n\nYes — TLS works on this through ${the(e)}. ${e.overview}`,
+      note: e.id === 'workflow' ? "If you tell me what process you're trying to improve, I can help you explore what might fit." : "If you tell me a bit about your situation, I can help you work out what might fit.",
+      links: [pageLink(e)],
+      chips: followFor(e),
+    };
+  }
 
-    // Guided discovery: the visitor is choosing what they need.
+  /** "What's the difference between X and Y?" */
+  function compareReply(u: Understanding): Reply | null {
+    const cs = u.concepts.slice(0, 4);
+    const es = u.entities.map((x) => x.e).slice(0, 3);
+    if (cs.length < 2 && es.length < 2) return null;
+    state.goal = 'learn';
+    const related = [...new Set((cs.length >= 2 ? cs.map((c) => byId(c.entity ?? '')) : es).filter((e): e is Entity => !!e))];
+    if (related[0]) state.topic = related[0].id;
+    state.concept = undefined;
+    return {
+      intent: 'compare',
+      text: v(["Here's the simplest way to think about it:", 'Good question. In short:', "Here's how they differ:"]),
+      points: cs.length >= 2 ? cs.map((c) => c.def) : es.map((e) => `${e.name} — ${firstSentence(e.overview)}`),
+      note: "If you tell me what you're trying to connect or build, I can help you work out which direction fits.",
+      chips: related.slice(0, 2).map((e) => `Tell me about ${e.name}`),
+    };
+  }
+
+  /* ---------------------------------------------------- discovery */
+
+  function askProblem(p: Problem, t: string): Reply {
+    state.problem = p.id;
+    state.goal = 'solve';
+    state.concept = undefined;
+    const q = p.ask(t);
+    if (p.id === 'open') {
+      state.awaiting = 'need';
+      return { intent: 'discovery.ask', text: q.text, chips: NEEDS.map((n) => n.label) };
+    }
+    state.awaiting = 'problem';
+    state.offered = q.chips;
+    return { intent: 'discovery.ask', text: q.text, chips: q.chips };
+  }
+
+  function recommend(p: Problem): Reply {
+    const es = p.recommend.map((id) => byId(id)).filter((e): e is Entity => !!e);
+    state.awaiting = undefined;
+    state.recommended = es.map((e) => e.id);
+    state.offered = undefined;
+    state.goal = 'solve';
+    setTopic(es[0]);
+    const names = es.map((e) => e.name).join(' or ');
+    return {
+      intent: 'discovery.result',
+      mood: 'solution',
+      text: p.id === 'open' ? `${p.why} Here's where that usually starts:` : `Based on what you've described, ${names} could be relevant. ${p.why}`,
+      cards: es.map(card),
+      chips: ['How would that work?', 'What would something like this cost?', 'Talk to someone'],
+    };
+  }
+
+  /** Is this message an answer to Tali's discovery question, or something new? */
+  const answersQuestion = (u: Understanding) => {
+    if (state.offered?.some((c) => clean(c) === u.text)) return true;
+    if (u.switched || u.define || u.compare) return false;
+    // A short reply ("Email", "A CRM", "Zoom") answers the question asked.
+    if (words(u.rest) <= 3 && !u.question) return true;
+    return (
+      words(u.rest) <= 10 &&
+      !u.facet &&
+      !(u.question && (u.tlsDirected || u.entities.length > 0)) &&
+      ![RX.human, RX.discovery, RX.project, RX.company, RX.contact].some((re) => re.test(u.rest))
+    );
+  };
+
+  /* ---------------------------------------------------- routing */
+
+  function route(u: Understanding): Reply {
+    const t = u.rest;
+    const found = u.entities;
+    const facet = u.facet;
+
+    /* Memory: Tali asked a question; is this the answer? */
     if (state.awaiting === 'need') {
+      state.awaiting = undefined;
       const need = NEEDS.find((n) => norm(n.label) === t) ?? NEEDS.find((n) => t.length > 3 && norm(n.label).includes(t));
       if (need) {
-        state.awaiting = undefined;
         const first = byId(need.entities[0])!;
-        state.topic = first.id;
-        return {
-          intent: 'discovery.result',
-          mood: 'solution',
-          text: need.note,
-          cards: need.entities.map((id) => byId(id)!).map((e) => ({ title: e.name, text: firstSentence(e.overview), href: e.url })),
-          links: [first.cta ?? CONTACT.page],
-          chips: followFor(first),
-        };
+        setTopic(first);
+        state.goal = 'solve';
+        state.recommended = need.entities;
+        return { intent: 'discovery.result', mood: 'solution', text: need.note, cards: need.entities.map((id) => card(byId(id)!)), chips: followFor(first) };
       }
+      const p = answersQuestion(u) ? problemOf(t, true, true) : undefined;
+      if (p && p.id !== 'open') return askProblem(p, t);
+      if (state.problem === 'open' && answersQuestion(u) && !found.length && words(t) >= 3) return recommend(problemById('open')!);
+    }
+    if (state.awaiting === 'problem' && state.problem) {
       state.awaiting = undefined;
+      if (answersQuestion(u)) {
+        const p = problemById(state.problem)!;
+        if (p.id === 'automate' || p.id === 'manual') {
+          const sub = problemOf(t, true, true);
+          if (sub && !['automate', 'manual', 'open'].includes(sub.id)) return askProblem(sub, t);
+        }
+        return recommend(p);
+      }
+    }
+    if (state.awaiting === 'pricing') {
+      state.awaiting = undefined;
+      if (found.length) {
+        setTopic(found[0].e);
+        return entityReply(found[0].e, 'pricing', t);
+      }
+      if (/\b(custom|project|something else|other|general|everything|all|both)\b/.test(t)) return pricingOverview();
     }
 
-    const short = t.split(' ').length <= 4;
-    if (short && RX.greeting.test(t)) return { intent: 'greeting', mood: 'idle', text: "Hi! I'm Tali, your True Lean AI Assistant. What are you trying to solve today?", chips: startersFor(opts.path) };
-    if (has(t, RX.identity)) return { intent: 'identity', text: "I'm Tali, the AI assistant for True Lean Solutions. I answer from our own website, so I can help you explore our solutions and find the right next step. For anything I can't answer, I'll connect you with the team.", chips: startersFor(opts.path).slice(0, 3) };
-    if (has(t, RX.howAreYou) && short) return { intent: 'smalltalk', text: "Doing well, thanks for asking! What are you working on?", chips: startersFor(opts.path).slice(0, 3) };
-    if (has(t, RX.thanks) && t.split(' ').length <= 6) return { intent: 'thanks', mood: 'success', text: "You're welcome! Is there anything else I can help you with?", chips: ['Explore TLS solutions', 'I want to discuss a project'] };
-    if (has(t, RX.bye) && t.split(' ').length <= 6) return { intent: 'goodbye', mood: 'success', text: "Thanks for stopping by! Whenever you're ready, the team is one message away.", links: [CONTACT.page] };
-    if (has(t, RX.offtopic) && !found.length) return { intent: 'offtopic', text: "That's outside what I can help with — I'm focused on True Lean Solutions: our solutions, how we work, and how to get started.", chips: ['Explore TLS solutions', 'Which solution fits my business?'] };
-    if (has(t, RX.human)) return { ...contactReply(found[0]?.e ?? topicEntity), intent: 'human' };
+    /* Guards: never guess at what isn't published. */
+    if (has(t, RX.certification)) {
+      const e = found[0]?.e ?? current();
+      return {
+        intent: 'tls.unconfirmed',
+        text: `I don't have a confirmed answer on specific certifications or compliance standards, so I won't guess.${e?.control ? ` What I can tell you about ${e.name}: ${e.control}` : ''} The team can confirm exactly what applies to your situation.`,
+        links: [CONTACT.page],
+      };
+    }
+    if (has(t, RX.guarantee)) {
+      const ai = (found[0]?.e.id ?? current()?.id) === 'visibility' || /\b(ai|chatgpt|gemini|perplexity|google|rank\w*|search)\b/.test(t);
+      return {
+        intent: 'guarantee',
+        text: ai
+          ? 'No one can honestly guarantee how AI platforms rank or cite a business — those platforms decide what they show. What the AI Visibility Growth Team works on is strengthening the signals that support credible recommendations and citations, and measuring progress over time.'
+          : "I can't promise specific outcomes. Every engagement is scoped to your situation, and the team can walk you through what to realistically expect.",
+        links: ai ? [pageLink(byId('visibility')!)] : [CONTACT.page],
+      };
+    }
+    if (has(t, RX.howMany)) return { ...UNKNOWN, intent: 'tls.unknown', text: "I don't have a confirmed number to share.", chips: ['Who is on the team?', 'Who are your clients?'] };
+    if (has(t, RX.act)) {
+      // Tali can't act outside the chat: say so, and point to where it's done.
+      return {
+        intent: 'action.unavailable',
+        text: "I can't do that myself from here — but you can book a free 30-minute call directly, or share what you need on the Contact page and the team will take it from there.",
+        links: [CONTACT.booking, CONTACT.page],
+      };
+    }
+    if (has(t, RX.build)) {
+      return {
+        intent: 'identity',
+        text: "I'm Tali, the AI assistant for True Lean Solutions. I don't go into how I'm built, but I'm happy to help with anything about TLS or the challenge you're working on.",
+      };
+    }
+    const member = TEAM.find((m) => m.keys.some((k) => new RegExp(`\\b${k}\\b`).test(t)));
+    if (member) {
+      return { intent: 'team.member', text: `${member.name} is the ${member.role} at True Lean Solutions.`, links: [{ label: 'Meet the team', href: '/about-us/' }], chips: ['Who is on the team?', 'How did True Lean Solutions start?'] };
+    }
+    if (has(t, RX.why)) {
+      return { intent: 'why', text: 'What sets True Lean Solutions apart:', points: COMPANY.values, links: [{ label: 'About us', href: '/about-us/' }], chips: ['How do you work?', 'Which solution fits my business?'] };
+    }
+    if (has(t, RX.size) && (u.tlsDirected || u.question)) {
+      return {
+        intent: 'audience.company',
+        text: `Yes — True Lean Solutions is built for growing businesses: ${COMPANY.values[0].replace(/^Built for growing businesses: /, '')}`,
+        chips: ['Which solution fits my business?', 'Who are your clients?'],
+      };
+    }
 
-    // What to bring, and how to begin (Contact page copy).
+    /* Actions: a person, contact, getting started. */
+    if (has(t, RX.human)) {
+      state.goal = 'contact';
+      return {
+        ...contactReply(found[0]?.e ?? current()),
+        intent: 'human',
+        text: `I can't hand you over to a person live from here, but the team is easy to reach: share what you're working on through the Contact page, or book a free 30-minute call. You can also email ${CONTACT.email} or call ${CONTACT.phone}.`,
+        chips: ['What should I prepare?'],
+      };
+    }
     if (has(t, RX.prepare)) {
       return {
         intent: 'prepare',
         text: "Just the problem you're trying to solve. The contact form asks about your business challenge and your timeline. Most businesses we work with know something isn't working but aren't sure which lever to pull first — that's a fine place to start.",
-        links: contactLinks(topicEntity?.cta),
+        links: contactLinks(current()?.cta),
         chips: ['Which solution is right for me?'],
       };
     }
     if (has(t, RX.getStarted)) {
-      const e = found[0]?.e ?? topicEntity;
-      if (e) state.topic = e.id;
+      const e = found[0]?.e ?? current();
+      if (e) setTopic(e);
+      state.goal = 'contact';
       return {
         intent: 'start',
         mood: 'success',
@@ -376,50 +509,109 @@ export function createEngine(opts: { path: string; insights?: Insight[]; state?:
         chips: e ? followFor(e, t, 'process') : ['What should I prepare?', 'Which solution is right for me?'],
       };
     }
-
-    // Next steps: an assessment, a demo or a project conversation.
-    if (has(t, RX.assessment) && (found[0]?.e.id === 'visibility' || topic === 'visibility')) {
+    if (has(t, RX.assessment) && (found[0]?.e.id === 'visibility' || current()?.id === 'visibility')) {
       const e = byId('visibility')!;
-      state.topic = e.id;
+      setTopic(e);
+      state.goal = 'contact';
       return { intent: 'assessment', mood: 'success', text: 'Every engagement starts by establishing your baseline: a review of your current AI discovery presence, content, technical foundations, and opportunities. Get in touch and the team will start there.', links: contactLinks(e.cta) };
     }
+
+    /* General knowledge: comparisons and definitions. */
+    if (u.compare) {
+      const r = compareReply(u);
+      if (r) return r;
+    }
+    const c = u.concepts[0];
+    if (u.define && c) {
+      if (u.tlsDirected) return hybridReply(c);
+      if (c.entity && c.entity === pageTopic) return hybridReply(c, true);
+      return conceptReply(c);
+    }
+
+    /* "Does TLS do that?": resolve "that" from the conversation. */
+    if (u.refers && u.tlsDirected && !found.length && !c) {
+      const concept = conceptById(state.concept);
+      if (concept?.company === 'approach') {
+        state.concept = undefined;
+        return { ...APPROACH, intent: 'approach', text: `Yes — it's at the core of how True Lean Solutions works. ${APPROACH.text}` };
+      }
+      const e = current();
+      if (e) {
+        setTopic(e);
+        if (facet) return entityReply(e, facet, t);
+        return { ...entityReply(e, null, t), text: `${concept ? `Yes — TLS works on this through ${the(e)}.` : `Yes — that's ${e.name}.`}\n\n${e.overview}` };
+      }
+      return { intent: 'clarify', text: 'Which service do you mean?', chips: ['Explore TLS solutions', 'Which solution fits my business?'] };
+    }
+
+    /* Guided discovery and described problems. */
     if (has(t, RX.discovery)) {
+      const p = problemById(state.problem);
+      if (p && p.id !== 'open') return recommend(p);
       state.awaiting = 'need';
+      state.goal = 'solve';
       return { intent: 'discovery', text: "Happy to help you find the right fit. What's closest to what you're trying to solve?", chips: NEEDS.map((n) => n.label) };
     }
+    if (!u.tlsDirected) {
+      const p = problemOf(t, u.firstPerson);
+      if (p) return askProblem(p, t);
+    }
+
+    /* Next steps: a project conversation, a demo, contact details. */
     if ((has(t, RX.project) && !facet) || (has(t, RX.contact) && !found.length)) {
-      const e = found[0]?.e ?? (has(t, /\b(demo|book)\b/) ? topicEntity : undefined);
-      if (e) state.topic = e.id;
+      const e = found[0]?.e ?? (has(t, /\b(demo|book)\b/) ? current() : undefined);
+      if (e) setTopic(e);
+      state.goal = 'contact';
       return contactReply(e);
     }
 
-    // A specific solution or product.
+    if (u.offtopic && !found.length && !c) return { intent: 'offtopic', text: OUT_OF_SCOPE, chips: ['What does TLS do?', 'Explore TLS solutions'] };
+
+    /* A tool the site never mentions: don't imply a ready-made connector. */
+    const tool = UNCONFIRMED_TOOLS.find((x) => new RegExp(`\\b${x}\\b`).test(t));
+    if (tool && (found.some((x) => x.e.id === 'integration') || u.tlsDirected || /\b(integrat|connect|sync|work with|link)\w*/.test(t))) {
+      const e = byId('integration')!;
+      setTopic(e);
+      const name = TOOL_NAMES[tool] ?? tool.charAt(0).toUpperCase() + tool.slice(1);
+      return {
+        intent: 'entity.unconfirmed',
+        text: `I can't confirm a ready-made connection to ${name} from what I know. Integration work uses native connectors, middleware like Zapier or Make, custom APIs, or direct database integrations — the team can confirm what fits your setup.`,
+        links: [pageLink(e), CONTACT.page],
+        chips: ['How does an integration project run?'],
+      };
+    }
+
+    /* TLS knowledge: a specific solution or product. */
     if (found.length) {
       const [top, second] = found;
-      if (second && second.score >= top.score * 0.6 && !facet && !wordIn(t, norm(top.e.name))) {
-        state.topic = top.e.id;
+      state.goal = facet === 'pricing' ? 'evaluate' : 'explore';
+      if (second && second.score >= top.score * 0.6 && !facet && !t.includes(norm(top.e.name))) {
+        setTopic(top.e);
         return {
           intent: 'entity.multiple',
           mood: 'solution',
           text: 'A few of our solutions fit that:',
-          cards: found.slice(0, 3).map(({ e }) => ({ title: e.name, text: firstSentence(e.overview), href: e.url })),
+          cards: found.slice(0, 3).map(({ e }) => card(e)),
           chips: [`Tell me about ${top.e.name}`, `Tell me about ${second.e.name}`, 'I want to discuss a project'],
         };
       }
-      state.topic = top.e.id;
+      setTopic(top.e);
       return entityReply(top.e, facet, t);
     }
 
-    // A question about the current topic ("what does the service include?").
+    /* A question about the solution in play ("what does it include?"). */
+    const topicEntity = current();
     if (topicEntity && facet && !has(t, RX.generalPricing) && !has(t, RX.company) && !has(t, RX.story)) {
-      state.topic = topicEntity.id;
+      setTopic(topicEntity);
+      if (facet === 'pricing') state.goal = 'evaluate';
       return entityReply(topicEntity, facet, t);
     }
 
-    // Company-level questions.
+    /* Company-level questions. */
     if (has(t, RX.story)) return { intent: 'story', text: COMPANY.story, links: [{ label: 'Our story', href: '/about-us/' }], chips: ['Who is on the team?', 'How do you work?'] };
     if (has(t, RX.company)) {
       state.topic = undefined;
+      state.concept = undefined;
       return {
         intent: 'company',
         text: `${COMPANY.positioning} ${COMPANY.short}\n\nWe work across AI & automation, custom software, system integration and technical talent — and we start by making sure we're solving the right problem.`,
@@ -432,47 +624,106 @@ export function createEngine(opts: { path: string; insights?: Insight[]; state?:
         intent: 'services',
         mood: 'solution',
         text: 'Here are our solutions. Each one links to its page:',
-        cards: ENTITIES.filter((e) => e.id !== 'meeting' && e.id !== 'visibility').map((e) => ({ title: e.name, text: firstSentence(e.overview), href: e.url })),
+        cards: ENTITIES.filter((e) => e.id !== 'meeting' && e.id !== 'visibility').map(card),
         chips: ['Tell me about Meeting Intelligence', 'Which solution fits my business?', 'I want to discuss a project'],
       };
     }
     if (has(t, RX.clients)) return { intent: 'clients', text: "Some of the organizations we've worked with:", points: COMPANY.clients, links: [{ label: 'See what our clients say', href: '/' }], chips: ['Do you have case studies?', 'I want to discuss a project'] };
     if (has(t, RX.team)) return { intent: 'team', text: 'Our core team includes:', points: COMPANY.team, links: [{ label: 'Meet the team', href: '/about-us/' }], chips: ['How did True Lean Solutions start?', 'How do you work?'] };
-    if (has(t, RX.approach) && !topicEntity) return { intent: 'approach', text: 'Lean thinking, a consulting mindset, and technical execution. Every engagement follows the same four steps:', points: COMPANY.approach, links: [{ label: 'Why True Lean Solutions', href: '/' }], chips: ['Which solution fits my business?', 'I want to discuss a project'] };
+    if (has(t, RX.approach) && !topicEntity) return { ...APPROACH, intent: 'approach', links: [{ label: 'Why True Lean Solutions', href: '/' }] };
     if (has(t, RX.location)) return { intent: 'location', text: 'You can see where our team delivers from on our About page — and we work with clients remotely.', links: [{ label: 'Global delivery', href: '/about-us/' }, CONTACT.page] };
     if (has(t, RX.insights)) {
       const r = insightReply(t);
       if (r) return r;
     }
 
-    // Follow-ups about the current topic ("how much is it?", "tell me more").
+    /* Follow-ups about the topic ("tell me more", "yes"). */
     if (topicEntity && (facet || RX.more.test(t)) && !has(t, RX.generalPricing)) {
-      state.topic = topicEntity.id;
+      setTopic(topicEntity);
       const f: Facet | null = facet ?? (topicEntity.details ? 'details' : topicEntity.process ? 'process' : null);
       return entityReply(topicEntity, f, t);
     }
-    if (facet === 'pricing' || has(t, RX.generalPricing)) {
-      const priced = ENTITIES.filter((e) => e.pricing);
-      return {
-        intent: 'pricing',
-        text: 'Everything we do is scoped and priced for the work. Two of our offerings have published prices:',
-        points: priced.map((e) => e.pricing!),
-        links: contactLinks(),
-        chips: priced.map((e) => `Tell me about ${e.name}`),
-      };
+    if (has(t, RX.generalPricing)) return pricingOverview();
+    // "Tell me more" with nothing in play: ask what, don't guess.
+    if (RX.more.test(t)) return { intent: 'fallback', text: 'Sure — what would you like to know more about?', chips: startersFor(opts.path).slice(0, 3) };
+    if (facet === 'pricing') {
+      // "How much does it cost?" with nothing in play: ask, don't guess.
+      state.awaiting = 'pricing';
+      state.goal = 'evaluate';
+      return { intent: 'pricing.clarify', text: 'Sure — which TLS solution are you asking about?', chips: ['Meeting Intelligence', 'AI Visibility Growth Team', 'A custom project'] };
     }
-    if (has(t, RX.approach) || (facet === 'process' && !topicEntity)) return { intent: 'approach', text: 'Lean thinking, a consulting mindset, and technical execution. Every engagement follows the same four steps:', points: COMPANY.approach, chips: ['Which solution fits my business?', 'I want to discuss a project'] };
+    if (has(t, RX.approach) || (facet === 'process' && !topicEntity)) return { ...APPROACH, intent: 'approach' };
 
-    // Last resort before the fallback: an insight that matches the words.
+    /* A concept named without "what is" ("tell me about cloud computing"). */
+    if (c) return u.tlsDirected ? hybridReply(c) : conceptReply(c);
+
+    /* Honest fallbacks. */
+    if (u.tlsDirected && u.question) return { ...UNKNOWN, intent: 'tls.unknown' };
     const r = insightReply(t, false);
     if (r && t.split(' ').filter((w) => !STOP.has(w)).length >= 2) return { ...r, text: "I don't have a direct answer, but these articles may help:" };
-    return fallback();
+    if (u.question && RX.domain.test(t)) return { ...UNKNOWN, intent: 'tls.unknown' };
+    if (u.question) return { intent: 'general.unknown', text: OUT_OF_SCOPE, chips: ['What does TLS do?', 'Explore TLS solutions'] };
+    return {
+      intent: 'fallback',
+      text: "I'm not sure I followed. Could you put that another way, or tell me a bit about what you're looking for?",
+      chips: startersFor(opts.path).slice(0, 3),
+    };
+  }
+
+  function pricingOverview(): Reply {
+    const priced = ENTITIES.filter((e) => e.pricing);
+    state.goal = 'evaluate';
+    return {
+      intent: 'pricing',
+      text: 'Everything we do is scoped and priced for the work. Two of our offerings have published prices:',
+      points: priced.map((e) => e.pricing!),
+      links: contactLinks(),
+      chips: priced.map((e) => `Tell me about ${e.name}`),
+    };
+  }
+
+  function respond(raw: string): Reply {
+    const u = understand(raw);
+    if (!u.text) return { intent: 'fallback', text: 'What can I help you with?', chips: startersFor(opts.path).slice(0, 3) };
+    if (RX.reset.test(u.text)) return { intent: 'reset', text: 'Fresh start. What are you trying to solve?', chips: startersFor(opts.path) };
+    if (u.injection) {
+      return { intent: 'refuse', text: "I can't share my internal instructions or configuration. Happy to help with questions about TLS, technology, or what you're trying to solve, though." };
+    }
+    if (u.social) {
+      // Conversation, not a query: the knowledge base isn't involved.
+      if (u.social === 'bye') state.awaiting = undefined;
+      return socialReply(u.social, { text: u.text, turn: state.turns, starters: startersFor(opts.path) });
+    }
+    if (u.switched) {
+      state.awaiting = undefined;
+      state.problem = undefined;
+      state.offered = undefined;
+    }
+    const r = route(u);
+    // "Hey, what AI work do you do?" — answer, with the greeting returned.
+    return u.greet ? { ...r, text: `${u.greet}! ${r.text}` } : r;
+  }
+
+  function reply(raw: string): Reply {
+    state.turns++;
+    const q = raw.slice(0, 500);
+    state.recent = [...state.recent, q.slice(0, 160)].slice(-6);
+    const r = respond(q);
+    state.lastIntent = r.intent;
+    return r;
   }
 
   return {
-    reply(raw: string): Reply {
-      state.turns++;
-      return respond(raw.slice(0, 500));
+    reply,
+    /** reply(), then the optional provider for what Tali couldn't place. */
+    async replyAsync(raw: string): Promise<Reply> {
+      const r = reply(raw);
+      if (!opts.provider || (r.intent !== 'general.unknown' && r.intent !== 'fallback')) return r;
+      const ctx = { message: raw.slice(0, 500), recent: state.recent.slice(0, -1), page: opts.path, topic: state.topic };
+      const text = await askProvider(opts.provider, ctx, opts.providerTimeoutMs);
+      if (!text) return r;
+      state.lastIntent = 'general.ai';
+      return { intent: 'general.ai', text, chips: ['What does TLS do?', 'Explore TLS solutions'] };
     },
     get state() {
       return state;
@@ -481,7 +732,7 @@ export function createEngine(opts: { path: string; insights?: Insight[]; state?:
       insights = list;
     },
     reset() {
-      state = { turns: 0 };
+      state = hydrate();
     },
   };
 }

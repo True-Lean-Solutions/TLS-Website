@@ -100,7 +100,7 @@ export const ENTITIES: Entity[] = [
   {
     id: 'ai',
     name: 'AI & Automation',
-    aliases: ['ai & automation', 'ai and automation', 'enterprise ai', 'custom ai', 'ai solution', 'ai solutions', 'ai for my business', 'ai automation', 'artificial intelligence', 'wisebric', 'governed ai', 'private ai', 'ai governance', 'ai assistants', 'ai agents', 'ai chat'],
+    aliases: ['ai', 'ai & automation', 'ai and automation', 'enterprise ai', 'custom ai', 'ai solution', 'ai solutions', 'ai for my business', 'ai automation', 'artificial intelligence', 'wisebric', 'governed ai', 'private ai', 'ai governance', 'ai assistants', 'ai agents', 'ai chat'],
     url: '/services/enterprise-ai/',
     overview:
       'Put AI to work on your business data — governed, private, and under your control. Enterprise AI is an intelligent layer between your people, your organizational knowledge, your business systems, and approved AI models, all governed through one secure platform.',

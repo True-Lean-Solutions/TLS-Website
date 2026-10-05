@@ -745,3 +745,13 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 **Cost we are accepting.** Himanshu and Mack have not reviewed Tali before launch. It quotes the prices the site already publishes on the Featured AI Solutions cards.
 
 **Where it lives.** `src/components/Tali.astro` (included in `src/layouts/BaseLayout.astro`), `src/scripts/tali/`, `src/pages/tali/insights.json.ts`, `public/tali/`, `docs/tali.md`; decision 8 in `docs/project-history.md`, CLAUDE.md (imagery rule, out-of-scope list), `docs/references/README.md`.
+
+## 2026-10-05 — Tali: understand first, then answer
+
+**Status:** settled (Hemang)
+
+**Decision.** Tali no longer treats every message as a knowledge-base query. Each message is first classified (conversation, general question, TLS question, action, business problem, prompt injection), then routed: small talk is answered locally and briefly; general ideas get a neutral definition with a pointer to the matching TLS solution; TLS facts still come only from `knowledge.ts`; described problems get one clarifying question before a recommendation. A general-AI provider seam exists but is off: nothing leaves the browser unless `PUBLIC_TALI_AI_ENDPOINT` is set, and it is never asked about TLS facts.
+
+**Cost we are accepting.** Without a provider, general questions outside Tali's glossary get an honest "that's outside what I specialize in" rather than an answer. The engine chunk is now about 74 KB uncompressed, loaded only when the chat is used.
+
+**Where it lives.** `src/scripts/tali/` (`understand.ts`, `language.ts`, `smalltalk.ts`, `general.ts`, `discovery.ts`, `provider.ts`, `engine.ts`, `ui.ts`), `src/components/Tali.astro`, `docs/tali.md`.

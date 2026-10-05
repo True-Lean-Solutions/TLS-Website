@@ -1,6 +1,6 @@
 /**
  * Tali's chat UI: opens and closes the panel, renders replies, handles the
- * composer and suggestions, the one-time welcome bubble, and session memory.
+ * composer and suggestions, the proactive prompts, and session memory.
  * It never decides what to say — that is engine.ts, loaded on first use so
  * pages that never open the chat pay nothing for it.
  *
@@ -89,7 +89,9 @@ export function initTali() {
   function load(): Promise<Engine> {
     loading ??= import('./engine').then((m) => {
       mod = m;
-      engine = m.createEngine({ path, state: saved?.state });
+      // An optional general-AI endpoint (PUBLIC_TALI_AI_ENDPOINT); off unless configured.
+      const provider = root.dataset.ai ? m.endpointProvider(root.dataset.ai) : undefined;
+      engine = m.createEngine({ path, state: saved?.state, provider });
       fetch(url('/tali/insights.json'))
         .then((r) => (r.ok ? r.json() : []))
         .then((list) => engine?.setInsights(list))
@@ -148,6 +150,7 @@ export function initTali() {
       r.points.forEach((p) => ul.append(el('li', undefined, p)));
       bubble.append(ul);
     }
+    if (r.note) bubble.append(el('p', 'tm-note', r.note));
     body.append(bubble);
     if (r.cards?.length) {
       const cards = el('div', 'tm-cards');
@@ -242,7 +245,7 @@ export function initTali() {
 
     try {
       const e = await load();
-      const r = e.reply(q);
+      const r = await e.replyAsync(q);
       // A short, human pause: answers are instant, a beat reads better.
       await new Promise((ok) => setTimeout(ok, reduced() ? 120 : Math.min(900, 380 + q.length * 6)));
       typing.remove();
@@ -520,6 +523,10 @@ export function initTali() {
   if (store.get(KEY.reopen)) {
     store.del(KEY.reopen);
     open(false);
+  } else if (history.some((m) => m.role === 'user')) {
+    // A conversation is under way in this tab: Tali waits to be reopened
+    // rather than interrupting it with a fresh welcome.
+    engaged();
   } else {
     later(() => showPrompt('welcome'), T.welcomeDelay);
   }
