@@ -86,8 +86,10 @@ export const PAGE_PROMPTS: PagePrompts[] = [
   {
     match: '/services/technology-strategy/',
     welcome: 'Planning your next technology decision?',
-    welcomeChips: ['What does technology strategy include?', 'How does TLS approach technology strategy?', ask],
-    scrollChips: ['Can you help me assess my current technology?', 'What happens after the roadmap?', ask],
+    // Short chips that fit the bubble; the full questions are this page's
+    // chat starters (engine.ts STARTERS), shown once Tali is opened.
+    welcomeChips: ["What's included?", 'How does it work?', ask],
+    scrollChips: ['Assess my technology', 'What happens next?', ask],
   },
   {
     match: '/services/',
