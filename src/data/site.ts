@@ -16,8 +16,8 @@ export const site = {
   canonical: 'https://www.trueleansolutions.com',
 
   email: 'success@trueleansolutions.com',
-  phone: '(848) 777-5326',
-  phoneHref: 'tel:+18487775326',
+  phone: '(941) 777-5326',
+  phoneHref: 'tel:+19417775326',
 
   /** Booking link behind the primary CTA (v2.3 / CLAUDE.md § Contact form). */
   booking: 'https://calendar.app.google/4V1G48o4zR2NRFSA9',

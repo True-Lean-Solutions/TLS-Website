@@ -50,7 +50,7 @@ export const CONTACT = {
   page: { label: 'Discuss Your Project', href: '/contact/' },
   booking: { label: 'Book a free 30-minute call', href: 'https://calendar.app.google/4V1G48o4zR2NRFSA9', external: true },
   email: 'success@trueleansolutions.com',
-  phone: '(848) 777-5326',
+  phone: '(941) 777-5326',
 } as const;
 
 export const COMPANY = {

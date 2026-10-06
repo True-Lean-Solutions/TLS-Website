@@ -161,7 +161,7 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
   - Tagline.
   - The positioning statement "We help organizations turn business needs into practical technology solutions."
   - Columns (since 2026-09-29, Hemang's footer reference), separated by hairlines: brand (lockup, the approved statement "Solve the Right Problem. Build the Right Solution.", positioning, social circles), Quick Links (the header's navigation), Solutions (all eight), Latest Insights (three newest posts with their covers and categories, from the Insights collection), Contact (email, phone, the "Discuss Your Project" CTA). A back-to-top button sits in the legal bar.
-  - Contact column: email `success@trueleansolutions.com`, phone (848) 777-5326, LinkedIn `https://www.linkedin.com/company/108455615/`, Facebook `https://www.facebook.com/profile.php?id=61585073567371`.
+  - Contact column: email `success@trueleansolutions.com`, phone (941) 777-5326, LinkedIn `https://www.linkedin.com/company/108455615/`, Facebook `https://www.facebook.com/profile.php?id=61585073567371`.
   - © with the build year computed at build time, alongside links to Privacy Policy (`/privacy-policy/`) and Terms of Service (`/terms-of-service/`).
   - No YouTube and no newsletter/"Stay Connected" capture in v1.
 
