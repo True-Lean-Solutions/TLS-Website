@@ -103,7 +103,8 @@ Every data file and every Markdown post records where its content came from, as 
 | `/services/software/` | Services - Custom Software Dev | **Ask** | |
 | `/services/integrations/` | Services - System Integration | **Ask** | |
 | `/services/technical-talent/` | Services - Technical Talent | **Ask** | |
-| `/services/workflow-automation/`, `/services/technology-strategy/`, `/services/data-analytics/`, `/services/cyber-security/` | `docs/sources.md` §5 | Derive | Short pages (one template, `[solution].astro`) added 2026-09-28. Cyber Security is name-only until copy exists. Never publish the Data & Analytics draft's mock figures or partner claims. |
+| `/services/technology-strategy/` | Hemang's brief (2026-10-06) + the approved hero copy | `pages/services/technology-strategy/` | Full page since 2026-10-06 (`technology-strategy.astro`; excluded from `[solution].astro`). Real proof only: the Six Account Tiers case study, the reviews reel, client logos, published Insights. See `docs/decisions.md` 2026-10-06 |
+| `/services/workflow-automation/`, `/services/data-analytics/`, `/services/cyber-security/` | `docs/sources.md` §5 | Derive | Short pages (one template, `[solution].astro`) added 2026-09-28. Cyber Security is name-only until copy exists. Never publish the Data & Analytics draft's mock figures or partner claims. |
 | `/insights/` | Index sheet and posts | **Ask** | Explore All: every post, newest first, with Browse by Topic and search |
 | `/insights/<category>/` | Same | **Ask** | perspectives, case-studies, guides, news. A category with no published posts is hidden from menus and has no page. |
 | `/insights/<slug>/` | Post files | **Ask** | Article layout, related posts |

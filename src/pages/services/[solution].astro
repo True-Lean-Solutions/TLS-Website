@@ -12,7 +12,10 @@ import { cta } from '../../data/site';
 import { moreSolutions, type Service } from '../../data/services';
 
 export function getStaticPaths() {
-  return moreSolutions.map((s) => ({
+  // Technology Strategy has its own full page (technology-strategy.astro).
+  // (getStaticPaths runs in its own scope, so this lives inside it.)
+  const ownPage = ['/services/technology-strategy/'];
+  return moreSolutions.filter((s) => !ownPage.includes(s.href)).map((s) => ({
     params: { solution: s.href.split('/').filter(Boolean).pop() },
     props: { solution: s },
   }));
@@ -38,8 +41,6 @@ const copy: Record<string, PageCopy> = {
   // Headlines: Hemang (2026-09-29), built on each card's copy.
   // v2.3 §09 "Process / Automation" CTA.
   'workflow-automation': { headline: ['Turn friction into', 'better workflows.'], cta: 'Discuss the Workflow' },
-  // v2.3 §09 "Requirements Not Yet Clear" CTA.
-  'technology-strategy': { headline: ['Make technology work toward', 'the right goal.'], cta: 'Bring Us the Need' },
   // source: TLS Website: Data & Analytics (Mack, 2026-09-28),
   // 1ukO2kvtwRtS00MqQ84yRgNMEZtv2PG1ESHGLrOmMt7Y — Fold 1 hero and final fold.
   'data-analytics': {

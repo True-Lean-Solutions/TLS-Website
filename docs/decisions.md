@@ -755,3 +755,18 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 **Cost we are accepting.** Without a provider, general questions outside Tali's glossary get an honest "that's outside what I specialize in" rather than an answer. The engine chunk is now about 74 KB uncompressed, loaded only when the chat is used.
 
 **Where it lives.** `src/scripts/tali/` (`understand.ts`, `language.ts`, `smalltalk.ts`, `general.ts`, `discovery.ts`, `provider.ts`, `engine.ts`, `ui.ts`), `src/components/Tali.astro`, `docs/tali.md`.
+
+## 2026-10-06 — Technology Strategy full page
+
+**Status:** interim (awaiting Hemang's review)
+
+**Decision.** `/services/technology-strategy/` is now a full page (`src/pages/services/technology-strategy.astro`) built from Hemang's brief and fold references; it is excluded from the short `[solution].astro` template. Sections: dark hero (approved headline, blurb and CTAs; the reference photo with its roadmap panels, soft pulses on the path nodes; a four-item benefit strip), why it matters (an on-brand roadmap illustration that draws on scroll — `[data-draw]` in `src/scripts/scroll/product.ts`), how we help (four cards), our approach (a line that fills on scroll), business outcomes, a real case study, client logos + the reviews reel, a plan-your-next-step band, FAQ, related solutions carousel, Insights, final CTA. Tali has page-aware suggestions and now knows the page's capabilities and process.
+
+**Content handling.**
+- Real proof only: the "Six Account Tiers, One Source of Truth" case study with its own at-a-glance facts (6 tiers, 9 domains, 4 surfaces, 3 phases), the reviews sheet (ReviewReel), the client logos (ClientLogos), and three published Insights posts.
+- Not used from the references: the sample statistics (40% / 30% / 2x and the "Our impact" strip), invented testimonials, vendor logos, the inline form ("within 24 hours"), the "Strategic technology today. Stronger business tomorrow." banner (tagline-style line), and the newsletter footer. The mountain/summit visuals are replaced (Tech Transpire visual world): the why-it-matters visual is a drawn roadmap; the next-step band uses the meeting-room photo.
+- "No obligation consultation" and "Speak with our experts" became "A free 30-minute call" and "Speak with our team" (no commitments beyond the approved free call). The Insights heading says "technology decisions" because the posts are about decisions, not strategy as a service.
+- FAQ answers use approved copy only (page blurb, the company values, the brief's process); "How long does the process take?" is left out (no approved timeline).
+- To confirm (brief copy, not in the 2026-09-27 docs): "Technology-agnostic advice", "Support from strategy to execution", the four outcome lines and the four indicators.
+
+**Where it lives.** `src/pages/services/technology-strategy.astro`, `src/pages/services/[solution].astro`, `src/scripts/scroll/product.ts`, `public/solutions/technology-strategy/`, `src/scripts/tali/{knowledge,prompts,engine,understand}.ts`, `docs/references/pages/services/technology-strategy/`.

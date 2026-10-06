@@ -13,6 +13,8 @@
  *   [data-chain] ....... stages arrive one after another, arrows first
  *   [data-cont] ........ the scattered handover lands, then the answer
  *   [data-search] ...... results fill in row by row
+ *   [data-draw] ........ a roadmap path draws, then its [data-draw-mark]
+ *                        milestones arrive along it (Technology Strategy)
  *
  * Every element ends exactly as authored; nothing runs with reduced motion.
  */
@@ -126,6 +128,26 @@ export function initProductPage(on: { desktop: boolean }): Cleanup {
     });
     const st = onEnter(chain, tl);
     cleanups.push(() => (st.kill(), tl.kill()));
+  }
+
+  // Roadmaps: the path draws itself, then its milestones arrive along it.
+  for (const map of document.querySelectorAll<HTMLElement>('[data-draw]')) {
+    const paths = [...map.querySelectorAll<SVGPathElement>('.draw-path')];
+    const marks = track([...map.querySelectorAll<HTMLElement>('[data-draw-mark]')]);
+    paths.forEach((p) => {
+      const len = p.getTotalLength();
+      gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
+    });
+    gsap.set(marks, { opacity: 0, y: 10 });
+    const tl = gsap.timeline({ paused: true, defaults: { ease: EASE } });
+    tl.to(paths, { strokeDashoffset: 0, duration: 1.6, ease: 'power2.inOut' }, 0);
+    tl.to(marks, { opacity: 1, y: 0, duration: 0.6, stagger: 0.2 }, 0.3);
+    const st = onEnter(map, tl, 'top 78%');
+    cleanups.push(() => {
+      st.kill();
+      tl.kill();
+      gsap.set(paths, { clearProps: 'strokeDasharray,strokeDashoffset' });
+    });
   }
 
   // Continuity: the handover lands scattered and settles; then the answer.

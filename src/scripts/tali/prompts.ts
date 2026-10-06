@@ -84,6 +84,12 @@ export const PAGE_PROMPTS: PagePrompts[] = [
     scrollChips: ['Do you offer contract-to-hire?', 'How can I get started?', ask],
   },
   {
+    match: '/services/technology-strategy/',
+    welcome: 'Planning your next technology decision?',
+    welcomeChips: ['What does technology strategy include?', 'How does TLS approach technology strategy?', ask],
+    scrollChips: ['Can you help me assess my current technology?', 'What happens after the roadmap?', ask],
+  },
+  {
     match: '/services/',
     welcome: 'Looking for a solution to a specific challenge?',
     welcomeChips: ['Workflow automation', 'Custom software', ask],

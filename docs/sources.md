@@ -32,6 +32,8 @@ Folder: `Website Update (2026-09-27)` (`18fb6Mq1jyC9Mpy5AfMFC9yC2XVekz_oQ`)
 | Testimonials | TLS Client Reviews (2026-09-27), a sheet | `14l3c8EBTcWbMgiaQrEG1iVOcNndLP1iXntZTG2-hDp8` |
 | Meeting Intelligence page | Hemang's Meeting Intelligence brief and full-page reference (2026-10-02, in chat; reference saved to `docs/references/pages/services/meeting-intelligence/`). Image folder (downloaded 2026-10-02) | `1Ke8D0YLnLABkVWS2SmSTDBaW_66xj7OY` |
 | AI Visibility Growth Team page | Hemang's AI Visibility brief (2026-10-02, in chat) and reference images, saved to `docs/references/pages/services/ai-visibility-growth-team/` | `1QPB3crwJfK8spU34tSknnnmocDJC_ND4` |
+| Technology Strategy page | Hemang's Technology Strategy brief (2026-10-06, in chat) and fold references, saved to `docs/references/pages/services/technology-strategy/`; hero copy from `src/data/services.ts` | in chat |
+| Technology Strategy images | Crops of the 2026-10-06 references: `public/solutions/technology-strategy/hero.webp` (+ `hero-720.webp`) from 01 (the photo with its baked-in roadmap panels), `card-1…4.webp` from 03 (2× upscale; card 2's "Possiblities" repainted as "Possibilities"), `team.webp` from 07 (the meeting-room photo). No mountain imagery used. | in chat |
 
 Two pages have no 2026-09-27 version. For those, the only source is the file below:
 

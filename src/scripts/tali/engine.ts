@@ -97,7 +97,7 @@ const STARTERS: [string, string[]][] = [
   ['/services/software/', ['What kind of software do you build?', 'How does a software project run?', 'I want to discuss a project']],
   ['/services/integrations/', ['Can you connect my existing tools?', 'How does an integration project run?', 'I want to discuss a project']],
   ['/services/technical-talent/', ['What roles do you place?', 'How does the hiring process work?', 'Do you offer contract-to-hire?']],
-  ['/services/technology-strategy/', ['Which solution fits my business?', 'How do you work?', 'I want to discuss a project']],
+  ['/services/technology-strategy/', ['What does technology strategy include?', 'How does TLS approach technology strategy?', 'Can you help me assess my current technology?', 'What happens after the roadmap?']],
   ['/services/data-analytics/', ['What is Data & Analytics?', 'Which solution fits my business?', 'I want to discuss a project']],
   ['/services/cyber-security/', ['Explore TLS solutions', 'I want to discuss a project']],
   ['/services/', ['Explore TLS solutions', 'Which solution fits my business?', 'Tell me about Meeting Intelligence', 'I want to discuss a project']],

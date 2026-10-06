@@ -332,12 +332,32 @@ export const ENTITIES: Entity[] = [
   {
     id: 'strategy',
     name: 'Technology Strategy',
-    aliases: ['technology strategy', 'strategy', 'roadmap', 'consulting', 'advice', 'not sure', 'where to start', 'right solution', 'assessment'],
+    aliases: ['technology strategy', 'strategy', 'roadmap', 'technology roadmap', 'consulting', 'advice', 'not sure', 'where to start', 'right solution', 'assessment', 'assess', 'current technology', 'tech stack', 'technology decisions'],
     url: '/services/technology-strategy/',
+    // Details, process and audience: the Technology Strategy page (Hemang's
+    // brief, 2026-10-06).
     overview:
-      'Work out what you actually need before you build — challenge assumptions early, then define the right solution.',
+      'Work out what you actually need before you build — challenge assumptions early, then define the right solution. We work closely with your team to understand your business, evaluate your current technology landscape and create a practical plan for what comes next.',
+    details: {
+      lead: 'From business goals to a clear technology roadmap:',
+      points: [
+        'Assess Current State — understand your business goals, processes and existing systems to identify gaps and opportunities.',
+        'Identify Opportunities — find areas where technology can improve efficiency, visibility and results.',
+        'Create a Roadmap — define the right solutions, priorities, timelines and implementation approach.',
+        'Support Execution — work with your team to ensure successful adoption, measure impact and adjust as you grow.',
+      ],
+    },
+    process: {
+      lead: 'A structured and practical process:',
+      points: [
+        'Discover — understand your goals, challenges and constraints.',
+        'Analyze — evaluate current technology, processes and data.',
+        'Plan — create a clear, prioritized roadmap with solutions.',
+        'Enable — support implementation and measure impact.',
+      ],
+    },
     cta: { label: 'Bring Us the Need', href: '/contact/' },
-    follow: ['Which solution fits my business?', 'I want to discuss a project'],
+    follow: ['What does technology strategy include?', 'How does the technology strategy process work?', 'Which solution fits my business?'],
   },
   {
     id: 'data',

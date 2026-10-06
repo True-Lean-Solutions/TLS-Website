@@ -1,0 +1,1822 @@
+---
+/**
+ * Technology Strategy (Hemang's brief and fold references, 2026-10-06;
+ * docs/references/pages/services/technology-strategy/). Replaces the short
+ * [solution].astro page for this route.
+ *
+ * Copy: the hero keeps the approved headline, blurb and CTAs (src/data/
+ * services.ts, v2.3 §09 "Requirements Not Yet Clear"); section copy is the
+ * brief's. Proof is real only: the "Six Account Tiers" case study and its own
+ * at-a-glance facts, the reviews sheet (ReviewReel), the client logos, and
+ * published Insights. The references' sample statistics, testimonials,
+ * vendor logos, mountain imagery, inline form and newsletter are not used.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import Button from '../../components/Button.astro';
+import Icon from '../../components/Icon.astro';
+import ClientLogos from '../../components/ClientLogos.astro';
+import ReviewReel from '../../components/ReviewReel.astro';
+import type { IconName } from '../../components/iconTypes';
+import { cta, href, site } from '../../data/site';
+import { solutions } from '../../data/services';
+import { testimonials } from '../../data/testimonials';
+import { categoryMeta, getPublishedPosts } from '../../data/insights';
+
+const img = (f: string) => href(`/solutions/technology-strategy/${f}`);
+const page = solutions.find((s) => s.href === '/services/technology-strategy/')!;
+const booking = { label: 'Book a Free 30-Minute Call', href: site.booking };
+
+const title = 'True Lean Solutions — Technology Strategy';
+const description =
+  'Turn business goals into a practical technology roadmap. True Lean Solutions helps you work out what you actually need, choose the right solutions and avoid unnecessary cost.';
+
+type Accent = 'red' | 'blue' | 'plum' | 'green';
+const tone: Record<Accent, string> = { red: 'var(--red)', blue: 'var(--blue)', plum: 'var(--ts-violet)', green: 'var(--ts-green)' };
+
+const benefits: { text: string; icon: IconName; c: Accent }[] = [
+  { text: 'Business-focused approach', icon: 'target', c: 'red' },
+  { text: 'Practical, actionable roadmap', icon: 'document', c: 'blue' },
+  { text: 'Technology-agnostic advice', icon: 'integration', c: 'plum' },
+  { text: 'Support from strategy to execution', icon: 'users', c: 'green' },
+];
+
+const indicators: { text: string; icon: IconName; c: Accent }[] = [
+  { text: 'Lower costs', icon: 'database', c: 'red' },
+  { text: 'Better visibility', icon: 'chart', c: 'blue' },
+  { text: 'Higher efficiency', icon: 'gear', c: 'plum' },
+  { text: 'Sustainable growth', icon: 'target', c: 'green' },
+];
+
+/* The roadmap illustration: milestones along one rising path (no figures). */
+const milestones: { text: string; icon: IconName; x: number; y: number; side: 'l' | 'r' }[] = [
+  { text: 'Clear roadmap', icon: 'users', x: 60, y: 384, side: 'r' },
+  { text: 'Right priorities', icon: 'chart', x: 200, y: 300, side: 'r' },
+  { text: 'Reduced risk', icon: 'shield', x: 320, y: 250, side: 'r' },
+  { text: 'Scalable solutions', icon: 'gear', x: 430, y: 160, side: 'l' },
+  { text: 'Business goals', icon: 'target', x: 530, y: 62, side: 'l' },
+];
+const PATH = 'M18 412 Q 40 396 60 384 T 200 300 T 320 250 T 430 160 T 530 62 T 586 22';
+
+const help: { title: string; text: string; icon: IconName; c: Accent; img: string; alt: string }[] = [
+  {
+    title: 'Assess Current State',
+    text: 'Understand your business goals, processes and existing systems to identify gaps and opportunities.',
+    icon: 'search',
+    c: 'red',
+    img: 'card-1.webp',
+    alt: 'A laptop showing dashboards, with panels labeled Systems, Processes and People.',
+  },
+  {
+    title: 'Identify Opportunities',
+    text: 'Find areas where technology can improve efficiency, visibility and results.',
+    icon: 'database',
+    c: 'blue',
+    img: 'card-2.webp',
+    alt: 'A planning wall of notes, with panels labeled Automation Opportunities, Integration Possibilities and AI & Data Use Cases.',
+  },
+  {
+    title: 'Create a Roadmap',
+    text: 'Define the right solutions, priorities, timelines and implementation approach.',
+    icon: 'document',
+    c: 'plum',
+    img: 'card-3.webp',
+    alt: 'A phased roadmap: Phase 1 Quick Wins, Phase 2 Core Solutions, Phase 3 Scale & Optimize.',
+  },
+  {
+    title: 'Support Execution',
+    text: 'Work with your team to ensure successful adoption, measure impact and adjust as you grow.',
+    icon: 'users',
+    c: 'green',
+    img: 'card-4.webp',
+    alt: 'A team at work, with checklist panels for Implementation Support, Change Management and Measure Results.',
+  },
+];
+
+const steps: { title: string; text: string; c: Accent }[] = [
+  { title: 'Discover', text: 'Understand your goals, challenges and constraints.', c: 'red' },
+  { title: 'Analyze', text: 'Evaluate current technology, processes and data.', c: 'blue' },
+  { title: 'Plan', text: 'Create a clear, prioritized roadmap with solutions.', c: 'plum' },
+  { title: 'Enable', text: 'Support implementation and measure impact.', c: 'green' },
+];
+
+const outcomes: { text: string; icon: IconName; c: Accent }[] = [
+  { text: 'Improved efficiency and productivity', icon: 'chart', c: 'red' },
+  { text: 'Better visibility and decision-making', icon: 'database', c: 'blue' },
+  { text: 'Reduced costs and technology debt', icon: 'server', c: 'plum' },
+  { text: 'A scalable foundation for future growth', icon: 'rocket', c: 'green' },
+];
+
+/* Real proof: the case study's own facts, verbatim from its post. */
+const posts = await getPublishedPosts();
+const caseStudy = posts.find((p) => p.id === 'six-account-tiers-one-source-of-truth');
+const glance =
+  caseStudy?.data.blocks.find((b): b is Extract<typeof b, { type: 'stats' }> => b.type === 'stats')?.items ?? [];
+const caseIcons: IconName[] = ['users', 'compass', 'software', 'process'];
+
+const faqs: { q: string; a: string[] }[] = [
+  {
+    q: 'What is technology strategy?',
+    a: [
+      "It's working out what technology your business actually needs — and why — before anything is bought or built. We challenge assumptions early, then define the right solution, so every investment serves a real business goal.",
+    ],
+  },
+  {
+    q: 'How is this different from IT consulting?',
+    a: [
+      "We don't stop at advice. Others build what you ask for; we build what you actually need. We don't deliver slide decks — we deliver working systems, documented processes, and measurable improvements, and we stay engaged after go-live.",
+    ],
+  },
+  {
+    q: 'What types of businesses do you work with?',
+    a: [
+      'Growing small and mid-sized businesses. Everything we do is scoped and priced for the constraints you work under.',
+      "Most businesses we work with know something isn't working but aren't sure which lever to pull first — that's a fine place to start.",
+    ],
+  },
+  {
+    q: 'How does the technology strategy process work?',
+    a: [
+      'In four steps: we discover your goals, challenges and constraints; analyze your current technology, processes and data; plan a clear, prioritized roadmap with the right solutions; and enable your team — supporting implementation and measuring impact.',
+    ],
+  },
+  {
+    q: 'What happens after the roadmap is created?',
+    a: [
+      'You decide how to move forward. We can work with your team to put the roadmap into practice — supporting adoption, measuring impact and adjusting as you grow — and we stay engaged after go-live to refine what we have built.',
+    ],
+  },
+];
+
+/* Related solutions: real routes only, each with its approved one-line summary. */
+const related: { title: string; text: string; href: string; icon: IconName; c: Accent; photo?: string }[] = [
+  ...['/services/enterprise-ai/'].map((h) => solutions.find((s) => s.href === h)!).map((s) => ({ title: s.title, text: s.summary, href: s.href, icon: s.icon, c: 'red' as Accent })),
+  { title: 'Meeting Intelligence', text: 'Turn every meeting into secure, searchable knowledge.', href: '/services/meeting-intelligence/', icon: 'video', c: 'blue', photo: href('/solutions/meeting-intelligence/hero-900.webp') },
+  ...[
+    ['/services/workflow-automation/', 'plum'],
+    ['/services/data-analytics/', 'green'],
+    ['/services/integrations/', 'blue'],
+    ['/services/software/', 'red'],
+    ['/services/cyber-security/', 'plum'],
+    ['/services/technical-talent/', 'green'],
+  ].map(([h, c]) => {
+    const s = solutions.find((x) => x.href === h)!;
+    return { title: s.title, text: s.summary, href: s.href, icon: s.icon, c: c as Accent };
+  }),
+];
+
+/* Insights on making technology decisions (real posts, as published). */
+const insightIds = ['why-your-software-implementation-failed', 'home-grown-erp-vs-off-the-shelf', 'custom-integrations-connect-instead-of-replace'];
+const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((p): p is NonNullable<typeof p> => !!p);
+---
+
+<BaseLayout title={title} description={description} path="/services/technology-strategy/">
+  <!-- 1. Hero -->
+  <section class="ts-hero">
+    <figure class="ts-hero-media">
+      <div class="ts-hero-frame" data-hero-photo>
+        <img
+          src={img('hero.webp')}
+          srcset={`${img('hero-720.webp')} 720w, ${img('hero.webp')} 1042w`}
+          sizes="(max-width: 960px) 100vw, 62vw"
+          alt="A strategy meeting at dusk above a city skyline, with a rising roadmap: Understand Your Business, Assess Opportunities, Create a Technology Roadmap, Support Execution, Business Growth."
+          width="1042"
+          height="649"
+          fetchpriority="high"
+          decoding="async"
+        />
+        <span class="ts-node" style="--x: 56.4%; --y: 62.9%; --d: 900ms" aria-hidden="true"></span>
+        <span class="ts-node" style="--x: 74.4%; --y: 47.6%; --d: 1250ms" aria-hidden="true"></span>
+        <span class="ts-node ts-node--goal" style="--x: 87%; --y: 29.6%; --d: 1600ms" aria-hidden="true"></span>
+      </div>
+    </figure>
+    <div class="wrap">
+      <div class="ts-hero-copy" data-reveal="load">
+        <nav class="ts-crumbs" aria-label="Breadcrumb">
+          <a href={href('/services/')}>Solutions</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Technology Strategy</span>
+        </nav>
+        <Eyebrow label="Technology Strategy" />
+        <h1>Make technology work toward <span class="accent">the right goal.</span></h1>
+        <p class="ts-lede">{page.blurb}</p>
+        <div class="ts-actions">
+          <Button href={cta.primary.href} variant="primary" arrow>Bring Us the Need</Button>
+          <Button href={cta.email.href} variant="ghost-light" external>{cta.email.label}</Button>
+        </div>
+      </div>
+      <ul class="ts-benefits" data-reveal="stagger" aria-label="What to expect">
+        {benefits.map((b) => (
+          <li style={`--c: ${tone[b.c]}`}>
+            <span class="ts-glyph" aria-hidden="true"><Icon name={b.icon} size={20} /></span>
+            {b.text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 2. Why technology strategy matters -->
+  <section class="section ts-why">
+    <div class="wrap ts-why-grid">
+      <div>
+        <SectionHeading
+          eyebrow="Why Technology Strategy Matters"
+          title="Good technology decisions create "
+          accent="long-term value."
+          lead="Many organizations invest in tools without a clear plan, leading to higher costs, disconnected systems and limited results. A well-defined technology strategy helps you align people, processes and technology with your business goals."
+        />
+        <ul class="ts-indicators" data-reveal="stagger">
+          {indicators.map((i) => (
+            <li style={`--c: ${tone[i.c]}`}>
+              <span class="ts-glyph ts-glyph--soft" aria-hidden="true"><Icon name={i.icon} size={20} /></span>
+              {i.text}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <figure class="ts-map" data-draw>
+        <div class="ts-map-grid" aria-hidden="true"></div>
+        <svg class="ts-map-path" viewBox="0 0 600 440" aria-hidden="true">
+          <defs>
+            <linearGradient id="ts-path-grad" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#1288CF" />
+              <stop offset="0.55" stop-color="#8b6cf0" />
+              <stop offset="1" stop-color="#D94040" />
+            </linearGradient>
+          </defs>
+          <path class="draw-path ts-map-glow" d={PATH} />
+          <path class="draw-path" d={PATH} />
+        </svg>
+        <ul class="ts-milestones">
+          {milestones.map((m, i) => (
+            <li
+              data-draw-mark
+              class:list={[`side-${m.side}`, { 'is-goal': i === milestones.length - 1 }]}
+              style={`--x: ${((m.x / 600) * 100).toFixed(2)}%; --y: ${((m.y / 440) * 100).toFixed(2)}%`}
+            >
+              <span class="ts-dot" aria-hidden="true"></span>
+              <span class="ts-chip">
+                <span class="ts-glyph" aria-hidden="true"><Icon name={m.icon} size={18} /></span>
+                {m.text}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <figcaption class="visually-hidden">
+          A rising roadmap from a clear roadmap and the right priorities, through reduced risk and scalable solutions, to business goals.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 3. How we help -->
+  <section class="section ts-help">
+    <div class="ts-wash" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="ts-help-head">
+        <SectionHeading
+          eyebrow="How We Help"
+          title="From business goals to a clear "
+          accent="technology roadmap."
+          lead="We work closely with your team to understand your business, evaluate your current technology landscape and create a practical plan for what comes next."
+        />
+        <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
+      </div>
+      <ol class="ts-help-cards" data-reveal="stagger">
+        {help.map((h, i) => (
+          <li class="ts-card ix-card ix-card--quiet" style={`--c: ${tone[h.c]}`}>
+            <div class="ts-card-top">
+              <span class="ts-tile" aria-hidden="true"><Icon name={h.icon} size={22} /></span>
+              <span class="ts-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            </div>
+            <h3>{h.title}</h3>
+            <p>{h.text}</p>
+            <img src={img(h.img)} alt={h.alt} width="700" height="312" loading="lazy" decoding="async" />
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- 4. Our approach -->
+  <section class="section ts-approach">
+    <div class="wrap">
+      <div class="ts-approach-head">
+        <SectionHeading eyebrow="Our Approach" title="A structured and " accent="practical process." />
+        <p class="ts-approach-note" data-reveal>We keep the process simple and focused on outcomes, so you get a strategy that is realistic, scalable and aligned with your business.</p>
+      </div>
+      <div class="ts-track" data-progress>
+        <span class="ts-track-line" aria-hidden="true"><span class="ts-track-fill"></span></span>
+        <ol class="ts-steps">
+          {steps.map((s, i) => (
+            <li data-step style={`--c: ${tone[s.c]}`}>
+              <span class="ts-step-dot" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+              <h3><span class="visually-hidden">{String(i + 1).padStart(2, '0')} — </span>{s.title}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Business outcomes -->
+  <section class="section ts-outcomes">
+    <div class="wrap">
+      <div class="ts-split-head">
+        <SectionHeading eyebrow="Business Outcomes" title="Build a stronger, more " accent="future-ready organization." />
+        <p data-reveal>A clear technology strategy helps you make confident decisions, reduce risk and create a strong foundation for long-term growth.</p>
+      </div>
+      <ul class="ts-outcome-cards" data-reveal="stagger">
+        {outcomes.map((o) => (
+          <li class="ix-card ix-card--quiet" style={`--c: ${tone[o.c]}`}>
+            <span class="ts-tile" aria-hidden="true"><Icon name={o.icon} size={22} /></span>
+            <span>{o.text}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6. Real-world impact: a real case study -->
+  {
+    caseStudy && (
+      <section class="section ts-case">
+        <div class="wrap ts-case-grid">
+          <div class="ts-case-copy">
+            <SectionHeading
+              eyebrow="Real-World Impact"
+              title="Helping businesses make "
+              accent="the right technology decisions."
+              lead="Every engagement starts by understanding what the business actually needs — then deciding what to build."
+            />
+            <article class="ts-case-card" data-reveal>
+              <p class="ts-case-tag">Case study</p>
+              <h3>{caseStudy.data.title}</h3>
+              <p>{caseStudy.data.excerpt}</p>
+              <div class="ts-actions">
+                <Button href={`/insights/${caseStudy.id}/`} variant="primary" arrow>Read the Case Study</Button>
+                <Button href="/insights/case-studies/" variant="ghost-light">View More Case Studies</Button>
+              </div>
+            </article>
+          </div>
+          <figure class="ts-case-visual">
+            {caseStudy.data.cover && (
+              <img
+                src={href(caseStudy.data.cover)}
+                alt={caseStudy.data.coverAlt ?? ''}
+                width="1200"
+                height="675"
+                loading="lazy"
+                decoding="async"
+                data-float="1"
+              />
+            )}
+            <ul class="ts-glance" data-reveal="stagger" aria-label="At a glance">
+              {glance.map((g, i) => (
+                <li>
+                  <span class="ts-glyph" aria-hidden="true"><Icon name={caseIcons[i % caseIcons.length]} size={18} /></span>
+                  <span>
+                    <strong>{g.value}</strong>
+                    <span>{g.label}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </figure>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 7. Clients and what they say -->
+  <section class="section ts-voices">
+    <div class="wrap">
+      <SectionHeading eyebrow="What Our Clients Say" title="Trusted by businesses that want " accent="real results." align="center" />
+      <div class="ts-logos" data-reveal><ClientLogos /></div>
+    </div>
+    <ReviewReel testimonials={testimonials} />
+  </section>
+
+  <!-- 8. Plan your next step -->
+  <section class="ts-plan">
+    <div class="ts-plan-photo" aria-hidden="true">
+      <img src={img('team.webp')} alt="" width="1062" height="280" loading="lazy" decoding="async" data-float="1" />
+    </div>
+    <div class="wrap">
+      <div class="ts-plan-copy" data-reveal>
+        <Eyebrow label="Let's Plan Your Next Step" />
+        <h2>Talk to our team about your <span class="accent">technology strategy.</span></h2>
+        <p>In a free 30-minute call, we'll understand your goals, discuss your challenges and explore how TLS can help you build a practical technology roadmap.</p>
+        <div class="ts-actions">
+          <Button href={booking.href} variant="primary" arrow external>{booking.label}</Button>
+          <Button href={cta.email.href} variant="ghost-light" external>{cta.email.label}</Button>
+        </div>
+        <ul class="ts-trust" aria-label="About the call">
+          <li><span class="ts-glyph" aria-hidden="true"><Icon name="clock" size={18} /></span>A free 30-minute call</li>
+          <li><span class="ts-glyph" aria-hidden="true"><Icon name="target" size={18} /></span>Tailored to your business</li>
+          <li><span class="ts-glyph" aria-hidden="true"><Icon name="message" size={18} /></span>Speak with our team</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. FAQ -->
+  <section class="section ts-faq">
+    <div class="wrap ts-faq-grid">
+      <SectionHeading
+        eyebrow="Frequently Asked Questions"
+        title="Common questions about "
+        accent="technology strategy."
+        lead="Quick answers about our approach, the process and how we can help your business."
+      />
+      <div class="ts-faq-list" data-reveal="stagger">
+        {faqs.map((f, i) => (
+          <details class="ts-faq-item" open={i === 0}>
+            <summary>
+              <span>{f.q}</span>
+              <span class="ts-faq-sign" aria-hidden="true"></span>
+            </summary>
+            <div class="ts-faq-a">{f.a.map((p) => <p>{p}</p>)}</div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. Related solutions -->
+  <section class="section ts-related" aria-labelledby="ts-related-title">
+    <div class="wrap">
+      <div class="ts-split-head ts-related-head">
+        <div class="section-heading" data-reveal="">
+          <Eyebrow label="Related Solutions" />
+          <h2 id="ts-related-title">Explore solutions that support your <span class="accent">technology strategy.</span></h2>
+        </div>
+        <div class="ts-related-side">
+          <p>Technology strategy often connects with several areas. Explore how our other solutions can support your goals.</p>
+          <div class="ts-arrows">
+            <button type="button" class="ts-arrow" data-dir="-1" aria-controls="ts-rel-track" aria-label="Previous solutions"><Icon name="arrow" size={18} /></button>
+            <button type="button" class="ts-arrow" data-dir="1" aria-controls="ts-rel-track" aria-label="Next solutions"><Icon name="arrow" size={18} /></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul class="ts-rel-track" id="ts-rel-track" tabindex="-1">
+      {related.map((r) => (
+        <li class="ts-rel" style={`--c: ${tone[r.c]}`}>
+          <a href={href(r.href)} class="ts-rel-link ix-card ix-card--quiet">
+            <span class:list={['ts-rel-art', { 'has-photo': r.photo }]} aria-hidden="true">
+              {r.photo ? <img src={r.photo} alt="" width="900" height="450" loading="lazy" decoding="async" /> : <span class="ts-rel-mark"><Icon name={r.icon} size={88} /></span>}
+              <span class="ts-tile"><Icon name={r.icon} size={22} /></span>
+            </span>
+            <span class="ts-rel-body">
+              <strong>{r.title}</strong>
+              <span>{r.text}</span>
+            </span>
+            <span class="ts-rel-go" aria-hidden="true"><Icon name="arrow" size={16} /></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- 11. Insights -->
+  {
+    insights.length > 0 && (
+      <section class="section ts-insights">
+        <div class="wrap">
+          <div class="ts-split-head">
+            <SectionHeading eyebrow="Insights & Resources" title="Ideas and perspectives on " accent="technology decisions." />
+            <Button href="/insights/" variant="secondary" arrow>View All Insights</Button>
+          </div>
+          <ul class="ts-posts" data-reveal="stagger">
+            {insights.map((p) => (
+              <li>
+                <a href={href(`/insights/${p.id}/`)} class="ts-post ix-card ix-card--quiet">
+                  {p.data.cover && <img src={href(p.data.cover)} alt="" width="320" height="200" loading="lazy" decoding="async" />}
+                  <span class="ts-post-body">
+                    <span class="ts-post-cat">{categoryMeta[p.data.category].label}</span>
+                    <strong>{p.data.title}</strong>
+                    {p.data.readTime && (
+                      <span class="ts-post-time">
+                        <Icon name="clock" size={14} /> {p.data.readTime}
+                      </span>
+                    )}
+                  </span>
+                  <span class="ts-rel-go" aria-hidden="true"><Icon name="arrow" size={16} /></span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 12. Final CTA -->
+  <section class="ts-final">
+    <svg class="ts-final-waves" viewBox="0 0 1440 360" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="ts-wave-a" x1="0" x2="1">
+          <stop offset="0" stop-color="#1288CF" stop-opacity="0" />
+          <stop offset="0.45" stop-color="#1288CF" stop-opacity="0.55" />
+          <stop offset="1" stop-color="#D94040" stop-opacity="0.9" />
+        </linearGradient>
+      </defs>
+      {Array.from({ length: 9 }).map((_, i) => (
+        <path d={`M0 ${250 + i * 9} C 300 ${180 + i * 12}, 520 ${330 - i * 6}, 820 ${240 + i * 5} S 1260 ${120 + i * 14}, 1440 ${170 + i * 10}`} />
+      ))}
+    </svg>
+    <div class="wrap ts-final-grid">
+      <div data-reveal>
+        <Eyebrow label="Ready When You Are" />
+        <h2>Let's build a technology strategy that drives <span class="accent">real results.</span></h2>
+      </div>
+      <div class="ts-final-cta" data-reveal>
+        <p>Book a free 30-minute call to discuss your goals, challenges and how we can help you create a practical technology roadmap.</p>
+        <div class="ts-actions">
+          <Button href={booking.href} variant="primary" arrow external>{booking.label}</Button>
+          <Button href={cta.email.href} variant="ghost-light" external>{cta.email.label}</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // Related solutions: arrow buttons step the track by one card; each button
+  // is disabled at its end. Touch, trackpad and keyboard scroll it natively.
+  const track = document.getElementById('ts-rel-track');
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('.ts-arrow')];
+  if (track && buttons.length) {
+    const step = () => (track.querySelector<HTMLElement>('.ts-rel')?.offsetWidth ?? 300) + 20;
+    const sync = () => {
+      const max = track.scrollWidth - track.clientWidth - 2;
+      buttons.forEach((b) => (b.disabled = b.dataset.dir === '-1' ? track.scrollLeft <= 2 : track.scrollLeft >= max));
+    };
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => {
+        const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        track.scrollBy({ left: Number(b.dataset.dir) * step(), behavior: smooth ? 'smooth' : 'auto' });
+      })
+    );
+    track.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  }
+</script>
+
+<style>
+  :global(:root) {
+    --ts-navy: #0a0f1d;
+    --ts-navy-2: #111a30;
+    --ts-violet: #7c5cf0;
+    --ts-green: #16a34a;
+    --ts-on-dark: #c7cedc;
+  }
+  .accent {
+    color: var(--red);
+  }
+  h2 {
+    font-size: clamp(2rem, 1.35rem + 2.1vw, 2.85rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .ts-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: var(--gap-actions);
+  }
+  /* Small glass icon chip, tinted by --c. */
+  .ts-glyph {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    color: var(--c, #fff);
+    background: color-mix(in srgb, var(--c, #fff) 14%, rgba(255, 255, 255, 0.04));
+    border: 1px solid color-mix(in srgb, var(--c, #fff) 30%, transparent);
+    box-shadow: 0 8px 22px -12px var(--c, transparent);
+  }
+  .ts-glyph--soft {
+    background: color-mix(in srgb, var(--c) 10%, #fff);
+    border-color: color-mix(in srgb, var(--c) 18%, transparent);
+  }
+  /* Solid icon tile for cards. */
+  .ts-tile {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    color: #fff;
+    background: linear-gradient(145deg, color-mix(in srgb, var(--c) 82%, #fff), var(--c));
+    box-shadow: 0 12px 24px -12px var(--c);
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+
+  /* Dark sections share one palette: headings white, copy soft gray. */
+  .ts-hero,
+  .ts-approach,
+  .ts-case,
+  .ts-plan,
+  .ts-final {
+    color: #fff;
+  }
+  .ts-hero :global(h1),
+  .ts-approach :global(h2),
+  .ts-case :global(h2),
+  .ts-plan h2,
+  .ts-final h2 {
+    color: #fff;
+  }
+  .ts-hero :global(.eyebrow),
+  .ts-approach :global(.eyebrow),
+  .ts-case :global(.eyebrow),
+  .ts-plan :global(.eyebrow),
+  .ts-final :global(.eyebrow) {
+    color: var(--ts-on-dark);
+  }
+  .ts-approach :global(.lead),
+  .ts-case :global(.lead) {
+    color: var(--ts-on-dark);
+  }
+
+  /* ---------- 1. Hero ----------
+     Desktop: the photo sits at the right, inside a box with its own aspect
+     ratio (so the node pulses stay on the drawn path), fading into the night
+     at its left, top and bottom. Tablets and phones: copy first, then the
+     photo, then the benefits. */
+  .ts-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Room under the photo for the benefit bar, so the two never overlap. */
+    --bar-room: 9.5rem;
+    min-height: clamp(700px, 56vw, 880px);
+    padding-block: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 3vw, 2.5rem);
+    background:
+      radial-gradient(50% 70% at 12% 30%, rgba(217, 64, 64, 0.12), transparent 70%),
+      radial-gradient(40% 60% at 60% 100%, rgba(18, 136, 207, 0.12), transparent 70%),
+      var(--ts-navy);
+  }
+  .ts-hero-media {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: var(--bar-room);
+    width: min(64vw, 1060px);
+    z-index: -1;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    --fade-x: linear-gradient(90deg, transparent 0, #000 26%);
+    --fade-y: linear-gradient(180deg, transparent 0, #000 14%, #000 87%, transparent 100%);
+  }
+  /* The fades sit on the photo's own box, so every edge dissolves. */
+  .ts-hero-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1042 / 649;
+    mask-image: var(--fade-x), var(--fade-y);
+    mask-composite: intersect;
+    -webkit-mask-image: var(--fade-x), var(--fade-y);
+    -webkit-mask-composite: source-in;
+  }
+  .ts-hero-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* A soft pulse on each node of the drawn roadmap. */
+  .ts-node {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: 0;
+    height: 0;
+  }
+  .ts-node::before {
+    content: '';
+    position: absolute;
+    left: -18px;
+    top: -18px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(110, 190, 255, 0.85);
+    opacity: 0;
+  }
+  .ts-node--goal::before {
+    border-color: rgba(255, 120, 150, 0.9);
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .ts-hero-media {
+      animation: ts-settle 1400ms var(--ix-ease) 80ms backwards;
+    }
+    .ts-node::before {
+      animation: ts-pulse 3.2s var(--ix-ease) var(--d) infinite;
+    }
+  }
+  @keyframes ts-settle {
+    from {
+      opacity: 0;
+      transform: translateX(28px);
+    }
+  }
+  @keyframes ts-pulse {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.35);
+    }
+    70%,
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+  /* The bar sits at the foot of the hero; the copy centers above it. */
+  .ts-hero > .wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .ts-hero-copy {
+    max-width: 36rem;
+    margin-block: auto;
+  }
+  .ts-crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--ts-on-dark);
+  }
+  .ts-crumbs a {
+    color: #9fd3f5;
+    text-decoration: none;
+  }
+  .ts-crumbs a:hover {
+    text-decoration: underline;
+  }
+  .ts-hero h1 {
+    font-size: clamp(2.4rem, 1.5rem + 2.8vw, 3.75rem);
+    line-height: 1.03;
+    letter-spacing: -0.03em;
+  }
+  .ts-hero h1 .accent {
+    display: block;
+  }
+  .ts-lede {
+    margin-top: var(--gap-lead);
+    max-width: 46ch;
+    font-size: 1.12rem;
+    line-height: 1.6;
+    color: var(--ts-on-dark);
+  }
+  .ts-benefits {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0.9rem;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
+    max-width: 62rem;
+    border-radius: var(--radius-lg);
+    background: rgba(10, 15, 29, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .ts-benefits li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.92rem;
+    line-height: 1.35;
+    color: #eef1f7;
+  }
+  .ts-benefits li + li {
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  @media (max-width: 960px) {
+    .ts-hero {
+      min-height: 0;
+    }
+    .ts-hero-media {
+      position: relative;
+      inset: auto;
+      order: 2;
+      width: 100%;
+      max-width: 760px;
+      margin: 1.75rem auto 0;
+      --fade-x: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+      --fade-y: linear-gradient(180deg, transparent 0, #000 12%, #000 86%, transparent 100%);
+    }
+    .ts-hero > .wrap {
+      display: contents;
+    }
+    .ts-hero-copy {
+      order: 1;
+      width: min(100% - 2 * var(--gutter), var(--wrap) - 2 * var(--gutter));
+      margin-inline: auto;
+    }
+    .ts-benefits {
+      order: 3;
+      width: min(100% - 2 * var(--gutter), var(--wrap) - 2 * var(--gutter));
+      margin: 1rem auto 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .ts-benefits li + li {
+      border-left: 0;
+    }
+  }
+  @media (max-width: 520px) {
+    .ts-benefits {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 2. Why it matters ---------- */
+  .ts-why-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .ts-indicators {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  .ts-indicators li {
+    display: grid;
+    gap: 0.6rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+  .ts-map {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    margin: 0;
+    aspect-ratio: 600 / 440;
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(60% 55% at 82% 10%, rgba(217, 64, 64, 0.32), transparent 70%),
+      radial-gradient(55% 60% at 10% 100%, rgba(18, 136, 207, 0.3), transparent 70%),
+      linear-gradient(160deg, #18213d, var(--ts-navy) 70%);
+    box-shadow: 0 40px 80px -48px rgba(10, 15, 29, 0.8);
+  }
+  /* A faint perspective floor grid. */
+  .ts-map-grid {
+    position: absolute;
+    inset: 40% -20% -10%;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgba(140, 180, 255, 0.14) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140, 180, 255, 0.14) 1px, transparent 1px);
+    background-size: 44px 44px;
+    transform: perspective(500px) rotateX(58deg);
+    transform-origin: top center;
+    mask-image: linear-gradient(180deg, transparent, #000 40%);
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 40%);
+  }
+  .ts-map-path {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .ts-map-path path {
+    fill: none;
+    stroke: url(#ts-path-grad);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  .ts-map-path .ts-map-glow {
+    stroke-width: 12;
+    opacity: 0.25;
+    filter: blur(6px);
+  }
+  .ts-milestones {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  /* Each milestone: a glowing node on the path, its chip beside it. */
+  .ts-milestones li {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: 0;
+    height: 0;
+    --c: #8ec9ff;
+  }
+  .ts-dot {
+    position: absolute;
+    left: -7px;
+    top: -7px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--c);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--c) 25%, transparent), 0 0 18px var(--c);
+  }
+  .ts-chip {
+    position: absolute;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.4rem 0.75rem 0.4rem 0.4rem;
+    border-radius: 14px;
+    background: rgba(17, 26, 48, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+  .side-r .ts-chip {
+    left: 16px;
+    transform: translateY(-50%);
+  }
+  .side-l .ts-chip {
+    right: 16px;
+    transform: translateY(-50%);
+  }
+  .ts-chip .ts-glyph {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+  .ts-milestones li.is-goal {
+    --c: #ff8080;
+  }
+  .is-goal .ts-chip {
+    border-color: rgba(217, 64, 64, 0.55);
+    background: rgba(70, 20, 30, 0.7);
+  }
+  @media (max-width: 1024px) {
+    .ts-why-grid {
+      grid-template-columns: 1fr;
+    }
+    .ts-map {
+      max-width: 680px;
+    }
+  }
+  @media (max-width: 560px) {
+    .ts-indicators {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ts-chip {
+      font-size: 0.7rem;
+      gap: 0.4rem;
+      padding-right: 0.55rem;
+    }
+    .ts-chip .ts-glyph {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  /* ---------- 3. How we help ---------- */
+  .ts-help {
+    position: relative;
+    isolation: isolate;
+  }
+  .ts-wash {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(40% 50% at 95% 10%, rgba(18, 136, 207, 0.08), transparent 70%),
+      radial-gradient(36% 44% at 2% 90%, rgba(217, 64, 64, 0.07), transparent 72%);
+  }
+  .ts-help-head,
+  .ts-split-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: var(--gap-block);
+  }
+  .ts-help-head :global(.section-heading),
+  .ts-split-head :global(.section-heading) {
+    margin-bottom: 0;
+  }
+  .ts-split-head > p {
+    max-width: 44ch;
+    color: var(--text-2);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  .ts-help-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .ts-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.4rem 1.4rem 1rem;
+    border-radius: 20px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--c) 5%, #fff), #fff 45%);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .ts-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.1rem;
+  }
+  .ts-num {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--c);
+    opacity: 0.8;
+  }
+  .ts-card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.4rem;
+  }
+  .ts-card p {
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin-bottom: 1.1rem;
+  }
+  .ts-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: auto;
+    border-radius: 14px;
+    aspect-ratio: 700 / 312;
+    object-fit: cover;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .ts-card:hover .ts-tile,
+    :global(.ts-outcome-cards li:hover) .ts-tile {
+      transform: translateY(-2px) rotate(-4deg);
+    }
+  }
+  @media (max-width: 1100px) {
+    .ts-help-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 600px) {
+    .ts-help-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 4. Approach: a line that fills as you scroll ---------- */
+  .ts-approach {
+    background:
+      radial-gradient(40% 70% at 0% 0%, rgba(217, 64, 64, 0.14), transparent 70%),
+      radial-gradient(40% 70% at 100% 100%, rgba(18, 136, 207, 0.14), transparent 70%),
+      var(--ts-navy);
+  }
+  .ts-approach-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem 3rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  .ts-approach-head :global(.section-heading) {
+    margin-bottom: 0;
+  }
+  .ts-approach-note {
+    max-width: 44ch;
+    color: var(--ts-on-dark);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  .ts-track {
+    --p: 1;
+    position: relative;
+  }
+  .ts-track-line {
+    position: absolute;
+    left: 12.5%;
+    right: 12.5%;
+    top: 31px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.14);
+  }
+  .ts-track-fill {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--red), var(--blue), var(--ts-violet), var(--ts-green));
+    transform-origin: left center;
+    transform: scaleX(var(--p));
+  }
+  .ts-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .ts-steps li {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    padding: 0 0.5rem;
+  }
+  .ts-step-dot {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1.1rem;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--c) 22%, var(--ts-navy));
+    border: 1px solid color-mix(in srgb, var(--c) 60%, transparent);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 0 0 8px var(--ts-navy), 0 16px 34px -14px var(--c);
+    transition:
+      background-color var(--ix-base) var(--ix-ease),
+      border-color var(--ix-base) var(--ix-ease),
+      transform var(--ix-base) var(--ix-ease),
+      opacity var(--ix-base) var(--ix-ease);
+  }
+  .ts-steps li.is-on .ts-step-dot {
+    background: var(--c);
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    :global(html.ix) .ts-steps li:not(.is-on) .ts-step-dot {
+      opacity: 0.55;
+      transform: scale(0.9);
+    }
+  }
+  .ts-steps h3 {
+    color: #fff;
+    font-size: var(--step-1);
+    margin-bottom: 0.4rem;
+  }
+  .ts-steps p {
+    color: var(--ts-on-dark);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    max-width: 28ch;
+  }
+  @media (max-width: 860px) {
+    .ts-track-line {
+      left: 31px;
+      right: auto;
+      top: 32px;
+      bottom: 32px;
+      width: 2px;
+      height: auto;
+    }
+    .ts-track-fill {
+      background: linear-gradient(180deg, var(--red), var(--blue), var(--ts-violet), var(--ts-green));
+      transform-origin: center top;
+      transform: scaleY(var(--p));
+    }
+    .ts-steps {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      max-width: 560px;
+    }
+    .ts-steps li {
+      grid-template-columns: auto 1fr;
+      justify-items: start;
+      text-align: left;
+      column-gap: 1.25rem;
+      padding: 0;
+    }
+    .ts-step-dot {
+      grid-row: span 2;
+      margin: 0;
+    }
+    .ts-steps h3 {
+      align-self: end;
+    }
+  }
+
+  /* ---------- 5. Outcomes ---------- */
+  .ts-outcome-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .ts-outcome-cards li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.3rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--c) 6%, #fff), #fff 60%);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+  @media (max-width: 1100px) {
+    .ts-outcome-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 560px) {
+    .ts-outcome-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 6. Case study ---------- */
+  .ts-case {
+    background:
+      radial-gradient(45% 70% at 100% 0%, rgba(18, 136, 207, 0.18), transparent 70%),
+      radial-gradient(40% 60% at 0% 100%, rgba(217, 64, 64, 0.16), transparent 70%),
+      var(--ts-navy);
+  }
+  .ts-case-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .ts-case-card {
+    padding: 1.6rem;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .ts-case-tag {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #ff9a9a;
+    margin-bottom: 0.6rem;
+  }
+  .ts-case-card h3 {
+    color: #fff;
+    font-size: clamp(1.25rem, 1rem + 0.8vw, 1.6rem);
+    line-height: 1.2;
+    margin-bottom: 0.6rem;
+  }
+  .ts-case-card p {
+    color: var(--ts-on-dark);
+    line-height: 1.6;
+  }
+  .ts-case-visual {
+    position: relative;
+    isolation: isolate;
+    margin: 0;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 40px 80px -50px rgba(0, 0, 0, 0.9);
+    min-height: 420px;
+    display: grid;
+    align-items: end;
+  }
+  .ts-case-visual img {
+    position: absolute;
+    inset: -40px 0;
+    width: 100%;
+    height: calc(100% + 80px);
+    object-fit: cover;
+    z-index: -1;
+  }
+  .ts-case-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, rgba(10, 15, 29, 0.92), rgba(10, 15, 29, 0.55) 60%, rgba(10, 15, 29, 0.25));
+  }
+  .ts-glance {
+    list-style: none;
+    margin: 0;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    display: grid;
+    gap: 0.75rem;
+    max-width: 30rem;
+  }
+  .ts-glance li {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    padding: 0.75rem 0.9rem;
+    border-radius: 14px;
+    background: rgba(10, 15, 29, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    --c: #8ec9ff;
+  }
+  .ts-glance strong {
+    display: block;
+    font-family: var(--font-head);
+    font-size: 1.15rem;
+    color: #fff;
+  }
+  .ts-glance li > span:last-child > span {
+    display: block;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    color: var(--ts-on-dark);
+  }
+  @media (max-width: 1024px) {
+    .ts-case-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 7. Voices ---------- */
+  .ts-logos {
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+
+  /* ---------- 8. Plan your next step ---------- */
+  .ts-plan {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: clamp(4rem, 8vw, 6.5rem);
+    background: linear-gradient(90deg, var(--ts-navy) 30%, #1a1426);
+  }
+  .ts-plan-photo {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(70%, 1100px);
+    z-index: -1;
+    --fade-x: linear-gradient(90deg, transparent 0, #000 40%);
+    mask-image: var(--fade-x);
+    -webkit-mask-image: var(--fade-x);
+  }
+  .ts-plan-photo img {
+    width: 100%;
+    height: calc(100% + 60px);
+    margin-top: -30px;
+    object-fit: cover;
+    object-position: 70% 50%;
+    opacity: 0.85;
+  }
+  .ts-plan-copy {
+    max-width: 38rem;
+  }
+  .ts-plan-copy > p {
+    margin-top: var(--gap-lead);
+    color: var(--ts-on-dark);
+    font-size: 1.08rem;
+    line-height: 1.6;
+  }
+  .ts-trust {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+  }
+  .ts-trust li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.92rem;
+    color: #eef1f7;
+    --c: #ff9a9a;
+  }
+  .ts-trust .ts-glyph {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+  @media (max-width: 860px) {
+    .ts-plan-photo {
+      width: 100%;
+      opacity: 0.35;
+      --fade-x: linear-gradient(90deg, transparent, #000);
+    }
+  }
+
+  /* ---------- 9. FAQ ---------- */
+  .ts-faq-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .ts-faq-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .ts-faq-item {
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    interpolate-size: allow-keywords;
+  }
+  .ts-faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.02rem;
+    border-radius: 16px;
+  }
+  .ts-faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .ts-faq-item summary:focus-visible {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 2px;
+  }
+  .ts-faq-sign {
+    position: relative;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--section);
+  }
+  .ts-faq-sign::before,
+  .ts-faq-sign::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 12px;
+    height: 2px;
+    margin: -1px 0 0 -6px;
+    background: var(--ink);
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  .ts-faq-sign::after {
+    transform: rotate(90deg);
+  }
+  .ts-faq-item[open] .ts-faq-sign::after {
+    transform: rotate(0deg);
+  }
+  .ts-faq-item[open] .ts-faq-sign {
+    background: var(--red-tint);
+  }
+  .ts-faq-a {
+    padding: 0 1.25rem 1.2rem;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+  .ts-faq-a p + p {
+    margin-top: 0.6rem;
+  }
+  /* Smooth open/close where the browser supports animating <details>. */
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .ts-faq-item::details-content {
+      block-size: 0;
+      overflow: hidden;
+      transition:
+        block-size 320ms var(--ix-ease),
+        content-visibility 320ms allow-discrete;
+    }
+    .ts-faq-item[open]::details-content {
+      block-size: auto;
+    }
+  }
+  @media (max-width: 900px) {
+    .ts-faq-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 10. Related solutions ---------- */
+  .ts-related {
+    padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  }
+  .ts-related-head {
+    align-items: flex-end;
+  }
+  .ts-related-head .section-heading {
+    max-width: 40rem;
+  }
+  .ts-related-side {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.5rem;
+  }
+  .ts-related-side p {
+    max-width: 40ch;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .ts-arrows {
+    display: flex;
+    gap: 0.5rem;
+    flex: none;
+  }
+  .ts-arrow {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition:
+      background-color var(--ix-base) var(--ix-ease),
+      opacity var(--ix-base) var(--ix-ease);
+  }
+  .ts-arrow[data-dir='-1'] :global(svg) {
+    transform: rotate(180deg);
+  }
+  .ts-arrow:hover:not(:disabled) {
+    background: var(--section);
+  }
+  .ts-arrow:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .ts-arrow:focus-visible {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 2px;
+  }
+  .ts-rel-track {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem max(var(--gutter), (100vw - var(--wrap)) / 2 + var(--gutter)) 1.5rem;
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: max(var(--gutter), (100vw - var(--wrap)) / 2 + var(--gutter));
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .ts-rel-track::-webkit-scrollbar {
+    display: none;
+  }
+  .ts-rel {
+    flex: 0 0 clamp(250px, 23vw, 286px);
+    scroll-snap-align: start;
+  }
+  .ts-rel-link {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    color: inherit;
+    text-decoration: none;
+  }
+  .ts-rel-link:focus-visible {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 3px;
+  }
+  .ts-rel-art {
+    position: relative;
+    height: 128px;
+    overflow: hidden;
+    background:
+      radial-gradient(70% 90% at 80% 0%, color-mix(in srgb, var(--c) 55%, transparent), transparent 70%),
+      linear-gradient(150deg, #17213d, var(--ts-navy));
+  }
+  .ts-rel-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+  }
+  .ts-rel-mark {
+    position: absolute;
+    right: -6px;
+    top: -10px;
+    color: color-mix(in srgb, var(--c) 70%, #fff);
+    opacity: 0.32;
+  }
+  .ts-rel-art .ts-tile {
+    position: absolute;
+    left: 1.1rem;
+    bottom: 0.9rem;
+  }
+  .ts-rel-body {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1.1rem 3.5rem 1.25rem 1.1rem;
+  }
+  .ts-rel-body strong {
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+  }
+  .ts-rel-body span {
+    color: var(--text-2);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+  .ts-rel-go {
+    position: absolute;
+    right: 1rem;
+    bottom: 1.1rem;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    color: var(--c, var(--red));
+    background: color-mix(in srgb, var(--c, var(--red)) 12%, #fff);
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .ts-rel-link:hover .ts-rel-go,
+    .ts-post:hover .ts-rel-go {
+      transform: translateX(3px);
+    }
+  }
+  @media (max-width: 760px) {
+    .ts-related-side {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .ts-rel {
+      flex-basis: 78%;
+    }
+  }
+
+  /* ---------- 11. Insights ---------- */
+  .ts-posts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .ts-post {
+    position: relative;
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+    height: 100%;
+    padding: 0.75rem 3.5rem 0.75rem 0.75rem;
+    border-radius: 18px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    color: inherit;
+    text-decoration: none;
+    --c: var(--red);
+  }
+  .ts-post:focus-visible {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 3px;
+  }
+  .ts-post img {
+    flex: none;
+    width: 112px;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+  .ts-post-body {
+    display: grid;
+    align-content: center;
+    gap: 0.4rem;
+  }
+  .ts-post-cat {
+    justify-self: start;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: var(--red-tint);
+    color: var(--red-text);
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .ts-post-body strong {
+    font-family: var(--font-head);
+    font-size: 0.98rem;
+    line-height: 1.3;
+  }
+  .ts-post-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    color: var(--text-2);
+  }
+  .ts-post .ts-rel-go {
+    top: 50%;
+    bottom: auto;
+    margin-top: -17px;
+  }
+  @media (max-width: 1024px) {
+    .ts-posts {
+      grid-template-columns: 1fr;
+      max-width: 640px;
+    }
+  }
+
+  /* ---------- 12. Final CTA ---------- */
+  .ts-final {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: clamp(3.5rem, 7vw, 5.5rem);
+    background:
+      radial-gradient(50% 80% at 100% 100%, rgba(217, 64, 64, 0.22), transparent 70%),
+      var(--ts-navy);
+  }
+  .ts-final-waves {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+  }
+  .ts-final-waves path {
+    fill: none;
+    stroke: url(#ts-wave-a);
+    stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .ts-final-waves {
+      animation: ts-drift 20s ease-in-out infinite alternate;
+    }
+  }
+  @keyframes ts-drift {
+    to {
+      transform: translateX(-3%) scaleY(1.06);
+    }
+  }
+  .ts-final-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 2rem clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .ts-final-cta > p {
+    color: var(--ts-on-dark);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  @media (max-width: 860px) {
+    .ts-final-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
