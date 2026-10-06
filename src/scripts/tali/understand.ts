@@ -56,18 +56,20 @@ export const RX = {
   generalPricing: /\b(your (price|prices|pricing|rate|rates|fee|fees)|do you charge|how do you (charge|price)|what do you charge|(tls|true lean)( solutions)? (charge|cost|price)\w*)\b/,
   pricing: /\b(price|prices|pricing|cost|costs|how much|fee|fees|rate|rates|budget|charge|expensive|cheap|afford|per month|per year|subscription)\b/,
   process: /\b(how (does|do|would|will) [a-z ]*\b(work|works|run|runs|go|goes|approach)|how it works|process|steps|stages|get started|getting started|onboard\w*|timeline|what happens|preserved|preserve)\b/,
-  details: /\b(include|includes|included|features?|what (does|do) (it|the service|you) (do|offer|include|build)|what (kind|kinds|type|types) of|what do you (build|place)|roles|deliverables|tell me more|more (details|info|information)|in detail|capabilit)/,
+  details: /\b((?!what\b)[a-z]+ (services|support) (do|does) (you|tls) (offer|provide)|include|includes|included|features?|what (does|do) (it|the service|you) (do|offer|include|build)|what (kind|kinds|type|types) of|what do you (build|place)|roles|deliverables|tell me more|more (details|info|information)|in detail|capabilit)/,
   audience: /\b(who (is it|is this|it is|it is) for|who should|right for|good fit|a fit|suitable|do i need|signs|when (do|should) (i|we))\b/,
-  control: /\b(secur\w*|privacy|private|data control|controlled|control (my|our|the) data|on.?prem\w*|deploy\w*|where .* data|data (stay|live|stored)|safe|confidential|ownership|lock-?in|used to train|train\w* (on|the|ai|models?|llms?))\b/,
+  control: /\b(secur\w*|(only|just) about (technology|tech|tools)|privacy|private|data control|controlled|control (my|our|the) data|on.?prem\w*|deploy\w*|where .* data|data (stay|live|stored)|safe|confidential|ownership|lock-?in|used to train|train\w* (on|the|ai|models?|llms?))\b/,
   /** "Tell me more", or yes to the last answer: more on the current topic. */
   more: /^(more|tell me more|go on|continue|details|more details|explain( more| please| that)?|elaborate|yes|yes please|sure|please do|please|and|what else)$/,
   /** Certifications and compliance: nothing published, so never asserted. */
   certification: /\b(iso ?\d*|soc ?2|soc2|hipaa|gdpr|pci|fedramp|certif\w*|accredit\w*|complian\w*)\b/,
-  guarantee: /\b(guarantee\w*|promise\w*|ensure (we|that we|our)|rank (first|1st|number one|on top|at the top)|be (first|number one|the top result))\b/,
+  guarantee: /\b(guarantee\w*|promise\w*|ensure (we|that we|our)|rank (first|1st|number one|on top|at the top)|be (first|number one|the top result)|(stop|prevent|block) (all|every|any) ([a-z]+ )?(attacks?|threats?|breach\w*|hacks?)|(100 ?%?|100 percent|fully|completely|totally) (secure|safe|protected)|never (be |get )?(hacked|breached|attacked)|unhackable|hack.?proof)\b/,
   howMany: /\bhow many (employees|people|staff|developers|engineers|clients|customers|projects|years)\b/,
   /** What sets TLS apart (answered from the published values). */
   why: /\b(what makes (you|tls|true lean)( guys)? (different|unique|special|better)|why (should (i|we) )?(choose|pick|go with|hire|use|work with|trust) (you|tls|true lean)|why (tls|true lean)|differentiat\w*|set (you|tls) apart|stand out)\b/,
   /** Who TLS works with, by size (published positioning only). */
+  /** "What types of businesses do you work with?" (answered from the published positioning). */
+  kinds: /\b(what|which) (types?|kinds?|sorts?|sizes?) of (business|businesses|companies|company|clients|customers|organizations)\b/,
   size: /\b(small|smaller|mid-?sized?|medium(-sized)?|growing|smb|smbs|small and mid-?sized?) (business|businesses|companies|company|firms|teams|organizations|orgs)\b/,
   /** Asking Tali to do something it can't do from a chat window. */
   act: /\b(can|could|will|would) (you|tali) (please )?(book|schedule|set up|arrange|send|email|text|call|submit|sign (me|us) up|add (me|us)|register|reserve|create (an? )?(account|ticket))\b/,

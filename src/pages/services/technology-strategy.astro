@@ -18,6 +18,7 @@ import Button from '../../components/Button.astro';
 import Icon from '../../components/Icon.astro';
 import ClientLogos from '../../components/ClientLogos.astro';
 import ReviewReel from '../../components/ReviewReel.astro';
+import FaqList from '../../components/FaqList.astro';
 import type { IconName } from '../../components/iconTypes';
 import { cta, href, site } from '../../data/site';
 import { solutions } from '../../data/services';
@@ -432,17 +433,7 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
         accent="technology strategy."
         lead="Quick answers about our approach, the process and how we can help your business."
       />
-      <div class="ts-faq-list" data-reveal="stagger">
-        {faqs.map((f, i) => (
-          <details class="ts-faq-item" open={i === 0}>
-            <summary>
-              <span>{f.q}</span>
-              <span class="ts-faq-sign" aria-hidden="true"></span>
-            </summary>
-            <div class="ts-faq-a">{f.a.map((p) => <p>{p}</p>)}</div>
-          </details>
-        ))}
-      </div>
+      <FaqList items={faqs} />
     </div>
   </section>
 
@@ -1446,87 +1437,6 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     gap: clamp(2rem, 5vw, 4rem);
     align-items: start;
-  }
-  .ts-faq-list {
-    display: grid;
-    gap: 0.75rem;
-  }
-  .ts-faq-item {
-    border-radius: 16px;
-    background: #fff;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    interpolate-size: allow-keywords;
-  }
-  .ts-faq-item summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1.1rem 1.25rem;
-    cursor: pointer;
-    list-style: none;
-    font-family: var(--font-head);
-    font-weight: 600;
-    font-size: 1.02rem;
-    border-radius: 16px;
-  }
-  .ts-faq-item summary::-webkit-details-marker {
-    display: none;
-  }
-  .ts-faq-item summary:focus-visible {
-    outline: 2px solid var(--blue-text);
-    outline-offset: 2px;
-  }
-  .ts-faq-sign {
-    position: relative;
-    flex: none;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--section);
-  }
-  .ts-faq-sign::before,
-  .ts-faq-sign::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 12px;
-    height: 2px;
-    margin: -1px 0 0 -6px;
-    background: var(--ink);
-    transition: transform var(--ix-base) var(--ix-ease);
-  }
-  .ts-faq-sign::after {
-    transform: rotate(90deg);
-  }
-  .ts-faq-item[open] .ts-faq-sign::after {
-    transform: rotate(0deg);
-  }
-  .ts-faq-item[open] .ts-faq-sign {
-    background: var(--red-tint);
-  }
-  .ts-faq-a {
-    padding: 0 1.25rem 1.2rem;
-    color: var(--text-2);
-    line-height: 1.65;
-  }
-  .ts-faq-a p + p {
-    margin-top: 0.6rem;
-  }
-  /* Smooth open/close where the browser supports animating <details>. */
-  @media screen and (prefers-reduced-motion: no-preference) {
-    .ts-faq-item::details-content {
-      block-size: 0;
-      overflow: hidden;
-      transition:
-        block-size 320ms var(--ix-ease),
-        content-visibility 320ms allow-discrete;
-    }
-    .ts-faq-item[open]::details-content {
-      block-size: auto;
-    }
   }
   @media (max-width: 900px) {
     .ts-faq-grid {

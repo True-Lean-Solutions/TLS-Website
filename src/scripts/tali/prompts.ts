@@ -92,6 +92,14 @@ export const PAGE_PROMPTS: PagePrompts[] = [
     scrollChips: ['Assess my technology', 'What happens next?', ask],
   },
   {
+    match: '/services/cyber-security/',
+    welcome: 'Thinking about how secure your business is?',
+    // Short chips that fit the bubble; the full questions are this page's
+    // chat starters (engine.ts STARTERS), shown once Tali is opened.
+    welcomeChips: ["What's included?", 'How does it work?', ask],
+    scrollChips: ['Assess my security', 'What happens next?', ask],
+  },
+  {
     match: '/services/',
     welcome: 'Looking for a solution to a specific challenge?',
     welcomeChips: ['Workflow automation', 'Custom software', ask],

@@ -770,3 +770,25 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 - To confirm (brief copy, not in the 2026-09-27 docs): "Technology-agnostic advice", "Support from strategy to execution", the four outcome lines and the four indicators.
 
 **Where it lives.** `src/pages/services/technology-strategy.astro`, `src/pages/services/[solution].astro`, `src/scripts/scroll/product.ts`, `public/solutions/technology-strategy/`, `src/scripts/tali/{knowledge,prompts,engine,understand}.ts`, `docs/references/pages/services/technology-strategy/`.
+
+## 2026-10-06 — Cyber Security full page
+
+**Status:** interim (awaiting Hemang's review)
+
+**Decision.** `/services/cyber-security/` is now a full page (`src/pages/services/cyber-security.astro`) built from Hemang's brief and fold references; it is excluded from the short `[solution].astro` template. Seven sections, each answering one question: hero (why care), why it matters (four outcomes around the business), our approach (people, process, technology: three circles that converge with the scroll), security at every layer (the signature: a pinned scene whose six-layer stack builds with the scroll and comes apart when scrolling back — `src/scripts/scroll/security.ts`), how we help (four stages on one continuous loop; the ring fills with the scroll through the existing `[data-progress]` hook), FAQ, final CTA. The FAQ accordion is now a shared component (`src/components/FaqList.astro`), also used by Technology Strategy (unchanged look).
+
+**Choices against the brief or references, and why.**
+- No raster imagery. The references' hero (an analyst at security-operations monitors over a city at night) and card photos (SOC monitors, a hand holding a shield) are cyber/SOC imagery, which v2.3 §13 rules out; the brand guide wins on imagery. Every visual is v2.3's approved isometric system art, drawn in code: the hero puts "your data / systems / people / operations" inside one perimeter around the TLS platform; the layer stack carries the red/blue edge light.
+- The brief's "How we help", "From risk to resilience" and "Security doesn't stop at go-live" sections tell the same four-to-five-stage story; they are one section here (the four stages on a loop, with "Security doesn't stop at go-live" at its center).
+- No case study, testimonials, client logos or Insights: none is about cyber security, and the brief says not to force proof. The reference's "Talk to our cyber security experts" became "Talk to our team".
+
+**Content handling.** No Cyber Security source doc exists (`docs/sources.md` §5; the Service Clarity Framework questionnaire is still unanswered). The headline is the approved one (2026-09-29); everything else is the brief's and the references' own lines, plus connective copy. FAQ answers restate the page's lines and the approved positioning ("growing small and mid-sized businesses"); the reference's "What industries do you work with?" is left out (no source).
+
+**To confirm before this is final** (capability claims, brief/reference copy only):
+- the four stages, especially "Monitor & Detect — detect threats early and respond before they impact your business" and "ongoing support, training and continuous improvement" (v2.3 says TLS is not "a cyber/SOC firm"; monitoring and response read close to one);
+- the six layers, especially "Threat Detection & Response" and "Compliance & Governance" ("Align with industry standards and regulatory needs");
+- the four hero benefits ("Risk-based approach", "Practical solutions", "People, process and technology", "Ongoing support") and the four outcomes.
+
+**Tali.** Knows the page's stages, approach and layers; page starters and short bubble chips; "can you stop all attacks?"-style questions get an honest no-guarantee answer; certification and compliance questions still never assert a standard.
+
+**Where it lives.** `src/pages/services/cyber-security.astro`, `src/components/FaqList.astro`, `src/scripts/scroll/{security,index}.ts`, `src/pages/services/[solution].astro`, `src/scripts/tali/{knowledge,prompts,engine,understand}.ts`, `docs/references/pages/services/cyber-security/`.

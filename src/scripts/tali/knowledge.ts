@@ -372,12 +372,35 @@ export const ENTITIES: Entity[] = [
   {
     id: 'security',
     name: 'Cyber Security',
-    aliases: ['cyber security', 'cybersecurity', 'cyber'],
+    aliases: ['cyber security', 'cybersecurity', 'cyber', 'security posture', 'security risks', 'security risk', 'threat detection', 'incident response', 'security controls', 'security'],
     url: '/services/cyber-security/',
+    // Details, approach and layers: the Cyber Security page (Hemang's brief,
+    // 2026-10-06).
     overview:
-      'Cyber Security is one of our solutions: protect what your business depends on. The details are best worked through with our team for your situation.',
+      'Protect what your business depends on. We help you strengthen your security posture, reduce risk and keep your operations running, with a practical, risk-based approach across people, processes and technology.',
+    details: {
+      lead: 'End-to-end cybersecurity support for your business:',
+      points: [
+        'Assess & Plan — understand your current security posture, identify risks and define a clear plan.',
+        'Implement & Secure — deploy the right security controls, policies and processes for your business.',
+        'Monitor & Detect — detect threats early and respond before they impact your business.',
+        'Support & Improve — ongoing support, training and continuous improvement as your business grows.',
+      ],
+    },
+    process: {
+      lead: "It starts with your business, then runs as one continuous cycle — security doesn't stop at go-live:",
+      points: [
+        'Assess & Plan — understand what your business depends on and your current security posture, identify the risks and define a clear plan.',
+        'Implement & Secure — put the right security controls, policies and processes in place.',
+        'Monitor & Detect — detect threats early and respond before they impact your business.',
+        'Support & Improve — we stay engaged with ongoing support, training and continuous improvement, so your protection keeps pace as your business grows.',
+      ],
+    },
+    // How TLS approaches security: people, process and technology, at every layer.
+    control:
+      'Security is strongest when people, processes and technology work together, so we look at all three. We start with your business — what it depends on and what matters most — then review your current security posture, identify the risks and define a clear plan that deals with the most important ones first. That covers every layer: people and awareness, processes and policies, infrastructure and technology, threat detection and response, data protection, and compliance and governance.',
     cta: projectCta,
-    follow: ['I want to discuss a project'],
+    follow: ['What does cyber security support include?', 'How do you assess security risks?', 'I want to discuss a project'],
   },
 ];
 

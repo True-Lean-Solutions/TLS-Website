@@ -1,0 +1,120 @@
+---
+/**
+ * FAQ accordion (solution pages): native <details>, so keyboard, focus and
+ * screen-reader behavior come from the element itself. Opening and closing
+ * animate where the browser supports ::details-content, never with reduced
+ * motion.
+ */
+interface Props {
+  items: { q: string; a: string[] }[];
+  /** Open the first answer on load. */
+  openFirst?: boolean;
+}
+const { items, openFirst = true } = Astro.props;
+---
+
+<div class="faq-list" data-reveal="stagger">
+  {
+    items.map((f, i) => (
+      <details class="faq-item" open={openFirst && i === 0}>
+        <summary>
+          <span>{f.q}</span>
+          <span class="faq-sign" aria-hidden="true" />
+        </summary>
+        <div class="faq-a">
+          {f.a.map((p) => (
+            <p>{p}</p>
+          ))}
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .faq-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .faq-item {
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    interpolate-size: allow-keywords;
+    transition: border-color var(--ix-base) var(--ix-ease);
+  }
+  .faq-item[open] {
+    border-color: var(--border-2);
+  }
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.02rem;
+    border-radius: 16px;
+  }
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-item summary:focus-visible {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 2px;
+  }
+  .faq-sign {
+    position: relative;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--section);
+    transition: background-color var(--ix-base) var(--ix-ease);
+  }
+  .faq-sign::before,
+  .faq-sign::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 12px;
+    height: 2px;
+    margin: -1px 0 0 -6px;
+    background: var(--ink);
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  .faq-sign::after {
+    transform: rotate(90deg);
+  }
+  .faq-item[open] .faq-sign::after {
+    transform: rotate(0deg);
+  }
+  .faq-item[open] .faq-sign {
+    background: var(--red-tint);
+  }
+  .faq-a {
+    padding: 0 1.25rem 1.2rem;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+  .faq-a p + p {
+    margin-top: 0.6rem;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .faq-item::details-content {
+      block-size: 0;
+      overflow: hidden;
+      transition:
+        block-size 320ms var(--ix-ease),
+        content-visibility 320ms allow-discrete;
+    }
+    .faq-item[open]::details-content {
+      block-size: auto;
+    }
+  }
+</style>

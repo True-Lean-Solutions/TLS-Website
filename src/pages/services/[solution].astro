@@ -12,9 +12,9 @@ import { cta } from '../../data/site';
 import { moreSolutions, type Service } from '../../data/services';
 
 export function getStaticPaths() {
-  // Technology Strategy has its own full page (technology-strategy.astro).
+  // Technology Strategy and Cyber Security have their own full pages.
   // (getStaticPaths runs in its own scope, so this lives inside it.)
-  const ownPage = ['/services/technology-strategy/'];
+  const ownPage = ['/services/technology-strategy/', '/services/cyber-security/'];
   return moreSolutions.filter((s) => !ownPage.includes(s.href)).map((s) => ({
     params: { solution: s.href.split('/').filter(Boolean).pop() },
     props: { solution: s },
@@ -54,8 +54,6 @@ const copy: Record<string, PageCopy> = {
       text: "Start with the decisions that matter. We'll help you build the strategy, data foundation and analytics capability to answer them.",
     },
   },
-  // No description yet (Hemang, 2026-09-28); headline Hemang (2026-09-29).
-  'cyber-security': { headline: ['Protect what', 'your business depends on.'], cta: 'Discuss Your Project' },
 };
 
 const page = copy[slug];

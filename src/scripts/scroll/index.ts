@@ -11,6 +11,7 @@
  *   signature heroes, Challenges, Solutions ........ media.ts, story.ts
  *   page      the Contact conversation ............. contact.ts
  *             product pages (Meeting Intelligence) .. product.ts
+ *             Cyber Security's layer stack ......... security.ts
  */
 import { gsap, ScrollTrigger, MQ, initSmoothScroll, refreshWhenSettled, scrollPosition, scrollToY } from './core';
 import { initHeadingReveals } from './text';
@@ -23,6 +24,7 @@ import { initStepSequences } from './steps';
 import { initReviewReels } from './reel';
 import { initPlaceCards } from './places';
 import { initProductPage } from './product';
+import { initSecurityPage } from './security';
 
 /** Solutions page: horizontal card track (off: the cards show as a grid). */
 const SOLUTIONS_TRACK = false;
@@ -102,6 +104,8 @@ export function initScroll() {
         cleanups.push(g.cleanup);
       }
       cleanups.push(initContact({ desktop: c.desktop }));
+      // Before the reveals: it changes the page's layout (tall layer notes).
+      cleanups.push(initSecurityPage({ desktop: c.desktop }));
       cleanups.push(initHeadingReveals());
       cleanups.push(initCardEntrances(skip));
       if (c.desktop) cleanups.push(initCardDepth(skip));

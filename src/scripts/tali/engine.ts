@@ -99,7 +99,7 @@ const STARTERS: [string, string[]][] = [
   ['/services/technical-talent/', ['What roles do you place?', 'How does the hiring process work?', 'Do you offer contract-to-hire?']],
   ['/services/technology-strategy/', ['What does technology strategy include?', 'How does TLS approach technology strategy?', 'Can you help me assess my current technology?', 'What happens after the roadmap?']],
   ['/services/data-analytics/', ['What is Data & Analytics?', 'Which solution fits my business?', 'I want to discuss a project']],
-  ['/services/cyber-security/', ['Explore TLS solutions', 'I want to discuss a project']],
+  ['/services/cyber-security/', ['What does cyber security support include?', 'How do you assess security risks?', 'Is security only about technology?', 'What happens after implementation?']],
   ['/services/', ['Explore TLS solutions', 'Which solution fits my business?', 'Tell me about Meeting Intelligence', 'I want to discuss a project']],
   ['/contact/', ['I want to discuss a new project', 'I need help choosing a service', 'How do I contact the TLS team?']],
   ['/about-us/', ['How did True Lean Solutions start?', 'Who is on the team?', 'How do you work?']],
@@ -184,6 +184,14 @@ const followFor = (e: Entity, asked?: string, answered?: Facet | null) =>
   (e.follow ?? []).filter((q) => norm(q) !== asked && !(answered && facetOf(clean(q)) === answered)).slice(0, 3);
 
 function entityReply(e: Entity, facet: Facet | null, asked: string): Reply {
+  // The solution's own name says nothing about the question: "what does cyber
+  // security support include?" asks what's included, not about data security.
+  if (facet) {
+    const flat = (s: string) => norm(s).replace(/ /g, '');
+    const names = [e.name, ...e.aliases.filter((a) => flat(a) === flat(e.name))].map(norm);
+    const bare = names.reduce((s, n) => s.split(n).join('it'), asked);
+    if (bare !== asked) facet = facetOf(bare) ?? (facet === 'control' ? null : facet);
+  }
   const chips = followFor(e, asked, facet);
   // Help first: the solution's page, not a sales button. Contact comes with
   // pricing, or when the visitor asks for it.
@@ -440,7 +448,14 @@ export function createEngine(opts: {
       };
     }
     if (has(t, RX.guarantee)) {
-      const ai = (found[0]?.e.id ?? current()?.id) === 'visibility' || /\b(ai|chatgpt|gemini|perplexity|google|rank\w*|search)\b/.test(t);
+      const about = found[0]?.e.id ?? current()?.id;
+      const ai = about === 'visibility' || /\b(ai|chatgpt|gemini|perplexity|google|rank\w*|search)\b/.test(t);
+      if (!ai && (about === 'security' || /\b(attack|threat|breach|hack|secur)/.test(t)))
+        return {
+          intent: 'guarantee',
+          text: 'No one can honestly promise that a business will never be attacked. What strong security does is reduce risk: protect what matters most, detect threats early and respond before they impact your business — and keep improving as threats change.',
+          links: [pageLink(byId('security')!), CONTACT.page],
+        };
       return {
         intent: 'guarantee',
         text: ai
@@ -471,10 +486,11 @@ export function createEngine(opts: {
     if (has(t, RX.why)) {
       return { intent: 'why', text: 'What sets True Lean Solutions apart:', points: COMPANY.values, links: [{ label: 'About us', href: '/about-us/' }], chips: ['How do you work?', 'Which solution fits my business?'] };
     }
-    if (has(t, RX.size) && (u.tlsDirected || u.question)) {
+    if ((has(t, RX.size) || has(t, RX.kinds)) && (u.tlsDirected || u.question)) {
+      const lead = has(t, RX.kinds) ? 'Growing small and mid-sized businesses' : 'Yes — True Lean Solutions is built for growing businesses';
       return {
         intent: 'audience.company',
-        text: `Yes — True Lean Solutions is built for growing businesses: ${COMPANY.values[0].replace(/^Built for growing businesses: /, '')}`,
+        text: `${lead}: ${COMPANY.values[0].replace(/^Built for growing businesses: /, '')}`,
         chips: ['Which solution fits my business?', 'Who are your clients?'],
       };
     }
@@ -579,6 +595,13 @@ export function createEngine(opts: {
         links: [pageLink(e), CONTACT.page],
         chips: ['How does an integration project run?'],
       };
+    }
+
+    /* "What about security?" while talking about a product means that
+       product's data security, not the Cyber Security solution. */
+    const inPlay = current();
+    if (found[0]?.e.id === 'security' && facet === 'control' && inPlay?.control && inPlay.id !== 'security' && !/\bcyber/.test(t)) {
+      return entityReply(inPlay, 'control', t);
     }
 
     /* TLS knowledge: a specific solution or product. */
