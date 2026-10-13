@@ -59,7 +59,8 @@ const solutionLinks = solutions.map((s) => ({ label: s.title, href: s.href }));
           <li>
             <a href={`mailto:${site.email}`}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1z" /><path d="M4.9 8L12 13.1 19.1 8" /></svg>
-              <span>{site.email}</span>
+              {/* A line-break chance after "@", so a narrow column wraps the address cleanly. */}
+              <span>{site.email.split('@')[0]}@<wbr />{site.email.split('@')[1]}</span>
             </a>
           </li>
           <li>
@@ -183,12 +184,16 @@ const solutionLinks = solutions.map((s) => ({ label: s.title, href: s.href }));
   .fc a {
     display: inline-flex;
     align-items: center;
+    max-width: 100%;
     gap: 0.55rem;
     font-size: 0.88rem;
     color: var(--text-2);
     text-decoration: none;
     overflow-wrap: break-word;
     transition: color 250ms ease;
+  }
+  .fc a span {
+    min-width: 0;
   }
   .fc a svg {
     flex: none;

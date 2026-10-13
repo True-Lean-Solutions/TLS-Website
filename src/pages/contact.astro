@@ -52,7 +52,7 @@ const description =
               <li>
                 <span class="k">Email</span>
                 <a href={`mailto:${site.email}`}>
-                  <span class="u">{site.email}</span><Icon name="arrow" size={14} class="go" />
+                  <span class="u">{site.email.split('@')[0]}@<wbr />{site.email.split('@')[1]}</span><Icon name="arrow" size={14} class="go" />
                 </a>
               </li>
               <li>

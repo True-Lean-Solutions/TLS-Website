@@ -570,7 +570,7 @@ const chain: { label: string; text: string; icon: IconName }[] = [
   @keyframes mi-settle {
     from { opacity: 0; transform: scale(1.03); }
   }
-  @media (max-width: 960px) {
+  @media (max-width: 1100px) {
     .mi-hero {
       min-height: 0;
       padding-bottom: 0;
@@ -1204,6 +1204,9 @@ const chain: { label: string; text: string; icon: IconName }[] = [
   /* ---------- 6. Knowledge continuity ---------- */
   .mi-cont {
     background: linear-gradient(180deg, var(--bg) 0, var(--section) 72px, var(--section) calc(100% - 72px), var(--bg) 100%);
+    /* The answer panel waits off to the right before it slides in: never let
+       that widen the page (clip, not hidden: no scroll container). */
+    overflow-x: clip;
   }
   .mi-tags {
     list-style: none;

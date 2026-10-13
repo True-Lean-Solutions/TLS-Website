@@ -444,7 +444,7 @@ const menuId = (label: string) => `menu-${label.toLowerCase().replace(/\s+/g, '-
   /* Very short desktop screens: the item grid scrolls inside the panel so the
      footer link stays in view (height-scoped so focus rings aren't clipped
      on normal screens). */
-  @media (min-width: 961px) and (max-height: 520px) {
+  @media (min-width: 1121px) and (max-height: 520px) {
     .mega-grid {
       max-height: calc(100vh - 170px);
       overflow-y: auto;
@@ -606,13 +606,14 @@ const menuId = (label: string) => `menu-${label.toLowerCase().replace(/\s+/g, '-
   }
 
   /* ---- Responsive ---- */
-  @media (max-width: 960px) {
+  @media (max-width: 1120px) {
     .menu-toggle {
       display: block;
       order: 3;
     }
     .actions {
       order: 2;
+      margin-left: auto; /* search + menu sit at the right edge, at any width */
     }
     .cta-wrap {
       display: none;
@@ -753,7 +754,7 @@ const menuId = (label: string) => `menu-${label.toLowerCase().replace(/\s+/g, '-
   // (Bundled module scripts have no document.currentScript, so query directly.)
   const header = document.querySelector('.site-header');
 
-  const mq = window.matchMedia('(max-width: 960px)');
+  const mq = window.matchMedia('(max-width: 1120px)');
   const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
   const nav = document.getElementById('primary-nav');
   const menus = Array.from(document.querySelectorAll<HTMLElement>('.has-menu'));

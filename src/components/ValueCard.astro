@@ -18,19 +18,19 @@ const accents: Record<Accent, string> = {
 };
 ---
 
+<!-- A statement, not a link: no arrow (Hemang, 2026-10-14). -->
 <div class="value-card ix-card ix-card--quiet ix-light" style={accents[accent]}>
   <span class="icon glass-icon"><Icon name={icon} size={24} /></span>
   <div class="body">
     <h3>{title}</h3>
     <p>{text}</p>
   </div>
-  <span class="arrow glass-icon" aria-hidden="true"><Icon name="arrow" size={18} /></span>
 </div>
 
 <style>
   .value-card {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
     align-items: center;
     gap: 1.1rem;
     background: var(--surface);
@@ -57,23 +57,5 @@ const accents: Record<Accent, string> = {
     color: var(--text-2);
     line-height: 1.55;
     font-size: 0.96rem;
-  }
-  .arrow {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    color: var(--c);
-    flex: none;
-  }
-  @media (max-width: 480px) {
-    .value-card {
-      grid-template-columns: auto 1fr;
-    }
-    .arrow {
-      display: none;
-    }
   }
 </style>

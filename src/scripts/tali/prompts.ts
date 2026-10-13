@@ -62,7 +62,9 @@ export const PAGE_PROMPTS: PagePrompts[] = [
   {
     match: '/services/workflow-automation/',
     welcome: 'Have a process that should run itself?',
-    welcomeChips: ['What processes can be automated?', 'Can automation work with my existing tools?', ask],
+    // Short enough for the bubble on a 360px phone; the full question is one of
+    // this page's chat starters (engine.ts STARTERS).
+    welcomeChips: ['What processes can be automated?', 'Automation with my tools?', ask],
     scrollChips: ['Which solution is right for me?', 'How can I get started?', ask],
   },
   {

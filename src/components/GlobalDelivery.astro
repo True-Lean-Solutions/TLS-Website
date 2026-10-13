@@ -169,6 +169,9 @@ const advantages = [
   /* White, eased in from the page canvas above rather than starting on a line. */
   .global {
     background: linear-gradient(180deg, var(--bg) 0, var(--surface) 96px);
+    /* The map's scroll zoom must never widen the page (clip, not hidden: no
+       scroll container). */
+    overflow-x: clip;
   }
   .hl {
     color: var(--red);

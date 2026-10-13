@@ -803,3 +803,15 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 - Text-only page heroes (`.page-hero`: About, Insights, legal pages) have the same 64px above the title as between the buttons and the next heading (was 96px above, 160px below).
 - The About page's sections use 64px padding (48px on phones) instead of the site-wide 96px (64px): 128px between sections instead of 192px.
 
+## 2026-10-14 — Responsive pass across every page and device; Why TLS cards lose their arrows
+
+**Status:** settled (Hemang)
+
+**Decision.** All 34 pages checked at 11 sizes (360–1920, phones, iPads, desktops): no sideways scroll, no broken images, no console errors. Fixes:
+- The header's compact menu now runs up to 1120px (was 960px): from 961 to 1120 the desktop header wrapped ("About Us", "Contact Us", the lockup and the CTA). Search and menu sit at the right edge. `Header.astro` (CSS and the script's matchMedia).
+- Meeting Intelligence and AI Visibility Growth Team heroes stack (copy, then image) up to 1100px (was 960px): at 1024 the headline ran over the image.
+- Sections whose motion starts off-screen clip horizontally (`overflow-x: clip`): Global Delivery (the map's scroll zoom widened About on phones and tablets) and Meeting Intelligence's continuity section (at 1024).
+- The email address may wrap after "@" in the footer (768–900px) and on Contact.
+- Workflow Automation's Tali bubble chip "Can automation work with my existing tools?" became "Automation with my tools?" (it ran off a 360px screen; the full question is a chat starter).
+- Home › Why TLS: the value cards' arrows are removed. The cards are statements, not links.
+
