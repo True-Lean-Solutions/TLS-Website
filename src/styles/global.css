@@ -198,11 +198,16 @@ a:hover {
 main > .section-alt:last-child {
   background: linear-gradient(180deg, var(--bg) 0, var(--section) var(--band-edge));
 }
+/* Text-only page heroes (About, Insights, legal pages): the same space above
+   the title as between the buttons and the next section's heading. */
 .page-hero {
-  padding-block: var(--space-7) var(--space-6);
+  padding-block: var(--space-6) 0;
   background:
     radial-gradient(50% 70% at 12% 30%, var(--red-tint), transparent 60%),
     radial-gradient(50% 70% at 90% 20%, var(--blue-tint), transparent 60%);
+}
+.page-hero + .section {
+  padding-top: var(--space-6);
 }
 .page-hero h1 {
   max-width: 20ch;

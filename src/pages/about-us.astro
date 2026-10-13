@@ -19,6 +19,7 @@ const description =
 ---
 
 <BaseLayout title={title} description={description} path="/about-us/">
+  <div class="about">
   <!-- Hero -->
   <section class="page-hero">
     <div class="wrap" data-reveal="load">
@@ -142,9 +143,27 @@ const description =
     <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
     <Button href={cta.email.href} variant="secondary" external>{cta.email.label}</Button>
   </CtaBand>
+  </div>
 </BaseLayout>
 
 <style>
+  /* Tighter rhythm than the site-wide sections (Hemang, 2026-10-14): less
+     empty space between the page's many short sections. */
+  .about :global(.section) {
+    padding-block: var(--space-6);
+  }
+  .about :global(.section-alt) {
+    --band-edge: 48px;
+  }
+  @media (max-width: 768px) {
+    .about :global(.section) {
+      padding-block: 3rem;
+    }
+    /* Same space below the hero as above its title. */
+    .about :global(.page-hero + .section) {
+      padding-top: var(--space-6);
+    }
+  }
   .pair {
     margin-top: 2rem;
     margin-bottom: 2rem;

@@ -10,7 +10,8 @@ export interface Person {
   role: string;
   bio: string;
   photo: string; // path under public/, resolved with href()
-  linkedin: string;
+  /** Omit when there is no profile to link: the card then shows no LinkedIn button. */
+  linkedin?: string;
 }
 
 export const coreTeam: Person[] = [
@@ -72,5 +73,24 @@ export const advisors: Person[] = [
     bio: 'Sanket is a serial entrepreneur and the CEO & Co-Founder of IConflux Technologies, a software development company with a team of 100+ developers serving Fintech, Manufacturing, and Tech Startups globally. With over 13 years of building and scaling technology ventures, Sanket brings deep expertise in business growth, digital transformation, and POD-based delivery models. At TLS, he advises on growth strategy and market expansion.',
     photo: '/team/sanket-thakkar.webp',
     linkedin: 'https://www.linkedin.com/in/sanket-thakkar/',
+  },
+  // Hemang (2026-10-14, in chat): his LinkedIn entry, rewritten in the third
+  // person like the other bios (approved by Hemang); dates left out until
+  // confirmed. Office portrait cropped to the shared eye line.
+  {
+    name: 'Ketul Thakker',
+    role: 'Advisor — Marketing Strategy & Campaigns',
+    bio: "Ketul advises and mentors the CEO of True Lean Solutions on market positioning, marketing communications and campaign development. He helps translate TLS's delivery capabilities into clear client propositions and campaigns that reach the right audiences — refining messaging, guiding campaign design, and aligning marketing activity with business development priorities. Through ongoing collaboration with the CEO, he helps bring focus and consistency to how the company presents its services and pursues growth.",
+    photo: '/team/ketul-thakker.webp',
+    linkedin: 'https://www.linkedin.com/in/ketul-thakker-k-504b2824/',
+  },
+  // Hemang (2026-10-14, in chat): his copy, reframed with the dates removed
+  // (Hemang); same facts. Office portrait cropped to the shared eye line.
+  {
+    name: 'Dharmendra Mistry',
+    role: 'Former Advisor — Healthcare Operations & Solutions',
+    bio: 'Dharmendra advised True Lean Solutions on healthcare operations and client delivery. A healthcare and medical technology executive with more than 30 years of experience, he built Biomet India from inception to about $10 million in four years, led the Zimmer Biomet integration in India, and headed Lumenis across India and South Asia. As co-founder of Valiant Care, he built and ran a 24/7 care service for seafarers, giving him first-hand experience of how clinical workflows really run. At TLS, he worked with hospitals and clinicians to find workflow gaps and turn them into clear requirements for the delivery team.',
+    photo: '/team/dharmendra-mistry.webp',
+    linkedin: 'https://www.linkedin.com/in/dharmendra-mistry-05470723/',
   },
 ];

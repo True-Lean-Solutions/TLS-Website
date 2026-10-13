@@ -792,3 +792,14 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 **Tali.** Knows the page's stages, approach and layers; page starters and short bubble chips; "can you stop all attacks?"-style questions get an honest no-guarantee answer; certification and compliance questions still never assert a standard.
 
 **Where it lives.** `src/pages/services/cyber-security.astro`, `src/components/FaqList.astro`, `src/scripts/scroll/{security,index}.ts`, `src/pages/services/[solution].astro`, `src/scripts/tali/{knowledge,prompts,engine,understand}.ts`, `docs/references/pages/services/cyber-security/`.
+
+## 2026-10-14 — About: two more advisors, tighter spacing; real social logos
+
+**Status:** settled (Hemang)
+
+**Decision.**
+- Advisors gains Ketul Thakker (Advisor — Marketing Strategy & Campaigns) and Dharmendra Mistry (Former Advisor — Healthcare Operations & Solutions), current advisors first. Copy and photos: `docs/sources.md` §4. A team card's LinkedIn link is now optional (`linkedin?` in `src/data/team.ts`).
+- LinkedIn and Facebook icons use the companies' own logos in their brand colors (LinkedIn #0A66C2, Facebook #0866FF): on the team cards and in the footer (`TeamCard.astro`, `FooterSocials.astro`). Hovering keeps the brand color (links otherwise turn red site-wide).
+- Text-only page heroes (`.page-hero`: About, Insights, legal pages) have the same 64px above the title as between the buttons and the next heading (was 96px above, 160px below).
+- The About page's sections use 64px padding (48px on phones) instead of the site-wide 96px (64px): 128px between sections instead of 192px.
+
