@@ -1,0 +1,823 @@
+---
+/**
+ * An illustrative executive dashboard (Data & Analytics page): KPI tiles,
+ * a trend chart, a region chart, a segment donut and, optionally, key
+ * insights. It works like the real thing — the range switch redraws every
+ * chart, the trend chart has a crosshair and tooltip, the legend highlights
+ * its segment — and with `live` it draws in and data moves through it
+ * (src/scripts/dashboard.ts). It carries no figures: the mock-ups' sample
+ * values are placeholders that are never published (CLAUDE.md, docs/
+ * sources.md §5), so tiles show trends and status instead.
+ *
+ * `draw`: the lines draw and the tiles arrive on scroll ([data-draw],
+ * src/scripts/scroll/product.ts) instead of on first view.
+ */
+import { RANGES, W, H, R, line, area, arcs } from '../scripts/dashboard';
+
+interface Props {
+  theme?: 'dark' | 'light';
+  title?: string;
+  insights?: boolean;
+  draw?: boolean;
+  live?: boolean;
+  /** Extra layers for the guided tour (data-bi-tour): role badge, locks. */
+  tour?: boolean;
+  id?: string;
+}
+const { theme = 'dark', title = 'Executive Dashboard', insights = false, draw = false, live = false, tour = false, id: domId } = Astro.props;
+
+const range = RANGES[0];
+const kpis = [
+  { label: 'Revenue', status: 'Ahead of plan', tone: 'up' },
+  { label: 'Customers', status: 'Growing', tone: 'up' },
+  { label: 'Service level', status: 'On target', tone: 'flat' },
+  { label: 'Forecast accuracy', status: 'Improving', tone: 'up' },
+];
+const regionNames = ['North', 'South', 'East', 'West'];
+const segments = [
+  { name: 'Direct', c: '#1288CF' },
+  { name: 'Partner', c: '#e2557a' },
+  { name: 'Online', c: '#22b8cf' },
+  { name: 'Other', c: '#8b6cf0' },
+];
+const donut = arcs(range.shares);
+const insightLines = [
+  { t: 'Revenue ahead of target in two regions', tone: 'up' },
+  { t: 'Customer churn trending down', tone: 'up' },
+  { t: 'Service levels holding steady', tone: 'flat' },
+  { t: 'Forecast tracking within range', tone: 'up' },
+];
+const sparkEnd = (vals: number[]) => `${((1 - (4 + vals[vals.length - 1] * 28) / 36) * 100).toFixed(2)}%`;
+
+const mark = draw ? { 'data-draw-mark': '' } : {};
+const drawPath = draw ? 'draw-path' : '';
+const id = `${theme}${insights ? 'i' : ''}`;
+const LOCK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>';
+---
+
+<div
+  id={domId}
+  class:list={['dash', `dash--${theme}`, { 'dash--insights': insights, 'dash--live': live, 'dash--tour': tour }]}
+  role="figure"
+  aria-label="Illustrative executive dashboard with sample data: KPI trends, revenue trend against target, revenue by segment and performance by region."
+  data-dash
+  {...(live ? { 'data-live': '' } : {})}
+  {...(draw ? { 'data-draw': '' } : {})}
+>
+  <div class="dash-top">
+    <span class="dash-title" aria-hidden="true">{live && <i class="dash-live" />}{title}</span>
+    {tour && <span class="dash-role" aria-hidden="true"><Fragment set:html={LOCK} />Viewing as · North region</span>}
+    <button type="button" class="dash-pill" aria-label={`Showing ${range.label.toLowerCase()} (sample data). Switch to ${RANGES[1].label.toLowerCase()}.`}>
+      <span>{range.label}</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+    </button>
+  </div>
+
+  <div class="dash-kpis" aria-hidden="true">
+    {
+      kpis.map((k, i) => (
+        <div class="dash-kpi" {...mark}>
+          <span class="dash-kpi-label">{k.label}</span>
+          <span class="dash-spark-wrap">
+            <svg class="dash-spark" viewBox="0 0 120 36" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id={`dash-sg-${id}-${i}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="currentColor" stop-opacity="0.35" />
+                  <stop offset="1" stop-color="currentColor" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <path class="dash-spark-area" d={area(range.spark[i], 120, 36, 4)} fill={`url(#dash-sg-${id}-${i})`} />
+              <path class:list={['dash-spark-line', drawPath]} d={line(range.spark[i], 120, 36, 4)} />
+            </svg>
+            <span class="dash-spark-end" style={`top: ${sparkEnd(range.spark[i])}`} />
+          </span>
+          <span class:list={['dash-chip', `is-${k.tone}`]}>
+            {k.tone === 'up' ? '▲' : '●'} {k.status}
+          </span>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="dash-grid" aria-hidden="true">
+    <div class="dash-card dash-trend" {...mark}>
+      <div class="dash-card-head">
+        <span>Revenue trend</span>
+        <span class="dash-legend"><i class="is-blue"></i>Actual <i class="is-red"></i>Target</span>
+      </div>
+      <div class="dash-trend-plot">
+        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" class="dash-chart">
+          <defs>
+            <linearGradient id={`dash-area-${id}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#1288CF" stop-opacity="0.3" />
+              <stop offset="1" stop-color="#1288CF" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          {[0.25, 0.5, 0.75].map((g) => <line class="dash-gridline" x1="0" x2={W} y1={H * g} y2={H * g} />)}
+          <path class="dash-area" d={area(range.actual)} fill={`url(#dash-area-${id})`} />
+          <path class:list={['dash-target', drawPath]} d={line(range.target)} />
+          <path class:list={['dash-actual', drawPath]} d={line(range.actual)} />
+        </svg>
+        <span class="dash-cross"></span>
+        <span class="dash-dot dash-dot-t"></span>
+        <span class="dash-dot dash-dot-a"></span>
+        <span class="dash-tip"></span>
+        {live && <span class="dash-runner" />}
+      </div>
+      <div class="dash-axis">{range.axis.map((m) => <span>{m}</span>)}</div>
+    </div>
+
+    <div class="dash-card dash-segments" {...mark}>
+      <div class="dash-card-head"><span>Revenue by segment</span></div>
+      {tour && (
+        <span class="dash-veil">
+          <Fragment set:html={LOCK} />
+          Restricted for this role
+        </span>
+      )}
+      <div class="dash-donut-row">
+        <svg viewBox="0 0 42 42" class="dash-donut">
+          <circle cx="21" cy="21" r={R} class="dash-donut-track" />
+          {donut.map((a, i) => <circle class="dash-arc" cx="21" cy="21" r={R} fill="none" stroke={segments[i].c} stroke-width="6" stroke-dasharray={a.dash} stroke-dashoffset={a.offset} />)}
+        </svg>
+        <ul class="dash-key">
+          {
+            segments.map((s) => (
+              <li>
+                <i style={`background:${s.c}`} />
+                {s.name}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="dash-card dash-regions" {...mark}>
+      <div class="dash-card-head"><span>Performance by region</span></div>
+      <div class="dash-bars">
+        {
+          range.regions.map((r, i) => (
+            <div class="dash-bar">
+              <span class="dash-bar-pair">
+                <i class="is-a" style={`--h:${r.a}`} />
+                <i class="is-t" style={`--h:${r.t}`} />
+              </span>
+              <span class="dash-bar-name">{regionNames[i]}</span>
+              {tour && i > 0 && <span class="dash-lock" set:html={LOCK} />}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    {
+      insights && (
+        <div class="dash-card dash-insights" {...mark}>
+          <div class="dash-card-head">
+            <span>Key insights</span>
+          </div>
+          <ul>
+            {insightLines.map((l) => (
+              <li class:list={[`is-${l.tone}`]}>
+                <b>{l.tone === 'up' ? '▲' : '●'}</b>
+                {l.t}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+  </div>
+  <span class="dash-note" aria-hidden="true">Illustrative dashboard · sample data</span>
+</div>
+
+<script>
+  import { initDashboards, initTours } from '../scripts/dashboard';
+  initDashboards();
+  initTours();
+</script>
+
+<style>
+  .dash {
+    --fg: #eef3ff;
+    --fg-2: rgba(214, 226, 255, 0.72);
+    --line: rgba(160, 200, 255, 0.16);
+    --surface: rgba(16, 28, 58, 0.62);
+    --tile: rgba(255, 255, 255, 0.05);
+    --actual: #3aa0ff;
+    position: relative;
+    display: grid;
+    gap: 0.7em;
+    padding: 1.1em;
+    border-radius: 18px;
+    font-family: var(--font-body);
+    font-size: clamp(9px, 0.42rem + 0.42vw, 13px);
+    color: var(--fg);
+    background: linear-gradient(160deg, rgba(30, 52, 104, 0.55), rgba(10, 18, 40, 0.72));
+    border: 1px solid rgba(150, 200, 255, 0.28);
+    box-shadow:
+      0 30px 80px -30px rgba(18, 136, 207, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .dash--light {
+    --fg: #0d0d0d;
+    --fg-2: #5a5a72;
+    --line: #e7e9f2;
+    --surface: #fff;
+    --tile: #fff;
+    --actual: #1288cf;
+    background: #f6f7fb;
+    border-color: #e3e6ef;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  /* A soft light sweeps across the glass now and then (live, dark). */
+  .dash--live.dash--dark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgba(160, 210, 255, 0.07) 50%, transparent 65%);
+    background-size: 250% 100%;
+    background-position: 150% 0;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .dash--live.dash--dark::before {
+      animation: dash-sheen 9s ease-in-out 2s infinite;
+    }
+  }
+  @keyframes dash-sheen {
+    0%,
+    60% {
+      background-position: 150% 0;
+    }
+    100% {
+      background-position: -50% 0;
+    }
+  }
+  .dash-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+  }
+  .dash-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.25em;
+  }
+  .dash-live {
+    position: relative;
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: #3ee08f;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .dash-live::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: #3ee08f;
+      animation: dash-ping 2s ease-out infinite;
+    }
+  }
+  @keyframes dash-ping {
+    to {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
+  .dash-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.35em 0.8em;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--fg-2);
+    font: inherit;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition:
+      color 200ms ease,
+      border-color 200ms ease,
+      background-color 200ms ease;
+  }
+  .dash-pill:hover {
+    color: var(--fg);
+    border-color: color-mix(in srgb, var(--actual) 55%, transparent);
+    background: color-mix(in srgb, var(--actual) 10%, transparent);
+  }
+  .dash-pill:focus-visible {
+    outline: 2px solid var(--actual);
+    outline-offset: 2px;
+  }
+  .dash-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.6em;
+  }
+  .dash-kpi {
+    display: grid;
+    gap: 0.35em;
+    padding: 0.75em 0.8em;
+    border-radius: 12px;
+    background: var(--tile);
+    border: 1px solid var(--line);
+    color: #3aa0ff;
+    transition:
+      transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 300ms ease;
+  }
+  .dash-kpi:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, currentColor 45%, transparent);
+  }
+  .dash-kpi:nth-child(2) {
+    color: #22b8a0;
+  }
+  .dash-kpi:nth-child(3) {
+    color: #8b6cf0;
+  }
+  .dash-kpi:nth-child(4) {
+    color: #e2557a;
+  }
+  .dash-kpi-label {
+    color: var(--fg);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.95em;
+  }
+  .dash-spark-wrap {
+    position: relative;
+    display: block;
+  }
+  .dash-spark {
+    display: block;
+    width: 100%;
+    height: 2.6em;
+  }
+  .dash-spark-line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .dash-spark-end {
+    position: absolute;
+    right: 0;
+    width: 0.45em;
+    height: 0.45em;
+    margin: -0.225em -0.225em 0 0;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 0 0.2em color-mix(in srgb, currentColor 25%, transparent);
+    transition: top 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .dash--live .dash-spark-end {
+      animation: dash-glow 2.4s ease-in-out infinite;
+    }
+    .dash--live .dash-kpi:nth-child(2) .dash-spark-end {
+      animation-delay: 0.6s;
+    }
+    .dash--live .dash-kpi:nth-child(3) .dash-spark-end {
+      animation-delay: 1.2s;
+    }
+    .dash--live .dash-kpi:nth-child(4) .dash-spark-end {
+      animation-delay: 1.8s;
+    }
+  }
+  @keyframes dash-glow {
+    50% {
+      box-shadow: 0 0 0 0.45em color-mix(in srgb, currentColor 0%, transparent);
+    }
+  }
+  .dash-chip {
+    justify-self: start;
+    padding: 0.15em 0.55em;
+    border-radius: 999px;
+    font-size: 0.78em;
+    font-weight: 600;
+  }
+  .dash-chip.is-up {
+    color: #138a52;
+    background: rgba(22, 163, 74, 0.14);
+  }
+  .dash-chip.is-flat {
+    color: #1d6fb8;
+    background: rgba(18, 136, 207, 0.14);
+  }
+  .dash--dark .dash-chip.is-up {
+    color: #6ee7a8;
+  }
+  .dash--dark .dash-chip.is-flat {
+    color: #8fd0ff;
+  }
+  .dash-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 0.6em;
+  }
+  /* Without the insights card, the region chart takes the full row. */
+  .dash:not(.dash--insights) .dash-regions {
+    grid-column: 1 / -1;
+  }
+  .dash:not(.dash--insights) .dash-bars {
+    height: 5.2em;
+  }
+  .dash-card {
+    padding: 0.8em 0.9em;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .dash-card-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5em;
+    margin-bottom: 0.5em;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.95em;
+  }
+  .dash-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.8em;
+    color: var(--fg-2);
+  }
+  .dash-legend i,
+  .dash-key i {
+    display: inline-block;
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+  }
+  .dash-legend i.is-blue {
+    background: #1288cf;
+  }
+  .dash-legend i.is-red {
+    background: #e2455a;
+    margin-left: 0.4em;
+  }
+  /* Trend chart: the plot, with a crosshair layer on top. */
+  .dash-trend-plot {
+    position: relative;
+    cursor: crosshair;
+    touch-action: pan-y;
+  }
+  .dash-chart {
+    display: block;
+    width: 100%;
+    height: 7.5em;
+    overflow: visible;
+  }
+  .dash-gridline {
+    stroke: var(--line);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+  .dash-area {
+    transition: opacity 400ms ease;
+  }
+  .dash-actual,
+  .dash-target {
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .dash-actual {
+    stroke: var(--actual);
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--actual) 60%, transparent));
+  }
+  .dash-target {
+    stroke: #e2455a;
+    stroke-dasharray: 5 4;
+  }
+  .is-switching .dash-area {
+    opacity: 0.3;
+  }
+  .dash-cross,
+  .dash-dot,
+  .dash-tip,
+  .dash-runner {
+    position: absolute;
+    pointer-events: none;
+  }
+  .dash-cross {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    margin-left: -0.5px;
+    background: color-mix(in srgb, var(--fg) 30%, transparent);
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+  .dash-dot {
+    width: 0.65em;
+    height: 0.65em;
+    margin: -0.325em 0 0 -0.325em;
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+  .dash--light .dash-dot {
+    border-color: #fff;
+  }
+  .dash-dot-a {
+    background: var(--actual);
+    box-shadow: 0 0 0 0.25em color-mix(in srgb, var(--actual) 25%, transparent);
+  }
+  .dash-dot-t {
+    background: #e2455a;
+  }
+  .dash-tip {
+    transform: translate(-50%, calc(-100% - 0.8em));
+    padding: 0.3em 0.6em;
+    border-radius: 0.5em;
+    white-space: nowrap;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.8em;
+    color: #fff;
+    background: rgba(10, 18, 40, 0.92);
+    border: 1px solid rgba(150, 200, 255, 0.3);
+    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+  .is-hovering :is(.dash-cross, .dash-dot, .dash-tip) {
+    opacity: 1;
+  }
+  .dash-runner {
+    width: 0.7em;
+    height: 0.7em;
+    margin: -0.35em 0 0 -0.35em;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow:
+      0 0 0 0.25em color-mix(in srgb, var(--actual) 45%, transparent),
+      0 0 1.4em 0.4em color-mix(in srgb, var(--actual) 70%, transparent);
+    opacity: 0;
+  }
+  .is-hovering .dash-runner {
+    visibility: hidden;
+  }
+  .dash-axis {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.35em;
+    font-size: 0.75em;
+    color: var(--fg-2);
+  }
+  .dash-donut-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+  }
+  .dash-donut {
+    flex: none;
+    width: 5.6em;
+    height: 5.6em;
+  }
+  .dash-donut-track {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 6;
+  }
+  .dash-arc {
+    transition:
+      opacity 250ms ease,
+      stroke-width 250ms ease;
+  }
+  .is-seg .dash-arc:not(.is-on) {
+    opacity: 0.25;
+  }
+  .dash-arc.is-on {
+    stroke-width: 7.5;
+  }
+  .dash-key {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35em;
+    font-size: 0.85em;
+    color: var(--fg-2);
+  }
+  .dash-key li {
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
+    cursor: default;
+    transition: color 200ms ease;
+  }
+  .dash-key li:hover {
+    color: var(--fg);
+  }
+  .dash-bars {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 0.6em;
+    height: 6.6em;
+  }
+  .dash-bar {
+    flex: 1;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+    gap: 0.3em;
+  }
+  .dash-bar-pair {
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    gap: 0.2em;
+  }
+  .dash-bar-pair i {
+    width: 34%;
+    height: calc(var(--h) * 100%);
+    border-radius: 0.3em 0.3em 0 0;
+    background: linear-gradient(180deg, #3aa0ff, #1660c4);
+    transition:
+      height 900ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 200ms ease;
+  }
+  .dash-bar-pair i.is-t {
+    background: linear-gradient(180deg, #b99bff, #7c5cf0);
+    opacity: 0.85;
+  }
+  .dash-bar:hover i {
+    filter: brightness(1.2) saturate(1.1);
+  }
+  .dash-bar-name {
+    text-align: center;
+    font-size: 0.75em;
+    color: var(--fg-2);
+  }
+  .dash-insights ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.45em;
+    font-size: 0.9em;
+  }
+  .dash-insights li {
+    display: flex;
+    gap: 0.5em;
+    padding-bottom: 0.4em;
+    border-bottom: 1px solid var(--line);
+  }
+  .dash-insights li:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  .dash-insights b {
+    color: #16a34a;
+  }
+  .dash-insights li.is-flat b {
+    color: #1288cf;
+  }
+  .dash-note {
+    justify-self: end;
+    font-size: 0.75em;
+    color: var(--fg-2);
+    letter-spacing: 0.02em;
+  }
+  /* ---- Tour focus states (data-bi-tour, src/scripts/dashboard.ts) ----
+     One part of the dashboard comes forward; the rest steps back. */
+  .dash--tour :is(.dash-kpi, .dash-card) {
+    transition:
+      opacity 450ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 450ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 450ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .dash.focus-kpis .dash-card,
+  .dash.focus-ops :is(.dash-kpi, .dash-trend, .dash-segments),
+  .dash.focus-explore :is(.dash-kpi, .dash-segments, .dash-regions, .dash-insights) {
+    opacity: 0.32;
+    filter: saturate(0.4);
+  }
+  .dash.focus-kpis .dash-kpi,
+  .dash.focus-ops :is(.dash-regions, .dash-insights),
+  .dash.focus-explore .dash-trend {
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--actual) 70%, transparent),
+      0 14px 34px -14px var(--actual);
+    transform: translateY(-2px);
+  }
+  /* Secure access: viewing as one region; the rest is locked away. */
+  .dash-role,
+  .dash-lock,
+  .dash-veil {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .dash-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-left: auto;
+    margin-right: 0.6em;
+    padding: 0.3em 0.7em;
+    border-radius: 999px;
+    font-size: 0.78em;
+    font-weight: 600;
+    color: #0e6dad;
+    background: rgba(18, 136, 207, 0.12);
+    border: 1px solid rgba(18, 136, 207, 0.3);
+    white-space: nowrap;
+  }
+  .dash-bar {
+    position: relative;
+  }
+  .dash-lock {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    display: grid;
+    place-items: center;
+    width: 1.9em;
+    height: 1.9em;
+    margin-left: -0.95em;
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(13, 13, 13, 0.72);
+    box-shadow: 0 6px 14px -6px rgba(0, 0, 0, 0.5);
+  }
+  .dash-card {
+    position: relative;
+  }
+  .dash-veil {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.35em;
+    border-radius: inherit;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.85em;
+    color: #3d3d55;
+    background: rgba(246, 247, 251, 0.6);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+  .dash.focus-secure :is(.dash-role, .dash-lock, .dash-veil) {
+    opacity: 1;
+  }
+  .dash.focus-secure .dash-bar:not(:first-child) .dash-bar-pair {
+    opacity: 0.18;
+    filter: grayscale(1);
+  }
+  .dash.focus-secure .dash-bar:first-child .dash-bar-pair i {
+    filter: brightness(1.1);
+  }
+  .dash.focus-secure .dash-regions {
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--actual) 70%, transparent),
+      0 14px 34px -14px var(--actual);
+  }
+  .dash-bar-pair {
+    transition:
+      opacity 400ms ease,
+      filter 400ms ease;
+  }
+  /* While the tour explores the trend chart, the crosshair glides. */
+  .is-scanning :is(.dash-cross, .dash-dot, .dash-tip) {
+    transition:
+      opacity 150ms ease,
+      left 380ms cubic-bezier(0.22, 1, 0.36, 1),
+      top 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dash-bar-pair i,
+    .dash-spark-end {
+      transition: none;
+    }
+  }
+</style>

@@ -94,6 +94,14 @@ export const PAGE_PROMPTS: PagePrompts[] = [
     scrollChips: ['Assess my technology', 'What happens next?', ask],
   },
   {
+    match: '/services/data-analytics/',
+    welcome: 'Have data that should be telling you more?',
+    // Short chips that fit the bubble; the full questions are this page's
+    // chat starters (engine.ts STARTERS), shown once Tali is opened.
+    welcomeChips: ["What's included?", 'How does it work?', ask],
+    scrollChips: ['Is my data good enough?', 'What do you build?', ask],
+  },
+  {
     match: '/services/cyber-security/',
     welcome: 'Thinking about how secure your business is?',
     // Short chips that fit the bubble; the full questions are this page's

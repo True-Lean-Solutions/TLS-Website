@@ -98,7 +98,7 @@ const STARTERS: [string, string[]][] = [
   ['/services/integrations/', ['Can you connect my existing tools?', 'How does an integration project run?', 'I want to discuss a project']],
   ['/services/technical-talent/', ['What roles do you place?', 'How does the hiring process work?', 'Do you offer contract-to-hire?']],
   ['/services/technology-strategy/', ['What does technology strategy include?', 'How does TLS approach technology strategy?', 'Can you help me assess my current technology?', 'What happens after the roadmap?']],
-  ['/services/data-analytics/', ['What is Data & Analytics?', 'Which solution fits my business?', 'I want to discuss a project']],
+  ['/services/data-analytics/', ['What does Data & Analytics include?', 'How do you approach analytics?', 'Does my data need to be perfect?', 'I want to discuss a project']],
   ['/services/cyber-security/', ['What does cyber security support include?', 'How do you assess security risks?', 'Is security only about technology?', 'What happens after implementation?']],
   ['/services/', ['Explore TLS solutions', 'Which solution fits my business?', 'Tell me about Meeting Intelligence', 'I want to discuss a project']],
   ['/contact/', ['I want to discuss a new project', 'I need help choosing a service', 'How do I contact the TLS team?']],
@@ -447,6 +447,19 @@ export function createEngine(opts: {
         links: [CONTACT.page],
       };
     }
+    // Practical analytics (the Data & Analytics page's principle, its own words).
+    if (has(t, RX.dataReady)) {
+      const data = byId('data')!;
+      setTopic(data);
+      return {
+        intent: 'data.ready',
+        mood: 'solution',
+        text: "Your data doesn't have to be perfect to be valuable: 100% visibility at 95% accuracy can be more valuable than 0% visibility waiting for perfection. Start with what you have, create visibility, and improve from there.",
+        links: [pageLink(data), CONTACT.page],
+        chips: ['How do you approach analytics?', 'What does Data & Analytics include?'],
+      };
+    }
+
     if (has(t, RX.guarantee)) {
       const about = found[0]?.e.id ?? current()?.id;
       const ai = about === 'visibility' || /\b(ai|chatgpt|gemini|perplexity|google|rank\w*|search)\b/.test(t);

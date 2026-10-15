@@ -1,0 +1,3437 @@
+---
+/**
+ * Data & Analytics (Hemang's brief "TLS Website: Data & Analytics" and fold
+ * references, 2026-10-15; docs/references/pages/services/data-analytics/).
+ * Replaces the short [solution].astro page for this route.
+ *
+ * Copy: the brief's, verbatim. The capability set comes from the delivery
+ * partner's published offering (the brief says so); it is presented as what
+ * TLS delivers, without naming the partner. Held back, per docs/sources.md
+ * §5: the mock dashboard figures ($24.8M, +12.4%, 94%, 87%) — the dashboards
+ * here carry none — and the partner's industry experience as a TLS claim,
+ * so Fold 10's eyebrow does not say "Real-World Experience" (its lines
+ * describe what analytics does in each industry, not past TLS work).
+ *
+ * Motion: the data foundation builds stage by stage with the scroll
+ * (src/scripts/scroll/pipeline.ts); the strategy steps light as the visitor
+ * reaches them and the BI dashboard draws itself (product.ts hooks). Without
+ * motion every visual is complete.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import Button from '../../components/Button.astro';
+import Icon from '../../components/Icon.astro';
+import DashboardMock from '../../components/DashboardMock.astro';
+import type { IconName } from '../../components/iconTypes';
+import { cta, href } from '../../data/site';
+
+const title = 'True Lean Solutions — Data & Analytics';
+const description =
+  'Turn data into better decisions. True Lean Solutions helps you connect, organize and visualize your data — from analytics strategy and data engineering to Power BI dashboards, governance and enablement.';
+const lede =
+  'Your data already contains answers. We help you connect it, organize it, visualize it, and turn it into intelligence your teams can actually use.';
+const contact = cta.primary.href;
+
+type Accent = 'red' | 'blue' | 'violet' | 'green' | 'plum' | 'cyan';
+const tone: Record<Accent, string> = {
+  red: 'var(--red)',
+  blue: 'var(--blue)',
+  violet: 'var(--da-violet)',
+  green: 'var(--da-green)',
+  plum: 'var(--plum)',
+  cyan: 'var(--da-cyan)',
+};
+
+/** Dotted wave mesh (the page's signature motif), in a 1440 × 360 box. */
+const mesh = (rows: number, base = 150) =>
+  Array.from({ length: rows }, (_, r) => {
+    const pts: string[] = [];
+    for (let x = 0; x <= 1440; x += 24) {
+      const y = base + r * 9 + Math.sin(x / 230 + r * 0.32) * (46 - r * 1.4) + Math.sin(x / 95 + r * 0.8) * 5;
+      pts.push(`${x ? 'L' : 'M'}${x} ${y.toFixed(1)}`);
+    }
+    return { d: pts.join(' '), o: (1 - r / rows) * 0.9 + 0.1 };
+  });
+const waves = mesh(14);
+
+const journey = ['Connect', 'Engineer', 'Analyze', 'Visualize', 'Decide'];
+
+/* The six capabilities, as a bento: each card has its own small animated
+   illustration of what the capability does (drawn below, played by the
+   [data-live-art] hook in src/scripts/scroll/product.ts). */
+const capabilities: { k: string; n: string; title: string; tag: string; text: string; icon: IconName; c: Accent; to: string }[] = [
+  { k: 'strategy', n: '01', title: 'Analytics Strategy', tag: 'Know what to measure—and why.', text: 'Align analytics priorities, KPIs, governance and investments with business outcomes.', icon: 'target', c: 'red', to: '#strategy' },
+  { k: 'engineering', n: '02', title: 'Data Engineering', tag: 'Build a foundation you can trust.', text: 'Connect, clean and structure data for reliable analytics at scale.', icon: 'database', c: 'blue', to: '#foundation' },
+  { k: 'bi', n: '03', title: 'Business Intelligence', tag: 'See what matters.', text: 'Turn complex data into clear dashboards, scorecards and operational insights.', icon: 'analytics', c: 'violet', to: '#bi' },
+  { k: 'gov', n: '04', title: 'Data Governance', tag: 'Make data trusted and controlled.', text: 'Improve quality, lineage, access and governance across your analytics environment.', icon: 'shield', c: 'cyan', to: '#trust' },
+  { k: 'enable', n: '05', title: 'Analytics Enablement', tag: "Put insights in people's hands.", text: 'Build internal capability through practical training, adoption and self-service analytics.', icon: 'users', c: 'plum', to: '#enablement' },
+  { k: 'lead', n: '06', title: 'Fractional Analytics Leadership', tag: 'Get experienced leadership when you need it.', text: 'Accelerate analytics initiatives without waiting to build an entire leadership function.', icon: 'compass', c: 'green', to: '#leadership' },
+];
+/* Strategy: the three things a strategy aligns, around the target. */
+const stratChips = [
+  { t: 'Priorities', x: 14, y: 46, w: 80 },
+  { t: 'KPIs', x: 222, y: 70, w: 52 },
+  { t: 'Investments', x: 190, y: 284, w: 92 },
+];
+/* Engineering: scattered data → through the pipe → into ordered rows. */
+const engScatter = [
+  [20, 36], [54, 24], [34, 66], [72, 54], [18, 104], [58, 94], [40, 140], [76, 128], [24, 152],
+];
+const engGrid = Array.from({ length: 16 }, (_, i) => ({ x: 214 + (i % 4) * 20, y: 46 + Math.floor(i / 4) * 26 }));
+const engFlows = [0, 2, 4, 6, 1, 7].map((s, i) => {
+  const [sx, sy] = engScatter[s];
+  const g = engGrid[[0, 5, 10, 15, 3, 12][i]];
+  return `M${sx} ${sy} C92 ${sy} 92 85 106 85 L188 85 C202 85 200 ${g.y} ${g.x} ${g.y}`;
+});
+/* Business intelligence: bars and a trend through them. */
+const biBars = [36, 58, 48, 74, 66, 92, 108].map((h, i) => ({ x: 34 + i * 36, h }));
+const biTrend = biBars.map((b, i) => `${i ? 'L' : 'M'}${b.x + 9} ${150 - b.h - 12}`).join(' ');
+/* Governance: lineage from source to report, checked step by step. */
+const govNodes = [
+  { t: 'Source', x: 16 },
+  { t: 'Transform', x: 112 },
+  { t: 'Report', x: 208 },
+];
+/* Enablement: three roles, their skills growing. */
+const enableRoles = [
+  { t: 'Analysts', x: 58, p: 72 },
+  { t: 'Business users', x: 150, p: 86 },
+  { t: 'Administrators', x: 242, p: 100 },
+];
+/* Leadership: a roadmap that keeps moving. */
+const LEAD_PATH = 'M30 104 C 80 104 100 62 150 62 S 250 98 300 98 S 400 58 450 58 S 520 72 540 72';
+const leadSteps = [
+  { t: 'Prioritize', x: 150, y: 62, at: 0.24 },
+  { t: 'Align', x: 300, y: 98, at: 0.53 },
+  { t: 'Adopt', x: 450, y: 58, at: 0.82 },
+];
+
+/* Each benefit is a step of the dashboard tour (src/scripts/dashboard.ts). */
+const biBenefits: { title: string; text: string; icon: IconName; c: Accent; step: string }[] = [
+  { title: 'Executive Scorecards', text: 'See business performance at a glance.', icon: 'target', c: 'red', step: 'kpis' },
+  { title: 'Operational Dashboards', text: 'Give teams visibility into what needs attention.', icon: 'chart', c: 'blue', step: 'ops' },
+  { title: 'Self-Service Analytics', text: 'Enable users to explore data without waiting for reports.', icon: 'users', c: 'violet', step: 'explore' },
+  { title: 'Secure Access', text: 'Control what users see through governed access.', icon: 'lock', c: 'cyan', step: 'secure' },
+];
+/* The strip lights the tech behind the step in focus. */
+const biTech = [
+  { name: 'Power BI', steps: 'kpis ops' },
+  { name: 'Semantic Models', steps: 'explore' },
+  { name: 'DAX', steps: 'kpis explore' },
+  { name: 'RLS', steps: 'secure' },
+  { name: 'Mobile', steps: 'ops' },
+];
+
+/* The data foundation: five stages, left to right (top to bottom on phones). */
+const stages: { title: string; sub: string[]; icon: IconName; c: string }[] = [
+  { title: 'Source Systems', sub: ['ERP', 'CRM', 'Applications', 'Files', 'APIs'], icon: 'database', c: '#e2557a' },
+  { title: 'Ingest & Transform', sub: ['ETL / ELT'], icon: 'workflow', c: '#b26bd8' },
+  { title: 'Data Platform', sub: ['Lakehouse'], icon: 'server', c: '#7c7cf0' },
+  { title: 'Semantic Layer', sub: ['Trusted Business Definitions'], icon: 'integration', c: '#3aa0ff' },
+  { title: 'Analytics', sub: ['Dashboards', 'Reports', 'AI'], icon: 'analytics', c: '#22b8cf' },
+];
+/* The flow diagram (desktop): one 1200 × 460 drawing. HTML nodes sit on it
+   by percentage; the SVG beneath carries the lines and the moving data. */
+const FW = 1200;
+const FH = 460;
+const pc = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
+const box = (x0: number, x1: number, y: number, h: number) =>
+  `left: ${pc(x0, FW)}; width: ${pc(x1 - x0, FW)}; top: ${pc(y - h / 2, FH)}; height: ${pc(h, FH)}`;
+const SRC = { x0: 0, x1: 196, h: 56 };
+const ING = { x0: 300, x1: 470, h: 168 };
+const PLT = { x0: 554, x1: 746, h: 210 };
+const SEM = { x0: 810, x1: 976, h: 168 };
+const OUTB = { x0: 1040, x1: 1200, h: 66 };
+const MID = 230;
+const flowSources: { t: string; icon: IconName; y: number }[] = (
+  [
+    ['ERP', 'database'],
+    ['CRM', 'users'],
+    ['Applications', 'software'],
+    ['Files', 'document'],
+    ['APIs', 'code'],
+  ] as [string, IconName][]
+).map(([t, icon], i) => ({ t, icon, y: 62 + i * 84 }));
+const flowOutputs: { t: string; icon: IconName; y: number }[] = (
+  [
+    ['Dashboards', 'analytics'],
+    ['Reports', 'document'],
+    ['AI', 'ai'],
+  ] as [string, IconName][]
+).map(([t, icon], i) => ({ t, icon, y: 112 + i * 118 }));
+/* Every line, with the stage it belongs to and the color of its data:
+   red on the problem side, blue on the built side (v2.3 §13). */
+const flowLines = [
+  ...flowSources.map((f) => ({ seg: 'src', c: '#ff6b7a', d: `M${SRC.x1} ${f.y} C${SRC.x1 + 64} ${f.y} ${ING.x0 - 64} ${MID} ${ING.x0} ${MID}` })),
+  { seg: 'ip', c: '#c77dff', d: `M${ING.x1} ${MID} L${PLT.x0} ${MID}` },
+  { seg: 'ps', c: '#7f8cff', d: `M${PLT.x1} ${MID} L${SEM.x0} ${MID}` },
+  ...flowOutputs.map((o) => ({ seg: 'out', c: '#3ee0f0', d: `M${SEM.x1} ${MID} C${SEM.x1 + 40} ${MID} ${OUTB.x0 - 40} ${o.y} ${OUTB.x0} ${o.y}` })),
+];
+/* The story, spanning the drawing: sources / ingest–platform / semantic / outputs. */
+const flowPhases = [
+  { t: 'Fragmented sources', x0: SRC.x0, x1: SRC.x1 },
+  { t: 'Structured data', x0: ING.x0, x1: PLT.x1 },
+  { t: 'Trusted definitions', x0: SEM.x0, x1: SEM.x1 },
+  { t: 'Actionable analytics', x0: OUTB.x0 - 20, x1: OUTB.x1 },
+];
+const slabYs = [44, 26, 8];
+const graphDots = [
+  [12, 26],
+  [36, 10],
+  [62, 24],
+  [88, 12],
+  [50, 34],
+];
+const foundationCards: { title: string; text: string; icon: IconName; c: Accent }[] = [
+  { title: 'Connect', text: 'Bring fragmented data together.', icon: 'integration', c: 'blue' },
+  { title: 'Engineer', text: 'Clean, transform and organize it.', icon: 'workflow', c: 'violet' },
+  { title: 'Trust', text: 'Build quality, lineage and monitoring into the foundation.', icon: 'shield', c: 'red' },
+];
+const platforms = ['Microsoft Fabric', 'Azure Data Factory', 'Azure Databricks'];
+
+const strategySteps: { title: string; text: string; icon: IconName; c: Accent }[] = [
+  { title: 'Understand', text: 'What decisions need better information?', icon: 'lightbulb', c: 'red' },
+  { title: 'Prioritize', text: 'Which use cases create the most value?', icon: 'target', c: 'plum' },
+  { title: 'Design', text: 'What data, technology and governance are required?', icon: 'database', c: 'violet' },
+  { title: 'Deliver', text: 'Start with quick wins and scale what works.', icon: 'rocket', c: 'blue' },
+];
+
+const practical: { text: string; icon: IconName; c: Accent }[] = [
+  { text: 'Start with what you have.', icon: 'database', c: 'blue' },
+  { text: 'Create visibility.', icon: 'analytics', c: 'violet' },
+  { text: 'Improve from there.', icon: 'chart', c: 'red' },
+];
+
+const trust: { title: string; text: string; icon: IconName; c: Accent }[] = [
+  { title: 'Data Quality', text: 'Know where issues exist and improve them over time.', icon: 'target', c: 'red' },
+  { title: 'Data Lineage', text: 'Understand where information came from and how it changed.', icon: 'database', c: 'blue' },
+  { title: 'Access & Security', text: 'Give the right people access to the right information.', icon: 'lock', c: 'violet' },
+  { title: 'Governance', text: 'Create common definitions, ownership and accountability.', icon: 'document', c: 'cyan' },
+];
+
+const leadership: { title: string; text: string }[] = [
+  { title: 'Prioritize the Right Work', text: 'Triage backlogs and focus teams on business value.' },
+  { title: 'Align Delivery', text: 'Coordinate internal teams, technology partners and vendors.' },
+  { title: 'Drive Adoption', text: 'Turn analytics investments into capabilities people actually use.' },
+];
+
+/* Industry marks (24 grid, the site's icon style). */
+const industries: { title: string; text: string; c: Accent; icon: string }[] = [
+  {
+    title: 'Retail',
+    text: 'Customer, sales, inventory and operational visibility.',
+    c: 'red',
+    icon: '<path d="M5 8h14l-1.2 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8L5 8z" fill="currentColor" fill-opacity=".18"/><path d="M5 8h14l-1.2 11.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8L5 8zM9 8V6.5a3 3 0 0 1 6 0V8"/>',
+  },
+  {
+    title: 'Financial Services',
+    text: 'Performance, reporting and governed analytics.',
+    c: 'blue',
+    icon: '<path d="M4 9.5 12 5l8 4.5H4z" fill="currentColor" fill-opacity=".18"/><path d="M4 9.5 12 5l8 4.5H4zM6 10v7M10 10v7M14 10v7M18 10v7M4 19.5h16"/>',
+  },
+  {
+    title: 'Manufacturing',
+    text: 'Operational visibility and performance intelligence.',
+    c: 'violet',
+    icon: '<path d="M3 20V11l5 3v-3l5 3v-3l5 3V5h3v15H3z" fill="currentColor" fill-opacity=".18"/><path d="M3 20V11l5 3v-3l5 3v-3l5 3V5h3v15H3zM7 17h2M12 17h2"/>',
+  },
+  {
+    title: 'Agriculture',
+    text: 'Turn operational data into actionable insight.',
+    c: 'green',
+    icon: '<path d="M12 20v-8M12 12c0-4 2.5-6.5 7-7 0 4.5-2.5 7-7 7zM12 14c0-3-2-5-6-5.5 0 3.5 2 5.5 6 5.5z" fill="currentColor" fill-opacity=".18"/><path d="M12 20v-8M12 12c0-4 2.5-6.5 7-7 0 4.5-2.5 7-7 7zM12 14c0-3-2-5-6-5.5 0 3.5 2 5.5 6 5.5zM5 20h14"/>',
+  },
+];
+const finalLine = ['Strategy', 'Data Engineering', 'Power BI', 'Governance', 'Enablement', 'Fractional Leadership'];
+---
+
+<BaseLayout title={title} description={description} path="/services/data-analytics/">
+  <!-- 1. Hero -->
+  <section class="da-hero">
+    <div class="da-hero-photo" aria-hidden="true">
+      <img src={href('/solutions/hero-solutions.webp')} alt="" width="1774" height="887" fetchpriority="high" decoding="async" data-hero-photo />
+    </div>
+    <div class="wrap da-hero-grid">
+      <div class="da-hero-copy" data-reveal="load">
+        <nav class="da-crumbs" aria-label="Breadcrumb">
+          <a href={href('/services/')}>Solutions</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Data &amp; Analytics</span>
+        </nav>
+        <Eyebrow label="Data & Analytics" />
+        <h1>Turn Data Into <span class="accent">Better Decisions.</span></h1>
+        <p class="da-lede">{lede}</p>
+        <div class="da-actions">
+          <Button href="#capabilities" variant="primary" arrow class="glide">Explore Capabilities</Button>
+          <Button href={contact} variant="ghost-light">Talk to an Expert</Button>
+        </div>
+      </div>
+      <div class="da-hero-dash" data-float="1">
+        <DashboardMock theme="dark" live />
+      </div>
+    </div>
+    <div class="wrap">
+      <ol class="da-journey" aria-label="From data to decision">
+        {
+          journey.map((j, i) => (
+            <li style={`--i: ${i}`}>
+              <span>{j}</span>
+              {i < journey.length - 1 && <Icon name="arrow" size={16} />}
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- 2. Capabilities (a bento: each card illustrates what it does) -->
+  <section class="section da-caps" id="capabilities">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Data & Analytics Capabilities"
+        title="From Raw Data to "
+        accent="Business Intelligence."
+        lead="One connected capability—from strategy and data engineering to dashboards, governance and adoption."
+      />
+      <ul class="da-bento" data-glow-grid data-reveal="stagger">
+        {
+          capabilities.map((c) => (
+            <li class:list={['da-bento-item', `is-${c.k}`]} style={`--c: ${tone[c.c]}`}>
+              <a class="da-cap glide" href={c.to}>
+                <span class="da-cap-art" aria-hidden="true" data-live-art>
+                  {c.k === 'strategy' && (
+                    <svg viewBox="0 0 300 340">
+                      {stratChips.map((s) => (
+                        <path class="s-link" d={`M${s.x + s.w / 2} ${s.y + 11} L150 172`} />
+                      ))}
+                      <g transform="translate(150 172)">
+                        <circle class="s-ring s-ring-out" r="104" />
+                        <circle class="s-ring" r="80" />
+                        <circle class="s-ring" r="56" />
+                        <circle class="s-ring" r="32" />
+                        <circle class="s-core" r="16" />
+                        <circle class="s-ping" r="16" />
+                        <g class="s-dart">
+                          <path d="M-64 -64 L-6 -6" />
+                          <path d="M-17 -6 L-6 -6 L-6 -17" />
+                          <path class="s-fletch" d="M-64 -64 L-54 -69 M-64 -64 L-69 -54" />
+                        </g>
+                      </g>
+                      {stratChips.map((s, i) => (
+                        <g class="s-chip" style={`--i: ${i}`}>
+                          <rect x={s.x} y={s.y} width={s.w} height="22" rx="11" />
+                          <circle cx={s.x + 12} cy={s.y + 11} r="3.5" />
+                          <text x={s.x + 21} y={s.y + 15}>{s.t}</text>
+                        </g>
+                      ))}
+                    </svg>
+                  )}
+                  {c.k === 'engineering' && (
+                    <svg viewBox="8 14 286 150">
+                      {engScatter.map(([x, y], i) => <circle class="e-raw" cx={x} cy={y} r={3 + (i % 3)} style={`--i: ${i}`} />)}
+                      <rect class="e-pipe" x="106" y="70" width="82" height="30" rx="15" />
+                      <text class="e-pipe-t" x="147" y="118">Clean · Transform</text>
+                      {engGrid.map((g, i) => <rect class="e-cell" x={g.x - 6} y={g.y - 6} width="12" height="12" rx="3" style={`--i: ${i}`} />)}
+                      {engFlows.map((d, i) => <path id={`e-fl-${i}`} class="e-flow" d={d} />)}
+                      <g class="e-dots">
+                        {engFlows.map((_, i) => (
+                          <circle r="3.4">
+                            <animateMotion dur="3.2s" begin={`-${(i * 0.53).toFixed(2)}s`} repeatCount="indefinite">
+                              <mpath href={`#e-fl-${i}`} />
+                            </animateMotion>
+                          </circle>
+                        ))}
+                      </g>
+                    </svg>
+                  )}
+                  {c.k === 'bi' && (
+                    <svg viewBox="14 0 282 156">
+                      {[40, 80, 120].map((y) => <line class="b-grid" x1="20" x2="290" y1={y} y2={y} />)}
+                      {biBars.map((b, i) => <rect class="b-bar" x={b.x} y={150 - b.h} width="18" height={b.h} rx="4" style={`--i: ${i}`} />)}
+                      <path class="b-line" d={biTrend} pathLength="1" />
+                      <circle class="b-end" cx={biBars[6].x + 9} cy={150 - biBars[6].h - 12} r="5" />
+                      <g class="b-tip">
+                        <rect x="178" y="6" width="78" height="22" rx="11" />
+                        <text x="217" y="21">On track</text>
+                      </g>
+                    </svg>
+                  )}
+                  {c.k === 'gov' && (
+                    <svg viewBox="8 16 286 100">
+                      <path class="g-link" d="M92 85 L112 85 M188 85 L208 85" />
+                      {govNodes.map((n, i) => (
+                        <g class="g-node" style={`--i: ${i}`}>
+                          <rect x={n.x} y="62" width="76" height="46" rx="12" />
+                          <text x={n.x + (i === 2 ? 44 : 38)} y="90">{n.t}</text>
+                          <g class="g-check" transform={`translate(${n.x + 72} 62)`}>
+                            <circle r="10" />
+                            <path d="M-4.5 0 L-1 3.5 L5 -3" />
+                          </g>
+                        </g>
+                      ))}
+                      <g class="g-lock" transform="translate(226 86)">
+                        <rect x="-5" y="-2" width="10" height="8" rx="2" />
+                        <path d="M-3 -2 V-4.5 A3 3 0 0 1 3 -4.5 V-2" />
+                      </g>
+                      <rect class="g-scan" x="-50" y="40" width="46" height="92" />
+                      <text class="g-cap" x="150" y="32">Quality · Lineage · Access</text>
+                    </svg>
+                  )}
+                  {c.k === 'enable' && (
+                    <svg viewBox="14 30 272 112">
+                      {enableRoles.map((r, i) => (
+                        <g transform={`translate(${r.x} 74)`} style={`--i: ${i}; --p: ${r.p}`}>
+                          <circle class="n-track" r="34" />
+                          <circle class="n-ring" r="34" pathLength="100" transform="rotate(-90)" />
+                          <circle class="n-head" cy="-9" r="9" />
+                          <path class="n-body" d="M-16 18 C-16 6 -8 1 0 1 C8 1 16 6 16 18" />
+                          {r.p === 100 && (
+                            <g class="n-star" transform="translate(26 -26)">
+                              <circle r="9" />
+                              <path d="M-4 0 L-1 3 L4 -3" />
+                            </g>
+                          )}
+                          <text class="n-t" y="58">{r.t}</text>
+                        </g>
+                      ))}
+                    </svg>
+                  )}
+                  {c.k === 'lead' && (
+                    <svg viewBox="16 22 540 124">
+                      <path class="l-track" d={LEAD_PATH} />
+                      <path id="l-road" class="l-road" d={LEAD_PATH} pathLength="1" />
+                      {leadSteps.map((s, i) => (
+                        <g class="l-step" style={`--at: ${s.at}; --i: ${i}`}>
+                          <circle class="l-halo" cx={s.x} cy={s.y} r="14" />
+                          <circle class="l-dot" cx={s.x} cy={s.y} r="7" />
+                          <text x={s.x} y={s.y < 80 ? s.y - 22 : s.y + 32}>{s.t}</text>
+                        </g>
+                      ))}
+                      <circle class="l-marker" r="6">
+                        <animateMotion dur="6s" repeatCount="indefinite">
+                          <mpath href="#l-road" />
+                        </animateMotion>
+                      </circle>
+                    </svg>
+                  )}
+                </span>
+                <span class="da-cap-body">
+                  <span class="da-cap-top">
+                    <span class="da-tile" aria-hidden="true">
+                      <Icon name={c.icon} size={24} />
+                    </span>
+                    <span class="da-cap-n" aria-hidden="true">{c.n}</span>
+                  </span>
+                  <h3>{c.title}</h3>
+                  <strong>{c.tag}</strong>
+                  <span class="da-cap-text">{c.text}</span>
+                  {c.k === 'strategy' && (
+                    <span class="da-cap-steps" aria-hidden="true">
+                      {strategySteps.map((st, i) => (
+                        <span style={`--c: ${tone[st.c]}`}>
+                          <b>{String(i + 1).padStart(2, '0')}</b>
+                          {st.title}
+                        </span>
+                      ))}
+                    </span>
+                  )}
+                  <span class="da-cap-go">
+                    See how <Icon name="arrow" size={15} />
+                  </span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3. Business intelligence (a guided tour: each benefit shows itself on the dashboard) -->
+  <section class="section da-bi" id="bi" data-bi-tour>
+    <div class="wrap da-bi-grid">
+      <div class="da-bi-copy">
+        <SectionHeading
+          eyebrow="Business Intelligence"
+          title="Stop Looking at Data. "
+          accent="Start Seeing the Business."
+          lead="Transform disconnected reports and spreadsheets into interactive dashboards that give leaders and teams a clear view of performance."
+        />
+        <ul class="da-benefits" data-reveal="stagger">
+          {
+            biBenefits.map((b) => (
+              <li style={`--c: ${tone[b.c]}`}>
+                <span class="da-glyph" aria-hidden="true">
+                  <Icon name={b.icon} size={22} />
+                </span>
+                <div>
+                  <h3>
+                    <button type="button" class="da-benefit" data-step={b.step} aria-pressed="false" aria-controls="da-bi-dash">
+                      {b.title}
+                    </button>
+                  </h3>
+                  <p>{b.text}</p>
+                </div>
+                <span class="da-benefit-bar" aria-hidden="true" />
+              </li>
+            ))
+          }
+        </ul>
+        <p class="da-tour-caption" aria-hidden="true"></p>
+        <p class="da-tour-hint">
+          <Icon name="arrow" size={14} />
+          Select one to see it on the dashboard.
+        </p>
+      </div>
+      <figure class="da-laptop" data-lid>
+        <div class="da-laptop-glow" aria-hidden="true"></div>
+        <div class="da-laptop-screen">
+          <DashboardMock theme="light" insights tour id="da-bi-dash" />
+          <div class="da-callout" aria-hidden="true">
+            <span class="da-callout-dot"></span>
+            <span class="da-callout-text"></span>
+          </div>
+        </div>
+        <div class="da-laptop-base" aria-hidden="true"></div>
+        <figcaption class="visually-hidden">
+          An illustrative executive dashboard on a laptop: KPI tiles, a revenue trend, revenue by segment, performance by region and key insights.
+        </figcaption>
+      </figure>
+    </div>
+    <div class="wrap">
+      <ul class="da-strip" aria-label="Business intelligence technology">
+        {biTech.map((t) => <li data-tech={t.steps}>{t.name}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4. Modern data foundation (signature: the flow assembles with the scroll) -->
+  <section class="da-found" id="foundation" data-pipeline aria-labelledby="da-found-title">
+    <div class="wrap">
+      <div class="section-heading da-found-head" data-reveal="">
+        <Eyebrow label="Modern Data Foundation" />
+        <h2 id="da-found-title">Good Analytics Starts <span class="accent-blue">With Good Data.</span></h2>
+        <p class="lead">Build reliable data pipelines and architectures that bring information together and make it usable across the business.</p>
+      </div>
+
+      <figure class="da-flow" data-flow aria-hidden="true">
+        <div class="da-flow-in">
+          <div class="da-flow-phases">
+            {
+              flowPhases.map((f, i) => (
+                <span class:list={['flow-phase', { 'is-last': i === flowPhases.length - 1 }]} style={`left: ${pc(f.x0, FW)}; width: ${pc(f.x1 - f.x0, FW)}`}>
+                  {f.t}
+                </span>
+              ))
+            }
+          </div>
+          <div class="da-flow-box">
+            <svg viewBox={`0 0 ${FW} ${FH}`} preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="da-flow-grad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={FW} y2="0">
+                  <stop offset="0" stop-color="#ff6b7a" />
+                  <stop offset="0.38" stop-color="#c77dff" />
+                  <stop offset="0.68" stop-color="#5b8cff" />
+                  <stop offset="1" stop-color="#3ee0f0" />
+                </linearGradient>
+              </defs>
+              {flowLines.map((l, i) => <path class="flow-line" data-seg={l.seg} id={`da-fl-${i}`} d={l.d} />)}
+              {
+                flowLines.map((l, i) => (
+                  <g class="flow-dots" data-seg={l.seg} style={`--c: ${l.c}`}>
+                    {[0, 1].map((k) => (
+                      <circle r="3.6">
+                        <animateMotion dur={l.seg === 'src' || l.seg === 'out' ? '2.4s' : '1.4s'} begin={`-${(k * 1.2 + i * 0.37).toFixed(2)}s`} repeatCount="indefinite">
+                          <mpath href={`#da-fl-${i}`} />
+                        </animateMotion>
+                      </circle>
+                    ))}
+                  </g>
+                ))
+              }
+            </svg>
+
+            {
+              flowSources.map((f) => (
+                <div class="flow-src" style={`${box(SRC.x0, SRC.x1, f.y, SRC.h)}; --c: #ff6b7a`}>
+                  <span class="flow-ico flow-ico--sm">
+                    <Icon name={f.icon} size={18} />
+                  </span>
+                  {f.t}
+                </div>
+              ))
+            }
+
+            <div class="flow-node flow-ing" style={`${box(ING.x0, ING.x1, MID, ING.h)}; --c: #c77dff`}>
+              <span class="flow-ico"><Icon name="workflow" size={24} /></span>
+              <strong>Ingest &amp; Transform</strong>
+              <span class="flow-sub">ETL / ELT</span>
+            </div>
+
+            <div class="flow-node flow-plt" style={`${box(PLT.x0, PLT.x1, MID, PLT.h)}; --c: #7f8cff`}>
+              <svg class="flow-slabs" viewBox="0 0 120 74">
+                <defs>
+                  <linearGradient id="da-slab-edge" x1="0" x2="1">
+                    <stop offset="0" stop-color="#ff6b7a" />
+                    <stop offset="1" stop-color="#3aa0ff" />
+                  </linearGradient>
+                </defs>
+                {
+                  slabYs.map((y) => (
+                    <g class="flow-slab">
+                      <path class="flow-slab-side" d={`M14 ${y + 18} L60 ${y + 34} L106 ${y + 18} L106 ${y + 24} L60 ${y + 40} L14 ${y + 24} Z`} />
+                      <path class="flow-slab-top" d={`M60 ${y + 2} L106 ${y + 18} L60 ${y + 34} L14 ${y + 18} Z`} />
+                      <path class="flow-slab-edge" d={`M14 ${y + 18} L60 ${y + 34} L106 ${y + 18}`} />
+                    </g>
+                  ))
+                }
+              </svg>
+              <strong>Data Platform</strong>
+              <span class="flow-sub">Lakehouse</span>
+            </div>
+
+            <div class="flow-node flow-sem" style={`${box(SEM.x0, SEM.x1, MID, SEM.h)}; --c: #3aa0ff`}>
+              <svg class="flow-graph" viewBox="0 0 100 40">
+                <path d="M12 26 L36 10 L62 24 L88 12 M36 10 L50 34 L62 24 M12 26 L50 34" />
+                {graphDots.map(([x, y]) => <circle cx={x} cy={y} r="4" />)}
+              </svg>
+              <strong>Semantic Layer</strong>
+              <span class="flow-sub">Trusted business definitions</span>
+            </div>
+
+            {
+              flowOutputs.map((o) => (
+                <div class="flow-node flow-out" style={`${box(OUTB.x0, OUTB.x1, o.y, OUTB.h)}; --c: #3ee0f0`}>
+                  <span class="flow-ico flow-ico--sm">
+                    <Icon name={o.icon} size={18} />
+                  </span>
+                  <strong>{o.t}</strong>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </figure>
+
+      <ol class="da-pipe" aria-label="From source systems to analytics">
+        {
+          stages.map((s, i) => (
+            <li class="da-node" style={`--c: ${s.c}`} data-n={i}>
+              {i > 0 && (
+                <span class="da-conn" aria-hidden="true">
+                  <span class="da-conn-fill" />
+                </span>
+              )}
+              <span class="da-node-icon" aria-hidden="true">
+                <Icon name={s.icon} size={28} />
+              </span>
+              <h3>{s.title}</h3>
+              {s.sub.length > 1 ? (
+                <ul class="da-node-tags">
+                  {s.sub.map((t) => (
+                    <li>{t}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>{s.sub[0]}</p>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+
+      <ul class="da-found-cards" data-reveal="stagger">
+        {
+          foundationCards.map((f) => (
+            <li style={`--c: ${tone[f.c]}`}>
+              <span class="da-glyph" aria-hidden="true">
+                <Icon name={f.icon} size={24} />
+              </span>
+              <div>
+                <h3>{f.title}</h3>
+                <p>{f.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="da-platforms">
+        <span>Built on modern platforms such as</span>
+        <ul aria-label="Data platforms">
+          {platforms.map((p) => <li>{p}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Analytics strategy -->
+  <section class="section da-strategy" id="strategy">
+    <div class="wrap">
+      <div class="da-strategy-top">
+        <SectionHeading
+          eyebrow="Analytics Strategy"
+          title="Don't Start With the Dashboard. "
+          accent="Start With the Decision."
+          lead="Before building reports or moving data, we identify the decisions your business needs to make, the information required to make them, and the simplest path to delivering it."
+        />
+        <figure class="da-decision" aria-hidden="true">
+          <div class="da-dec-card da-dec-q" data-reveal="">
+            <span class="da-dec-k">The decision</span>
+            <strong>Where should we focus next quarter?</strong>
+          </div>
+          <span class="da-dec-link"></span>
+          <div class="da-dec-card" data-reveal="">
+            <span class="da-dec-k">The information it needs</span>
+            <ul>
+              <li>Sales by region</li>
+              <li>Customer trends</li>
+              <li>Operational capacity</li>
+            </ul>
+          </div>
+          <span class="da-dec-link"></span>
+          <div class="da-dec-card da-dec-path" data-reveal="">
+            <span class="da-dec-k">The simplest path</span>
+            <strong>One trusted view, built from what you already have</strong>
+          </div>
+          <span class="da-dec-dash">Then, the dashboard.</span>
+        </figure>
+      </div>
+      <div class="da-steps" data-progress>
+        <span class="da-steps-line" aria-hidden="true"><span></span></span>
+        <ol>
+          {
+            strategySteps.map((s, i) => (
+              <li data-step style={`--c: ${tone[s.c]}`}>
+                <span class="da-step-n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <span class="da-step-icon" aria-hidden="true">
+                  <Icon name={s.icon} size={22} />
+                </span>
+                <h3>
+                  <span class="visually-hidden">{String(i + 1).padStart(2, '0')} — </span>
+                  {s.title}
+                </h3>
+                <p>{s.text}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <p class="da-goal" data-reveal="">The goal isn't more dashboards. <span class="accent">It's better decisions.</span></p>
+    </div>
+  </section>
+
+  <!-- 6. The 95% principle -->
+  <section class="da-practical">
+    <svg class="da-mesh" viewBox="0 0 1440 360" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="da-mesh-a" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1440" y2="0">
+          <stop offset="0" stop-color="#ff4d5e" />
+          <stop offset="0.5" stop-color="#a14fd0" />
+          <stop offset="1" stop-color="#2f8cff" />
+        </linearGradient>
+      </defs>
+      {waves.map((w) => <path d={w.d} stroke="url(#da-mesh-a)" stroke-opacity={w.o.toFixed(2)} />)}
+    </svg>
+    <div class="wrap da-practical-grid">
+      <div>
+        <div class="section-heading" data-reveal="">
+          <Eyebrow label="Practical Analytics" />
+          <h2>Your Data Doesn't Have to Be Perfect to Be <span class="accent">Valuable.</span></h2>
+        </div>
+        <blockquote class="da-ninety" data-reveal="stagger">
+          <span><em>100% visibility</em> at <em>95% accuracy</em></span>
+          <span>can be more valuable than</span>
+          <span>0% visibility waiting for perfection.</span>
+        </blockquote>
+      </div>
+      <div class="da-practical-side">
+        <ul class="da-practical-steps" data-reveal="stagger">
+          {
+            practical.map((p) => (
+              <li style={`--c: ${tone[p.c]}`}>
+                <span class="da-glyph" aria-hidden="true">
+                  <Icon name={p.icon} size={22} />
+                </span>
+                {p.text}
+              </li>
+            ))
+          }
+        </ul>
+        <div class="da-actions">
+          <Button href={contact} variant="primary" arrow>Find Your 95%</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Trusted data -->
+  <section class="section da-trust" id="trust">
+    <div class="wrap">
+      <div class="da-split-head">
+        <SectionHeading eyebrow="Trusted Data" title="Insights Are Only Valuable When People " accent="Trust the Data." />
+        <p data-reveal="">One version of the truth starts with shared definitions and disciplined governance.</p>
+      </div>
+      <ul class="da-trust-grid" data-reveal="stagger">
+        {
+          trust.map((t) => (
+            <li class="ix-card ix-card--quiet" style={`--c: ${tone[t.c]}`}>
+              <span class="da-tile" aria-hidden="true">
+                <Icon name={t.icon} size={24} />
+              </span>
+              <h3>{t.title}</h3>
+              <p>{t.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 8. Analytics enablement -->
+  <section class="section da-enable" id="enablement">
+    <div class="wrap da-enable-grid">
+      <div class="da-enable-copy">
+        <SectionHeading eyebrow="Analytics Enablement" title="Build Capability, " accent="Not Dependency." />
+        <div class="da-enable-text" data-reveal="">
+          <p>Technology creates little value if people don't know how to use it.</p>
+          <p>We help analysts, business users and administrators develop the skills to confidently use and manage their analytics environment.</p>
+        </div>
+        <ul class="da-roles" aria-label="Who it's for" data-reveal="stagger">
+          <li><Icon name="chart" size={16} />Analysts</li>
+          <li><Icon name="users" size={16} />Business users</li>
+          <li><Icon name="gear" size={16} />Administrators</li>
+        </ul>
+      </div>
+      <ul class="da-learn" data-reveal="stagger">
+        <li class="da-learn-card" style={`--c: ${tone.blue}`}>
+          <span class="da-tile" aria-hidden="true"><Icon name="analytics" size={22} /></span>
+          <div>
+            <h3>Power BI</h3>
+            <p>From fundamentals through advanced DAX.</p>
+            <span class="da-learn-path" aria-hidden="true">
+              <i class="is-done">Fundamentals</i>
+              <b></b>
+              <i class="is-done">Modeling</i>
+              <b></b>
+              <i>Advanced DAX</i>
+            </span>
+          </div>
+        </li>
+        <li class="da-learn-card" style={`--c: ${tone.violet}`}>
+          <span class="da-tile" aria-hidden="true"><Icon name="lightbulb" size={22} /></span>
+          <div>
+            <h3>Data Storytelling</h3>
+            <p>Turn analysis into information people understand and act on.</p>
+            <span class="da-learn-story" aria-hidden="true">
+              <svg viewBox="0 0 160 44" preserveAspectRatio="none"><path d="M0 38 L30 32 L60 34 L90 22 L120 18 L160 6" /><circle cx="160" cy="6" r="3.5" /></svg>
+              <span>What changed, and why it matters</span>
+            </span>
+          </div>
+        </li>
+        <li class="da-learn-card" style={`--c: ${tone.red}`}>
+          <span class="da-tile" aria-hidden="true"><Icon name="checklist" size={22} /></span>
+          <div>
+            <h3>Platform &amp; Governance</h3>
+            <p>Build capability around administration, deployment and governance.</p>
+            <span class="da-learn-checks" aria-hidden="true">
+              <i>Administration</i>
+              <i>Deployment</i>
+              <i>Governance</i>
+            </span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 9. Fractional analytics leadership -->
+  <section class="da-lead" id="leadership">
+    <div class="wrap da-lead-grid">
+      <div class="da-lead-copy">
+        <SectionHeading
+          eyebrow="Fractional Analytics Leadership"
+          title="Leadership When You Need It. "
+          accent="Without the Full-Time Overhead."
+          lead="Bring experienced analytics leadership into your organization to establish priorities, accelerate delivery and create accountability while you build your permanent capability."
+        />
+        <ol class="da-outcomes" data-reveal="stagger">
+          {
+            leadership.map((l, i) => (
+              <li>
+                <span class="da-outcome-n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3>{l.title}</h3>
+                  <p>{l.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <figure class="da-lead-photo">
+        <img
+          src={href('/solutions/data-analytics/leader.webp')}
+          alt="An analytics leader in thought, weighing a decision."
+          width="718"
+          height="860"
+          loading="lazy"
+          decoding="async"
+          data-float="1"
+        />
+      </figure>
+    </div>
+  </section>
+
+  <!-- 10. Industries -->
+  <section class="section da-ind" id="industries">
+    <div class="wrap">
+      <SectionHeading eyebrow="Across Industries" title="Analytics Across " accent="the Business." align="center" />
+      <ul class="da-ind-grid" data-reveal="stagger">
+        {
+          industries.map((d) => (
+            <li class="ix-card ix-card--quiet" style={`--c: ${tone[d.c]}`}>
+              <span class="da-ind-art" aria-hidden="true">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={d.icon} />
+              </span>
+              <h3>{d.title}</h3>
+              <p>{d.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 11. Final CTA -->
+  <section class="da-final">
+    <svg class="da-mesh" viewBox="0 0 1440 360" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="da-mesh-b" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1440" y2="0">
+          <stop offset="0" stop-color="#2f8cff" />
+          <stop offset="0.55" stop-color="#a14fd0" />
+          <stop offset="1" stop-color="#ff4d5e" />
+        </linearGradient>
+      </defs>
+      {waves.slice(0, 10).map((w) => <path d={w.d} stroke="url(#da-mesh-b)" stroke-opacity={w.o.toFixed(2)} />)}
+    </svg>
+    <div class="wrap da-final-grid">
+      <div data-reveal="">
+        <Eyebrow label="Data & Analytics" />
+        <h2>Your Data Already Has a Story. <span class="accent">Let's Make It Useful.</span></h2>
+      </div>
+      <div class="da-final-cta" data-reveal="">
+        <p>Start with the decisions that matter. We'll help you build the strategy, data foundation and analytics capability to answer them.</p>
+        <div class="da-actions">
+          <Button href={contact} variant="primary" arrow>Start a Conversation</Button>
+          <Button href={cta.email.href} variant="ghost-light" external>{cta.email.label}</Button>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <ul class="da-final-line" aria-label="What we help with">
+        {finalLine.map((f) => <li>{f}</li>)}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  :global(:root) {
+    --da-navy: #0a0f1d;
+    --da-violet: #7c5cf0;
+    --da-green: #16a34a;
+    --da-cyan: #0891b2;
+    --da-on-dark: #c7cedc;
+  }
+  .accent {
+    color: var(--red);
+  }
+  .accent-blue {
+    color: #3aa0ff;
+  }
+  h2 {
+    font-size: clamp(2rem, 1.35rem + 2.1vw, 2.85rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .da-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: var(--gap-actions);
+  }
+  /* Icon chip tinted by --c (light surfaces). */
+  .da-glyph {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    color: var(--c);
+    background: color-mix(in srgb, var(--c) 11%, #fff);
+    border: 1px solid color-mix(in srgb, var(--c) 20%, transparent);
+  }
+  /* Solid gradient tile. */
+  .da-tile {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    color: #fff;
+    background: linear-gradient(145deg, color-mix(in srgb, var(--c) 78%, #fff), var(--c));
+    box-shadow: 0 12px 24px -12px var(--c);
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+
+  /* Dark sections share one palette. */
+  .da-hero,
+  .da-found,
+  .da-practical,
+  .da-lead,
+  .da-final {
+    color: #fff;
+  }
+  .da-hero h1,
+  .da-found h2,
+  .da-practical h2,
+  .da-lead :global(h2),
+  .da-final h2 {
+    color: #fff;
+  }
+  .da-hero :global(.eyebrow),
+  .da-found :global(.eyebrow),
+  .da-practical :global(.eyebrow),
+  .da-lead :global(.eyebrow),
+  .da-final :global(.eyebrow) {
+    color: var(--da-on-dark);
+  }
+  .da-found :global(.lead),
+  .da-lead :global(.lead) {
+    color: var(--da-on-dark);
+  }
+
+  /* ---------- 1. Hero ---------- */
+  .da-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: clamp(2rem, 4vw, 3rem) clamp(1.25rem, 2.5vw, 2rem);
+    background: var(--da-navy);
+  }
+  .da-hero-photo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .da-hero-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 70% 60%;
+  }
+  .da-hero-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(10, 15, 29, 0.94) 0%, rgba(10, 15, 29, 0.82) 34%, rgba(10, 15, 29, 0.3) 62%, rgba(10, 15, 29, 0.15) 100%),
+      linear-gradient(180deg, rgba(10, 15, 29, 0.35) 0%, transparent 30%, transparent 70%, rgba(10, 15, 29, 0.8) 100%);
+  }
+  .da-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: center;
+    min-height: clamp(520px, 42vw, 640px);
+  }
+  .da-crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--da-on-dark);
+  }
+  .da-crumbs a {
+    color: #9fd3f5;
+    text-decoration: none;
+  }
+  .da-crumbs a:hover {
+    text-decoration: underline;
+  }
+  .da-hero h1 {
+    font-size: clamp(2.4rem, 1.4rem + 2.75vw, 3.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+  .da-hero h1 .accent {
+    display: block;
+  }
+  .da-lede {
+    margin-top: var(--gap-lead);
+    max-width: 44ch;
+    font-size: 1.12rem;
+    line-height: 1.6;
+    color: #dfe5f0;
+  }
+  .da-hero-dash {
+    transform: perspective(1400px) rotateY(-7deg) rotateX(2deg);
+    transform-origin: left center;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .da-hero-dash > :global(.dash) {
+      animation: da-rise 1300ms var(--ix-ease) 200ms backwards;
+    }
+    .da-journey li {
+      animation: da-fade 700ms var(--ix-ease) calc(700ms + var(--i) * 120ms) backwards;
+    }
+  }
+  @keyframes da-rise {
+    from {
+      opacity: 0;
+      transform: translateY(26px) scale(0.98);
+    }
+  }
+  @keyframes da-fade {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+  .da-journey {
+    list-style: none;
+    margin: clamp(1.25rem, 2.5vw, 2rem) 0 0;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(10, 15, 29, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .da-journey li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #e6ebf5;
+  }
+  .da-journey li:last-child span {
+    color: #ff6b6b;
+  }
+  .da-journey :global(svg) {
+    color: #7d8aa8;
+  }
+  @media (max-width: 960px) {
+    .da-hero-grid {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .da-hero-photo::after {
+      background: linear-gradient(180deg, rgba(10, 15, 29, 0.9) 0%, rgba(10, 15, 29, 0.78) 45%, rgba(10, 15, 29, 0.92) 100%);
+    }
+    .da-hero-dash {
+      transform: none;
+      max-width: 640px;
+      width: 100%;
+      margin-inline: auto;
+    }
+  }
+  @media (max-width: 560px) {
+    .da-journey {
+      border-radius: var(--radius-lg);
+      gap: 0.45rem 0.6rem;
+    }
+    .da-journey li {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      gap: 0.5rem;
+    }
+  }
+
+  /* ---------- 2. Capabilities ----------
+     A bento: Strategy and Engineering lead, the three platform capabilities
+     follow, Fractional Leadership closes as a dark feature card. A light
+     follows the cursor across the cards' faces and borders ([data-glow-grid]);
+     each card's illustration plays while on screen ([data-live-art]). At rest
+     (no JS, reduced motion) every illustration shows its finished state. */
+  .da-caps {
+    position: relative;
+    isolation: isolate;
+    overflow-x: clip;
+    background:
+      radial-gradient(40% 50% at 95% 0%, rgba(18, 136, 207, 0.08), transparent 70%),
+      radial-gradient(35% 45% at 0% 100%, rgba(217, 64, 64, 0.06), transparent 70%),
+      radial-gradient(rgba(13, 13, 13, 0.06) 1px, transparent 1.2px) 0 0 / 22px 22px,
+      linear-gradient(180deg, #fff 0%, var(--bg) 100%);
+  }
+  .da-bento {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .da-bento > li {
+    display: flex;
+    grid-column: span 4;
+  }
+  .da-bento > .is-strategy {
+    grid-column: span 7;
+  }
+  .da-bento > .is-engineering {
+    grid-column: span 5;
+  }
+  .da-bento > .is-lead {
+    grid-column: span 12;
+  }
+  .da-cap {
+    position: relative;
+    isolation: isolate;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 22px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      transform 450ms var(--ix-ease),
+      box-shadow 450ms var(--ix-ease);
+  }
+  .is-strategy .da-cap,
+  .is-lead .da-cap {
+    flex-direction: row-reverse;
+  }
+  /* The cursor's light: on the face, and along the border. */
+  .da-cap::before,
+  .da-cap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 400ms var(--ix-ease);
+  }
+  .da-cap::before {
+    z-index: -1;
+    background: radial-gradient(460px circle at var(--mx, 50%) var(--my, -40%), color-mix(in srgb, var(--c) 10%, transparent), transparent 65%);
+  }
+  .da-cap::after {
+    padding: 1.5px;
+    background: radial-gradient(320px circle at var(--mx, 50%) var(--my, -40%), var(--c), transparent 70%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .da-bento:hover .da-cap::before,
+    .da-bento:hover .da-cap::after {
+      opacity: 1;
+    }
+    .da-cap:hover {
+      transform: translateY(-5px);
+      box-shadow:
+        0 28px 56px -28px color-mix(in srgb, var(--c) 55%, transparent),
+        var(--shadow);
+    }
+  }
+  .da-cap:focus-visible {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 3px;
+  }
+  /* The illustration panel. */
+  .da-cap-art {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    height: 196px;
+    margin: 0.75rem 0.75rem 0;
+    border-radius: 16px;
+    overflow: hidden;
+    background:
+      radial-gradient(80% 90% at 50% 100%, color-mix(in srgb, var(--c) 12%, transparent), transparent 70%),
+      radial-gradient(color-mix(in srgb, var(--c) 22%, transparent) 1px, transparent 1.3px) 0 0 / 16px 16px,
+      color-mix(in srgb, var(--c) 4%, #fafbfe);
+    border: 1px solid color-mix(in srgb, var(--c) 12%, var(--border));
+    transition: transform 600ms var(--ix-ease);
+  }
+  .is-strategy .da-cap-art {
+    width: 48%;
+    height: auto;
+    min-height: 230px;
+    margin: 0.75rem 0.75rem 0.75rem 0;
+  }
+  /* The drawing fits the panel, whatever the panel's shape. */
+  .da-cap-art svg {
+    position: absolute;
+    inset: 14px;
+    width: calc(100% - 28px);
+    height: calc(100% - 28px);
+    overflow: visible;
+  }
+  .da-cap:hover .da-cap-art {
+    transform: scale(1.02);
+  }
+  .da-cap-art text {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 11px;
+    fill: var(--ink);
+  }
+  .da-cap-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.3rem 1.5rem 1.4rem;
+  }
+  .da-cap-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .da-cap-n {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--c) 45%, transparent);
+  }
+  .da-cap h3 {
+    font-size: 1.18rem;
+    line-height: 1.25;
+  }
+  .da-cap strong {
+    margin-top: 0.35rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.98rem;
+    color: color-mix(in srgb, var(--c) 72%, var(--ink));
+  }
+  .da-cap-text {
+    margin-top: 0.5rem;
+    color: var(--text-2);
+    line-height: 1.55;
+    font-size: 0.95rem;
+  }
+  /* Strategy's card previews the four-step approach further down. */
+  .da-cap-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1.1rem;
+  }
+  .da-cap-steps span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem 0.3rem 0.35rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+  .da-cap-steps b {
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    font-size: 0.66rem;
+    color: #fff;
+    background: var(--c);
+  }
+  .da-cap-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: auto;
+    padding-top: 1.1rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.86rem;
+    color: var(--red-text);
+  }
+  .da-cap-go :global(svg) {
+    transition: transform var(--ix-fast) var(--ix-ease);
+  }
+  .da-cap:is(:hover, :focus-visible) .da-cap-go :global(svg) {
+    transform: translateX(4px);
+  }
+  .da-cap:hover .da-tile {
+    transform: translateY(-2px) rotate(-5deg);
+  }
+
+  /* The dark feature card: Fractional Analytics Leadership. */
+  .is-lead .da-cap {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.08);
+    background:
+      radial-gradient(60% 120% at 100% 50%, rgba(22, 163, 74, 0.22), transparent 70%),
+      radial-gradient(50% 120% at 0% 0%, rgba(18, 136, 207, 0.18), transparent 70%),
+      var(--da-navy);
+  }
+  .is-lead .da-cap h3 {
+    color: #fff;
+  }
+  .is-lead .da-cap strong {
+    color: #6ee7a8;
+  }
+  .is-lead .da-cap-text {
+    color: var(--da-on-dark);
+  }
+  .is-lead .da-cap-go {
+    color: #ff8a8a;
+  }
+  .is-lead .da-cap-body {
+    max-width: 30rem;
+  }
+  .is-lead .da-cap-art {
+    flex: 1;
+    height: auto;
+    min-height: 190px;
+    margin: 0.75rem 0.75rem 0.75rem 0;
+    background:
+      radial-gradient(rgba(110, 231, 168, 0.18) 1px, transparent 1.3px) 0 0 / 16px 16px,
+      rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  .is-lead .da-cap-art text {
+    fill: #eaf2ff;
+  }
+
+  /* --- 01 Strategy: everything a strategy aligns, on one target. */
+  .s-ring {
+    fill: none;
+    stroke: color-mix(in srgb, var(--c) 32%, transparent);
+    stroke-width: 1.5;
+  }
+  .s-ring-out {
+    stroke-dasharray: 3 7;
+  }
+  .s-core {
+    fill: var(--c);
+  }
+  .s-ping {
+    fill: none;
+    stroke: var(--c);
+    stroke-width: 2;
+    opacity: 0;
+  }
+  .s-link {
+    fill: none;
+    stroke: color-mix(in srgb, var(--c) 45%, transparent);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 5;
+  }
+  .s-dart path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .s-dart .s-fletch {
+    stroke: var(--c);
+  }
+  .s-chip rect {
+    fill: #fff;
+    stroke: var(--border);
+    filter: drop-shadow(0 4px 8px rgba(13, 13, 13, 0.08));
+  }
+  .s-chip circle {
+    fill: var(--c);
+  }
+  /* --- 02 Engineering: scattered data comes out in order. */
+  .e-raw {
+    fill: color-mix(in srgb, var(--c) 45%, #e2557a);
+    opacity: 0.55;
+  }
+  .e-raw:nth-child(3n) {
+    fill: #8b6cf0;
+  }
+  .e-pipe {
+    fill: color-mix(in srgb, var(--c) 14%, #fff);
+    stroke: var(--c);
+    stroke-width: 1.5;
+  }
+  .da-cap-art .e-pipe-t {
+    font-size: 10px;
+    text-anchor: middle;
+    fill: color-mix(in srgb, var(--c) 75%, var(--ink));
+  }
+  .e-cell {
+    fill: color-mix(in srgb, var(--c) 70%, #fff);
+  }
+  .e-flow {
+    fill: none;
+    stroke: color-mix(in srgb, var(--c) 18%, transparent);
+    stroke-width: 1;
+  }
+  .e-dots circle {
+    fill: var(--c);
+    filter: drop-shadow(0 0 3px var(--c));
+  }
+  /* --- 03 BI: bars rise, the trend draws through them. */
+  .b-grid {
+    stroke: color-mix(in srgb, var(--c) 14%, transparent);
+    stroke-dasharray: 2 4;
+  }
+  .b-bar {
+    fill: color-mix(in srgb, var(--c) 30%, #fff);
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+  .b-bar:nth-child(n + 9) {
+    fill: color-mix(in srgb, var(--c) 75%, #fff);
+  }
+  .b-line {
+    fill: none;
+    stroke: var(--c);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1 1;
+  }
+  .b-end {
+    fill: #fff;
+    stroke: var(--c);
+    stroke-width: 3;
+  }
+  .b-tip rect {
+    fill: var(--ink);
+  }
+  .da-cap-art .b-tip text {
+    fill: #fff;
+    font-size: 10px;
+    text-anchor: middle;
+  }
+  /* --- 04 Governance: lineage, checked step by step; access locked. */
+  .g-link {
+    fill: none;
+    stroke: color-mix(in srgb, var(--c) 50%, transparent);
+    stroke-width: 2;
+    stroke-dasharray: 3 4;
+  }
+  .g-node rect {
+    fill: #fff;
+    stroke: color-mix(in srgb, var(--c) 40%, var(--border));
+    stroke-width: 1.2;
+    filter: drop-shadow(0 4px 8px rgba(13, 13, 13, 0.06));
+  }
+  .da-cap-art .g-node text {
+    font-size: 10.5px;
+    text-anchor: middle;
+  }
+  .g-check circle {
+    fill: var(--c);
+  }
+  .g-check path,
+  .n-star path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .g-lock rect {
+    fill: var(--c);
+  }
+  .g-lock path {
+    fill: none;
+    stroke: var(--c);
+    stroke-width: 1.6;
+  }
+  .g-scan {
+    fill: color-mix(in srgb, var(--c) 16%, transparent);
+    opacity: 0;
+  }
+  .da-cap-art .g-cap {
+    font-size: 10px;
+    text-anchor: middle;
+    fill: color-mix(in srgb, var(--c) 70%, var(--ink));
+    letter-spacing: 0.06em;
+  }
+  /* --- 05 Enablement: every role's skills grow. */
+  .n-track {
+    fill: #fff;
+    stroke: color-mix(in srgb, var(--c) 14%, var(--border));
+    stroke-width: 5;
+  }
+  .n-ring {
+    fill: none;
+    stroke: var(--c);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: calc(var(--p) * 1px) 100px;
+  }
+  .n-head,
+  .n-body {
+    fill: color-mix(in srgb, var(--c) 30%, #fff);
+    stroke: var(--c);
+    stroke-width: 1.5;
+  }
+  .n-star circle {
+    fill: #16a34a;
+  }
+  .da-cap-art .n-t {
+    font-size: 10px;
+    text-anchor: middle;
+  }
+  /* --- 06 Leadership: a roadmap that keeps moving. */
+  .l-track {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 6;
+    stroke-linecap: round;
+  }
+  .l-road {
+    fill: none;
+    stroke: #6ee7a8;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 1 1;
+  }
+  .l-dot {
+    fill: var(--da-navy);
+    stroke: #6ee7a8;
+    stroke-width: 3;
+  }
+  .l-halo {
+    fill: rgba(110, 231, 168, 0.18);
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .da-cap-art .l-step text {
+    font-size: 12px;
+    text-anchor: middle;
+  }
+  .l-marker {
+    fill: #fff;
+    filter: drop-shadow(0 0 4px #6ee7a8) drop-shadow(0 0 10px #6ee7a8);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .e-dots,
+    .l-marker {
+      display: none;
+    }
+  }
+
+  /* Motion: each illustration plays while its card is on screen. */
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .is-live .s-ring-out {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: cap-spin 22s linear infinite;
+    }
+    .is-live .s-link {
+      animation: cap-march 1.4s linear infinite;
+    }
+    .is-live .s-chip {
+      animation: cap-pop 700ms var(--ix-ease) backwards;
+      animation-delay: calc(var(--i) * 140ms + 150ms);
+    }
+    .is-live .s-dart {
+      animation: s-dart 900ms cubic-bezier(0.2, 0.8, 0.2, 1) 650ms backwards;
+    }
+    .is-live .s-ping {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: cap-ping 2.6s ease-out 1.5s infinite;
+    }
+    .is-live .e-cell {
+      animation: cap-blink 3.2s ease-in-out infinite;
+      animation-delay: calc(var(--i) * 0.2s);
+    }
+    .is-live .e-raw {
+      animation: e-drift 4s ease-in-out infinite alternate;
+      animation-delay: calc(var(--i) * -0.6s);
+    }
+    .is-live .b-bar {
+      animation:
+        b-grow 800ms var(--ix-ease) backwards,
+        b-breathe 3.6s ease-in-out 1.4s infinite alternate;
+      animation-delay: calc(var(--i) * 80ms), calc(var(--i) * 0.3s + 1.4s);
+    }
+    .is-live .b-line {
+      animation: cap-draw 1.3s ease 550ms backwards;
+    }
+    .is-live .b-end {
+      animation: cap-pop 500ms var(--ix-ease) 1.6s backwards;
+    }
+    .is-live .b-tip {
+      animation: cap-pop 500ms var(--ix-ease) 1.8s backwards;
+    }
+    .is-live .g-scan {
+      animation: g-scan 3.4s ease-in-out infinite;
+    }
+    .is-live .g-check {
+      animation: cap-pop 500ms var(--ix-ease) backwards;
+      animation-delay: calc(var(--i) * 450ms + 700ms);
+    }
+    .is-live .g-link {
+      animation: cap-march 1.4s linear infinite;
+    }
+    .is-live .n-ring {
+      animation: n-fill 1.4s var(--ix-ease) backwards;
+      animation-delay: calc(var(--i) * 200ms + 200ms);
+    }
+    .is-live .n-star {
+      animation: cap-pop 500ms var(--ix-ease) 1.6s backwards;
+    }
+    .is-live .l-road {
+      animation: cap-draw 1.6s ease 200ms backwards;
+    }
+    .is-live .l-halo {
+      animation: l-flash 6s ease-out infinite;
+      animation-delay: calc(var(--at) * 6s);
+    }
+  }
+  @keyframes cap-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes cap-march {
+    to {
+      stroke-dashoffset: -16;
+    }
+  }
+  @keyframes cap-pop {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.92);
+    }
+  }
+  @keyframes cap-ping {
+    from {
+      opacity: 0.9;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(4.2);
+    }
+  }
+  @keyframes s-dart {
+    from {
+      opacity: 0;
+      transform: translate(-70px, -70px);
+    }
+  }
+  @keyframes cap-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+  @keyframes e-drift {
+    to {
+      transform: translate(4px, -5px);
+    }
+  }
+  @keyframes b-grow {
+    from {
+      transform: scaleY(0);
+    }
+  }
+  @keyframes b-breathe {
+    to {
+      transform: scaleY(0.88);
+    }
+  }
+  @keyframes cap-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+  }
+  @keyframes g-scan {
+    0% {
+      opacity: 0;
+      transform: translateX(0);
+    }
+    15% {
+      opacity: 1;
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(330px);
+    }
+  }
+  @keyframes n-fill {
+    from {
+      stroke-dasharray: 0 100px;
+    }
+  }
+  @keyframes l-flash {
+    0% {
+      opacity: 1;
+      transform: scale(0.6);
+    }
+    30% {
+      opacity: 0;
+      transform: scale(1.8);
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .da-bento {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .da-bento > li,
+    .da-bento > .is-engineering {
+      grid-column: span 1;
+    }
+    .da-bento > .is-strategy,
+    .da-bento > .is-lead {
+      grid-column: span 2;
+    }
+    /* The roadmap needs width: the leadership card stacks, roadmap on top. */
+    .is-lead .da-cap {
+      flex-direction: column;
+    }
+    .is-lead .da-cap-art {
+      flex: none;
+      min-height: 0;
+      height: 196px;
+      margin: 0.75rem 0.75rem 0;
+    }
+    .is-lead .da-cap-body {
+      max-width: none;
+    }
+  }
+  @media (max-width: 640px) {
+    .da-bento {
+      grid-template-columns: 1fr;
+    }
+    .da-bento > li,
+    .da-bento > .is-strategy,
+    .da-bento > .is-engineering,
+    .da-bento > .is-lead {
+      grid-column: auto;
+    }
+    .is-strategy .da-cap,
+    .is-lead .da-cap {
+      flex-direction: column;
+    }
+    .is-strategy .da-cap-art,
+    .is-lead .da-cap-art {
+      width: auto;
+      min-height: 0;
+      height: 196px;
+      margin: 0.75rem 0.75rem 0;
+    }
+    /* Phones: simple cards, no illustrations (Hemang, 2026-10-15). */
+    .da-cap-art,
+    .da-cap-steps {
+      display: none;
+    }
+    .da-bento {
+      gap: 0.85rem;
+    }
+    .da-cap-body {
+      padding: 1.2rem 1.25rem 1.25rem;
+    }
+    .da-cap-top {
+      margin-bottom: 0.8rem;
+    }
+    .da-cap-n {
+      font-size: 1.5rem;
+    }
+  }
+
+  /* ---------- 3. Business intelligence ---------- */
+  .da-bi {
+    position: relative;
+    overflow: clip;
+    background:
+      radial-gradient(40% 50% at 100% 20%, rgba(18, 136, 207, 0.1), transparent 70%),
+      radial-gradient(35% 45% at 0% 100%, rgba(217, 64, 64, 0.07), transparent 70%),
+      var(--bg);
+  }
+  .da-bi-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+    align-items: center;
+  }
+  .da-bi-copy :global(h2 .accent),
+  .da-strategy :global(h2 .accent) {
+    display: block;
+  }
+  /* The benefits are the tour's steps: the whole row is the button. */
+  .da-benefits li {
+    position: relative;
+    padding: 0.85rem 1rem 1rem;
+    margin-inline: -1rem;
+    border-radius: 16px;
+    border: 1px solid transparent;
+    transition:
+      background-color 350ms var(--ix-ease),
+      border-color 350ms var(--ix-ease),
+      box-shadow 350ms var(--ix-ease);
+  }
+  .da-benefits li:hover {
+    background: rgba(255, 255, 255, 0.6);
+  }
+  .da-benefits li.is-active {
+    background: #fff;
+    border-color: var(--border);
+    box-shadow: var(--shadow-m);
+  }
+  .da-benefits li.is-active .da-glyph {
+    color: #fff;
+    background: var(--c);
+    border-color: var(--c);
+  }
+  .da-benefits .da-glyph {
+    transition:
+      background-color 350ms var(--ix-ease),
+      color 350ms var(--ix-ease);
+  }
+  .da-benefit {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .da-benefit::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .da-benefit:focus-visible {
+    outline: none;
+  }
+  .da-benefits li:has(.da-benefit:focus-visible) {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 2px;
+  }
+  /* The active step's timer: when it fills, the tour moves on. */
+  .da-benefit-bar {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0.45rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--border);
+    overflow: hidden;
+    opacity: 0;
+  }
+  .da-benefits li.is-active .da-benefit-bar {
+    opacity: 1;
+  }
+  .da-benefits li.is-active .da-benefit-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--c);
+    transform-origin: left;
+    animation: da-tour-progress 5.5s linear forwards;
+  }
+  .da-bi-grid:hover li.is-active .da-benefit-bar::after,
+  .is-paused li.is-active .da-benefit-bar::after {
+    animation-play-state: paused;
+  }
+  .is-manual .da-benefit-bar {
+    display: none;
+  }
+  @keyframes da-tour-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .da-benefit-bar {
+      display: none;
+    }
+  }
+  .da-tour-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-2);
+  }
+  .da-tour-hint :global(svg) {
+    color: var(--red);
+    transform: rotate(180deg);
+  }
+  .is-manual .da-tour-hint {
+    visibility: hidden;
+  }
+  .da-tour-caption {
+    display: none;
+  }
+
+  /* The laptop: a soft glow behind it, glass on the screen, and a lid that
+     swings open as it scrolls in (product.ts, [data-lid]). */
+  .da-laptop {
+    position: relative;
+    isolation: isolate;
+    perspective: 2200px;
+  }
+  .da-laptop-glow {
+    position: absolute;
+    inset: 6% 4% -4%;
+    z-index: -1;
+    background: radial-gradient(60% 60% at 50% 55%, rgba(18, 136, 207, 0.32), rgba(124, 92, 240, 0.18) 45%, transparent 75%);
+    filter: blur(34px);
+  }
+  .da-laptop-screen {
+    position: relative;
+    transform-origin: 50% 100%;
+  }
+  .da-laptop-screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(115deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 32%);
+  }
+  /* A label that points at the part of the dashboard in focus. */
+  .da-callout {
+    position: absolute;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.5em 0.9em 0.5em 0.7em;
+    border-radius: 999px;
+    white-space: nowrap;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: clamp(0.72rem, 0.55rem + 0.35vw, 0.88rem);
+    color: #fff;
+    background: rgba(13, 13, 13, 0.88);
+    box-shadow: 0 14px 30px -10px rgba(13, 13, 13, 0.5);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      left 500ms var(--ix-ease),
+      top 500ms var(--ix-ease);
+  }
+  .da-callout.is-in {
+    animation: da-callout-in 500ms var(--ix-ease) forwards;
+  }
+  @keyframes da-callout-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% + 10px)) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+  .da-callout-dot {
+    width: 0.55em;
+    height: 0.55em;
+    border-radius: 50%;
+    background: #3ee08f;
+    box-shadow: 0 0 0 0.25em rgba(62, 224, 143, 0.25);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .da-callout.is-in {
+      animation: none;
+      opacity: 1;
+    }
+    .da-callout {
+      transition: none;
+    }
+  }
+  /* The tech behind the step in focus lights up in the strip. */
+  .da-strip li {
+    transition: color 350ms var(--ix-ease);
+  }
+  .da-strip li.is-on {
+    color: var(--red-text);
+  }
+  .da-benefits {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+  .da-benefits li {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .da-benefits h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.15rem;
+  }
+  .da-benefits p {
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  /* Tablets and phones: the steps become a compact 2 × 2 grid right above
+     the dashboard, with the active step's line as a caption, so what a tap
+     changes is in view. */
+  @media (max-width: 1024px) {
+    .da-benefits {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+    .da-benefits li {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin: 0;
+      padding: 0.7rem 0.8rem 0.8rem;
+      border-radius: 14px;
+      border-color: var(--border);
+      background: #fff;
+    }
+    .da-benefits .da-glyph {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+    }
+    .da-benefits h3 {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.25;
+    }
+    .da-benefits li p {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .da-benefit-bar {
+      bottom: 0.3rem;
+      left: 0.8rem;
+      right: 0.8rem;
+    }
+    .da-tour-caption {
+      display: block;
+      min-height: 1.6em;
+      margin-top: 0.85rem;
+      color: var(--text-2);
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+    .da-tour-caption:empty,
+    .da-tour-hint {
+      display: none;
+    }
+  }
+  .da-laptop {
+    margin: 0 calc(-1 * clamp(0px, 3vw, 2.5rem)) 0 0;
+  }
+  .da-laptop-screen {
+    padding: 2.4% 2.4% 2%;
+    border-radius: 22px 22px 6px 6px;
+    background: linear-gradient(180deg, #24262d, #121318);
+    box-shadow:
+      0 40px 80px -30px rgba(13, 13, 13, 0.45),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+  .da-laptop-screen :global(.dash) {
+    border-radius: 10px;
+  }
+  .da-laptop-base {
+    height: 18px;
+    margin-inline: -5%;
+    border-radius: 0 0 22px 22px;
+    background: linear-gradient(180deg, #d9dbe2, #a9adb8 60%, #8c909b);
+    box-shadow: 0 18px 30px -18px rgba(13, 13, 13, 0.5);
+    position: relative;
+  }
+  .da-laptop-base::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 16%;
+    height: 7px;
+    margin-left: -8%;
+    border-radius: 0 0 10px 10px;
+    background: #9da1ab;
+  }
+  .da-strip {
+    list-style: none;
+    margin: clamp(2rem, 4vw, 3rem) 0 0;
+    padding: 1rem 0 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 0;
+  }
+  .da-strip li {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .da-strip li + li::before {
+    content: '•';
+    margin-inline: 1rem;
+    color: var(--red);
+  }
+  @media (max-width: 1024px) {
+    .da-bi-grid {
+      grid-template-columns: 1fr;
+    }
+    .da-laptop {
+      margin: 0 auto;
+      width: 100%;
+      max-width: 720px;
+    }
+  }
+
+  /* ---------- 4. Modern data foundation ----------
+     Desktop: a flow diagram (.da-flow) that assembles as the visitor scrolls
+     past it — the scattered sources line up, the lines draw, each stage
+     arrives — and then data keeps flowing through it (pipeline.ts). Tablets
+     and phones: the same five stages as a vertical list that builds the same
+     way. The list is also the diagram's text for assistive tech. */
+  .da-found {
+    position: relative;
+    isolation: isolate;
+    overflow-x: clip;
+    padding-block: var(--space-7);
+    background:
+      radial-gradient(45% 40% at 85% 10%, rgba(18, 136, 207, 0.22), transparent 70%),
+      radial-gradient(40% 40% at 5% 95%, rgba(124, 92, 240, 0.16), transparent 70%),
+      linear-gradient(rgba(140, 175, 235, 0.05) 1px, transparent 1px) 0 0 / 56px 56px,
+      linear-gradient(90deg, rgba(140, 175, 235, 0.05) 1px, transparent 1px) 0 0 / 56px 56px,
+      var(--da-navy);
+  }
+  .da-found-head {
+    margin-bottom: clamp(1.75rem, 3.5vw, 3rem);
+  }
+
+  /* The flow diagram. Sizes are in em of a font that scales with the
+     diagram's width, so the whole drawing keeps its proportions. */
+  .da-flow {
+    margin: 0;
+    container-type: inline-size;
+  }
+  .da-flow-in {
+    font-size: max(11px, 1.13cqw);
+  }
+  .da-flow-phases {
+    position: relative;
+    height: 2.6em;
+    margin-bottom: 1.2em;
+  }
+  .flow-phase {
+    position: absolute;
+    bottom: 0;
+    padding-bottom: 0.6em;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.16);
+    text-align: center;
+    white-space: nowrap;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.78em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #9fb6da;
+  }
+  .flow-phase.is-last {
+    color: #8fe3f0;
+    border-color: rgba(34, 184, 207, 0.6);
+  }
+  .da-flow-box {
+    position: relative;
+    aspect-ratio: 1200 / 460;
+  }
+  .da-flow-box > svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .flow-line {
+    fill: none;
+    stroke: url(#da-flow-grad);
+    stroke-width: 2;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.75;
+  }
+  .flow-dots circle {
+    fill: var(--c);
+    filter: drop-shadow(0 0 3px var(--c)) drop-shadow(0 0 7px var(--c));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .flow-dots {
+      display: none;
+    }
+  }
+  .flow-src,
+  .flow-node {
+    position: absolute;
+    border-radius: 1.1em;
+    border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
+    background: linear-gradient(170deg, color-mix(in srgb, var(--c) 20%, rgba(20, 30, 60, 0.94)), rgba(10, 16, 34, 0.96));
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+      0 1.4em 2.8em -1.4em var(--c);
+    color: #fff;
+    transition:
+      translate 300ms var(--ix-ease),
+      box-shadow 300ms var(--ix-ease);
+  }
+  .flow-src:hover,
+  .flow-node:hover {
+    translate: 0 -3px;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--c) 40%, transparent) inset,
+      0 0 0 0.4em color-mix(in srgb, var(--c) 12%, transparent),
+      0 1.6em 3em -1.2em var(--c);
+  }
+  .flow-src {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 0 0.9em 0 0.55em;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1em;
+  }
+  .flow-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em;
+    padding: 0.8em;
+    text-align: center;
+  }
+  .flow-node strong {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.08em;
+    line-height: 1.2;
+  }
+  .flow-sub {
+    color: var(--da-on-dark);
+    font-size: 0.88em;
+    line-height: 1.35;
+  }
+  .flow-ico {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.8em;
+    height: 2.8em;
+    border-radius: 0.85em;
+    color: color-mix(in srgb, var(--c) 70%, #fff);
+    background: color-mix(in srgb, var(--c) 16%, rgba(255, 255, 255, 0.03));
+    border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
+  }
+  .flow-ico--sm {
+    width: 2.3em;
+    height: 2.3em;
+    border-radius: 0.7em;
+  }
+  .flow-ico :global(svg) {
+    width: 55%;
+    height: 55%;
+  }
+  .flow-out {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.6em;
+    padding: 0 0.7em;
+    text-align: left;
+  }
+  .flow-out strong {
+    font-size: 1em;
+  }
+  /* The lakehouse: three layers stacked with the red-to-blue edge light. */
+  .flow-slabs {
+    width: 62%;
+    height: auto;
+    overflow: visible;
+  }
+  .flow-slab-top {
+    fill: color-mix(in srgb, #7f8cff 22%, rgba(16, 24, 50, 0.95));
+    stroke: rgba(170, 190, 255, 0.35);
+    stroke-width: 0.6;
+  }
+  .flow-slab-side {
+    fill: rgba(8, 12, 28, 0.95);
+  }
+  .flow-slab-edge {
+    fill: none;
+    stroke: url(#da-slab-edge);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 2px #7f8cff);
+  }
+  /* The semantic layer: a small graph of shared definitions, glowing. */
+  .flow-graph {
+    width: 58%;
+    height: auto;
+    overflow: visible;
+  }
+  .flow-graph path {
+    fill: none;
+    stroke: rgba(150, 200, 255, 0.6);
+    stroke-width: 1.4;
+  }
+  .flow-graph circle {
+    fill: #3aa0ff;
+    filter: drop-shadow(0 0 3px #3aa0ff);
+  }
+  .flow-sem::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 1px solid #3aa0ff;
+    opacity: 0;
+    pointer-events: none;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .da-flow.is-done .flow-sem::after {
+      animation: flow-ring 2.6s ease-out infinite;
+    }
+    .da-flow.is-done .flow-graph circle {
+      animation: flow-blink 2.6s ease-in-out infinite;
+    }
+    .da-flow.is-done .flow-graph circle:nth-of-type(2n) {
+      animation-delay: 1.3s;
+    }
+  }
+  @keyframes flow-ring {
+    from {
+      opacity: 0.9;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.12, 1.18);
+    }
+  }
+  @keyframes flow-blink {
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  /* The vertical list: phones and tablets (and screen readers everywhere). */
+  .da-pipe {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    display: grid;
+    gap: 1.75rem;
+    max-width: 560px;
+  }
+  .da-node {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 1rem;
+    align-items: center;
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    background: linear-gradient(170deg, color-mix(in srgb, var(--c) 20%, rgba(20, 30, 60, 0.9)), rgba(12, 18, 38, 0.92));
+    border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+      0 18px 40px -22px var(--c);
+    transition:
+      box-shadow 400ms var(--ix-ease),
+      border-color 400ms var(--ix-ease);
+  }
+  .da-node.is-active {
+    border-color: var(--c);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--c) 40%, transparent) inset,
+      0 0 0 6px color-mix(in srgb, var(--c) 14%, transparent),
+      0 24px 50px -18px var(--c);
+  }
+  .da-node-icon {
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    color: var(--c);
+    background: color-mix(in srgb, var(--c) 14%, rgba(255, 255, 255, 0.03));
+    border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
+  }
+  .da-node h3 {
+    color: #fff;
+    font-size: 0.86rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.3;
+  }
+  .da-node p {
+    margin-top: 0.15rem;
+    color: var(--da-on-dark);
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+  .da-node-tags {
+    list-style: none;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .da-node-tags li {
+    padding: 0.18rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    color: #eef2fa;
+    background: color-mix(in srgb, var(--c) 18%, rgba(255, 255, 255, 0.04));
+    border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+  }
+  /* Connector from the stage above: it fills, then a light runs down it. */
+  .da-conn {
+    position: absolute;
+    left: 2.6rem;
+    bottom: 100%;
+    width: 3px;
+    height: 1.75rem;
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  .da-conn-fill {
+    position: absolute;
+    inset: 0;
+    transform-origin: center top;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), var(--c));
+  }
+  .da-conn-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.95), transparent);
+    background-size: 100% 50%;
+    background-repeat: no-repeat;
+    opacity: 0;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .da-conn-fill::after {
+      opacity: 1;
+      animation: da-pulse 1.6s linear infinite;
+    }
+  }
+  @keyframes da-pulse {
+    from {
+      background-position: 0 -60%;
+    }
+    to {
+      background-position: 0 160%;
+    }
+  }
+  @media (min-width: 1024px) {
+    .da-pipe {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+  @media (max-width: 1023px) {
+    .da-flow {
+      display: none;
+    }
+  }
+
+  .da-found-cards {
+    list-style: none;
+    margin: clamp(2.5rem, 5vw, 3.5rem) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .da-found-cards li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.3rem;
+    border-radius: 16px;
+    background: linear-gradient(120deg, color-mix(in srgb, var(--c) 30%, rgba(20, 30, 60, 0.9)), rgba(12, 18, 38, 0.6));
+    border: 1px solid color-mix(in srgb, var(--c) 50%, transparent);
+  }
+  .da-found-cards .da-glyph {
+    color: #fff;
+    background: color-mix(in srgb, var(--c) 30%, transparent);
+    border-color: color-mix(in srgb, var(--c) 55%, transparent);
+  }
+  .da-found-cards h3 {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 0.15rem;
+  }
+  .da-found-cards p {
+    color: var(--da-on-dark);
+    line-height: 1.5;
+  }
+  .da-platforms {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 1.75rem;
+    color: var(--da-on-dark);
+    font-size: 0.9rem;
+  }
+  .da-platforms ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .da-platforms li {
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.04);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #fff;
+  }
+  @media (max-width: 1023px) {
+    .da-found-cards {
+      grid-template-columns: 1fr;
+      max-width: 560px;
+      margin-inline: auto;
+    }
+  }
+
+  /* ---------- 5. Analytics strategy ---------- */
+  .da-strategy {
+    position: relative;
+    background:
+      radial-gradient(60% 30% at 50% 0%, rgba(18, 136, 207, 0.12), transparent 70%),
+      var(--bg);
+  }
+  .da-strategy-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+    align-items: center;
+  }
+  .da-decision {
+    position: relative;
+    margin: 0;
+    display: grid;
+    justify-items: start;
+    gap: 0;
+    padding: 1.5rem;
+    border-radius: 22px;
+    background:
+      radial-gradient(70% 80% at 100% 0%, rgba(18, 136, 207, 0.1), transparent 70%),
+      #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-m);
+  }
+  .da-dec-card {
+    width: min(100%, 22rem);
+    padding: 0.9rem 1.1rem;
+    border-radius: 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+  .da-dec-card:nth-of-type(2) {
+    margin-left: clamp(1rem, 6%, 3rem);
+  }
+  .da-dec-path {
+    margin-left: clamp(2rem, 12%, 6rem);
+    background: linear-gradient(120deg, rgba(18, 136, 207, 0.1), rgba(124, 92, 240, 0.08));
+    border-color: rgba(18, 136, 207, 0.3);
+  }
+  .da-dec-q {
+    background: linear-gradient(120deg, rgba(217, 64, 64, 0.1), rgba(217, 64, 64, 0.03));
+    border-color: var(--red-edge);
+  }
+  .da-dec-k {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .da-dec-card strong {
+    font-family: var(--font-head);
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+  .da-dec-card ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .da-dec-card li {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .da-dec-link {
+    width: 2px;
+    height: 1.1rem;
+    margin-left: 2.2rem;
+    background: linear-gradient(180deg, var(--border-2), var(--blue));
+  }
+  .da-dec-link:nth-of-type(2) {
+    margin-left: calc(clamp(1rem, 6%, 3rem) + 2.2rem);
+  }
+  .da-dec-dash {
+    margin: 0.9rem 0 0 auto;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-2);
+  }
+  .da-steps {
+    --p: 1;
+    position: relative;
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  }
+  .da-steps-line {
+    position: absolute;
+    left: 12.5%;
+    right: 12.5%;
+    top: 26px;
+    height: 2px;
+    background: var(--border);
+  }
+  .da-steps-line span {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--red), var(--plum), var(--da-violet), var(--blue));
+    transform-origin: left;
+    transform: scaleX(var(--p));
+  }
+  .da-steps ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .da-steps li {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    padding: 0 0.5rem;
+  }
+  .da-step-n {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-family: var(--font-head);
+    font-weight: 700;
+    color: var(--c);
+    background: #fff;
+    border: 2px solid color-mix(in srgb, var(--c) 40%, transparent);
+    box-shadow: 0 0 0 8px var(--bg);
+    transition:
+      background-color var(--ix-base) var(--ix-ease),
+      color var(--ix-base) var(--ix-ease),
+      transform var(--ix-base) var(--ix-ease);
+  }
+  .da-steps li.is-on .da-step-n {
+    background: var(--c);
+    color: #fff;
+    border-color: var(--c);
+  }
+  .da-step-icon {
+    margin: 1rem 0 0.4rem;
+    color: var(--c);
+  }
+  .da-steps h3 {
+    font-size: var(--step-1);
+    margin-bottom: 0.3rem;
+  }
+  .da-steps p {
+    color: var(--text-2);
+    line-height: 1.5;
+    font-size: 0.95rem;
+    max-width: 24ch;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    :global(html.ix) .da-steps li:not(.is-on) .da-step-n {
+      transform: scale(0.88);
+    }
+    :global(html.ix) .da-steps li:not(.is-on) :is(h3, p, .da-step-icon) {
+      opacity: 0.5;
+    }
+    .da-steps li :is(h3, p, .da-step-icon) {
+      transition: opacity var(--ix-base) var(--ix-ease);
+    }
+  }
+  .da-goal {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    text-align: center;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    line-height: 1.3;
+  }
+  @media (max-width: 1024px) {
+    .da-strategy-top {
+      grid-template-columns: 1fr;
+    }
+    .da-decision {
+      max-width: 560px;
+    }
+  }
+  /* Phones: the steps indent less, so every card stays inside the panel. */
+  @media (max-width: 600px) {
+    .da-decision {
+      padding: 1rem;
+    }
+    .da-dec-card,
+    .da-dec-card:nth-of-type(2),
+    .da-dec-path {
+      width: auto;
+      max-width: 100%;
+      margin-left: 0;
+      justify-self: stretch;
+    }
+    .da-dec-card:nth-of-type(2) {
+      margin-left: 0.75rem;
+    }
+    .da-dec-path {
+      margin-left: 1.5rem;
+    }
+    .da-dec-link,
+    .da-dec-link:nth-of-type(2) {
+      margin-left: 1.5rem;
+    }
+  }
+  @media (max-width: 760px) {
+    .da-steps-line {
+      left: 25px;
+      right: auto;
+      top: 26px;
+      bottom: 26px;
+      width: 2px;
+      height: auto;
+    }
+    .da-steps-line span {
+      transform-origin: top;
+      transform: scaleY(var(--p));
+    }
+    .da-steps ol {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .da-steps li {
+      grid-template-columns: auto 1fr;
+      column-gap: 1.1rem;
+      justify-items: start;
+      text-align: left;
+      padding: 0;
+    }
+    .da-step-n {
+      grid-row: span 3;
+    }
+    .da-step-icon {
+      margin: 0.2rem 0 0.2rem;
+    }
+  }
+
+  /* ---------- 6. The 95% principle ---------- */
+  .da-practical,
+  .da-final {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    background:
+      radial-gradient(45% 60% at 0% 100%, rgba(217, 64, 64, 0.2), transparent 70%),
+      radial-gradient(45% 60% at 100% 100%, rgba(18, 136, 207, 0.22), transparent 70%),
+      #070a14;
+  }
+  .da-practical {
+    padding-block: clamp(4rem, 8vw, 6.5rem);
+  }
+  .da-mesh {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -70px;
+    z-index: -1;
+    width: 100%;
+    height: 58%;
+    pointer-events: none;
+  }
+  .da-mesh path {
+    fill: none;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-dasharray: 0 9;
+    vector-effect: non-scaling-stroke;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .da-mesh {
+      animation: da-drift 24s ease-in-out infinite alternate;
+    }
+  }
+  @keyframes da-drift {
+    to {
+      transform: translateX(-3%) scaleY(1.06);
+    }
+  }
+  .da-practical-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .da-practical :global(.section-heading) {
+    margin-bottom: 1.75rem;
+  }
+  .da-ninety {
+    margin: 0;
+    padding-left: 1.4rem;
+    border-left: 4px solid;
+    border-image: linear-gradient(180deg, var(--red), rgba(255, 255, 255, 0.85)) 1;
+    display: grid;
+    gap: 0.15rem;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: clamp(1.4rem, 0.95rem + 1.6vw, 2.2rem);
+    line-height: 1.22;
+    letter-spacing: -0.015em;
+    color: #fff;
+  }
+  .da-ninety em {
+    font-style: normal;
+    color: #ff5a5f;
+  }
+  .da-practical-side {
+    padding: 1.75rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .da-practical-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  .da-practical-steps li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #fff;
+  }
+  .da-practical-steps .da-glyph,
+  .da-final .da-glyph {
+    color: color-mix(in srgb, var(--c) 60%, #fff);
+    background: color-mix(in srgb, var(--c) 18%, transparent);
+    border-color: color-mix(in srgb, var(--c) 45%, transparent);
+  }
+  @media (max-width: 900px) {
+    .da-practical-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 7. Trusted data ---------- */
+  .da-trust {
+    background: linear-gradient(180deg, #fff, var(--bg));
+  }
+  .da-split-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2.5rem;
+    margin-bottom: var(--gap-block);
+  }
+  .da-split-head :global(.section-heading) {
+    margin-bottom: 0;
+  }
+  .da-split-head > p {
+    max-width: 34ch;
+    color: var(--text-2);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  .da-trust-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .da-trust-grid li {
+    position: relative;
+    overflow: hidden;
+    padding: 1.5rem 1.4rem;
+    border-radius: 18px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .da-trust-grid li::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: var(--c);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  .da-trust-grid li:hover::after {
+    transform: scaleX(1);
+  }
+  .da-trust-grid li:hover .da-tile {
+    transform: translateY(-3px) rotate(-4deg);
+  }
+  .da-trust-grid h3 {
+    margin: 1.1rem 0 0.35rem;
+    font-size: 1.12rem;
+  }
+  .da-trust-grid p {
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  @media (max-width: 1024px) {
+    .da-trust-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 520px) {
+    .da-trust-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 8. Analytics enablement ---------- */
+  .da-enable {
+    background:
+      linear-gradient(rgba(13, 13, 13, 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
+      linear-gradient(90deg, rgba(13, 13, 13, 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
+      var(--section);
+  }
+  .da-enable-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .da-enable-copy :global(.section-heading) {
+    margin-bottom: var(--gap-lead);
+  }
+  .da-enable-text {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 46ch;
+    color: var(--text-2);
+    font-size: 1.05rem;
+    line-height: 1.65;
+  }
+  .da-enable-text p:first-child {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .da-roles {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .da-roles li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--border);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--ink);
+  }
+  .da-roles :global(svg) {
+    color: var(--blue);
+  }
+  .da-learn {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  .da-learn-card {
+    display: flex;
+    gap: 1.1rem;
+    padding: 1.35rem 1.4rem;
+    border-radius: 18px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .da-learn-card:nth-child(2) {
+    margin-left: clamp(0px, 5%, 2.5rem);
+  }
+  .da-learn-card:nth-child(3) {
+    margin-left: clamp(0px, 10%, 5rem);
+  }
+  .da-learn-card h3 {
+    font-size: 1.12rem;
+    margin-bottom: 0.2rem;
+  }
+  .da-learn-card p {
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .da-learn-path,
+  .da-learn-checks {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.85rem;
+  }
+  .da-learn-path i,
+  .da-learn-checks i {
+    font-style: normal;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: 1px solid color-mix(in srgb, var(--c) 30%, transparent);
+    color: color-mix(in srgb, var(--c) 75%, var(--ink));
+    background: color-mix(in srgb, var(--c) 8%, #fff);
+  }
+  .da-learn-path i.is-done {
+    background: color-mix(in srgb, var(--c) 16%, #fff);
+  }
+  .da-learn-path b {
+    width: 14px;
+    height: 2px;
+    background: color-mix(in srgb, var(--c) 40%, transparent);
+  }
+  .da-learn-checks i::before {
+    content: '✓ ';
+    color: var(--c);
+  }
+  .da-learn-story {
+    display: grid;
+    gap: 0.3rem;
+    margin-top: 0.85rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--c) 6%, #fff);
+    border: 1px dashed color-mix(in srgb, var(--c) 35%, transparent);
+  }
+  .da-learn-story svg {
+    width: 100%;
+    height: 34px;
+  }
+  .da-learn-story path {
+    fill: none;
+    stroke: var(--c);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+  .da-learn-story circle {
+    fill: var(--c);
+  }
+  .da-learn-story span {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--c) 70%, var(--ink));
+  }
+  @media (max-width: 960px) {
+    .da-enable-grid {
+      grid-template-columns: 1fr;
+    }
+    .da-learn-card:nth-child(n) {
+      margin-left: 0;
+    }
+  }
+
+  /* ---------- 9. Fractional analytics leadership ---------- */
+  .da-lead {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: var(--space-7);
+    background:
+      radial-gradient(50% 70% at 85% 40%, rgba(18, 136, 207, 0.22), transparent 70%),
+      radial-gradient(40% 50% at 0% 0%, rgba(217, 64, 64, 0.12), transparent 70%),
+      var(--da-navy);
+  }
+  .da-lead-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .da-outcomes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+  }
+  .da-outcomes li {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1.15rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .da-outcomes li:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .da-outcome-n {
+    flex: none;
+    min-width: 2.4rem;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 1.6rem;
+    line-height: 1;
+    background: linear-gradient(135deg, #ff6b6b, #8b6cf0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .da-outcomes h3 {
+    color: #fff;
+    font-size: 1.15rem;
+    margin-bottom: 0.2rem;
+  }
+  .da-outcomes p {
+    color: var(--da-on-dark);
+    line-height: 1.55;
+  }
+  .da-lead-photo {
+    position: relative;
+    margin: 0;
+    border-radius: 24px;
+    overflow: hidden;
+    aspect-ratio: 718 / 860;
+    max-height: 600px;
+    justify-self: end;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 40px 80px -40px rgba(18, 136, 207, 0.7);
+  }
+  .da-lead-photo img {
+    width: 100%;
+    height: 110%;
+    object-fit: cover;
+    object-position: 50% 30%;
+  }
+  .da-lead-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    background: linear-gradient(180deg, transparent 60%, rgba(10, 15, 29, 0.55));
+  }
+  @media (max-width: 900px) {
+    .da-lead-grid {
+      grid-template-columns: 1fr;
+    }
+    .da-lead-photo {
+      justify-self: center;
+      max-width: 420px;
+      order: -1;
+    }
+  }
+
+  /* ---------- 10. Industries ---------- */
+  .da-ind {
+    background: var(--bg);
+  }
+  .da-ind-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .da-ind-grid li {
+    position: relative;
+    overflow: hidden;
+    padding: 1.6rem 1.4rem 1.5rem;
+    border-radius: 18px;
+    background:
+      radial-gradient(90% 60% at 100% 0%, color-mix(in srgb, var(--c) 10%, transparent), transparent 70%),
+      #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .da-ind-art {
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    color: var(--c);
+    background: color-mix(in srgb, var(--c) 10%, #fff);
+    border: 1px solid color-mix(in srgb, var(--c) 22%, transparent);
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  .da-ind-grid li:hover .da-ind-art {
+    transform: translateY(-3px);
+  }
+  .da-ind-grid h3 {
+    margin: 1.2rem 0 0.35rem;
+    font-size: 1.15rem;
+  }
+  .da-ind-grid p {
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  @media (max-width: 1024px) {
+    .da-ind-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 520px) {
+    .da-ind-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 11. Final CTA ---------- */
+  .da-final {
+    padding-block: clamp(3.5rem, 7vw, 5.5rem) 130px;
+  }
+  /* The wave runs along the foot of the band, under the capability line. */
+  .da-final .da-mesh {
+    bottom: -24px;
+    height: 150px;
+    opacity: 0.8;
+  }
+  .da-final-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 2rem clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .da-final-cta > p {
+    color: var(--da-on-dark);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  .da-final-line {
+    list-style: none;
+    margin: clamp(2.5rem, 5vw, 3.5rem) 0 0;
+    padding: 1.1rem 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 0;
+  }
+  .da-final-line li {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    color: #dfe5f0;
+  }
+  .da-final-line li + li::before {
+    content: '•';
+    margin-inline: 0.8rem;
+    color: #ff5a5f;
+  }
+  @media (max-width: 860px) {
+    .da-final-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -362,12 +362,37 @@ export const ENTITIES: Entity[] = [
   {
     id: 'data',
     name: 'Data & Analytics',
-    aliases: ['data & analytics', 'data and analytics', 'analytics', 'data analytics', 'dashboards', 'dashboard', 'business intelligence', 'power bi', 'data strategy', 'make sense of our data', 'data warehouse'],
+    aliases: ['data & analytics', 'data and analytics', 'analytics', 'data analytics', 'dashboards', 'dashboard', 'business intelligence', 'power bi', 'data strategy', 'make sense of our data', 'data warehouse', 'data engineering', 'data governance', 'data quality', 'lakehouse', 'reporting', 'reports', 'kpis', 'fractional analytics', 'analytics leadership'],
     url: '/services/data-analytics/',
+    // Details and approach: the Data & Analytics page (Hemang's brief,
+    // 2026-10-15).
     overview:
       'Your data already contains answers. We help you connect it, organize it, visualize it, and turn it into intelligence your teams can actually use.',
+    details: {
+      lead: 'One connected capability—from strategy and data engineering to dashboards, governance and adoption:',
+      points: [
+        'Analytics Strategy — know what to measure and why: align analytics priorities, KPIs, governance and investments with business outcomes.',
+        'Data Engineering — build a foundation you can trust: connect, clean and structure data for reliable analytics at scale.',
+        'Business Intelligence — see what matters: turn complex data into clear dashboards, scorecards and operational insights.',
+        'Data Governance — make data trusted and controlled: improve quality, lineage, access and governance.',
+        "Analytics Enablement — put insights in people's hands: practical training, adoption and self-service analytics.",
+        'Fractional Analytics Leadership — experienced leadership when you need it, without waiting to build an entire leadership function.',
+      ],
+    },
+    // Trusted data, from the page's Secure Access and Trusted Data lines.
+    control:
+      'Access is governed: you control what each user sees, so the right people get the right information. Quality, lineage and monitoring are built into the data foundation, with common definitions, ownership and accountability.',
+    process: {
+      lead: "Don't start with the dashboard. Start with the decision:",
+      points: [
+        'Understand — what decisions need better information?',
+        'Prioritize — which use cases create the most value?',
+        'Design — what data, technology and governance are required?',
+        'Deliver — start with quick wins and scale what works.',
+      ],
+    },
     cta: projectCta,
-    follow: ['Which solution fits my business?', 'I want to discuss a project'],
+    follow: ['What does Data & Analytics include?', 'How do you approach analytics?', 'I want to discuss a project'],
   },
   {
     id: 'security',

@@ -12,6 +12,7 @@
  *   page      the Contact conversation ............. contact.ts
  *             product pages (Meeting Intelligence) .. product.ts
  *             Cyber Security's layer stack ......... security.ts
+ *             Data & Analytics' data pipeline ...... pipeline.ts
  */
 import { gsap, ScrollTrigger, MQ, initSmoothScroll, refreshWhenSettled, scrollPosition, scrollToY } from './core';
 import { initHeadingReveals } from './text';
@@ -25,6 +26,7 @@ import { initReviewReels } from './reel';
 import { initPlaceCards } from './places';
 import { initProductPage } from './product';
 import { initSecurityPage } from './security';
+import { initPipelines } from './pipeline';
 
 /** Solutions page: horizontal card track (off: the cards show as a grid). */
 const SOLUTIONS_TRACK = false;
@@ -106,6 +108,7 @@ export function initScroll() {
       cleanups.push(initContact({ desktop: c.desktop }));
       // Before the reveals: it changes the page's layout (tall layer notes).
       cleanups.push(initSecurityPage({ desktop: c.desktop }));
+      cleanups.push(initPipelines({ desktop: c.desktop }));
       cleanups.push(initHeadingReveals());
       cleanups.push(initCardEntrances(skip));
       if (c.desktop) cleanups.push(initCardDepth(skip));

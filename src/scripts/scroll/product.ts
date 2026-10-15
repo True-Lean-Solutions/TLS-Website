@@ -15,6 +15,9 @@
  *   [data-search] ...... results fill in row by row
  *   [data-draw] ........ a roadmap path draws, then its [data-draw-mark]
  *                        milestones arrive along it (Technology Strategy)
+ *   [data-lid] ......... a laptop's screen swings open (Data & Analytics)
+ *   [data-glow-grid] ... a light follows the cursor across a bento's cards
+ *   [data-live-art] .... an illustration plays (.is-live) while on screen
  *
  * Every element ends exactly as authored; nothing runs with reduced motion.
  */
@@ -53,6 +56,50 @@ export function initProductPage(on: { desktop: boolean }): Cleanup {
     if (!hero || !on.desktop) break;
     track([photo]);
     scrub(photo, { y: 0, scale: 1 }, { y: 80, scale: 1.06 }, { trigger: hero, start: 'top top', end: 'bottom top' });
+  }
+
+  // Laptops (desktop): the screen swings open as the visitor scrolls in.
+  for (const lid of document.querySelectorAll<HTMLElement>('[data-lid]')) {
+    const screen = lid.querySelector<HTMLElement>('.da-laptop-screen');
+    if (!on.desktop || !screen) continue;
+    track([screen]);
+    scrub(screen, { rotateX: -74, opacity: 0.5 }, { rotateX: 0, opacity: 1 }, { trigger: lid, start: 'top 95%', end: 'top 38%' });
+  }
+
+  // Bento grids: a light follows the cursor across every card (desktop).
+  for (const grid of document.querySelectorAll<HTMLElement>('[data-glow-grid]')) {
+    if (!on.desktop) break;
+    const cards = [...grid.querySelectorAll<HTMLElement>('.da-cap')];
+    const move = (e: PointerEvent) => {
+      for (const c of cards) {
+        const r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', `${Math.round(e.clientX - r.left)}px`);
+        c.style.setProperty('--my', `${Math.round(e.clientY - r.top)}px`);
+      }
+    };
+    grid.addEventListener('pointermove', move);
+    cleanups.push(() => grid.removeEventListener('pointermove', move));
+  }
+
+  // Living illustrations: play while on screen, pause (CSS and SVG) when not.
+  const arts = [...document.querySelectorAll<HTMLElement>('[data-live-art]')];
+  if (arts.length) {
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          const el = e.target as HTMLElement;
+          el.classList.toggle('is-live', e.isIntersecting);
+          const svg = el.querySelector('svg');
+          if (e.isIntersecting) svg?.unpauseAnimations();
+          else svg?.pauseAnimations();
+        }),
+      { threshold: 0.3 }
+    );
+    arts.forEach((a) => io.observe(a));
+    cleanups.push(() => {
+      io.disconnect();
+      arts.forEach((a) => (a.classList.remove('is-live'), a.querySelector('svg')?.unpauseAnimations()));
+    });
   }
 
   // Depth layers (desktop): drift against the scroll while on screen.

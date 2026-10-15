@@ -63,6 +63,8 @@ export const RX = {
   more: /^(more|tell me more|go on|continue|details|more details|explain( more| please| that)?|elaborate|yes|yes please|sure|please do|please|and|what else)$/,
   /** Certifications and compliance: nothing published, so never asserted. */
   certification: /\b(iso ?\d*|soc ?2|soc2|hipaa|gdpr|pci|fedramp|certif\w*|accredit\w*|complian\w*)\b/,
+  /** "Does my data need to be perfect?": the practical-analytics principle (Data & Analytics page). */
+  dataReady: /\b((data|it|this)\b[a-z' ]{0,24}\b(perfect|good enough|clean enough|messy|(a|such a) mess|dirty|not ready)|(perfect|messy|dirty|bad|imperfect|incomplete) data|data (is|isn't|is not) (ready|clean|good))\b/,
   guarantee: /\b(guarantee\w*|promise\w*|ensure (we|that we|our)|rank (first|1st|number one|on top|at the top)|be (first|number one|the top result)|(stop|prevent|block) (all|every|any) ([a-z]+ )?(attacks?|threats?|breach\w*|hacks?)|(100 ?%?|100 percent|fully|completely|totally) (secure|safe|protected)|never (be |get )?(hacked|breached|attacked)|unhackable|hack.?proof)\b/,
   howMany: /\bhow many (employees|people|staff|developers|engineers|clients|customers|projects|years)\b/,
   /** What sets TLS apart (answered from the published values). */
