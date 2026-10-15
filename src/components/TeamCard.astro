@@ -6,6 +6,8 @@ interface Props {
   person: Person;
 }
 const { person } = Astro.props;
+const paras = Array.isArray(person.bio) ? person.bio : [person.bio];
+const bioId = `bio-${person.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 ---
 
 <article class="team-card ix-card ix-card--quiet ix-light">
@@ -38,7 +40,13 @@ const { person } = Astro.props;
         )
       }
     </div>
-    <p class="bio">{person.bio}</p>
+    <div class="bio-wrap" id={bioId} data-bio>
+      {paras.map((para) => <p class="bio">{para}</p>)}
+    </div>
+    <button type="button" class="bio-more" aria-expanded="false" aria-controls={bioId} hidden>
+      <span>See more</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+    </button>
   </div>
 </article>
 
@@ -139,4 +147,83 @@ const { person } = Astro.props;
     font-size: 0.92rem;
     line-height: 1.55;
   }
+  .bio + .bio {
+    margin-top: 0.6rem;
+  }
+  /* Every bio shows the same five lines; "See more" opens the rest. The
+     clamp only applies once the script finds a bio longer than that, so
+     without JS every bio reads in full. */
+  .bio-wrap.is-clamped:not(.is-open) {
+    max-height: calc(0.92rem * 1.55 * 5);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent);
+    mask-image: linear-gradient(180deg, #000 55%, transparent);
+  }
+  .bio-more {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: -0.2rem;
+    padding: 0.25rem 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.86rem;
+    color: var(--red-text);
+  }
+  .bio-more[hidden] {
+    display: none;
+  }
+  .bio-more:hover span {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .bio-more:focus-visible {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  .bio-more svg {
+    transition: transform var(--ix-fast) var(--ix-ease);
+  }
+  .bio-more[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
 </style>
+
+<script>
+  // Clamp each bio that runs longer than five lines and give it a "See more"
+  // toggle; re-measured when fonts load and when the width changes.
+  const bios = [...document.querySelectorAll<HTMLElement>('[data-bio]')];
+  const measure = () => {
+    for (const wrap of bios) {
+      const btn = wrap.nextElementSibling as HTMLButtonElement | null;
+      if (!btn || wrap.classList.contains('is-open')) continue;
+      wrap.classList.add('is-clamped');
+      const overflows = wrap.scrollHeight > wrap.clientHeight + 2;
+      wrap.classList.toggle('is-clamped', overflows);
+      btn.hidden = !overflows;
+    }
+  };
+  for (const wrap of bios) {
+    const btn = wrap.nextElementSibling as HTMLButtonElement | null;
+    btn?.addEventListener('click', () => {
+      const open = wrap.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', String(open));
+      btn.querySelector('span')!.textContent = open ? 'See less' : 'See more';
+      // The page got taller or shorter: let the scroll layer re-measure.
+      window.dispatchEvent(new Event('resize'));
+    });
+  }
+  measure();
+  document.fonts?.ready.then(measure);
+  let width = window.innerWidth;
+  window.addEventListener('resize', () => {
+    if (window.innerWidth === width) return;
+    width = window.innerWidth;
+    measure();
+  });
+</script>

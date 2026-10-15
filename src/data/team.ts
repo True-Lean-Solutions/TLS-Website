@@ -8,7 +8,8 @@
 export interface Person {
   name: string;
   role: string;
-  bio: string;
+  /** One paragraph, or several. */
+  bio: string | string[];
   photo: string; // path under public/, resolved with href()
   /** Omit when there is no profile to link: the card then shows no LinkedIn button. */
   linkedin?: string;
@@ -83,6 +84,18 @@ export const advisors: Person[] = [
     bio: "Ketul advises and mentors the CEO of True Lean Solutions on market positioning, marketing communications and campaign development. He helps translate TLS's delivery capabilities into clear client propositions and campaigns that reach the right audiences — refining messaging, guiding campaign design, and aligning marketing activity with business development priorities. Through ongoing collaboration with the CEO, he helps bring focus and consistency to how the company presents its services and pursues growth.",
     photo: '/team/ketul-thakker.webp',
     linkedin: 'https://www.linkedin.com/in/ketul-thakker-k-504b2824/',
+  },
+  // Hemang (2026-10-15, in chat): copy verbatim; office portrait cropped to
+  // the shared eye line.
+  {
+    name: 'Saurabh Kumar',
+    role: 'Technical Advisor — AI Strategy & Deep Tech',
+    bio: [
+      'Saurabh advises the CEO of True Lean Solutions on AI strategy and deep technology. He helps shape how the firm evaluates emerging technologies, positions its technical offerings and wins clients in hard-tech markets. He also reviews client engagements hands-on where architecture, security or embedded systems decisions carry real risk.',
+      "A technology executive with 25+ years of experience, Saurabh was most recently Director and Principal Engineer at Samsung Research America. There he led a 25-person global R&D team across agentic AI, developer productivity and open source. He represented Samsung at board level in the Linux Foundation and the Agentic AI Foundation. He led the company's evaluation of AI coding agents through benchmarking and harness engineering, and briefed the CTO on adopting emerging technologies.",
+      "His AI advice rests on two decades of hardware work for some of the world's largest consumer electronics companies. At Marvell he did SoC firmware and silicon bring-up for Hisense, Vizio, Lenovo and TPVision. At Samsung SmartThings he shipped firmware to millions of hubs. He is active on the standards bodies behind the major smart home and low-power mesh protocols used in smart home and industrial applications. Through his consultancy, Wanderlight Creative Group, he designed a way to upgrade IoT devices already in the field to post-quantum cryptography with no new silicon.",
+    ],
+    photo: '/team/saurabh-kumar.webp',
   },
   // Hemang (2026-10-14, in chat): his copy, reframed with the dates removed
   // (Hemang); same facts. Office portrait cropped to the shared eye line.

@@ -815,3 +815,11 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 - Workflow Automation's Tali bubble chip "Can automation work with my existing tools?" became "Automation with my tools?" (it ran off a 360px screen; the full question is a chat starter).
 - Home › Why TLS: the value cards' arrows are removed. The cards are statements, not links.
 
+## 2026-10-15 — About: Saurabh Kumar joins Advisors; bios clamp to five lines with "See more"
+
+**Status:** settled (Hemang)
+
+**Decision.**
+- Advisors gains Saurabh Kumar (Technical Advisor — AI Strategy & Deep Tech), after Ketul Thakker and before the former advisor. His bio is three paragraphs; `bio` in `src/data/team.ts` may now be a list of paragraphs.
+- Every team card shows the same five lines of bio, fading out, with a "See more" / "See less" toggle (`TeamCard.astro`: a button with `aria-expanded` and `aria-controls`). Bios that fit in five lines get no button. The clamp is applied by the script only when a bio overflows, so without JS every bio reads in full.
+
