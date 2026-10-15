@@ -96,6 +96,7 @@ export const advisors: Person[] = [
       "His AI advice rests on two decades of hardware work for some of the world's largest consumer electronics companies. At Marvell he did SoC firmware and silicon bring-up for Hisense, Vizio, Lenovo and TPVision. At Samsung SmartThings he shipped firmware to millions of hubs. He is active on the standards bodies behind the major smart home and low-power mesh protocols used in smart home and industrial applications. Through his consultancy, Wanderlight Creative Group, he designed a way to upgrade IoT devices already in the field to post-quantum cryptography with no new silicon.",
     ],
     photo: '/team/saurabh-kumar.webp',
+    linkedin: 'https://www.linkedin.com/in/saurabh-kumar-26891a4/',
   },
   // Hemang (2026-10-14, in chat): his copy, reframed with the dates removed
   // (Hemang); same facts. Office portrait cropped to the shared eye line.
