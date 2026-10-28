@@ -5,6 +5,8 @@
  * all but Sanket's are the office portraits Hemang supplied, cropped to a
  * shared eye line and head size (docs/sources.md §4).
  */
+import { advisor } from './advisor';
+
 export interface Person {
   name: string;
   role: string;
@@ -54,6 +56,15 @@ export const coreTeam: Person[] = [
 ];
 
 export const advisors: Person[] = [
+  // Hemang (2026-10-29): Dr. Wally Potts first. Name, bio, photo and LinkedIn
+  // come from src/data/advisor.ts, shared with the Technology Strategy page.
+  {
+    name: `${advisor.name}, ${advisor.credentials}`,
+    role: 'Advisor — Technology Strategy & Enterprise Transformation',
+    bio: [...advisor.bio],
+    photo: advisor.photo,
+    linkedin: advisor.linkedin,
+  },
   {
     name: 'Nirav Kambodi',
     role: 'Advisor — Engineering & Delivery',
@@ -102,7 +113,7 @@ export const advisors: Person[] = [
   // (Hemang); same facts. Office portrait cropped to the shared eye line.
   {
     name: 'Dharmendra Mistry',
-    role: 'Former Advisor — Healthcare Operations & Solutions',
+    role: 'Advisor — Healthcare Operations & Solutions',
     bio: 'Dharmendra advised True Lean Solutions on healthcare operations and client delivery. A healthcare and medical technology executive with more than 30 years of experience, he built Biomet India from inception to about $10 million in four years, led the Zimmer Biomet integration in India, and headed Lumenis across India and South Asia. As co-founder of Valiant Care, he built and ran a 24/7 care service for seafarers, giving him first-hand experience of how clinical workflows really run. At TLS, he worked with hospitals and clinicians to find workflow gaps and turn them into clear requirements for the delivery team.',
     photo: '/team/dharmendra-mistry.webp',
     linkedin: 'https://www.linkedin.com/in/dharmendra-mistry-05470723/',

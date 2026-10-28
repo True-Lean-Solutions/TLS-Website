@@ -872,6 +872,8 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 
 Phones get the fork, the card art and pillars in their simple forms; the hub, approach track and outcome curve are desktop-only. Reduced motion or no JS: every diagram is complete and still. The shared logo reel moved into `Marquee.astro` unchanged (0 differing pixels at 360 and 1280).
 
+**About: Dr. Wally Potts joins Advisors, first (Hemang, 2026-10-29).** This settles the open item on listing him on About. The card reuses `src/data/advisor.ts`. Same day: Dharmendra Mistry's title drops "Former" (Hemang).
+
 **Key Areas, all six equal (Hemang, 2026-10-29).** The Strategic Transitions & Acquisition Readiness tile was secondary (dashed outline, no fill, dashed hub node). It read as blank, so it is now a normal card like the other five.
 
 **Removed the same day (Hemang, 2026-10-28).**
