@@ -96,8 +96,9 @@ export const advisors: Person[] = [
     photo: '/team/ketul-thakker.webp',
     linkedin: 'https://www.linkedin.com/in/ketul-thakker-k-504b2824/',
   },
-  // Hemang (2026-10-15, in chat): copy verbatim; office portrait cropped to
-  // the shared eye line.
+  // Hemang (2026-10-15, in chat): copy verbatim. Photo replaced 2026-10-29
+  // (Hemang, in chat): the office portrait in casual dress, cropped to the
+  // shared eye line.
   {
     name: 'Saurabh Kumar',
     role: 'Technical Advisor — AI Strategy & Deep Tech',
