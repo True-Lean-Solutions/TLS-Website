@@ -10,7 +10,9 @@
  * - Faded at both edges; linear motion.
  * - Paused while the pointer is over it or focus is inside it — over the
  *   whole host element when one is marked [data-marquee-host] (the logo rail
- *   pauses over its padding too), otherwise over the strip itself.
+ *   pauses over its padding too), otherwise over the strip itself. Never
+ *   over its own Pause / Play button: a click leaves the pointer and focus
+ *   there, which would hold the strip paused after "Play".
  * - Reduced motion: no movement; the items wrap into a centered, static grid
  *   and the repeat copy is hidden.
  * - `controls`: a visible Pause / Play button, and the strip itself can take
@@ -92,7 +94,7 @@ const { loop, gap = '3rem', controls = false, label } = Astro.props;
     .mq-track {
       animation: mq-scroll var(--mq-loop) linear infinite;
     }
-    .mq:is(:hover, :focus-within) .mq-track,
+    .mq-viewport:is(:hover, :focus-within) .mq-track,
     :global([data-marquee-host]:is(:hover, :focus-within)) .mq-track,
     .mq.is-paused .mq-track {
       animation-play-state: paused;

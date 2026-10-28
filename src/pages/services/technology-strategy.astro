@@ -574,11 +574,14 @@ const jsonLd = {
     <Marquee loop={`${results.length * 8}s`} gap="1.25rem" controls label="Realized results by Dr. Wally Potts">
       {
         [0, 1].map((copy) =>
-          results.map((r, i) => (
-            <li class="ts-result" style={`--c: ${tone[(['red', 'blue', 'plum', 'green'] as Accent[])[i % 4]]}`} aria-hidden={copy ? 'true' : undefined}>
+          results.map((r) => (
+            <li class="ts-result ix-card ix-light" aria-hidden={copy ? 'true' : undefined}>
               <strong>{r.figure}</strong>
               <span>{r.label}</span>
-              <small>{r.caption}</small>
+              <small>
+                <Icon name="briefcase" size={14} />
+                {r.caption}
+              </small>
             </li>
           ))
         )
@@ -1976,25 +1979,48 @@ const jsonLd = {
     font-size: 0.9rem;
     color: var(--text-2);
   }
+  /* One brand treatment for every card (Hemang, 2026-10-29: "make this card
+     attractive and interactive"): the figure in the brand gradient, a
+     gradient rule that sweeps across on hover, a cursor light (.ix-light)
+     and a lift with a plum glow (.ix-card). */
   .ts-result {
+    --c: var(--plum);
     flex: none;
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.4rem;
     width: 19rem;
-    height: 12.5rem;
-    padding: 1.25rem 1.3rem;
-    border-radius: var(--radius-lg);
-    background: linear-gradient(160deg, color-mix(in srgb, var(--c) 7%, #fff), #fff 55%);
-    border: 1px solid color-mix(in srgb, var(--c) 30%, var(--border));
-    box-shadow: var(--shadow);
+    height: 13.25rem;
+    padding: 1.4rem 1.35rem 1.15rem;
+    border-radius: 20px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow:
+      0 1px 2px rgba(13, 13, 13, 0.04),
+      0 14px 34px -20px rgba(13, 13, 13, 0.28);
+  }
+  .ts-result::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: var(--grad-h);
+    transform: scaleX(0.22);
+    transform-origin: left;
+    transition: transform 600ms var(--ix-ease);
   }
   .ts-result strong {
     font-family: var(--font-head);
     font-weight: 800;
-    font-size: 1.7rem;
+    font-size: 2rem;
     line-height: 1.1;
-    color: var(--ink);
+    letter-spacing: -0.01em;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
   .ts-result span {
     color: var(--ink);
@@ -2002,15 +2028,40 @@ const jsonLd = {
     line-height: 1.45;
   }
   .ts-result small {
+    display: flex;
+    gap: 0.45rem;
+    align-items: flex-start;
     margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
     font-size: 0.76rem;
     line-height: 1.4;
     color: var(--text-2);
   }
+  .ts-result small :global(svg) {
+    flex: none;
+    margin-top: 0.1rem;
+    color: var(--plum);
+  }
+  /* Room inside the strip for the hover lift and glow (it clips overflow). */
+  .ts-results :global(.mq-track) {
+    padding-block: 0.6rem 1.6rem;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    :root .ts-result:hover {
+      border-color: color-mix(in srgb, var(--plum) 35%, var(--border));
+      box-shadow:
+        0 1px 2px rgba(13, 13, 13, 0.04),
+        0 26px 50px -22px rgba(135, 54, 98, 0.45);
+    }
+    .ts-result:hover::after {
+      transform: scaleX(1);
+    }
+  }
   @media (max-width: 480px) {
     .ts-result {
       width: 16.5rem;
-      height: 12.5rem;
+      height: 13.75rem;
     }
   }
 
