@@ -332,10 +332,11 @@ export const ENTITIES: Entity[] = [
   {
     id: 'strategy',
     name: 'Technology Strategy',
-    aliases: ['technology strategy', 'strategy', 'roadmap', 'technology roadmap', 'consulting', 'advice', 'not sure', 'where to start', 'right solution', 'assessment', 'assess', 'current technology', 'tech stack', 'technology decisions'],
+    aliases: ['technology strategy', 'strategy', 'roadmap', 'technology roadmap', 'consulting', 'advice', 'not sure', 'where to start', 'right solution', 'assessment', 'assess', 'current technology', 'tech stack', 'technology decisions', 'executive technology strategy', 'rationalization'],
     url: '/services/technology-strategy/',
     // Details, process and audience: the Technology Strategy page (Hemang's
-    // brief, 2026-10-06).
+    // brief, 2026-10-06; audience from its FAQ, 2026-10-28, which Tali took
+    // over when the FAQ left the page — draft, ships with that page).
     overview:
       'Work out what you actually need before you build — challenge assumptions early, then define the right solution. We work closely with your team to understand your business, evaluate your current technology landscape and create a practical plan for what comes next.',
     details: {
@@ -345,6 +346,13 @@ export const ENTITIES: Entity[] = [
         'Identify Opportunities — find areas where technology can improve efficiency, visibility and results.',
         'Create a Roadmap — define the right solutions, priorities, timelines and implementation approach.',
         'Support Execution — work with your team to ensure successful adoption, measure impact and adjust as you grow.',
+      ],
+    },
+    audience: {
+      lead: 'Who it’s for:',
+      points: [
+        'Growing small and mid-sized businesses — everything we do is scoped and priced for the constraints you work under.',
+        'Private equity-backed and portfolio companies facing a major technology decision or a sale.',
       ],
     },
     process: {
@@ -357,7 +365,43 @@ export const ENTITIES: Entity[] = [
       ],
     },
     cta: { label: 'Bring Us the Need', href: '/contact/' },
-    follow: ['What does technology strategy include?', 'How does the technology strategy process work?', 'Which solution fits my business?'],
+    follow: ['What does technology strategy include?', 'How does the technology strategy process work?', 'Who leads executive advisory engagements?'],
+  },
+  {
+    // Not a separate solution (kept out of the solutions list, like the two
+    // products): the executive advisory side of Technology Strategy. Source:
+    // the Technology Strategy page and its former FAQ (2026-10-28) and
+    // src/data/advisor.ts. Draft pending Dr. Potts's approval; ships with
+    // that page.
+    id: 'advisory',
+    name: 'Executive Advisory',
+    aliases: ['executive advisory', 'advisory', 'executive advisor', 'wally potts', 'wally', 'potts', 'dr potts', 'expedited exits', 'expedited exit', 'exit', 'exits', 'exit readiness', 'acquisition readiness', 'mergers', 'divestitures', 'mado', 'private equity', 'pe-backed', 'portfolio companies', 'ai enablement', 'aiops'],
+    url: '/services/technology-strategy/#advisor',
+    overview:
+      'Executive engagements are led by Dr. Wally Potts, Ed.D, MBA, PMP, our advisor for technology strategy and enterprise transformation. He brings 15+ years of enterprise technology and operations leadership across Fortune 50, federal, healthcare and private equity-backed organizations. His two areas of focus are Expedited Exits (compressing a five-year business plan into two years and a successful acquisition) and AI Enablement (putting AI and analytics to work across operations). He leads the strategy and guidance; TLS teams and partners carry out the hands-on implementation.',
+    details: {
+      lead: 'Two areas of focus:',
+      points: [
+        'Expedited Exits — compress a five-year business plan into two years and achieve a successful acquisition: a clear two-year roadmap, the initiatives that drive valuation, and people, processes and technology aligned for the exit.',
+        'AI Enablement — put AI and analytics to work across operations, guided by hands-on AIOps leadership.',
+      ],
+    },
+    process: {
+      lead: 'How an engagement is shared:',
+      points: [
+        'Dr. Potts leads the strategy and guidance.',
+        'TLS teams and partners carry out the hands-on implementation — from consolidating duplicate applications to merging directory domains.',
+      ],
+    },
+    audience: {
+      lead: 'It suits:',
+      points: [
+        'Private equity-backed and portfolio companies facing a major technology decision or a sale.',
+        'Companies preparing for an exit or acquisition — Dr. Potts led M&A execution (due diligence, data room development, enterprise communications and integration planning) for the sale of Veterans Engineering to Aretum.',
+      ],
+    },
+    cta: { label: 'Discuss Your Project', href: '/contact/' },
+    follow: ['What does executive advisory include?', 'Who is executive advisory for?', 'How does executive advisory work?'],
   },
   {
     id: 'data',

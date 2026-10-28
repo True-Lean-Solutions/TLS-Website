@@ -1,65 +1,141 @@
 ---
 /**
- * Technology Strategy (Hemang's brief and fold references, 2026-10-06;
- * docs/references/pages/services/technology-strategy/). Replaces the short
- * [solution].astro page for this route.
+ * Technology Strategy — executive technology strategy, led by TLS's advisor
+ * Dr. Wally Potts (Hemang's brief and Wally's requests, 2026-10-28; earlier
+ * version: Hemang's brief and fold references, 2026-10-06). Replaces the
+ * short [solution].astro page for this route.
  *
- * Copy: the hero keeps the approved headline, blurb and CTAs (src/data/
- * services.ts, v2.3 §09 "Requirements Not Yet Clear"); section copy is the
- * brief's. Proof is real only: the "Six Account Tiers" case study and its own
- * at-a-glance facts, the reviews sheet (ReviewReel), the client logos, and
- * published Insights. The references' sample statistics, testimonials,
- * vendor logos, mountain imagery, inline form and newsletter are not used.
+ * DRAFT pending Dr. Potts's approval: not published until Hemang's go-ahead.
+ *
+ * Proof, two kinds, kept apart:
+ * - The advisor's own results (src/data/advisor.ts): his resume's role-level
+ *   bullets, every figure credited to his role, employer and years — a
+ *   page-scoped exception to the six-metric rule (Hemang, 2026-10-28).
+ * - TLS's own work: the "Six Account Tiers" case study and published
+ *   Insights. (The reviews reel, client logos and FAQ were removed on
+ *   2026-10-28, Hemang: Tali answers the questions.)
+ * Scope guardrail: Dr. Potts leads strategy and guidance; TLS teams and
+ * partners do the hands-on implementation.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Eyebrow from '../../components/Eyebrow.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import Button from '../../components/Button.astro';
 import Icon from '../../components/Icon.astro';
-import ClientLogos from '../../components/ClientLogos.astro';
-import ReviewReel from '../../components/ReviewReel.astro';
-import FaqList from '../../components/FaqList.astro';
+import Marquee from '../../components/Marquee.astro';
+import TeamCard from '../../components/TeamCard.astro';
 import type { IconName } from '../../components/iconTypes';
-import { cta, href, site } from '../../data/site';
+import { cta, href, site, canonicalUrl } from '../../data/site';
 import { solutions } from '../../data/services';
-import { testimonials } from '../../data/testimonials';
 import { categoryMeta, getPublishedPosts } from '../../data/insights';
+import { advisor, proofTiles, results } from '../../data/advisor';
+import { parseMetric, formatMetric } from '../../scripts/metric';
 
 const img = (f: string) => href(`/solutions/technology-strategy/${f}`);
-const page = solutions.find((s) => s.href === '/services/technology-strategy/')!;
 const booking = { label: 'Book a Free 30-Minute Call', href: site.booking };
+const PATH_URL = '/services/technology-strategy/';
 
-const title = 'True Lean Solutions — Technology Strategy';
+const title = 'True Lean Solutions — Executive Technology Strategy';
 const description =
-  'Turn business goals into a practical technology roadmap. True Lean Solutions helps you work out what you actually need, choose the right solutions and avoid unnecessary cost.';
+  'Executive technology strategy for growing and PE-backed firms: faster exits, AI enablement, MADO (mergers, acquisitions, divestitures) and rationalization.';
 
 type Accent = 'red' | 'blue' | 'plum' | 'green';
 const tone: Record<Accent, string> = { red: 'var(--red)', blue: 'var(--blue)', plum: 'var(--ts-violet)', green: 'var(--ts-green)' };
 
+/* 1. Hero */
 const benefits: { text: string; icon: IconName; c: Accent }[] = [
-  { text: 'Business-focused approach', icon: 'target', c: 'red' },
-  { text: 'Practical, actionable roadmap', icon: 'document', c: 'blue' },
+  { text: 'Business-first perspective', icon: 'target', c: 'red' },
+  { text: 'Executive experience in small, medium and Fortune 50 companies', icon: 'briefcase', c: 'blue' },
   { text: 'Technology-agnostic advice', icon: 'integration', c: 'plum' },
   { text: 'Support from strategy to execution', icon: 'users', c: 'green' },
 ];
 
-const indicators: { text: string; icon: IconName; c: Accent }[] = [
-  { text: 'Lower costs', icon: 'database', c: 'red' },
-  { text: 'Better visibility', icon: 'chart', c: 'blue' },
-  { text: 'Higher efficiency', icon: 'gear', c: 'plum' },
-  { text: 'Sustainable growth', icon: 'target', c: 'green' },
+/* Hero visual: the exit race. A 540 × 260 drawing, five years left to right
+   (100 units each). The advised path climbs to exit-ready at the end of Year
+   2; the typical plan winds to the top at Year 5. HTML labels sit on it by
+   percentage, so they stay readable at any width. */
+const RW = 540;
+const RH = 260;
+type P = [number, number];
+const cubic = (p0: P, c1: P, c2: P, p3: P, t: number): P => {
+  const u = 1 - t;
+  return [0, 1].map((k) => u * u * u * p0[k] + 3 * u * u * t * c1[k] + 3 * u * t * t * c2[k] + t * t * t * p3[k]) as P;
+};
+const FAST_A: [P, P, P, P] = [[20, 230], [80, 226], [112, 202], [140, 170]];
+const FAST_B: [P, P, P, P] = [[140, 170], [168, 138], [196, 92], [220, 62]];
+const FAST = `M20 230 C80 226 112 202 140 170 S196 92 220 62`;
+const SLOW = 'M20 230 C120 229 200 218 280 196 S420 120 520 62';
+const raceSteps: { t: string; tip: string; at: P; side: 'l' | 'r' }[] = [
+  { t: 'Roadmap', tip: 'Define and execute a clear two-year roadmap', at: cubic(...FAST_A, 0.62), side: 'r' },
+  { t: 'Priorities', tip: 'Prioritize the initiatives that drive valuation', at: cubic(...FAST_B, 0.3), side: 'r' },
+  { t: 'Alignment', tip: 'Align people, processes and technology for a successful exit', at: cubic(...FAST_B, 0.7), side: 'l' },
+];
+const pct = (p: P) => `left: ${((p[0] / RW) * 100).toFixed(2)}%; top: ${((p[1] / RH) * 100).toFixed(2)}%`;
+
+/* The page's section rail (wide screens): one dot per section, lit as you read. */
+const rail = [
+  { id: 'challenge', label: 'The challenge' },
+  { id: 'advisory', label: 'Advisory value' },
+  { id: 'results', label: 'Realized results' },
+  { id: 'advisor', label: 'The advisor' },
+  { id: 'areas', label: 'Key areas' },
+  { id: 'approach', label: 'Our approach' },
+  { id: 'industries', label: 'Industries' },
+  { id: 'outcomes', label: 'Outcomes' },
 ];
 
-/* The roadmap illustration: milestones along one rising path (no figures). */
-const milestones: { text: string; icon: IconName; x: number; y: number; side: 'l' | 'r' }[] = [
-  { text: 'Clear roadmap', icon: 'users', x: 60, y: 384, side: 'r' },
-  { text: 'Right priorities', icon: 'chart', x: 200, y: 300, side: 'r' },
-  { text: 'Reduced risk', icon: 'shield', x: 320, y: 250, side: 'r' },
-  { text: 'Scalable solutions', icon: 'gear', x: 430, y: 160, side: 'l' },
-  { text: 'Business goals', icon: 'target', x: 530, y: 62, side: 'l' },
-];
-const PATH = 'M18 412 Q 40 396 60 384 T 200 300 T 320 250 T 430 160 T 530 62 T 586 22';
+/* Decision fork (The Challenge): six options leave "Today"; one stays aligned. */
+const FORK_YS = [22, 58, 94, 130, 166, 202];
+const FORK_PICK = 1;
+const fork = FORK_YS.map((y, i) => ({ i, y, d: `M28 112 C150 112 250 ${y} 478 ${y}` }));
 
+/* Strategy hub (Key Areas): six areas around one strategy. */
+const hub = Array.from({ length: 6 }, (_, i) => {
+  const a = (-90 + i * 60) * (Math.PI / 180);
+  return { i, x: +(160 + 118 * Math.cos(a)).toFixed(1), y: +(160 + 118 * Math.sin(a)).toFixed(1) };
+});
+
+/* Count-up starting state for the proof tiles ("$0", "0+ years"). */
+const zeroOf = (v: string) => {
+  const m = parseMetric(v);
+  return m ? formatMetric(m, 0) : undefined;
+};
+
+/* 2. The challenge, and where engagements start */
+const challenges: { title: string; text: string; icon: IconName; c: Accent }[] = [
+  { title: 'Multiple competing options', text: "It's not always clear which path is right.", icon: 'integration', c: 'red' },
+  { title: 'Higher financial and operational risk', text: 'The cost of getting it wrong is real.', icon: 'alert', c: 'blue' },
+  { title: 'Need for business and technology alignment', text: 'People, processes and technology must work together.', icon: 'workflow', c: 'green' },
+];
+const starts: { title: string; text: string; icon: IconName; c: Accent }[] = [
+  { title: 'A government cure notice to resolve', text: 'A contract is at risk and needs a credible plan to restore performance.', icon: 'document', c: 'red' },
+  { title: 'A major miss with a key customer to correct', text: 'A Fortune 100 relationship needs a clear recovery plan and rebuilt confidence.', icon: 'users', c: 'blue' },
+  { title: 'A sale to prepare for', text: 'The company must be ready for buyers and prove its quality of earnings.', icon: 'briefcase', c: 'plum' },
+];
+
+/* 3. Advisory value: the two pillars */
+const exitBullets = [
+  'Define and execute a clear two-year roadmap',
+  'Prioritize the initiatives that drive valuation',
+  'Align people, processes and technology for a successful exit',
+];
+const aiBullets = [
+  'Identify where AI, AIOps and analytics can improve how operations run',
+  'Experience leading an AIOps, analytics and monitoring transformation that consolidated tools and improved mean time to resolution (TISTA, 2021–2022)',
+  'Author of “Best Practices Implementing AIOps in Large Organizations” (IEEE, 2024)',
+];
+
+/* 6. Key areas of advisory support (descriptions: the v2 mockup) */
+const areas: { title: string; text: string; icon: IconName; c: Accent }[] = [
+  { title: 'Technology Direction & Architecture', text: 'Define the right technology foundation and roadmap.', icon: 'compass', c: 'blue' },
+  { title: 'Risk Assessment & Decision Support', text: 'Identify risks, evaluate options, and make better decisions.', icon: 'shield', c: 'red' },
+  { title: 'Operational Transformation', text: 'Improve processes, efficiency, and performance.', icon: 'gear', c: 'plum' },
+  { title: 'Cloud, Data & AI Modernization', text: 'Build scalable, secure, and flexible infrastructure.', icon: 'cloud', c: 'blue' },
+  { title: 'Execution Planning & Partner Alignment', text: 'Bridge strategy and execution with the right partners.', icon: 'checklist', c: 'green' },
+  { title: 'Strategic Transitions & Acquisition Readiness', text: 'Prepare for growth, change, and long-term value.', icon: 'chart', c: 'plum' },
+];
+
+/* 7. How we help + our approach (one section; the hero's anchor lands here) */
 const help: { title: string; text: string; icon: IconName; c: Accent; img: string; alt: string }[] = [
   {
     title: 'Assess Current State',
@@ -71,7 +147,7 @@ const help: { title: string; text: string; icon: IconName; c: Accent; img: strin
   },
   {
     title: 'Identify Opportunities',
-    text: 'Find areas where technology can improve efficiency, visibility and results.',
+    text: 'Find areas where technology can improve efficiency, visibility and results, including application and system rationalization.',
     icon: 'database',
     c: 'blue',
     img: 'card-2.webp',
@@ -83,7 +159,7 @@ const help: { title: string; text: string; icon: IconName; c: Accent; img: strin
     icon: 'document',
     c: 'plum',
     img: 'card-3.webp',
-    alt: 'A phased roadmap: Phase 1 Quick Wins, Phase 2 Core Solutions, Phase 3 Scale & Optimize.',
+    alt: 'A phased technology roadmap for enterprise transformation: Phase 1 Quick Wins, Phase 2 Core Solutions, Phase 3 Scale & Optimize.',
   },
   {
     title: 'Support Execution',
@@ -95,18 +171,21 @@ const help: { title: string; text: string; icon: IconName; c: Accent; img: strin
   },
 ];
 
-const steps: { title: string; text: string; c: Accent }[] = [
-  { title: 'Discover', text: 'Understand your goals, challenges and constraints.', c: 'red' },
-  { title: 'Analyze', text: 'Evaluate current technology, processes and data.', c: 'blue' },
-  { title: 'Plan', text: 'Create a clear, prioritized roadmap with solutions.', c: 'plum' },
-  { title: 'Enable', text: 'Support implementation and measure impact.', c: 'green' },
+/* 8. Industries: "advisor experience" where the only evidence is Dr. Potts's resume. */
+const industries: { title: string; text: string; icon: IconName; c: Accent; advisorOnly: boolean }[] = [
+  { title: 'Private Equity & Portfolio Companies', text: 'Portfolio companies facing a major technology decision or preparing for a sale.', icon: 'briefcase', c: 'red', advisorOnly: true },
+  { title: 'Enterprise & Corporate', text: 'Large, complex environments with many systems, vendors and teams.', icon: 'server', c: 'blue', advisorOnly: true },
+  { title: 'Federal & Healthcare', text: 'Mission-critical systems where performance and continuity matter most.', icon: 'shield', c: 'plum', advisorOnly: true },
+  { title: 'Growing Small & Mid-Sized Businesses', text: 'The businesses TLS is built for: everything we do is scoped and priced for the constraints you work under.', icon: 'users', c: 'green', advisorOnly: false },
 ];
 
+/* 9. Business outcomes */
 const outcomes: { text: string; icon: IconName; c: Accent }[] = [
-  { text: 'Improved efficiency and productivity', icon: 'chart', c: 'red' },
-  { text: 'Better visibility and decision-making', icon: 'database', c: 'blue' },
-  { text: 'Reduced costs and technology debt', icon: 'server', c: 'plum' },
-  { text: 'A scalable foundation for future growth', icon: 'rocket', c: 'green' },
+  { text: 'Faster outcomes', icon: 'rocket', c: 'red' },
+  { text: 'Reduced risk', icon: 'shield', c: 'blue' },
+  { text: 'Greater efficiency', icon: 'gear', c: 'plum' },
+  { text: 'Higher valuation', icon: 'chart', c: 'green' },
+  { text: 'Long-term value', icon: 'target', c: 'red' },
 ];
 
 /* Real proof: the case study's own facts, verbatim from its post. */
@@ -116,39 +195,6 @@ const glance =
   caseStudy?.data.blocks.find((b): b is Extract<typeof b, { type: 'stats' }> => b.type === 'stats')?.items ?? [];
 const caseIcons: IconName[] = ['users', 'compass', 'software', 'process'];
 
-const faqs: { q: string; a: string[] }[] = [
-  {
-    q: 'What is technology strategy?',
-    a: [
-      "It's working out what technology your business actually needs — and why — before anything is bought or built. We challenge assumptions early, then define the right solution, so every investment serves a real business goal.",
-    ],
-  },
-  {
-    q: 'How is this different from IT consulting?',
-    a: [
-      "We don't stop at advice. Others build what you ask for; we build what you actually need. We don't deliver slide decks — we deliver working systems, documented processes, and measurable improvements, and we stay engaged after go-live.",
-    ],
-  },
-  {
-    q: 'What types of businesses do you work with?',
-    a: [
-      'Growing small and mid-sized businesses. Everything we do is scoped and priced for the constraints you work under.',
-      "Most businesses we work with know something isn't working but aren't sure which lever to pull first — that's a fine place to start.",
-    ],
-  },
-  {
-    q: 'How does the technology strategy process work?',
-    a: [
-      'In four steps: we discover your goals, challenges and constraints; analyze your current technology, processes and data; plan a clear, prioritized roadmap with the right solutions; and enable your team — supporting implementation and measuring impact.',
-    ],
-  },
-  {
-    q: 'What happens after the roadmap is created?',
-    a: [
-      'You decide how to move forward. We can work with your team to put the roadmap into practice — supporting adoption, measuring impact and adjusting as you grow — and we stay engaged after go-live to refine what we have built.',
-    ],
-  },
-];
 
 /* Related solutions: real routes only, each with its approved one-line summary. */
 const related: { title: string; text: string; href: string; icon: IconName; c: Accent; photo?: string }[] = [
@@ -170,178 +216,548 @@ const related: { title: string; text: string; href: string; icon: IconName; c: A
 /* Insights on making technology decisions (real posts, as published). */
 const insightIds = ['why-your-software-implementation-failed', 'home-grown-erp-vs-off-the-shelf', 'custom-integrations-connect-instead-of-replace'];
 const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((p): p is NonNullable<typeof p> => !!p);
+
+/* Structured data: the page and its advisor (resume-supported fields only). */
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      '@id': `${canonicalUrl(PATH_URL)}#webpage`,
+      url: canonicalUrl(PATH_URL),
+      name: title,
+      description,
+      keywords:
+        'technology strategy, executive technology strategy, MADO strategy, mergers, acquisitions, divestitures, enterprise transformation, application rationalization, system rationalization, AI enablement, AIOps, mean time to resolution (MTTR) improvement, acquisition readiness',
+      isPartOf: { '@type': 'WebSite', name: site.name, url: canonicalUrl('/') },
+      about: { '@id': `${canonicalUrl(PATH_URL)}#advisor` },
+    },
+    {
+      '@type': 'Person',
+      '@id': `${canonicalUrl(PATH_URL)}#advisor`,
+      name: `${advisor.name}, ${advisor.credentials}`,
+      jobTitle: advisor.title,
+      sameAs: [advisor.linkedin],
+      alumniOf: advisor.alumniOf.map((name) => ({ '@type': 'CollegeOrUniversity', name })),
+    },
+  ],
+};
 ---
 
-<BaseLayout title={title} description={description} path="/services/technology-strategy/">
+<BaseLayout title={title} description={description} path={PATH_URL}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </Fragment>
+
   <!-- 1. Hero -->
   <section class="ts-hero">
-    <figure class="ts-hero-media">
-      <div class="ts-hero-frame" data-hero-photo>
-        <img
-          src={img('hero.webp')}
-          srcset={`${img('hero-720.webp')} 720w, ${img('hero.webp')} 1042w`}
-          sizes="(max-width: 960px) 100vw, 62vw"
-          alt="A strategy meeting at dusk above a city skyline, with a rising roadmap: Understand Your Business, Assess Opportunities, Create a Technology Roadmap, Support Execution, Business Growth."
-          width="1042"
-          height="649"
-          fetchpriority="high"
-          decoding="async"
-        />
-        <span class="ts-node" style="--x: 56.4%; --y: 62.9%; --d: 900ms" aria-hidden="true"></span>
-        <span class="ts-node" style="--x: 74.4%; --y: 47.6%; --d: 1250ms" aria-hidden="true"></span>
-        <span class="ts-node ts-node--goal" style="--x: 87%; --y: 29.6%; --d: 1600ms" aria-hidden="true"></span>
-      </div>
-    </figure>
-    <div class="wrap">
+    <div class="wrap ts-hero-grid">
       <div class="ts-hero-copy" data-reveal="load">
         <nav class="ts-crumbs" aria-label="Breadcrumb">
           <a href={href('/services/')}>Solutions</a>
           <span aria-hidden="true">/</span>
           <span aria-current="page">Technology Strategy</span>
         </nav>
-        <Eyebrow label="Technology Strategy" />
-        <h1>Make technology work toward <span class="accent">the right goal.</span></h1>
-        <p class="ts-lede">{page.blurb}</p>
+        <Eyebrow label="Executive Technology Strategy" />
+        <h1>Accelerate Business Outcomes with <span class="accent">Proven Expertise.</span></h1>
+        <p class="ts-lede">
+          Get senior-level perspective to make the right technology decisions, enable AI and accelerate strategic outcomes — including successful exits.
+        </p>
         <div class="ts-actions">
-          <Button href={cta.primary.href} variant="primary" arrow>Bring Us the Need</Button>
-          <Button href={cta.email.href} variant="ghost-light" external>{cta.email.label}</Button>
+          <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
         </div>
       </div>
+
+      <div class="ts-hero-side">
+        <figure class="ts-exit">
+          <p class="ts-exit-kicker">From Strategy to Successful Exit</p>
+          <p class="ts-exit-big">
+            <s>5 Years</s>
+            <Icon name="arrow" size={26} />
+            <strong><span data-countdown>2</span> Years</strong>
+          </p>
+          <div class="ts-race" aria-hidden="true">
+            <div class="race-plot">
+            <svg viewBox={`0 0 ${RW} ${RH}`} preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="ts-race-fast" gradientUnits="userSpaceOnUse" x1="20" y1="230" x2="220" y2="62">
+                  <stop offset="0" stop-color="#ff5a6e" />
+                  <stop offset="0.55" stop-color="#c25bd6" />
+                  <stop offset="1" stop-color="#4fb6ff" />
+                </linearGradient>
+                <linearGradient id="ts-race-area" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#c25bd6" stop-opacity="0.35" />
+                  <stop offset="1" stop-color="#c25bd6" stop-opacity="0" />
+                </linearGradient>
+                <filter id="ts-race-glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="4" result="b" />
+                  <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+              </defs>
+              {[120, 220, 320, 420].map((x) => <line class="race-col" x1={x} x2={x} y1="20" y2="238" />)}
+              <rect class="race-win" x="20" y="20" width="200" height="218" rx="10" />
+              <path class="race-slow" d={SLOW} />
+              <path class="race-area" d={`${FAST} L220 238 L20 238 Z`} />
+              <path class="race-fast" d={FAST} pathLength="1" />
+              <path class="race-trail" d={FAST} pathLength="100" />
+              <circle class="race-end-dim" cx="520" cy="62" r="6" />
+              <g class="race-end">
+                <circle class="race-ring" cx="220" cy="62" r="11" />
+                <circle class="race-ring race-ring-2" cx="220" cy="62" r="11" />
+                <circle class="race-core" cx="220" cy="62" r="11" filter="url(#ts-race-glow)" />
+                <path class="race-check" d="M214.5 62 L218.5 66 L226 57.5" />
+              </g>
+              <circle class="race-runner race-runner-slow" r="4.5">
+                <animateMotion dur="9s" begin="1.6s" repeatCount="indefinite" path={SLOW} />
+              </circle>
+              <circle class="race-runner race-runner-fast" r="6" filter="url(#ts-race-glow)">
+                <animateMotion dur="9s" begin="1.6s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.4;1" calcMode="linear" path={FAST} />
+              </circle>
+            </svg>
+            <span class="race-gap"></span>
+            <span class="race-ahead">Three years ahead of plan</span>
+            {
+              raceSteps.map((s, i) => (
+                <span class:list={['race-step', `is-${s.side}`]} style={`${pct(s.at)}; --i: ${i}`}>
+                  <i />
+                  <b>{s.t}</b>
+                  <em>{s.tip}</em>
+                </span>
+              ))
+            }
+            <span class="race-tag race-tag-fast" style={pct([220, 62])}>Exit-ready</span>
+            <span class="race-tag race-tag-slow" style={pct([520, 62])}>Original plan</span>
+            </div>
+            <div class="race-years">
+              {[1, 2, 3, 4, 5].map((y) => <span class:list={[{ 'is-done': y <= 2 }]}>Year {y}</span>)}
+            </div>
+          </div>
+          <figcaption>
+            Advisor experience: Dr. Wally Potts, VP, Advisory Services, Veterans Engineering (acquired by Aretum), 2022–2026 — acquisition readiness three years
+            ahead of plan.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+    <div class="wrap">
       <ul class="ts-benefits" data-reveal="stagger" aria-label="What to expect">
-        {benefits.map((b) => (
-          <li style={`--c: ${tone[b.c]}`}>
-            <span class="ts-glyph" aria-hidden="true"><Icon name={b.icon} size={20} /></span>
-            {b.text}
-          </li>
-        ))}
+        {
+          benefits.map((b) => (
+            <li style={`--c: ${tone[b.c]}`}>
+              <span class="ts-glyph" aria-hidden="true">
+                <Icon name={b.icon} size={20} />
+              </span>
+              {b.text}
+            </li>
+          ))
+        }
       </ul>
     </div>
   </section>
 
-  <!-- 2. Why technology strategy matters -->
-  <section class="section ts-why">
-    <div class="wrap ts-why-grid">
-      <div>
+  <!-- Section rail: where you are on the page (wide screens) -->
+  <nav class="ts-rail" aria-label="On this page" data-rail>
+    <span class="ts-rail-track" aria-hidden="true"><span class="ts-rail-fill"></span></span>
+    <ol>
+      {
+        rail.map((r) => (
+          <li>
+            <a href={`#${r.id}`} class="glide" data-rail-link={r.id}>
+              <i aria-hidden="true" />
+              <span>{r.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+
+  <!-- 2. The challenge, and where engagements start -->
+  <section class="section ts-challenge" id="challenge">
+    <div class="wrap">
+      <div class="ts-challenge-grid">
+        <div>
         <SectionHeading
-          eyebrow="Why Technology Strategy Matters"
-          title="Good technology decisions create "
-          accent="long-term value."
-          lead="Many organizations invest in tools without a clear plan, leading to higher costs, disconnected systems and limited results. A well-defined technology strategy helps you align people, processes and technology with your business goals."
+          eyebrow="The Challenge"
+          title="Technology decisions shape your business "
+          accent="for years."
+          lead="New technologies, market changes and growing customer expectations create difficult decisions. Without the right perspective, it's easy to invest in the wrong solutions, underestimate risk, or miss opportunities for growth."
         />
-        <ul class="ts-indicators" data-reveal="stagger">
-          {indicators.map((i) => (
-            <li style={`--c: ${tone[i.c]}`}>
-              <span class="ts-glyph ts-glyph--soft" aria-hidden="true"><Icon name={i.icon} size={20} /></span>
-              {i.text}
-            </li>
-          ))}
+        <figure class="ts-fork" data-scrub aria-hidden="true">
+          <svg viewBox="0 0 520 224">
+            <defs>
+              <linearGradient id="ts-fork-pick" gradientUnits="userSpaceOnUse" x1="28" y1="0" x2="478" y2="0">
+                <stop offset="0" stop-color="#D94040" />
+                <stop offset="0.6" stop-color="#873662" />
+                <stop offset="1" stop-color="#1288CF" />
+              </linearGradient>
+            </defs>
+            {fork.map((f) => <path class:list={['fork-path scrub-path', { 'is-pick': f.i === FORK_PICK }]} d={f.d} data-from="0" data-to="0.42" />)}
+            {fork.filter((f) => f.i !== FORK_PICK).map((f) => (
+              <g class="fork-off" data-at="0.5">
+                <circle cx="478" cy={f.y} r="9" />
+                <path d={`M474 ${f.y - 4} L482 ${f.y + 4} M482 ${f.y - 4} L474 ${f.y + 4}`} />
+              </g>
+            ))}
+            <path class="fork-glow scrub-path" d={fork[FORK_PICK].d} data-from="0.5" data-to="0.82" />
+            <circle class="fork-start" cx="28" cy="112" r="9" />
+            <g class="fork-goal" data-at="0.84">
+              <circle class="fork-goal-ring" cx="478" cy={FORK_YS[FORK_PICK]} r="15" />
+              <circle cx="478" cy={FORK_YS[FORK_PICK]} r="10" />
+              <path d={`M473 ${FORK_YS[FORK_PICK]} L477 ${FORK_YS[FORK_PICK] + 4} L484 ${FORK_YS[FORK_PICK] - 4}`} />
+            </g>
+          </svg>
+          <span class="fork-label fork-label-start">Today</span>
+          <span class="fork-label fork-label-many" data-at="0.2">Many possible paths</span>
+          <span class="fork-label fork-label-goal" data-at="0.86">Aligned with your goals</span>
+        </figure>
+        </div>
+        <ul class="ts-challenges" data-reveal="stagger" data-scrub>
+          {
+            challenges.map((c, k) => (
+              <li style={`--c: ${tone[c.c]}`}>
+                <span class="ts-glyph ts-glyph--soft" aria-hidden="true">
+                  <Icon name={c.icon} size={20} />
+                </span>
+                <div>
+                  <h3>{c.title}</h3>
+                  <p>{c.text}</p>
+                </div>
+                {k === 0 && (
+                  <div class="ch-art ch-opts" aria-hidden="true">
+                    {[0, 1, 2, 3].map((i) => <span style={`--i: ${i}`}><i /><b /></span>)}
+                    <em>?</em>
+                  </div>
+                )}
+                {k === 1 && (
+                  <div class="ch-art ch-risk" aria-hidden="true">
+                    <span class="ch-risk-track"><span class="ch-risk-mark" /></span>
+                    <span class="ch-risk-low">Low</span>
+                    <span class="ch-risk-high">High</span>
+                  </div>
+                )}
+                {k === 2 && (
+                  <div class="ch-art ch-align" aria-hidden="true">
+                    {['People', 'Processes', 'Technology'].map((t, i) => (
+                      <span class="ch-lane" style={`--off: ${[18, 46, 30][i]}%`}><small>{t}</small><span class="ch-lane-track"><i /></span></span>
+                    ))}
+                    <span class="ch-align-check"><Icon name="check" size={12} /></span>
+                  </div>
+                )}
+              </li>
+            ))
+          }
         </ul>
       </div>
-      <figure class="ts-map" data-draw>
-        <div class="ts-map-grid" aria-hidden="true"></div>
-        <svg class="ts-map-path" viewBox="0 0 600 440" aria-hidden="true">
-          <defs>
-            <linearGradient id="ts-path-grad" x1="0" y1="1" x2="1" y2="0">
-              <stop offset="0" stop-color="#1288CF" />
-              <stop offset="0.55" stop-color="#8b6cf0" />
-              <stop offset="1" stop-color="#D94040" />
-            </linearGradient>
-          </defs>
-          <path class="draw-path ts-map-glow" d={PATH} />
-          <path class="draw-path" d={PATH} />
-        </svg>
-        <ul class="ts-milestones">
-          {milestones.map((m, i) => (
-            <li
-              data-draw-mark
-              class:list={[`side-${m.side}`, { 'is-goal': i === milestones.length - 1 }]}
-              style={`--x: ${((m.x / 600) * 100).toFixed(2)}%; --y: ${((m.y / 440) * 100).toFixed(2)}%`}
-            >
-              <span class="ts-dot" aria-hidden="true"></span>
-              <span class="ts-chip">
-                <span class="ts-glyph" aria-hidden="true"><Icon name={m.icon} size={18} /></span>
-                {m.text}
-              </span>
-            </li>
-          ))}
+      <div class="ts-starts">
+        <h3 class="ts-starts-title">Where engagements start</h3>
+        <ul class="ts-start-cards" data-reveal="stagger" data-scrub>
+          {
+            starts.map((s, k) => (
+              <li class="ix-card ix-card--quiet" style={`--c: ${tone[s.c]}`}>
+                <span class="ts-tile" aria-hidden="true">
+                  <Icon name={s.icon} size={22} />
+                </span>
+                <svg class="ts-start-art" viewBox="0 0 120 64" aria-hidden="true">
+                  {k === 0 && (
+                    <g class="st-swap" data-at="0.45">
+                      <rect class="st-doc" x="30" y="6" width="44" height="54" rx="5" />
+                      <path class="st-lines" d="M38 18 H66 M38 27 H66 M38 36 H58" />
+                      <g class="st-bad"><circle cx="78" cy="46" r="13" /><path d="M78 39 V47 M78 51.5 V52" /></g>
+                      <g class="st-good"><circle cx="78" cy="46" r="13" /><path d="M71.5 46 L76 50.5 L84.5 41.5" /></g>
+                    </g>
+                  )}
+                  {k === 1 && (
+                    <g>
+                      <path class="st-axis" d="M8 56 H112" />
+                      <path class="st-trend scrub-path" d="M10 26 L34 30 L52 50 L72 38 L94 22 L110 12" data-from="0.2" data-to="0.65" />
+                      <circle class="st-low" cx="52" cy="50" r="4" data-at="0.4" />
+                      <circle class="st-high" cx="110" cy="12" r="5" data-at="0.66" />
+                    </g>
+                  )}
+                  {k === 2 && (
+                    <g>
+                      {[0, 1, 2].map((r) => (
+                        <g class="st-row" data-at={(0.45 + r * 0.12).toFixed(2)}>
+                          <rect x="14" y={8 + r * 18} width="14" height="14" rx="4" />
+                          <path class="st-tick" d={`M17.5 ${15 + r * 18} L20.5 ${18 + r * 18} L25 ${12 + r * 18}`} />
+                          <path class="st-text" d={`M36 ${15 + r * 18} H${92 - r * 12}`} />
+                        </g>
+                      ))}
+                    </g>
+                  )}
+                </svg>
+                <h4>{s.title}</h4>
+                <p>{s.text}</p>
+              </li>
+            ))
+          }
         </ul>
-        <figcaption class="visually-hidden">
-          A rising roadmap from a clear roadmap and the right priorities, through reduced risk and scalable solutions, to business goals.
-        </figcaption>
-      </figure>
+      </div>
     </div>
   </section>
 
-  <!-- 3. How we help -->
-  <section class="section ts-help">
+  <!-- 3. Advisory value: the two pillars and the advisor's proof -->
+  <section class="section ts-advisory" id="advisory">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Our Advisory Expertise"
+        title="Executive Experience That "
+        accent="Accelerates Outcomes."
+        lead="Our technology strategy is guided by a seasoned executive advisor with deep experience across enterprise operations, technology modernization and organizational transformation. This perspective helps you make more informed decisions and avoid common pitfalls."
+      />
+      <div class="ts-pillar-grid">
+        <article class="ts-pillar" style={`--c: ${tone.red}`} data-reveal="">
+          <span class="ts-tile" aria-hidden="true"><Icon name="rocket" size={22} /></span>
+          <p class="ts-pillar-k">Pillar 1</p>
+          <h3>Expedited Exits</h3>
+          <p class="ts-pillar-lead">Compress a five-year business plan into two years and achieve a successful acquisition.</p>
+          <div class="ts-compress" data-sequence="0,400,1500,2400,3300,4300,5000" aria-hidden="true">
+            <p class="yb-count">
+              <span class="yb-odo"><span class="yb-digits"><span>5</span><span>4</span><span>3</span><span>2</span></span></span>-year plan
+            </p>
+            <div class="yb-row">
+              {[1, 2, 3, 4, 5].map((y) => <span class:list={['yb', { 'is-kept': y <= 2 }]} data-y={y}>Year {y}</span>)}
+              <span class="yb-flag"><Icon name="check" size={14} /> Exit-ready</span>
+            </div>
+            <span class="yb-note">Five-year plan, delivered in two</span>
+          </div>
+          <ul>{exitBullets.map((b) => <li>{b}</li>)}</ul>
+        </article>
+        <article class="ts-pillar" style={`--c: ${tone.blue}`} data-reveal="">
+          <span class="ts-tile" aria-hidden="true"><Icon name="ai" size={22} /></span>
+          <p class="ts-pillar-k">Pillar 2</p>
+          <h3>AI Enablement</h3>
+          <p class="ts-pillar-lead">Put AI and analytics to work across operations, guided by hands-on AIOps leadership.</p>
+          <figure class="ts-signal" data-scrub aria-hidden="true">
+            <svg viewBox="0 0 320 96">
+              {[14, 36, 60, 82].map((y, i) => (
+                <path class="sig-noise scrub-path" d={`M4 ${y} q10 -8 20 0 t20 0 t20 0 t20 0 t20 0 C120 ${y} 130 48 150 48`} data-from={(i * 0.05).toFixed(2)} data-to={(0.45 + i * 0.05).toFixed(2)} />
+              ))}
+              <circle class="sig-node-ring" cx="162" cy="48" r="17" data-at="0.6" />
+              <circle class="sig-node" cx="162" cy="48" r="11" data-at="0.6" />
+              <path class="sig-clean scrub-path" d="M174 48 C210 48 220 30 250 30 S290 18 312 14" data-from="0.62" data-to="0.95" />
+            </svg>
+            <span class="sig-label sig-label-l">Separate tools, noisy alerts</span>
+            <span class="sig-label sig-label-m" data-at="0.6">AIOps</span>
+            <span class="sig-label sig-label-r" data-at="0.8">One clear operational view</span>
+          </figure>
+          <ul>{aiBullets.map((b) => <li>{b}</li>)}</ul>
+        </article>
+      </div>
+      <ul class="ts-proof" data-reveal="stagger" data-count-group aria-label="Our advisor's track record">
+        {
+          proofTiles.map((t) => (
+            <li>
+              <strong data-count-up data-count-live={zeroOf(t.figure)}>{t.figure}</strong>
+              <span>{t.label}</span>
+              <small>Dr. Wally Potts · {t.caption}</small>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4. Realized results (the advisor's, from his executive roles) -->
+  <section class="section ts-results" id="results" aria-labelledby="ts-results-title">
+    <div class="wrap">
+      <div class="section-heading" data-reveal="">
+        <Eyebrow label="Advisor Track Record" />
+        <h2 id="ts-results-title">Realized <span class="accent">results.</span></h2>
+        <p class="lead">Outcomes delivered by our advisor across enterprise engagements.</p>
+      </div>
+      <p class="ts-results-note">
+        Each result is from Dr. Wally Potts's own executive roles at the organizations named, before advising TLS — not TLS client results.
+      </p>
+    </div>
+    <Marquee loop={`${results.length * 8}s`} gap="1.25rem" controls label="Realized results by Dr. Wally Potts">
+      {
+        [0, 1].map((copy) =>
+          results.map((r, i) => (
+            <li class="ts-result" style={`--c: ${tone[(['red', 'blue', 'plum', 'green'] as Accent[])[i % 4]]}`} aria-hidden={copy ? 'true' : undefined}>
+              <strong>{r.figure}</strong>
+              <span>{r.label}</span>
+              <small>{r.caption}</small>
+            </li>
+          ))
+        )
+      }
+    </Marquee>
+  </section>
+
+  <!-- 5. Advisor profile -->
+  <section class="section ts-advisor" id="advisor" aria-labelledby="ts-advisor-title">
+    <div class="wrap ts-advisor-grid">
+      <div class="section-heading" data-reveal="">
+        <Eyebrow label="Meet the Advisor" />
+        <h2 id="ts-advisor-title">The executive behind <span class="accent">these results.</span></h2>
+        <p class="lead">
+          Dr. Wally Potts leads strategy and guidance on executive engagements. TLS teams and partners carry out the hands-on implementation — from consolidating
+          duplicate applications to merging directory domains.
+        </p>
+      </div>
+      <div class="ts-advisor-card">
+        <TeamCard person={{ name: `${advisor.name}, ${advisor.credentials}`, role: advisor.title, bio: [...advisor.bio], photo: advisor.photo, linkedin: advisor.linkedin }} />
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Key areas of advisory support -->
+  <section class="section ts-areas" id="areas">
+    <div class="wrap ts-areas-grid">
+      <div>
+      <SectionHeading
+        eyebrow="Key Areas of Advisory Support"
+        title="A broader lens on "
+        accent="technology strategy."
+        lead="We combine deep executive experience and practical technology expertise to help you navigate complex challenges and make informed decisions — from MADO strategy (mergers, acquisitions, divestitures) to application and system rationalization."
+      />
+      <figure class="ts-hub" data-scrub aria-hidden="true">
+        <svg viewBox="0 0 320 320">
+          <defs>
+            <radialGradient id="ts-hub-core" cx="0.35" cy="0.3">
+              <stop offset="0" stop-color="#2a3b6e" />
+              <stop offset="1" stop-color="#0a0f1d" />
+            </radialGradient>
+          </defs>
+          <circle class="hub-orbit" cx="160" cy="160" r="118" />
+          <circle class="hub-orbit hub-orbit-2" cx="160" cy="160" r="78" />
+          {hub.map((h) => <path class="hub-spoke scrub-path" d={`M160 160 L${h.x} ${h.y}`} data-from={(0.08 * h.i).toFixed(2)} data-to={(0.3 + 0.08 * h.i).toFixed(2)} data-n={h.i} />)}
+          {hub.map((h) => (
+            <g class="hub-node" data-n={h.i} data-at={(0.3 + 0.08 * h.i).toFixed(2)}>
+              <circle cx={h.x} cy={h.y} r="20" />
+              <text x={h.x} y={h.y + 5}>{h.i + 1}</text>
+            </g>
+          ))}
+          <g class="hub-core" data-at="0.8">
+            <circle cx="160" cy="160" r="46" fill="url(#ts-hub-core)" />
+            <text x="160" y="156">Technology</text>
+            <text x="160" y="172">strategy</text>
+          </g>
+        </svg>
+      </figure>
+      </div>
+      <ul class="ts-area-tiles" data-reveal="stagger">
+        {
+          areas.map((a, i) => (
+            <li style={`--c: ${tone[a.c]}`} data-area={i}>
+              <span class="ts-area-n" aria-hidden="true">{i + 1}</span>
+              <span class="ts-glyph ts-glyph--soft" aria-hidden="true">
+                <Icon name={a.icon} size={20} />
+              </span>
+              <h3>{a.title}</h3>
+              <p>{a.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7. How we help: our approach (the hero links here) -->
+  <section class="section ts-help" id="approach">
     <div class="ts-wash" aria-hidden="true"></div>
     <div class="wrap">
       <div class="ts-help-head">
         <SectionHeading
-          eyebrow="How We Help"
+          eyebrow="How We Help · Our Approach"
           title="From business goals to a clear "
           accent="technology roadmap."
-          lead="We work closely with your team to understand your business, evaluate your current technology landscape and create a practical plan for what comes next."
+          lead="We work closely with your team to understand your business, evaluate your current technology landscape and create a practical plan for what comes next — then support it through execution."
         />
         <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
       </div>
+      <div class="ts-help-line" data-scrub aria-hidden="true">
+        <span class="ts-help-track"><span></span></span>
+        {[0, 1, 2, 3].map((i) => <i style={`--i: ${i}; --c: ${tone[help[i].c]}`} data-at={(0.08 + i * 0.28).toFixed(2)}>{String(i + 1).padStart(2, '0')}</i>)}
+      </div>
       <ol class="ts-help-cards" data-reveal="stagger">
-        {help.map((h, i) => (
-          <li class="ts-card ix-card ix-card--quiet" style={`--c: ${tone[h.c]}`}>
-            <div class="ts-card-top">
-              <span class="ts-tile" aria-hidden="true"><Icon name={h.icon} size={22} /></span>
-              <span class="ts-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-            </div>
-            <h3>{h.title}</h3>
-            <p>{h.text}</p>
-            <img src={img(h.img)} alt={h.alt} width="700" height="312" loading="lazy" decoding="async" />
-          </li>
-        ))}
+        {
+          help.map((h, i) => (
+            <li class="ts-card ix-card ix-card--quiet" style={`--c: ${tone[h.c]}`}>
+              <div class="ts-card-top">
+                <span class="ts-tile" aria-hidden="true">
+                  <Icon name={h.icon} size={22} />
+                </span>
+                <span class="ts-num" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </div>
+              <h3>
+                <span class="visually-hidden">Step {i + 1}: </span>
+                {h.title}
+              </h3>
+              <p>{h.text}</p>
+              <img src={img(h.img)} alt={h.alt} width="700" height="312" loading="lazy" decoding="async" />
+            </li>
+          ))
+        }
       </ol>
     </div>
   </section>
 
-  <!-- 4. Our approach -->
-  <section class="section ts-approach">
+  <!-- 8. Industries we support -->
+  <section class="section ts-industries" id="industries">
     <div class="wrap">
-      <div class="ts-approach-head">
-        <SectionHeading eyebrow="Our Approach" title="A structured and " accent="practical process." />
-        <p class="ts-approach-note" data-reveal>We keep the process simple and focused on outcomes, so you get a strategy that is realistic, scalable and aligned with your business.</p>
-      </div>
-      <div class="ts-track" data-progress>
-        <span class="ts-track-line" aria-hidden="true"><span class="ts-track-fill"></span></span>
-        <ol class="ts-steps">
-          {steps.map((s, i) => (
-            <li data-step style={`--c: ${tone[s.c]}`}>
-              <span class="ts-step-dot" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-              <h3><span class="visually-hidden">{String(i + 1).padStart(2, '0')} — </span>{s.title}</h3>
-              <p>{s.text}</p>
+      <SectionHeading eyebrow="Industries We Support" title="Experience across " accent="complex environments." />
+      <ul class="ts-industry-tiles" data-reveal="stagger">
+        {
+          industries.map((d) => (
+            <li class="ix-card ix-card--quiet" style={`--c: ${tone[d.c]}`}>
+              <span class="ts-tile" aria-hidden="true">
+                <Icon name={d.icon} size={22} />
+              </span>
+              <h3>{d.title}</h3>
+              <span class:list={['ts-industry-tag', { 'is-tls': !d.advisorOnly }]}>{d.advisorOnly ? 'Advisor experience' : 'TLS focus'}</span>
+              <p>{d.text}</p>
             </li>
-          ))}
-        </ol>
-      </div>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
-  <!-- 5. Business outcomes -->
-  <section class="section ts-outcomes">
+  <!-- 9. Business outcomes -->
+  <section class="section ts-outcomes" id="outcomes">
     <div class="wrap">
       <div class="ts-split-head">
         <SectionHeading eyebrow="Business Outcomes" title="Build a stronger, more " accent="future-ready organization." />
         <p data-reveal>A clear technology strategy helps you make confident decisions, reduce risk and create a strong foundation for long-term growth.</p>
       </div>
+      <div class="ts-rise" data-scrub>
+      <svg class="ts-rise-art" viewBox="0 0 1000 220" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="ts-rise-line" x1="0" x2="1">
+            <stop offset="0" stop-color="#D94040" />
+            <stop offset="0.5" stop-color="#7c5cf0" />
+            <stop offset="1" stop-color="#16a34a" />
+          </linearGradient>
+          <linearGradient id="ts-rise-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#7c5cf0" stop-opacity="0.16" />
+            <stop offset="1" stop-color="#7c5cf0" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        <path class="rise-fill" d="M0 210 C200 200 300 170 450 140 S750 60 1000 14 L1000 220 L0 220 Z" />
+        <path class="rise-line scrub-path" d="M0 210 C200 200 300 170 450 140 S750 60 1000 14" />
+      </svg>
       <ul class="ts-outcome-cards" data-reveal="stagger">
-        {outcomes.map((o) => (
-          <li class="ix-card ix-card--quiet" style={`--c: ${tone[o.c]}`}>
-            <span class="ts-tile" aria-hidden="true"><Icon name={o.icon} size={22} /></span>
-            <span>{o.text}</span>
-          </li>
-        ))}
+        {
+          outcomes.map((o) => (
+            <li class="ix-card ix-card--quiet" style={`--c: ${tone[o.c]}`}>
+              <span class="ts-tile" aria-hidden="true">
+                <Icon name={o.icon} size={22} />
+              </span>
+              <span>{o.text}</span>
+            </li>
+          ))
+        }
       </ul>
+      </div>
     </div>
   </section>
 
-  <!-- 6. Real-world impact: a real case study -->
+  <!-- 10. Real-world impact: TLS's own case study (kept apart from the advisor's results) -->
   {
     caseStudy && (
       <section class="section ts-case">
@@ -392,16 +808,7 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     )
   }
 
-  <!-- 7. Clients and what they say -->
-  <section class="section ts-voices">
-    <div class="wrap">
-      <SectionHeading eyebrow="What Our Clients Say" title="Trusted by businesses that want " accent="real results." align="center" />
-      <div class="ts-logos" data-reveal><ClientLogos /></div>
-    </div>
-    <ReviewReel testimonials={testimonials} />
-  </section>
-
-  <!-- 8. Plan your next step -->
+  <!-- 12. Plan your next step -->
   <section class="ts-plan">
     <div class="ts-plan-photo" aria-hidden="true">
       <img src={img('team.webp')} alt="" width="1062" height="280" loading="lazy" decoding="async" data-float="1" />
@@ -409,8 +816,8 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     <div class="wrap">
       <div class="ts-plan-copy" data-reveal>
         <Eyebrow label="Let's Plan Your Next Step" />
-        <h2>Talk to our team about your <span class="accent">technology strategy.</span></h2>
-        <p>In a free 30-minute call, we'll understand your goals, discuss your challenges and explore how TLS can help you build a practical technology roadmap.</p>
+        <h2>Turn Your Next Technology Decision into a <span class="accent">Real Opportunity.</span></h2>
+        <p>Bring us the challenge. We'll help you evaluate your options, define a practical path forward, and turn it into measurable results.</p>
         <div class="ts-actions">
           <Button href={booking.href} variant="primary" arrow external>{booking.label}</Button>
           <Button href={cta.email.href} variant="ghost-light" external>{cta.email.label}</Button>
@@ -424,20 +831,7 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     </div>
   </section>
 
-  <!-- 9. FAQ -->
-  <section class="section ts-faq">
-    <div class="wrap ts-faq-grid">
-      <SectionHeading
-        eyebrow="Frequently Asked Questions"
-        title="Common questions about "
-        accent="technology strategy."
-        lead="Quick answers about our approach, the process and how we can help your business."
-      />
-      <FaqList items={faqs} />
-    </div>
-  </section>
-
-  <!-- 10. Related solutions -->
+  <!-- 14. Related solutions -->
   <section class="section ts-related" aria-labelledby="ts-related-title">
     <div class="wrap">
       <div class="ts-split-head ts-related-head">
@@ -473,7 +867,7 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     </ul>
   </section>
 
-  <!-- 11. Insights -->
+  <!-- 15. Insights -->
   {
     insights.length > 0 && (
       <section class="section ts-insights">
@@ -506,7 +900,7 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     )
   }
 
-  <!-- 12. Final CTA -->
+  <!-- 16. Final CTA -->
   <section class="ts-final">
     <svg class="ts-final-waves" viewBox="0 0 1440 360" preserveAspectRatio="none" aria-hidden="true">
       <defs>
@@ -537,6 +931,55 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
 </BaseLayout>
 
 <script>
+  // Section rail: the dot for the section in view lights; the rail fills
+  // with the reader's progress through the sections.
+  const railEl = document.querySelector<HTMLElement>('[data-rail]');
+  if (railEl) {
+    const links = [...railEl.querySelectorAll<HTMLAnchorElement>('[data-rail-link]')];
+    const secs = links.map((a) => document.getElementById(a.dataset.railLink!)).filter((s): s is HTMLElement => !!s);
+    const update = () => {
+      const line = window.innerHeight * 0.4;
+      let active = -1;
+      secs.forEach((sec, i) => {
+        if (sec.getBoundingClientRect().top <= line) active = i;
+      });
+      links.forEach((a, i) => {
+        a.classList.toggle('is-active', i === active);
+        a.classList.toggle('is-past', i < active);
+        if (i === active) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      });
+      railEl.style.setProperty('--rail', String(Math.max(0, active) / Math.max(1, secs.length - 1)));
+      const first = secs[0]?.getBoundingClientRect().top ?? 0;
+      const last = secs[secs.length - 1]?.getBoundingClientRect().bottom ?? 0;
+      railEl.classList.toggle('is-shown', first < window.innerHeight * 0.6 && last > window.innerHeight * 0.3);
+    };
+    let ticking = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => ((ticking = false), update()));
+      },
+      { passive: true }
+    );
+    window.addEventListener('resize', update);
+    update();
+  }
+
+  // Hero: "2 Years" counts down from 5 while the advised path draws.
+  const count = document.querySelector<HTMLElement>('[data-countdown]');
+  if (count && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    let n = 5;
+    count.textContent = String(n);
+    const step = window.setInterval(() => {
+      n -= 1;
+      count.textContent = String(n);
+      if (n <= 2) window.clearInterval(step);
+    }, 450);
+  }
+
   // Related solutions: arrow buttons step the track by one card; each button
   // is disabled at its end. Touch, trackpad and keyboard scroll it natively.
   const track = document.getElementById('ts-rel-track');
@@ -614,36 +1057,33 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
 
   /* Dark sections share one palette: headings white, copy soft gray. */
   .ts-hero,
-  .ts-approach,
   .ts-case,
   .ts-plan,
   .ts-final {
     color: #fff;
   }
   .ts-hero :global(h1),
-  .ts-approach :global(h2),
   .ts-case :global(h2),
   .ts-plan h2,
   .ts-final h2 {
     color: #fff;
   }
   .ts-hero :global(.eyebrow),
-  .ts-approach :global(.eyebrow),
   .ts-case :global(.eyebrow),
   .ts-plan :global(.eyebrow),
   .ts-final :global(.eyebrow) {
     color: var(--ts-on-dark);
   }
-  .ts-approach :global(.lead),
   .ts-case :global(.lead) {
     color: var(--ts-on-dark);
   }
 
   /* ---------- 1. Hero ----------
-     Desktop: the photo sits at the right, inside a box with its own aspect
-     ratio (so the node pulses stay on the drawn path), fading into the night
-     at its left, top and bottom. Tablets and phones: copy first, then the
-     photo, then the benefits. */
+     Copy at left; at right, the exit race (5 years → 2) drawn in SVG; the
+     four promises along the foot. Tablets and phones:
+     everything stacks, copy first. */
+  /* Fills the first screen under the header, so no strip of the next
+     section shows on load (Hemang, 2026-10-29). */
   .ts-hero {
     position: relative;
     isolation: isolate;
@@ -651,100 +1091,20 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* Room under the photo for the benefit bar, so the two never overlap. */
-    --bar-room: 9.5rem;
-    min-height: clamp(700px, 56vw, 880px);
+    min-height: calc(100svh - var(--header-h));
     padding-block: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 3vw, 2.5rem);
     background:
-      radial-gradient(50% 70% at 12% 30%, rgba(217, 64, 64, 0.12), transparent 70%),
-      radial-gradient(40% 60% at 60% 100%, rgba(18, 136, 207, 0.12), transparent 70%),
+      radial-gradient(50% 70% at 12% 30%, rgba(217, 64, 64, 0.14), transparent 70%),
+      radial-gradient(45% 60% at 82% 40%, rgba(18, 136, 207, 0.16), transparent 70%),
+      linear-gradient(rgba(140, 175, 235, 0.045) 1px, transparent 1px) 0 0 / 56px 56px,
+      linear-gradient(90deg, rgba(140, 175, 235, 0.045) 1px, transparent 1px) 0 0 / 56px 56px,
       var(--ts-navy);
   }
-  .ts-hero-media {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: var(--bar-room);
-    width: min(64vw, 1060px);
-    z-index: -1;
-    margin: 0;
-    display: flex;
+  .ts-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
     align-items: center;
-    --fade-x: linear-gradient(90deg, transparent 0, #000 26%);
-    --fade-y: linear-gradient(180deg, transparent 0, #000 14%, #000 87%, transparent 100%);
-  }
-  /* The fades sit on the photo's own box, so every edge dissolves. */
-  .ts-hero-frame {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1042 / 649;
-    mask-image: var(--fade-x), var(--fade-y);
-    mask-composite: intersect;
-    -webkit-mask-image: var(--fade-x), var(--fade-y);
-    -webkit-mask-composite: source-in;
-  }
-  .ts-hero-frame img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  /* A soft pulse on each node of the drawn roadmap. */
-  .ts-node {
-    position: absolute;
-    left: var(--x);
-    top: var(--y);
-    width: 0;
-    height: 0;
-  }
-  .ts-node::before {
-    content: '';
-    position: absolute;
-    left: -18px;
-    top: -18px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 2px solid rgba(110, 190, 255, 0.85);
-    opacity: 0;
-  }
-  .ts-node--goal::before {
-    border-color: rgba(255, 120, 150, 0.9);
-  }
-  @media screen and (prefers-reduced-motion: no-preference) {
-    .ts-hero-media {
-      animation: ts-settle 1400ms var(--ix-ease) 80ms backwards;
-    }
-    .ts-node::before {
-      animation: ts-pulse 3.2s var(--ix-ease) var(--d) infinite;
-    }
-  }
-  @keyframes ts-settle {
-    from {
-      opacity: 0;
-      transform: translateX(28px);
-    }
-  }
-  @keyframes ts-pulse {
-    0% {
-      opacity: 0.9;
-      transform: scale(0.35);
-    }
-    70%,
-    100% {
-      opacity: 0;
-      transform: scale(1.5);
-    }
-  }
-  /* The bar sits at the foot of the hero; the copy centers above it. */
-  .ts-hero > .wrap {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  .ts-hero-copy {
-    max-width: 36rem;
-    margin-block: auto;
   }
   .ts-crumbs {
     display: flex;
@@ -762,8 +1122,8 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     text-decoration: underline;
   }
   .ts-hero h1 {
-    font-size: clamp(2.4rem, 1.5rem + 2.8vw, 3.75rem);
-    line-height: 1.03;
+    font-size: clamp(2.3rem, 1.4rem + 2.7vw, 3.6rem);
+    line-height: 1.04;
     letter-spacing: -0.03em;
   }
   .ts-hero h1 .accent {
@@ -776,19 +1136,400 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     line-height: 1.6;
     color: var(--ts-on-dark);
   }
+  /* The exit timeline. */
+  .ts-hero-side {
+    display: grid;
+    gap: 0.9rem;
+  }
+  .ts-exit {
+    margin: 0;
+    padding: 1.4rem 1.5rem 1.2rem;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(160deg, rgba(30, 44, 84, 0.65), rgba(12, 18, 38, 0.85));
+    border: 1px solid rgba(160, 200, 255, 0.18);
+    box-shadow: 0 30px 70px -30px rgba(18, 136, 207, 0.5);
+  }
+  .ts-exit-kicker {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #9fd3f5;
+  }
+  .ts-exit-big {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.4rem;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: clamp(1.8rem, 1.2rem + 1.8vw, 2.6rem);
+    line-height: 1.1;
+  }
+  .ts-exit-big s {
+    color: #8392b0;
+    text-decoration-thickness: 3px;
+    text-decoration-color: rgba(217, 64, 64, 0.8);
+  }
+  .ts-exit-big :global(svg) {
+    color: #8392b0;
+  }
+  .ts-exit-big strong {
+    color: #ff6b6b;
+  }
+  .ts-exit-big [data-countdown] {
+    display: inline-block;
+    min-width: 0.7em;
+    text-align: center;
+  }
+  /* The exit race: two runners on one five-year grid. */
+  .ts-race {
+    margin-top: 2.6rem; /* room for the tags above the plot */
+  }
+  /* The drawing and its labels share one box, so labels land on the lines. */
+  .race-plot {
+    position: relative;
+  }
+  .ts-race svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 540 / 260;
+    overflow: visible;
+  }
+  .race-col {
+    stroke: rgba(255, 255, 255, 0.08);
+    stroke-dasharray: 2 5;
+    vector-effect: non-scaling-stroke;
+  }
+  .race-win {
+    fill: rgba(217, 64, 64, 0.06);
+    stroke: rgba(255, 120, 140, 0.18);
+    stroke-dasharray: 3 5;
+    vector-effect: non-scaling-stroke;
+  }
+  .race-slow {
+    fill: none;
+    stroke: rgba(170, 185, 215, 0.45);
+    stroke-width: 2;
+    stroke-dasharray: 5 7;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .race-area {
+    fill: url(#ts-race-area);
+  }
+  .race-fast {
+    fill: none;
+    stroke: url(#ts-race-fast);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 1 1;
+  }
+  .race-trail {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 10 90;
+    stroke-dashoffset: 10;
+    opacity: 0;
+    filter: drop-shadow(0 0 4px #ff9ab0);
+  }
+  .race-end-dim {
+    fill: var(--ts-navy);
+    stroke: rgba(170, 185, 215, 0.6);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+  .race-core {
+    fill: #6ee7a8;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .race-check {
+    fill: none;
+    stroke: var(--ts-navy);
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .race-ring {
+    fill: none;
+    stroke: #6ee7a8;
+    stroke-width: 2;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .race-runner-fast {
+    fill: #fff;
+  }
+  .race-runner-slow {
+    fill: #a9b6d2;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .race-runner,
+    .race-trail {
+      display: none;
+    }
+  }
+  /* Labels, in HTML so they stay readable at any width. */
+  .race-step,
+  .race-tag,
+  .race-ahead {
+    position: absolute;
+    font-family: var(--font-head);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .race-step {
+    width: 0;
+    height: 0;
+    font-size: 0.74rem;
+  }
+  .race-step i {
+    position: absolute;
+    left: -6px;
+    top: -6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--ts-navy);
+    border: 2.5px solid #ff8fa3;
+    box-shadow: 0 0 0 4px rgba(255, 143, 163, 0.15);
+  }
+  .race-step b {
+    position: absolute;
+    top: -0.65em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    color: #fff;
+    background: rgba(10, 15, 29, 0.85);
+    border: 1px solid rgba(255, 143, 163, 0.35);
+    cursor: default;
+  }
+  .race-step.is-r b {
+    left: 12px;
+  }
+  .race-step.is-l b {
+    right: 12px;
+  }
+  /* Hover a milestone: what it stands for (the Expedited Exits bullets). */
+  .race-step em {
+    position: absolute;
+    top: 1.2em;
+    z-index: 2;
+    width: 13rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 10px;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    white-space: normal;
+    color: var(--ink);
+    background: #fff;
+    box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    translate: 0 4px;
+    pointer-events: none;
+    transition:
+      opacity 200ms ease,
+      translate 200ms var(--ix-ease);
+  }
+  .race-step.is-r em {
+    left: 0;
+  }
+  .race-step.is-l em {
+    right: 0;
+  }
+  .race-step:hover em {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .race-tag {
+    translate: -50% calc(-100% - 16px);
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+  }
+  .race-tag-fast {
+    color: var(--ts-navy);
+    background: #6ee7a8;
+    box-shadow: 0 8px 20px -8px rgba(110, 231, 168, 0.8);
+  }
+  .race-tag-slow {
+    translate: -88% calc(-100% - 16px);
+    color: #a9b6d2;
+    background: var(--ts-navy);
+    border: 1px dashed rgba(170, 185, 215, 0.45);
+  }
+  /* The gap between the two finishes: a line from tag to tag (both tags sit
+     at the same height, 16px plus their own height above the finish line). */
+  .race-gap,
+  .race-ahead {
+    position: absolute;
+    left: 40.7%;
+    right: 3.7%;
+    top: 23.85%;
+  }
+  .race-gap {
+    z-index: 0;
+    height: 2px;
+    translate: 0 calc(-16px - 0.85rem);
+    background: linear-gradient(90deg, #6ee7a8, rgba(110, 231, 168, 0.35));
+    transform-origin: left center;
+  }
+  .race-tag {
+    z-index: 1;
+  }
+  .race-ahead {
+    /* Centered between the two tags. */
+    left: 48%;
+    right: 19%;
+    translate: 0 calc(-16px - 0.6rem);
+    text-align: center;
+    font-size: 0.72rem;
+    color: #6ee7a8;
+  }
+  .race-years {
+    margin: 0.55rem 3.7% 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    font-size: 0.7rem;
+    color: #7f8cab;
+    text-align: center;
+  }
+  .race-years .is-done {
+    color: #ffb3c0;
+    font-weight: 600;
+  }
+
+  /* Motion: the advised path draws in, the milestones arrive, exit-ready
+     bursts, then both runners keep racing (9 s laps, the fast one arriving at
+     40% of the lap, i.e. Year 2) — the end node flashes as it arrives. */
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .race-fast {
+      animation: race-draw 1.4s cubic-bezier(0.65, 0, 0.35, 1) 300ms backwards;
+    }
+    .race-area {
+      animation: race-fade 900ms ease 1.2s backwards;
+    }
+    .race-step {
+      animation: race-pop 500ms var(--ix-ease) backwards;
+      animation-delay: calc(600ms + var(--i) * 250ms);
+    }
+    .race-end,
+    .race-tag-fast {
+      animation: race-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) 1.6s backwards;
+    }
+    .race-gap {
+      animation: race-grow 900ms var(--ix-ease) 1.9s backwards;
+    }
+    .race-ahead,
+    .race-tag-slow {
+      animation: race-fade 600ms ease 2.4s backwards;
+    }
+    .race-ring {
+      animation: race-ring 9s ease-out 1.6s infinite;
+    }
+    .race-ring-2 {
+      animation-delay: 1.9s;
+    }
+    .race-trail {
+      animation: race-trail 9s linear 1.6s infinite;
+    }
+    .race-core {
+      animation: race-beat 9s ease-out 1.6s infinite;
+    }
+  }
+  @keyframes race-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+  }
+  @keyframes race-grow {
+    from {
+      transform: scaleX(0);
+    }
+  }
+  @keyframes race-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes race-pop {
+    from {
+      opacity: 0;
+      scale: 0.5;
+    }
+  }
+  /* Rings burst as the fast runner arrives (40% of the lap). */
+  @keyframes race-ring {
+    0%,
+    39% {
+      opacity: 0;
+      transform: scale(1);
+    }
+    40% {
+      opacity: 0.9;
+      transform: scale(1);
+    }
+    60%,
+    100% {
+      opacity: 0;
+      transform: scale(3.2);
+    }
+  }
+  @keyframes race-beat {
+    0%,
+    39%,
+    52%,
+    100% {
+      transform: scale(1);
+    }
+    44% {
+      transform: scale(1.35);
+    }
+  }
+  /* A bright streak rides the advised path with the runner. */
+  @keyframes race-trail {
+    0% {
+      opacity: 1;
+      stroke-dashoffset: 10;
+    }
+    40% {
+      opacity: 1;
+      stroke-dashoffset: -90;
+    }
+    41%,
+    100% {
+      opacity: 0;
+      stroke-dashoffset: -90;
+    }
+  }
+  .ts-exit figcaption {
+    margin-top: 0.9rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: #a9b6d2;
+  }
   .ts-benefits {
     list-style: none;
-    margin: 2rem 0 0;
+    margin: clamp(1.75rem, 3vw, 2.5rem) 0 0;
     padding: 0.9rem;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.5rem;
-    max-width: 62rem;
     border-radius: var(--radius-lg);
     background: rgba(10, 15, 29, 0.62);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
   }
   .ts-benefits li {
     display: flex;
@@ -802,199 +1543,551 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
   .ts-benefits li + li {
     border-left: 1px solid rgba(255, 255, 255, 0.1);
   }
-  @media (max-width: 960px) {
-    .ts-hero {
-      min-height: 0;
+  @media (max-width: 1024px) {
+    .ts-hero-grid {
+      grid-template-columns: 1fr;
     }
-    .ts-hero-media {
-      position: relative;
-      inset: auto;
-      order: 2;
-      width: 100%;
-      max-width: 760px;
-      margin: 1.75rem auto 0;
-      --fade-x: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
-      --fade-y: linear-gradient(180deg, transparent 0, #000 12%, #000 86%, transparent 100%);
-    }
-    .ts-hero > .wrap {
-      display: contents;
-    }
-    .ts-hero-copy {
-      order: 1;
-      width: min(100% - 2 * var(--gutter), var(--wrap) - 2 * var(--gutter));
-      margin-inline: auto;
+    .ts-hero-side {
+      max-width: 640px;
     }
     .ts-benefits {
-      order: 3;
-      width: min(100% - 2 * var(--gutter), var(--wrap) - 2 * var(--gutter));
-      margin: 1rem auto 0;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .ts-benefits li:nth-child(3) {
+      border-left: 0;
+    }
+  }
+  @media (max-width: 560px) {
+    .ts-benefits {
+      grid-template-columns: 1fr;
     }
     .ts-benefits li + li {
       border-left: 0;
     }
-  }
-  @media (max-width: 520px) {
-    .ts-benefits {
-      grid-template-columns: 1fr;
+    .ts-exit {
+      padding: 1.1rem 1.1rem 1rem;
+    }
+    .race-years {
+      font-size: 0.62rem;
+    }
+    /* Too little room between the tags: the caption below says it. */
+    .race-ahead {
+      display: none;
     }
   }
 
-  /* ---------- 2. Why it matters ---------- */
-  .ts-why-grid {
+  /* ---------- 2. The challenge, and where engagements start ---------- */
+  .ts-challenge-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: clamp(2rem, 5vw, 4rem);
-    align-items: center;
+    align-items: start;
   }
-  .ts-indicators {
+  .ts-challenge-grid :global(.section-heading) {
+    margin-bottom: 0;
+  }
+  /* Three equal cards that run the full height of the heading and fork
+     beside them, so the column has no empty tail (Hemang, 2026-10-29). */
+  .ts-challenges {
     list-style: none;
     margin: 0;
+    padding: 0;
+    display: grid;
+    grid-auto-rows: 1fr;
+    gap: 1rem;
+    align-self: stretch;
+  }
+  .ts-challenges li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: space-between;
+    align-items: center;
+    column-gap: 1.1rem;
+    row-gap: 1rem;
+    padding: 1.4rem 1.5rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(120deg, color-mix(in srgb, var(--c) 5%, #fff), #fff 55%);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--c);
+    box-shadow: var(--shadow);
+  }
+  .ts-challenges h3 {
+    font-size: 1.08rem;
+    margin-bottom: 0.2rem;
+  }
+  .ts-challenges p {
+    color: var(--text-2);
+  }
+  /* ---------- The challenge cards' pictures ----------
+     Fill each card's lower half (Hemang, 2026-10-29). --p comes from the
+     list's scrub: complete once the cards are wholly on screen. */
+  .ch-art {
+    grid-column: 1 / -1;
+    position: relative;
+  }
+  /* 1. Options: four alike; the highlight never settles. */
+  .ch-opts {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .ch-opts span {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 2rem;
+    padding: 0 0.55rem;
+    border-radius: 9px;
+    background: #fff;
+    border: 1px solid var(--border-2);
+  }
+  .ch-opts i {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--border-2);
+  }
+  .ch-opts b {
+    flex: 1;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--border);
+  }
+  .ch-opts em {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    font-family: var(--font-head);
+    font-style: normal;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: #fff;
+    background: var(--red);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ch-opts span {
+      animation: ch-hop 4s ease-in-out infinite;
+      animation-delay: calc(var(--i) * 1s);
+    }
+    .ch-opts span i {
+      animation: ch-hop-dot 4s ease-in-out infinite;
+      animation-delay: calc(var(--i) * 1s);
+    }
+  }
+  @keyframes ch-hop {
+    0%,
+    30%,
+    100% {
+      border-color: var(--border-2);
+      box-shadow: none;
+    }
+    8%,
+    22% {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(217, 64, 64, 0.14);
+    }
+  }
+  @keyframes ch-hop-dot {
+    0%,
+    30%,
+    100% {
+      background: var(--border-2);
+    }
+    8%,
+    22% {
+      background: var(--red);
+    }
+  }
+  /* 2. Risk: the marker slides from low to high. */
+  .ch-risk {
+    padding-bottom: 1.1rem;
+  }
+  .ch-risk-track {
+    position: relative;
+    display: block;
+    height: 10px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #22c55e, #f59e0b 50%, var(--red));
+  }
+  .ch-risk-mark {
+    position: absolute;
+    top: 50%;
+    left: calc(8% + var(--p, 1) * 80%);
+    width: 20px;
+    height: 20px;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid var(--ink);
+    box-shadow: 0 4px 12px rgba(13, 13, 13, 0.2);
+  }
+  .ch-risk-low,
+  .ch-risk-high {
+    position: absolute;
+    bottom: 0;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.7rem;
+    color: var(--text-2);
+  }
+  .ch-risk-low {
+    left: 0;
+  }
+  .ch-risk-high {
+    right: 0;
+  }
+  /* 3. Alignment: three lanes whose markers line up. */
+  .ch-align {
+    display: grid;
+    gap: 0.35rem;
+    padding-right: 1.9rem;
+  }
+  .ch-lane {
+    display: grid;
+    grid-template-columns: 5.6rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .ch-lane small {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.7rem;
+    color: var(--text-2);
+  }
+  .ch-lane-track {
+    position: relative;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--border);
+  }
+  .ch-lane-track i {
+    position: absolute;
+    top: 50%;
+    left: calc(var(--off) * (1 - var(--p, 1)) + 78% * var(--p, 1));
+    width: 12px;
+    height: 12px;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: var(--ts-green);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+  }
+  .ch-align-check {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    translate: 0 -50%;
+    display: grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--ts-green);
+    opacity: clamp(0, (var(--p, 1) - 0.85) * 7, 1);
+  }
+  @media (max-width: 900px) {
+    .ch-art {
+      display: none;
+    }
+  }
+  .ts-starts {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  }
+  .ts-starts-title {
+    margin-bottom: 1rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .ts-start-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .ts-start-cards li {
+    padding: 1.4rem;
+    border-radius: 18px;
+    background: linear-gradient(160deg, color-mix(in srgb, var(--c) 6%, #fff), #fff 60%);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--c);
+    box-shadow: var(--shadow);
+  }
+  .ts-start-cards h4 {
+    margin: 1rem 0 0.35rem;
+    font-size: 1.08rem;
+    line-height: 1.3;
+  }
+  .ts-start-cards p {
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  @media (max-width: 900px) {
+    .ts-challenge-grid,
+    .ts-start-cards {
+      grid-template-columns: 1fr;
+    }
+    .ts-challenges {
+      grid-auto-rows: auto;
+    }
+  }
+
+  /* ---------- 3. Advisory value ---------- */
+  .ts-advisory {
+    position: relative;
+    isolation: isolate;
+    color: #fff;
+    background:
+      radial-gradient(50% 60% at 0% 0%, rgba(217, 64, 64, 0.16), transparent 70%),
+      radial-gradient(45% 60% at 100% 100%, rgba(18, 136, 207, 0.18), transparent 70%),
+      var(--ts-navy);
+  }
+  .ts-advisory :global(h2) {
+    color: #fff;
+  }
+  .ts-advisory :global(.eyebrow),
+  .ts-advisory :global(.lead) {
+    color: var(--ts-on-dark);
+  }
+  .ts-pillar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .ts-pillar {
+    padding: 1.6rem;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(160deg, color-mix(in srgb, var(--c) 18%, rgba(20, 30, 60, 0.9)), rgba(12, 18, 38, 0.92));
+    border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
+  }
+  .ts-pillar-k {
+    margin-top: 1rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--c) 60%, #fff);
+  }
+  .ts-pillar h3 {
+    margin-top: 0.2rem;
+    font-size: 1.5rem;
+    color: #fff;
+  }
+  .ts-pillar-lead {
+    margin-top: 0.5rem;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: #e6ebf5;
+  }
+  .ts-pillar ul {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .ts-pillar li {
+    position: relative;
+    padding-left: 1.6rem;
+    color: var(--ts-on-dark);
+    line-height: 1.5;
+  }
+  .ts-pillar li::before {
+    content: '';
+    position: absolute;
+    left: 0.15rem;
+    top: 0.42em;
+    width: 0.75rem;
+    height: 0.4rem;
+    border-left: 2px solid color-mix(in srgb, var(--c) 70%, #fff);
+    border-bottom: 2px solid color-mix(in srgb, var(--c) 70%, #fff);
+    transform: rotate(-45deg);
+  }
+  .ts-proof {
+    list-style: none;
+    margin: 1.25rem 0 0;
     padding: 0;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.75rem;
+    gap: 1.25rem;
   }
-  .ts-indicators li {
-    display: grid;
-    gap: 0.6rem;
+  .ts-proof li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1.2rem 1.25rem;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .ts-proof strong {
     font-family: var(--font-head);
-    font-weight: 600;
+    font-weight: 800;
+    font-size: 1.9rem;
+    line-height: 1.1;
+    color: #ff6b6b;
+  }
+  .ts-proof span {
+    color: #e6ebf5;
+    line-height: 1.45;
+  }
+  .ts-proof small {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    font-size: 0.76rem;
+    line-height: 1.45;
+    color: #a9b6d2;
+  }
+  @media (max-width: 1024px) {
+    .ts-proof {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 760px) {
+    .ts-pillar-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 480px) {
+    .ts-proof {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 4. Realized results (the shared Marquee) ---------- */
+  .ts-results {
+    background: linear-gradient(180deg, var(--bg), #fff);
+  }
+  .ts-results .section-heading {
+    margin-bottom: 0.75rem;
+  }
+  .ts-results-note {
+    max-width: 62ch;
+    margin-bottom: 1.75rem;
+    font-size: 0.9rem;
+    color: var(--text-2);
+  }
+  .ts-result {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    width: 19rem;
+    height: 12.5rem;
+    padding: 1.25rem 1.3rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(160deg, color-mix(in srgb, var(--c) 7%, #fff), #fff 55%);
+    border: 1px solid color-mix(in srgb, var(--c) 30%, var(--border));
+    box-shadow: var(--shadow);
+  }
+  .ts-result strong {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 1.7rem;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .ts-result span {
+    color: var(--ink);
     font-size: 0.95rem;
-    line-height: 1.3;
+    line-height: 1.45;
   }
-  .ts-map {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    margin: 0;
-    aspect-ratio: 600 / 440;
-    border-radius: var(--radius-xl);
-    background:
-      radial-gradient(60% 55% at 82% 10%, rgba(217, 64, 64, 0.32), transparent 70%),
-      radial-gradient(55% 60% at 10% 100%, rgba(18, 136, 207, 0.3), transparent 70%),
-      linear-gradient(160deg, #18213d, var(--ts-navy) 70%);
-    box-shadow: 0 40px 80px -48px rgba(10, 15, 29, 0.8);
+  .ts-result small {
+    margin-top: auto;
+    font-size: 0.76rem;
+    line-height: 1.4;
+    color: var(--text-2);
   }
-  /* A faint perspective floor grid. */
-  .ts-map-grid {
-    position: absolute;
-    inset: 40% -20% -10%;
-    z-index: -1;
-    background-image:
-      linear-gradient(rgba(140, 180, 255, 0.14) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(140, 180, 255, 0.14) 1px, transparent 1px);
-    background-size: 44px 44px;
-    transform: perspective(500px) rotateX(58deg);
-    transform-origin: top center;
-    mask-image: linear-gradient(180deg, transparent, #000 40%);
-    -webkit-mask-image: linear-gradient(180deg, transparent, #000 40%);
+  @media (max-width: 480px) {
+    .ts-result {
+      width: 16.5rem;
+      height: 12.5rem;
+    }
   }
-  .ts-map-path {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+
+  /* ---------- 5. Advisor profile ---------- */
+  .ts-advisor-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
   }
-  .ts-map-path path {
-    fill: none;
-    stroke: url(#ts-path-grad);
-    stroke-width: 3;
-    stroke-linecap: round;
+  .ts-advisor-grid .section-heading {
+    margin-bottom: 0;
   }
-  .ts-map-path .ts-map-glow {
-    stroke-width: 12;
-    opacity: 0.25;
-    filter: blur(6px);
+  .ts-advisor-card {
+    display: grid;
   }
-  .ts-milestones {
+  @media (max-width: 860px) {
+    .ts-advisor-grid {
+      grid-template-columns: 1fr;
+    }
+    .ts-advisor-card {
+      max-width: 26rem;
+    }
+  }
+
+  /* ---------- 6. Key areas of advisory support ---------- */
+  .ts-areas {
+    background: var(--section);
+  }
+  .ts-areas-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .ts-area-tiles {
     list-style: none;
     margin: 0;
     padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
   }
-  /* Each milestone: a glowing node on the path, its chip beside it. */
-  .ts-milestones li {
-    position: absolute;
-    left: var(--x);
-    top: var(--y);
-    width: 0;
-    height: 0;
-    --c: #8ec9ff;
-  }
-  .ts-dot {
-    position: absolute;
-    left: -7px;
-    top: -7px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
+  .ts-area-tiles li {
+    padding: 1.2rem;
+    border-radius: var(--radius-lg);
     background: #fff;
-    border: 3px solid var(--c);
-    box-shadow: 0 0 0 5px color-mix(in srgb, var(--c) 25%, transparent), 0 0 18px var(--c);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
   }
-  .ts-chip {
-    position: absolute;
-    top: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    padding: 0.4rem 0.75rem 0.4rem 0.4rem;
-    border-radius: 14px;
-    background: rgba(17, 26, 48, 0.78);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: #fff;
-    font-family: var(--font-head);
-    font-weight: 600;
-    font-size: 0.82rem;
-    white-space: nowrap;
+  .ts-area-tiles h3 {
+    margin: 0.85rem 0 0.3rem;
+    font-size: 1rem;
+    line-height: 1.3;
   }
-  .side-r .ts-chip {
-    left: 16px;
-    transform: translateY(-50%);
-  }
-  .side-l .ts-chip {
-    right: 16px;
-    transform: translateY(-50%);
-  }
-  .ts-chip .ts-glyph {
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
-  }
-  .ts-milestones li.is-goal {
-    --c: #ff8080;
-  }
-  .is-goal .ts-chip {
-    border-color: rgba(217, 64, 64, 0.55);
-    background: rgba(70, 20, 30, 0.7);
+  .ts-area-tiles p {
+    color: var(--text-2);
+    font-size: 0.92rem;
+    line-height: 1.5;
   }
   @media (max-width: 1024px) {
-    .ts-why-grid {
+    .ts-areas-grid {
       grid-template-columns: 1fr;
     }
-    .ts-map {
-      max-width: 680px;
-    }
   }
-  @media (max-width: 560px) {
-    .ts-indicators {
+  @media (max-width: 760px) {
+    .ts-area-tiles {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
-    .ts-chip {
-      font-size: 0.7rem;
-      gap: 0.4rem;
-      padding-right: 0.55rem;
-    }
-    .ts-chip .ts-glyph {
-      width: 24px;
-      height: 24px;
+  }
+  @media (max-width: 480px) {
+    .ts-area-tiles {
+      grid-template-columns: 1fr;
     }
   }
 
-  /* ---------- 3. How we help ---------- */
+  /* ---------- 7. How we help: our approach ---------- */
   .ts-help {
     position: relative;
     isolation: isolate;
@@ -1093,146 +2186,71 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     }
   }
 
-  /* ---------- 4. Approach: a line that fills as you scroll ---------- */
-  .ts-approach {
-    background:
-      radial-gradient(40% 70% at 0% 0%, rgba(217, 64, 64, 0.14), transparent 70%),
-      radial-gradient(40% 70% at 100% 100%, rgba(18, 136, 207, 0.14), transparent 70%),
-      var(--ts-navy);
-  }
-  .ts-approach-head {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 1rem 3rem;
-    margin-bottom: clamp(2rem, 4vw, 3rem);
-  }
-  .ts-approach-head :global(.section-heading) {
-    margin-bottom: 0;
-  }
-  .ts-approach-note {
-    max-width: 44ch;
-    color: var(--ts-on-dark);
-    font-size: 1.05rem;
-    line-height: 1.6;
-  }
-  .ts-track {
-    --p: 1;
-    position: relative;
-  }
-  .ts-track-line {
-    position: absolute;
-    left: 12.5%;
-    right: 12.5%;
-    top: 31px;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.14);
-  }
-  .ts-track-fill {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, var(--red), var(--blue), var(--ts-violet), var(--ts-green));
-    transform-origin: left center;
-    transform: scaleX(var(--p));
-  }
-  .ts-steps {
+  /* ---------- 8. Industries we support ---------- */
+  .ts-industry-tiles {
     list-style: none;
     margin: 0;
     padding: 0;
-    position: relative;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1.25rem;
   }
-  .ts-steps li {
-    display: grid;
-    justify-items: center;
-    text-align: center;
-    padding: 0 0.5rem;
-  }
-  .ts-step-dot {
-    display: grid;
-    place-items: center;
-    width: 64px;
-    height: 64px;
-    margin-bottom: 1.1rem;
+  .ts-industry-tiles li {
+    display: flex;
+    flex-direction: column;
+    padding: 1.4rem;
     border-radius: 18px;
-    background: color-mix(in srgb, var(--c) 22%, var(--ts-navy));
-    border: 1px solid color-mix(in srgb, var(--c) 60%, transparent);
-    color: #fff;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .ts-industry-tiles h3 {
+    margin-top: 1rem;
+    font-size: 1.08rem;
+    line-height: 1.3;
+  }
+  .ts-industry-tag {
+    align-self: start;
+    margin-top: 0.5rem;
+    padding: 0.18rem 0.6rem;
+    border-radius: 999px;
     font-family: var(--font-head);
-    font-weight: 700;
-    font-size: 1.1rem;
-    box-shadow: 0 0 0 8px var(--ts-navy), 0 16px 34px -14px var(--c);
-    transition:
-      background-color var(--ix-base) var(--ix-ease),
-      border-color var(--ix-base) var(--ix-ease),
-      transform var(--ix-base) var(--ix-ease),
-      opacity var(--ix-base) var(--ix-ease);
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--text-2);
+    background: var(--section);
+    border: 1px solid var(--border);
   }
-  .ts-steps li.is-on .ts-step-dot {
-    background: var(--c);
+  .ts-industry-tag.is-tls {
+    color: var(--red-text);
+    background: var(--red-tint);
+    border-color: var(--red-edge);
   }
-  @media screen and (prefers-reduced-motion: no-preference) {
-    :global(html.ix) .ts-steps li:not(.is-on) .ts-step-dot {
-      opacity: 0.55;
-      transform: scale(0.9);
-    }
-  }
-  .ts-steps h3 {
-    color: #fff;
-    font-size: var(--step-1);
-    margin-bottom: 0.4rem;
-  }
-  .ts-steps p {
-    color: var(--ts-on-dark);
-    font-size: 0.95rem;
+  .ts-industry-tiles p {
+    margin-top: 0.6rem;
+    color: var(--text-2);
+    font-size: 0.93rem;
     line-height: 1.55;
-    max-width: 28ch;
   }
-  @media (max-width: 860px) {
-    .ts-track-line {
-      left: 31px;
-      right: auto;
-      top: 32px;
-      bottom: 32px;
-      width: 2px;
-      height: auto;
+  @media (max-width: 1024px) {
+    .ts-industry-tiles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-    .ts-track-fill {
-      background: linear-gradient(180deg, var(--red), var(--blue), var(--ts-violet), var(--ts-green));
-      transform-origin: center top;
-      transform: scaleY(var(--p));
-    }
-    .ts-steps {
+  }
+  @media (max-width: 520px) {
+    .ts-industry-tiles {
       grid-template-columns: 1fr;
-      gap: 2rem;
-      max-width: 560px;
-    }
-    .ts-steps li {
-      grid-template-columns: auto 1fr;
-      justify-items: start;
-      text-align: left;
-      column-gap: 1.25rem;
-      padding: 0;
-    }
-    .ts-step-dot {
-      grid-row: span 2;
-      margin: 0;
-    }
-    .ts-steps h3 {
-      align-self: end;
     }
   }
 
-  /* ---------- 5. Outcomes ---------- */
+  /* ---------- 9. Outcomes (five) ---------- */
   .ts-outcome-cards {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 1.25rem;
   }
   .ts-outcome-cards li {
@@ -1250,6 +2268,11 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     line-height: 1.35;
   }
   @media (max-width: 1100px) {
+    .ts-outcome-cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 760px) {
     .ts-outcome-cards {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -1363,11 +2386,6 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
     }
   }
 
-  /* ---------- 7. Voices ---------- */
-  .ts-logos {
-    margin-bottom: clamp(2rem, 4vw, 3rem);
-  }
-
   /* ---------- 8. Plan your next step ---------- */
   .ts-plan {
     position: relative;
@@ -1428,19 +2446,6 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
       width: 100%;
       opacity: 0.35;
       --fade-x: linear-gradient(90deg, transparent, #000);
-    }
-  }
-
-  /* ---------- 9. FAQ ---------- */
-  .ts-faq-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    gap: clamp(2rem, 5vw, 4rem);
-    align-items: start;
-  }
-  @media (max-width: 900px) {
-    .ts-faq-grid {
-      grid-template-columns: 1fr;
     }
   }
 
@@ -1727,6 +2732,837 @@ const insights = insightIds.map((id) => posts.find((p) => p.id === id)).filter((
   @media (max-width: 860px) {
     .ts-final-grid {
       grid-template-columns: 1fr;
+    }
+  }
+
+  /* =====================================================================
+     Scroll-driven diagrams (src/scripts/scroll/scrub.ts). Each one's "not
+     yet" state lives under .is-scrub: without motion every diagram is
+     complete and still. --p is the diagram's scroll progress (0–1).
+     ===================================================================== */
+
+  /* ---------- Section rail (wide screens) ---------- */
+  .ts-rail {
+    display: none;
+  }
+  @media (min-width: 1380px) {
+    .ts-rail {
+      --rail: 0;
+      position: fixed;
+      left: 1.25rem;
+      top: 50%;
+      z-index: 40;
+      display: block;
+      translate: -12px -50%;
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        opacity 400ms var(--ix-ease),
+        translate 400ms var(--ix-ease);
+    }
+    .ts-rail.is-shown {
+      opacity: 1;
+      translate: 0 -50%;
+      pointer-events: auto;
+    }
+    .ts-rail ol {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.95rem;
+      position: relative;
+    }
+    .ts-rail-track {
+      position: absolute;
+      left: 5px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      border-radius: 2px;
+      background: rgba(130, 140, 170, 0.25);
+    }
+    .ts-rail-track span {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(180deg, var(--red), var(--blue));
+      transform-origin: top;
+      transform: scaleY(var(--rail));
+      transition: transform 500ms var(--ix-ease);
+    }
+    .ts-rail a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: var(--text-2);
+    }
+    .ts-rail i {
+      flex: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid rgba(130, 140, 170, 0.6);
+      transition:
+        background-color 300ms ease,
+        border-color 300ms ease,
+        box-shadow 300ms ease,
+        scale 300ms var(--ix-ease);
+    }
+    .ts-rail a.is-past i {
+      background: color-mix(in srgb, var(--red) 60%, var(--blue));
+      border-color: transparent;
+    }
+    .ts-rail a.is-active i {
+      scale: 1.35;
+      background: var(--red);
+      border-color: #fff;
+      box-shadow: 0 0 0 4px rgba(217, 64, 64, 0.2);
+    }
+    .ts-rail span {
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-family: var(--font-head);
+      font-weight: 600;
+      font-size: 0.72rem;
+      white-space: nowrap;
+      color: #fff;
+      background: var(--ink);
+      opacity: 0;
+      translate: -6px 0;
+      transition:
+        opacity 200ms ease,
+        translate 200ms var(--ix-ease);
+    }
+    .ts-rail a:is(:hover, :focus-visible) span {
+      opacity: 1;
+      translate: 0 0;
+    }
+    /* The current section's name stays out only where the gutter has room. */
+    @media (min-width: 1600px) {
+      .ts-rail a.is-active span {
+        opacity: 1;
+        translate: 0 0;
+      }
+    }
+    .ts-rail a:focus-visible {
+      outline: none;
+    }
+    .ts-rail a:focus-visible i {
+      box-shadow: 0 0 0 3px var(--blue-text);
+    }
+  }
+
+  /* ---------- The challenge: decision fork ---------- */
+  .ts-fork {
+    position: relative;
+    margin: 2rem 0 0;
+    max-width: 34rem;
+  }
+  .ts-fork svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .fork-path {
+    fill: none;
+    stroke: var(--border-2);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 1 0;
+  }
+  .fork-path.is-pick {
+    stroke: color-mix(in srgb, var(--blue) 40%, var(--border-2));
+  }
+  .fork-glow {
+    fill: none;
+    stroke: url(#ts-fork-pick);
+    stroke-width: 5;
+    stroke-linecap: round;
+    filter: drop-shadow(0 4px 8px rgba(18, 136, 207, 0.35));
+  }
+  .fork-off circle {
+    fill: #fff;
+    stroke: var(--border-2);
+    stroke-width: 1.5;
+  }
+  .fork-off path {
+    stroke: #94a3b8;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+  .fork-off {
+    opacity: 0.55;
+    transition: opacity 400ms ease;
+  }
+  .is-scrub .fork-off:not(.is-on) {
+    opacity: 0;
+  }
+  .fork-start {
+    fill: var(--ink);
+    stroke: #fff;
+    stroke-width: 3;
+  }
+  .fork-goal circle:not(.fork-goal-ring) {
+    fill: var(--blue);
+  }
+  .fork-goal-ring {
+    fill: rgba(18, 136, 207, 0.15);
+    stroke: rgba(18, 136, 207, 0.4);
+  }
+  .fork-goal path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .fork-goal {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 400ms ease,
+      scale 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .is-scrub .fork-goal:not(.is-on) {
+    opacity: 0;
+    scale: 0.4;
+  }
+  .fork-label {
+    position: absolute;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    transition: opacity 400ms ease;
+  }
+  .fork-label-start {
+    left: 0;
+    top: calc(112 / 224 * 100% + 14px);
+    color: var(--ink);
+  }
+  .fork-label-many {
+    left: 44%;
+    bottom: -1.4rem;
+    color: var(--text-2);
+  }
+  .fork-label-goal {
+    right: calc(8.1% + 14px);
+    top: calc(58 / 224 * 100%);
+    translate: 0 -50%;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    color: #fff;
+    background: var(--blue-text);
+  }
+  .is-scrub .fork-label[data-at]:not(.is-on) {
+    opacity: 0;
+  }
+
+  /* ---------- Where engagements start: each picture resolves ---------- */
+  .ts-start-cards li {
+    position: relative;
+  }
+  .ts-start-art {
+    position: absolute;
+    top: 1.1rem;
+    right: 1.1rem;
+    width: 104px;
+    height: auto;
+  }
+  .st-doc {
+    fill: #fff;
+    stroke: var(--border-2);
+    stroke-width: 1.5;
+  }
+  .st-lines,
+  .st-text,
+  .st-axis {
+    fill: none;
+    stroke: var(--border-2);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  .st-axis {
+    stroke-width: 1.5;
+  }
+  .st-bad circle {
+    fill: var(--red);
+  }
+  .st-good circle {
+    fill: var(--ts-green);
+  }
+  .st-bad path,
+  .st-good path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .st-bad,
+  .st-good {
+    transition: opacity 350ms ease;
+  }
+  .st-bad {
+    opacity: 0;
+  }
+  .is-scrub .st-swap:not(.is-on) .st-bad {
+    opacity: 1;
+  }
+  .is-scrub .st-swap:not(.is-on) .st-good {
+    opacity: 0;
+  }
+  .st-trend {
+    fill: none;
+    stroke: var(--blue);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .st-low {
+    fill: var(--red);
+  }
+  .st-high {
+    fill: var(--ts-green);
+    stroke: #fff;
+    stroke-width: 2;
+  }
+  .st-low,
+  .st-high {
+    transition: opacity 300ms ease;
+  }
+  .is-scrub :is(.st-low, .st-high):not(.is-on) {
+    opacity: 0;
+  }
+  .st-row rect {
+    fill: #fff;
+    stroke: var(--border-2);
+    stroke-width: 1.5;
+    transition:
+      fill 300ms ease,
+      stroke 300ms ease;
+  }
+  .st-row.is-on rect,
+  .ts-start-cards:not(.is-scrub) .st-row rect {
+    fill: var(--ts-violet);
+    stroke: var(--ts-violet);
+  }
+  .st-tick {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: opacity 300ms ease;
+  }
+  .is-scrub .st-row:not(.is-on) .st-tick {
+    opacity: 0;
+  }
+
+  /* ---------- Pillar 1: five years compress into two ----------
+     A timed motion graphic (sequence.ts), stages 0–6:
+     0 the five-year plan · 1 a light sweeps it · 2–4 Years 5, 4, 3 fold away
+     (the counter rolls 5 → 2) · 5 the two kept years light up · 6 Exit-ready.
+     At rest (reduced motion, no JS) the finished picture. */
+  .ts-compress {
+    margin-top: 1.1rem;
+  }
+  .yb-count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.1rem;
+    margin: 0 0 0.5rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #a9b6d2;
+  }
+  .yb-odo {
+    display: inline-block;
+    height: 1.6rem;
+    overflow: hidden;
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #fff;
+  }
+  .yb-digits {
+    display: flex;
+    flex-direction: column;
+    translate: 0 calc(var(--k, 3) * -1.6rem);
+    transition: translate 700ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .yb-digits span {
+    height: 1.6rem;
+    text-align: right;
+  }
+  .yb-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 2.4rem;
+  }
+  .yb {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    color: #fff;
+    background: linear-gradient(135deg, var(--red), #b04a8f);
+    box-shadow: 0 10px 24px -12px rgba(217, 64, 64, 0.8);
+    transition:
+      flex 850ms cubic-bezier(0.65, 0, 0.35, 1),
+      margin 850ms cubic-bezier(0.65, 0, 0.35, 1),
+      opacity 600ms ease,
+      translate 850ms cubic-bezier(0.65, 0, 0.35, 1),
+      background 500ms ease,
+      color 500ms ease,
+      box-shadow 500ms ease;
+  }
+  /* Years 3–5 are gone at rest (the plan delivered in two). */
+  .yb:not(.is-kept) {
+    flex: 0 0 0;
+    margin-inline: -0.175rem;
+    opacity: 0;
+    translate: -40% 0;
+  }
+  .yb-flag {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--ts-navy);
+    background: #6ee7a8;
+    transition:
+      opacity 400ms ease,
+      scale 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .yb-note {
+    display: block;
+    margin-top: 0.55rem;
+    font-size: 0.8rem;
+    color: #6ee7a8;
+    transition: opacity 500ms ease;
+  }
+
+  /* The sequence. "Still in the plan" for each year, by stage. */
+  .is-seq:is([data-stage='0'], [data-stage='1']) .yb[data-y='5'],
+  .is-seq:is([data-stage='0'], [data-stage='1'], [data-stage='2']) .yb[data-y='4'],
+  .is-seq:is([data-stage='0'], [data-stage='1'], [data-stage='2'], [data-stage='3']) .yb[data-y='3'] {
+    flex: 1;
+    margin-inline: 0;
+    opacity: 1;
+    translate: 0 0;
+  }
+  /* Until stage 5 every year is the plain plan. */
+  .is-seq:not([data-stage='5'], [data-stage='6']) .yb {
+    background: rgba(255, 255, 255, 0.08);
+    color: #a9b6d2;
+    box-shadow: none;
+  }
+  /* Stage 5: the two kept years light up. */
+  .is-seq[data-stage='5'] .yb.is-kept {
+    animation: yb-pop 600ms ease-out;
+  }
+  @keyframes yb-pop {
+    50% {
+      box-shadow: 0 0 0 6px rgba(217, 64, 64, 0.25), 0 10px 24px -12px rgba(217, 64, 64, 0.8);
+    }
+  }
+  /* Stage 1: a light sweeps the five-year plan. */
+  .yb-row::after {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 22%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .is-seq[data-stage='1'] .yb-row::after {
+    animation: yb-sweep 1000ms ease-in-out;
+  }
+  @keyframes yb-sweep {
+    0% {
+      opacity: 1;
+      translate: -20% 0;
+    }
+    100% {
+      opacity: 1;
+      translate: 460% 0;
+    }
+  }
+  /* The counter: 5, then one down per folded year. */
+  .is-seq:is([data-stage='0'], [data-stage='1']) .yb-digits {
+    --k: 0;
+  }
+  .is-seq[data-stage='2'] .yb-digits {
+    --k: 1;
+  }
+  .is-seq[data-stage='3'] .yb-digits {
+    --k: 2;
+  }
+  /* Exit-ready and the note arrive last. */
+  .is-seq:not([data-stage='6']) :is(.yb-flag, .yb-note) {
+    opacity: 0;
+  }
+  .is-seq:not([data-stage='6']) .yb-flag {
+    scale: 0.6;
+  }
+
+  /* ---------- Pillar 2: noisy signals converge into one view ---------- */
+  .ts-signal {
+    position: relative;
+    margin: 1.1rem 0 0.4rem;
+    padding-bottom: 1.4rem;
+    container-type: inline-size;
+  }
+  .ts-signal svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .sig-noise {
+    fill: none;
+    stroke: rgba(160, 185, 230, 0.5);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .sig-clean {
+    fill: none;
+    stroke: #4fb6ff;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 6px rgba(79, 182, 255, 0.8));
+  }
+  .sig-node {
+    fill: #4fb6ff;
+  }
+  .sig-node-ring {
+    fill: rgba(79, 182, 255, 0.18);
+    stroke: rgba(79, 182, 255, 0.5);
+  }
+  .sig-node,
+  .sig-node-ring {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 400ms ease,
+      scale 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .is-scrub :is(.sig-node, .sig-node-ring):not(.is-on) {
+    opacity: 0;
+    scale: 0.3;
+  }
+  .sig-label {
+    position: absolute;
+    bottom: 0;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    color: #a9b6d2;
+    transition: opacity 400ms ease;
+  }
+  .sig-label-l {
+    left: 0;
+  }
+  /* Above its node: clear of the two captions below. */
+  .sig-label-m {
+    left: 50.6%;
+    bottom: auto;
+    top: calc((100% - 1.4rem) * 0.3);
+    translate: -50% -100%;
+    color: #8fd0ff;
+  }
+  .sig-label-r {
+    right: 0;
+    color: #8fd0ff;
+  }
+  .is-scrub .sig-label[data-at]:not(.is-on) {
+    opacity: 0;
+  }
+  /* Too narrow for both captions in one row: keep the outcome. */
+  @container (max-width: 440px) {
+    .sig-label-l {
+      display: none;
+    }
+  }
+
+  /* ---------- Key areas: the strategy hub ---------- */
+  .ts-hub {
+    margin: 1.5rem auto 0;
+    max-width: 21rem;
+  }
+  .ts-hub svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .hub-orbit {
+    fill: none;
+    stroke: var(--border-2);
+    stroke-dasharray: 3 7;
+  }
+  .hub-orbit-2 {
+    stroke-dasharray: 2 5;
+    opacity: 0.6;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .hub-orbit {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: hub-spin 40s linear infinite;
+    }
+    .hub-orbit-2 {
+      animation-direction: reverse;
+      animation-duration: 28s;
+    }
+  }
+  @keyframes hub-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .hub-spoke {
+    fill: none;
+    stroke: color-mix(in srgb, var(--blue) 45%, var(--border-2));
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition:
+      stroke 250ms ease,
+      stroke-width 250ms ease;
+  }
+  .hub-node circle {
+    fill: #fff;
+    stroke: var(--blue);
+    stroke-width: 2;
+    transition:
+      fill 250ms ease,
+      stroke 250ms ease;
+  }
+  .hub-node text {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 15px;
+    text-anchor: middle;
+    fill: var(--ink);
+  }
+  .hub-node {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 350ms ease,
+      scale 450ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .is-scrub .hub-node:not(.is-on),
+  .is-scrub .hub-core:not(.is-on) {
+    opacity: 0;
+    scale: 0.4;
+  }
+  .hub-core {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 400ms ease,
+      scale 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .hub-core text {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 12px;
+    text-anchor: middle;
+    fill: #fff;
+  }
+  /* Hover a tile: its node and spoke light. */
+  .ts-areas:has(.ts-area-tiles li[data-area='0']:hover) :is(.hub-node[data-n='0'] circle, .hub-spoke[data-n='0']),
+  .ts-areas:has(.ts-area-tiles li[data-area='1']:hover) :is(.hub-node[data-n='1'] circle, .hub-spoke[data-n='1']),
+  .ts-areas:has(.ts-area-tiles li[data-area='2']:hover) :is(.hub-node[data-n='2'] circle, .hub-spoke[data-n='2']),
+  .ts-areas:has(.ts-area-tiles li[data-area='3']:hover) :is(.hub-node[data-n='3'] circle, .hub-spoke[data-n='3']),
+  .ts-areas:has(.ts-area-tiles li[data-area='4']:hover) :is(.hub-node[data-n='4'] circle, .hub-spoke[data-n='4']),
+  .ts-areas:has(.ts-area-tiles li[data-area='5']:hover) :is(.hub-node[data-n='5'] circle, .hub-spoke[data-n='5']) {
+    stroke: var(--red);
+    stroke-width: 3;
+  }
+  .ts-areas:has(.ts-area-tiles li[data-area='0']:hover) .hub-node[data-n='0'] circle,
+  .ts-areas:has(.ts-area-tiles li[data-area='1']:hover) .hub-node[data-n='1'] circle,
+  .ts-areas:has(.ts-area-tiles li[data-area='2']:hover) .hub-node[data-n='2'] circle,
+  .ts-areas:has(.ts-area-tiles li[data-area='3']:hover) .hub-node[data-n='3'] circle,
+  .ts-areas:has(.ts-area-tiles li[data-area='4']:hover) .hub-node[data-n='4'] circle,
+  .ts-areas:has(.ts-area-tiles li[data-area='5']:hover) .hub-node[data-n='5'] circle {
+    fill: var(--red-tint);
+  }
+  .ts-area-tiles li {
+    position: relative;
+    transition:
+      border-color 250ms ease,
+      transform 300ms var(--ix-ease);
+  }
+  .ts-area-tiles li:hover {
+    border-color: color-mix(in srgb, var(--red) 40%, var(--border));
+    transform: translateY(-2px);
+  }
+  .ts-area-n {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--blue-text);
+    background: var(--blue-tint);
+  }
+  @media (max-width: 1024px) {
+    .ts-hub {
+      display: none;
+    }
+    .ts-area-n {
+      display: none;
+    }
+  }
+
+  /* ---------- Approach: a line through the four steps ---------- */
+  .ts-help-line {
+    --p: 1;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .ts-help-track {
+    position: absolute;
+    left: 12.5%;
+    right: 12.5%;
+    top: 50%;
+    height: 3px;
+    margin-top: -1.5px;
+    border-radius: 3px;
+    background: var(--border);
+  }
+  .ts-help-track span {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--red), var(--blue), var(--ts-violet), var(--ts-green));
+    transform-origin: left;
+    transform: scaleX(var(--p));
+  }
+  .ts-help-line i {
+    position: relative;
+    justify-self: center;
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    font-style: normal;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #fff;
+    background: var(--c);
+    box-shadow:
+      0 0 0 6px var(--bg),
+      0 10px 22px -10px var(--c);
+    transition:
+      background-color 300ms ease,
+      color 300ms ease,
+      scale 400ms var(--ix-ease);
+  }
+  .is-scrub .ts-help-line i:not(.is-on),
+  .ts-help-line.is-scrub i:not(.is-on) {
+    color: var(--c);
+    background: #fff;
+    scale: 0.85;
+  }
+  @media (max-width: 1100px) {
+    .ts-help-line {
+      display: none;
+    }
+  }
+
+  /* ---------- Outcomes: a rising curve beneath the five ---------- */
+  .ts-rise {
+    position: relative;
+  }
+  .ts-rise-art {
+    position: absolute;
+    left: -2%;
+    right: -2%;
+    bottom: -1.5rem;
+    width: 104%;
+    height: 150%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .rise-fill {
+    fill: url(#ts-rise-fill);
+    transition: opacity 500ms ease;
+  }
+  .rise-line {
+    fill: none;
+    stroke: url(#ts-rise-line);
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+  .is-scrub .rise-fill {
+    opacity: var(--p);
+  }
+  .ts-rise .ts-outcome-cards {
+    position: relative;
+    z-index: 1;
+  }
+  /* Desktop: the five step up, left to right. */
+  @media (min-width: 1101px) {
+    .ts-rise .ts-outcome-cards {
+      align-items: end;
+      padding-top: 3rem;
+    }
+    .ts-rise .ts-outcome-cards li:nth-child(1) {
+      margin-top: 3rem;
+    }
+    .ts-rise .ts-outcome-cards li:nth-child(2) {
+      margin-bottom: 0.75rem;
+    }
+    .ts-rise .ts-outcome-cards li:nth-child(3) {
+      margin-bottom: 1.5rem;
+    }
+    .ts-rise .ts-outcome-cards li:nth-child(4) {
+      margin-bottom: 2.25rem;
+    }
+    .ts-rise .ts-outcome-cards li:nth-child(5) {
+      margin-bottom: 3rem;
+    }
+  }
+  @media (max-width: 1100px) {
+    .ts-rise-art {
+      display: none;
     }
   }
 </style>

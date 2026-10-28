@@ -1,0 +1,166 @@
+---
+/**
+ * A slow, seamless, auto-scrolling strip (extracted 2026-10-28 from the
+ * client logo rail, which keeps the exact same look and behavior).
+ *
+ * The caller renders the items twice inside the default slot, the second set
+ * marked aria-hidden="true": the track moves left by half its width per loop,
+ * so the two copies join seamlessly. `loop` is the duration of one loop.
+ *
+ * - Faded at both edges; linear motion.
+ * - Paused while the pointer is over it or focus is inside it — over the
+ *   whole host element when one is marked [data-marquee-host] (the logo rail
+ *   pauses over its padding too), otherwise over the strip itself.
+ * - Reduced motion: no movement; the items wrap into a centered, static grid
+ *   and the repeat copy is hidden.
+ * - `controls`: a visible Pause / Play button, and the strip itself can take
+ *   keyboard focus (which pauses it), for strips people read (WCAG 2.2.2).
+ */
+interface Props {
+  /** Duration of one full loop, e.g. "96s". */
+  loop: string;
+  /** Space between items (and between the two copies). */
+  gap?: string;
+  /** Show a Pause / Play button and make the strip focusable. */
+  controls?: boolean;
+  /** Accessible name of the strip (with `controls`). */
+  label?: string;
+}
+const { loop, gap = '3rem', controls = false, label } = Astro.props;
+---
+
+<div class:list={['mq', { 'mq--controls': controls }]} style={`--mq-loop: ${loop}; --mq-gap: ${gap}`} data-marquee>
+  <div class="mq-viewport" {...(controls ? { tabindex: 0, role: 'region', 'aria-label': label } : {})}>
+    <ul class="mq-track">
+      <slot />
+    </ul>
+  </div>
+  {
+    controls && (
+      <button type="button" class="mq-toggle" aria-pressed="false" data-marquee-toggle>
+        <span class="mq-toggle-pause">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <rect x="5" y="4" width="5" height="16" rx="1.5" />
+            <rect x="14" y="4" width="5" height="16" rx="1.5" />
+          </svg>
+          Pause
+        </span>
+        <span class="mq-toggle-play">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z" />
+          </svg>
+          Play
+        </span>
+      </button>
+    )
+  }
+</div>
+
+{
+  controls && (
+    <script>
+      for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-marquee-toggle]')) {
+        const mq = btn.closest<HTMLElement>('[data-marquee]');
+        btn.addEventListener('click', () => {
+          const paused = mq?.classList.toggle('is-paused') ?? false;
+          btn.setAttribute('aria-pressed', String(paused));
+        });
+      }
+    </script>
+  )
+}
+
+<style>
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .mq-viewport {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .mq-track {
+    display: flex;
+    align-items: center;
+    gap: var(--mq-gap);
+    width: max-content;
+    padding-right: var(--mq-gap); /* the gap that joins the two copies */
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .mq-track {
+      animation: mq-scroll var(--mq-loop) linear infinite;
+    }
+    .mq:is(:hover, :focus-within) .mq-track,
+    :global([data-marquee-host]:is(:hover, :focus-within)) .mq-track,
+    .mq.is-paused .mq-track {
+      animation-play-state: paused;
+    }
+  }
+  @keyframes mq-scroll {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mq-track {
+      flex-wrap: wrap;
+      justify-content: center;
+      width: auto;
+    }
+    .mq-track > :global([aria-hidden='true']) {
+      display: none;
+    }
+  }
+
+  /* Strips people read: a visible focus ring and a Pause / Play button. */
+  .mq--controls .mq-viewport:focus-visible {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 4px;
+    border-radius: var(--radius-lg);
+  }
+  .mq-toggle {
+    display: inline-flex;
+    align-items: center;
+    margin: 1rem auto 0;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    background: var(--surface);
+    color: var(--ink);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+  .mq--controls {
+    display: flex;
+    flex-direction: column;
+  }
+  .mq-toggle:hover {
+    border-color: var(--ink);
+  }
+  .mq-toggle:focus-visible {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 2px;
+  }
+  .mq-toggle > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .mq-toggle > .mq-toggle-play,
+  .mq.is-paused .mq-toggle > .mq-toggle-pause {
+    display: none;
+  }
+  .mq.is-paused .mq-toggle > .mq-toggle-play {
+    display: inline-flex;
+  }
+  /* Nothing moves with reduced motion, so there is nothing to pause. */
+  @media (prefers-reduced-motion: reduce) {
+    .mq-toggle {
+      display: none;
+    }
+  }
+</style>

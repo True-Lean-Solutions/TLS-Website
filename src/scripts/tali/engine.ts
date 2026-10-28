@@ -660,7 +660,7 @@ export function createEngine(opts: {
         intent: 'services',
         mood: 'solution',
         text: 'Here are our solutions. Each one links to its page:',
-        cards: ENTITIES.filter((e) => e.id !== 'meeting' && e.id !== 'visibility').map(card),
+        cards: ENTITIES.filter((e) => e.id !== 'meeting' && e.id !== 'visibility' && e.id !== 'advisory').map(card),
         chips: ['Tell me about Meeting Intelligence', 'Which solution fits my business?', 'I want to discuss a project'],
       };
     }

@@ -8,9 +8,12 @@
  * - MARQUEE_MIN or more: a slow infinite marquee (SECONDS_PER_LOGO per logo
  *   per loop, linear: ~37 px/s on desktop, calm enough to read every logo),
  *   faded at both edges, paused on hover/focus, static under reduced motion.
+ *   The marquee itself is the shared Marquee component (since 2026-10-28);
+ *   the rail is its host, so hovering anywhere on the rail pauses it.
  */
 import { clients } from '../data/clients';
 import ClientLogoItem from './ClientLogoItem.astro';
+import Marquee from './Marquee.astro';
 
 interface Props {
   /** Override for testing/layout reuse; defaults to all clients. */
@@ -22,14 +25,12 @@ const SECONDS_PER_LOGO = 8;
 const marquee = items.length >= MARQUEE_MIN;
 ---
 
-<div class:list={['logos', marquee ? 'logos--marquee' : 'logos--static']} style={`--loop: ${items.length * SECONDS_PER_LOGO}s`}>
+<div class:list={['logos', marquee ? 'logos--marquee' : 'logos--static']} data-marquee-host>
   {
     marquee ? (
-      <div class="logos-viewport">
-        <ul class="logos-track">
-          {[0, 1].map((copy) => items.map((c) => <ClientLogoItem client={c} copy={copy === 1} />))}
-        </ul>
-      </div>
+      <Marquee loop={`${items.length * SECONDS_PER_LOGO}s`} gap="3rem">
+        {[0, 1].map((copy) => items.map((c) => <ClientLogoItem client={c} copy={copy === 1} />))}
+      </Marquee>
     ) : (
       <ul class="logos-row">
         {items.map((c) => (
@@ -87,43 +88,6 @@ const marquee = items.length >= MARQUEE_MIN;
     height: 48px;
     translate: 0 -50%;
     background: linear-gradient(transparent, var(--border-2), transparent);
-  }
-
-  /* Marquee */
-  .logos-viewport {
-    overflow: hidden;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-  }
-  .logos-track {
-    display: flex;
-    align-items: center;
-    gap: 3rem;
-    width: max-content;
-    padding-right: 3rem; /* the gap that joins the two copies */
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .logos-track {
-      animation: logos-scroll var(--loop) linear infinite;
-    }
-    .logos--marquee:is(:hover, :focus-within) .logos-track {
-      animation-play-state: paused;
-    }
-  }
-  @keyframes logos-scroll {
-    to {
-      transform: translateX(-50%);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .logos-track {
-      flex-wrap: wrap;
-      justify-content: center;
-      width: auto;
-    }
-    .logos-track > :global([aria-hidden='true']) {
-      display: none;
-    }
   }
 
   @media (max-width: 560px) {

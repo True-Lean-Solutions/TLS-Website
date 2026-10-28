@@ -846,3 +846,54 @@ Removed one-off overrides: the client/review headings' 1.5rem and 2.25rem, the p
 
 **Where it lives.** `src/pages/services/data-analytics.astro`, `src/components/DashboardMock.astro`, `src/scripts/scroll/{pipeline,index}.ts`, `src/pages/services/[solution].astro`, `src/scripts/tali/{knowledge,prompts,engine,understand}.ts`, `public/solutions/data-analytics/`, `docs/references/pages/services/data-analytics/`.
 
+## 2026-10-28 — Technology Strategy becomes Executive Technology Strategy, led by advisor Dr. Wally Potts
+
+**Status:** draft, built locally only — not to be pushed until Hemang's go-ahead after Dr. Potts's review.
+
+**Claims exception (approver: Hemang Dwivedi, 2026-10-28).** Dr. Wally Potts's long resume ("Wally Potts Resume (19).pdf", role-level bullets only) is an approved source **for `/services/technology-strategy/` and its Q&A page only**. Every figure from it is credited to Dr. Potts and to the role, employer and years it comes from, and is never presented as a TLS result. The six-metric rule (v2.3 §15) still applies everywhere else on the site. The career-highlights bullets that blend roles are not used; each figure follows the role history (the 9,000+ applications, 63%, $7.5M+ and $2.7M are HP Inc., 2014–2016).
+
+**Decision.** Hero leads with two pillars, Expedited Exits and AI Enablement, and the line "Executive experience in small, medium and Fortune 50 companies"; Strategic Transitions & Acquisition Readiness is a secondary tile in Key Areas. New sections: The Challenge with three "Where engagements start" cards, Advisory Value (pillars plus four proof tiles), Realized results (13 tiles), the advisor profile card, Key Areas of Advisory Support, Industries We Support. How We Help and Our Approach are merged (anchor `#approach`). Business Outcomes has five items. The case study, client logos and reviews, Related Solutions, Insights and the final CTA are unchanged. JSON-LD: WebPage, Person (resume-supported fields only) and FAQPage (seven questions). An unlisted Q&A page, `/services/technology-strategy/advisory-qa/` (ten answers, third person), is in the sitemap and linked from nowhere.
+
+**Hero visual (revised 2026-10-28, Hemang: "boring").** The "5 Years → 2 Years" bars became an exit race drawn in SVG: on one five-year grid, the advised path draws in and climbs through three milestones (Roadmap, Priorities, Alignment — hover shows each Expedited Exits bullet) to Exit-ready at the end of Year 2, which bursts; a line to the "Original plan" finish at Year 5 marks "three years ahead of plan"; two runners then keep racing in 9 s laps (the fast one arrives at 40% of the lap); the big "2 Years" counts down from 5. Labels are HTML on the drawing so they stay readable at 360 px. Reduced motion: the finished picture, still. The caption keeps the credit to Dr. Potts's Veterans Engineering role.
+
+**Scroll-built diagrams (2026-10-28, Hemang: "add the scroll animations across this page… cool SVG").** A new scroll hook, `[data-scrub]` (`src/scripts/scroll/scrub.ts`), ties each diagram to the scroll: it builds as you scroll down and comes apart going back up, eased so it glides. Same day, Hemang: "full view when the viewer comes to that section", and then "the scrolling animation is cool", so keep the scrubbing. Each diagram's window now runs from the moment it peeks into view to the moment it is wholly on screen, so it is complete as soon as you can see all of it. Pillar 1 ("make this transformation slow… motion graphics") is a timed sequence instead (`[data-sequence]`, `src/scripts/scroll/sequence.ts`). Once the strip is fully on screen it plays at its own pace over about 5 s: the five-year plan, a light sweeping it, Years 5, 4 and 3 folding away one by one while a counter rolls 5 → 2 "-year plan", the two kept years lighting up, then "Exit-ready". Scrolling back above it resets it, so it plays again. Every diagram restates copy already on the page; none adds a claim.
+
+- **Challenge:** a decision fork: six possible paths, five crossed out, one aligned with your goals.
+- **Where engagements start:**
+  - the cure-notice document's red mark turns into a check;
+  - the customer trend dips, then recovers;
+  - the sale checklist ticks.
+- **Pillar 1:** Years 1–5 collapse to two, ending in "Exit-ready".
+- **Pillar 2:** four noisy signals converge through an AIOps node into one clean line.
+- **Advisory value:** the four proof tiles count up. `metric.ts` now handles thousands separators ("9,000+").
+- **Key Areas:** a hub of the six areas around "Technology strategy". Hovering a tile lights its node. The hub is hidden at 1024 px and below.- **Approach:** a numbered track draws across the four steps (hidden at 1100 px and below).
+- **Outcomes:** a rising curve behind cards that step up (desktop only).
+- **Section rail:** a section rail in the left gutter from 1380 px up. The current section's name shows from 1600 px; below that, it shows on hover or focus.
+
+Phones get the fork, the card art and pillars in their simple forms; the hub, approach track and outcome curve are desktop-only. Reduced motion or no JS: every diagram is complete and still. The shared logo reel moved into `Marquee.astro` unchanged (0 differing pixels at 360 and 1280).
+
+**Key Areas, all six equal (Hemang, 2026-10-29).** The Strategic Transitions & Acquisition Readiness tile was secondary (dashed outline, no fill, dashed hub node). It read as blank, so it is now a normal card like the other five.
+
+**Removed the same day (Hemang, 2026-10-28).**
+
+- The hero's two pillar cards (Expedited Exits, AI Enablement): Advisory Value covers both.
+- The advisor's career timeline.
+- The clients and reviews section (logo strip and review reel).
+- The FAQ section, with the FAQPage block in the JSON-LD (it must match visible content), and its rail dot.
+
+Tali answers those questions instead. `knowledge.ts` gains an **Executive Advisory** entry (Dr. Potts, the two areas of focus, how the work is shared, who it suits; kept out of Tali's solutions list, like the two products), and Technology Strategy gains its audience. Two routing fixes in `understand.ts`: "prepare for an exit or sale" no longer reads as "what should I prepare for the call", and "private equity" no longer reads as a data-privacy question. These Tali lines are draft with the page and ship with it. The unlisted Q&A page keeps its own FAQPage.
+
+**Shared marquee.** `src/components/Marquee.astro` is extracted from the client logo rail; `ClientLogos` now uses it and is pixel-identical (0 differing pixels at 360 and 1280 px, with motion and with reduced motion; same 96 s loop, same pause on hover/focus over the whole rail). The results reel uses it with a visible Pause / Play button and a focusable strip.
+
+**Choices made from the brief's rules.**
+- Hero buttons: "Discuss Your Project" only. "Explore Our Approach" is not in the v2.3 §09 CTA list and no approved label fits an in-page anchor, so the secondary button is left out (open item).
+- AI Enablement shows no ticket-deflection figure (none in the resume); it rests on the TISTA AIOps transformation and the IEEE 2024 publication.
+- Industries: Private Equity & Portfolio Companies, Enterprise & Corporate, and Federal & Healthcare are tagged "Advisor experience" (their only evidence is Dr. Potts's resume); Growing Small & Mid-Sized Businesses is TLS's own focus.
+- Employer names appear in the result captions for Dr. Potts's review (open item).
+- The headshot is cropped from the approved advisor card (Wally, 2026-10-26), `public/team/wally-potts.webp`. Dr. Potts is not added to the About page's Advisors (permission is an open item).
+- The Drive folder with the v2 mockups could not be opened from this session; the layout follows the brief, Hemang's 2026-10-28 answers (including the Key Areas lines) and the local advisor card.
+
+**Open items (Wally and Mack).** Ticket-deflection figures; company size for the exit line; whether any CEO role exists; employer names in captions; permission to list Dr. Potts as an advisor (here and on About); permission to use the bio card's testimonials; an approved CTA label for the hero's secondary in-page button.
+
+**Where it lives.** `src/pages/services/technology-strategy.astro`, `src/pages/services/technology-strategy/advisory-qa.astro`, `src/data/advisor.ts`, `src/components/Marquee.astro`, `src/components/ClientLogos.astro`, `public/team/wally-potts.webp`, `docs/references/pages/services/technology-strategy/advisor-v2/`.
+

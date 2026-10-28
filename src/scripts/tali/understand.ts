@@ -40,7 +40,8 @@ export const RX = {
     /\b(ignore (all |any |your |the |previous |prior |above |earlier )*(instructions|rules|prompts?|directions|guidelines)|system prompt|(your|tali s|talis) (hidden |internal |initial |system )?(prompt|instructions|configuration|config|source code|training data|rules)|the (hidden|internal|initial|system) (prompt|instructions)|reveal (your|the) (prompt|instructions|rules|system|config\w*|secrets?)|jailbreak|developer mode|dan mode|(your|tali s|talis) (api keys?|secret keys?|access tokens?|passwords?|credentials)|internal (documents|docs|files|notes)|you are now|pretend (you are|to be)|act as (a |an )?(different|unrestricted|evil|human)|disregard (your|the|all) (instructions|rules))\b/,
   human: /\b(human|real person|talk to (a |an |the |your |our )?(person|expert|someone|somebody|team|sales|people|consultant)|speak (to|with) (a |an |the |your |our )?(person|someone|somebody|expert|team)|live agent|representative|someone from (your|the) team)\b/,
   getStarted: /\b(get started|getting started|how (do|can|should) (i|we) (start|begin)|first step|next steps?)\b/,
-  prepare: /\b(what should i prepare|prepare|what do you need from (me|us)|what information do you need|what should (i|we) (bring|have ready))\b/,
+  // "Prepare for an exit / a sale" is about the business, not the call.
+  prepare: /\b(what should i prepare|prepare(?!\s+(?:\w+\s+){0,3}for\s+(?:an?\s+|the\s+)?(?:exit|sale|acquisition|merger))|what do you need from (me|us)|what information do you need|what should (i|we) (bring|have ready))\b/,
   contact: /\b(contact|get in touch|reach (you|out|the team)|email|e-mail|phone|call you|your number|address)\b/,
   project: /\b(discuss|start a conversation|start a project|new project|my project|a project|work with you|hire you|engage|proposal|quote|consultation|book|schedule|demo|call)\b/,
   assessment: /\b(assessment|baseline|audit)\b/,
@@ -57,8 +58,8 @@ export const RX = {
   pricing: /\b(price|prices|pricing|cost|costs|how much|fee|fees|rate|rates|budget|charge|expensive|cheap|afford|per month|per year|subscription)\b/,
   process: /\b(how (does|do|would|will) [a-z ]*\b(work|works|run|runs|go|goes|approach)|how it works|process|steps|stages|get started|getting started|onboard\w*|timeline|what happens|preserved|preserve)\b/,
   details: /\b((?!what\b)[a-z]+ (services|support) (do|does) (you|tls) (offer|provide)|include|includes|included|features?|what (does|do) (it|the service|you) (do|offer|include|build)|what (kind|kinds|type|types) of|what do you (build|place)|roles|deliverables|tell me more|more (details|info|information)|in detail|capabilit)/,
-  audience: /\b(who (is it|is this|it is|it is) for|who should|right for|good fit|a fit|suitable|do i need|signs|when (do|should) (i|we))\b/,
-  control: /\b(secur\w*|(only|just) about (technology|tech|tools)|privacy|private|data control|controlled|control (my|our|the) data|on.?prem\w*|deploy\w*|where .* data|data (stay|live|stored)|safe|confidential|ownership|lock-?in|used to train|train\w* (on|the|ai|models?|llms?))\b/,
+  audience: /\b(who (is it|is this|it is|it is) for|who (is|are) (\w+ ){1,3}for|who should|right for|good fit|a fit|suitable|do i need|signs|when (do|should) (i|we))\b/,
+  control: /\b(secur\w*|(only|just) about (technology|tech|tools)|privacy|private(?! equity)|data control|controlled|control (my|our|the) data|on.?prem\w*|deploy\w*|where .* data|data (stay|live|stored)|safe|confidential|ownership|lock-?in|used to train|train\w* (on|the|ai|models?|llms?))\b/,
   /** "Tell me more", or yes to the last answer: more on the current topic. */
   more: /^(more|tell me more|go on|continue|details|more details|explain( more| please| that)?|elaborate|yes|yes please|sure|please do|please|and|what else)$/,
   /** Certifications and compliance: nothing published, so never asserted. */
