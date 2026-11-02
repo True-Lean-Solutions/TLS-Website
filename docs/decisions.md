@@ -899,3 +899,19 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 
 **Where it lives.** `src/pages/services/technology-strategy.astro`, `src/pages/services/technology-strategy/advisory-qa.astro`, `src/data/advisor.ts`, `src/components/Marquee.astro`, `src/components/ClientLogos.astro`, `public/team/wally-potts.webp`, `docs/references/pages/services/technology-strategy/advisor-v2/`.
 
+## 2026-11-02 — Cyber Security: Mack's final changes
+
+**Source.** Mack Akhani on Telegram, 2026-11-02 (worked out with Sai). His screenshots are saved in `docs/references/pages/services/cyber-security/mack-2026-11-02/`, one file per note. The chat export itself is not in the repo: it contains a meeting passcode.
+
+**Changes.**
+
+- **Hero.** The headline is now "Protect what matters most." The lede is "Stay ahead of cyber threats. Protect your people, secure your data, and keep your business running."
+- **Hero picture.** The design and its labels are unchanged (Hemang: "change only text"), but it now arrives one thing at a time in Mack's order: your people, your data, your systems, your operations. Then TLS lights the platform, the shield lands, protection flows out to each, and an emotional line appears: "You built it. We help you protect it." It is ordinary hero copy, never styled as the tagline. With reduced motion, the picture is shown complete. Same day (Hemang): the build-up **loops** while the hero is on screen (`data-sequence-loop` in `sequence.ts`: about 9 s a cycle, paused when scrolled away). The **shield now lies flat on the base**, stuck to it (turned 45° in the deck's plane so its check still reads as a check), and a **3D TLS logo** takes its place above it: the mark stacked twelve deep into an extruded edge, turning slowly. It lands at stage 6, after the shield lights the base at stage 5.
+- **CTAs.** "Discuss Your Project" becomes **"Discuss Your Security Needs"** throughout the page (`cta.security` in `site.ts`). This departs from v2.3 §09's primary CTA, on the CEO's instruction. The FAQ box keeps one CTA only: **"Get in Touch with Our Security Advisor"** (`cta.securityAdvisor`). The header button stays "Discuss Your Project".
+- **New "The Real Risk" section** after the hero, from Mack's mock-up copy: six risk cards and one CTA. The mock-up's photo of a stressed executive is not used. Instead, an isometric laptop raising an alarm is drawn in code, in keeping with this page's visual rule. On phones it is hidden.
+- **Methodology.** The four-stage circle stays, with Mack's new stages: Understand Your Needs; Identify the Right Solutions; Implement & Integrate; Secure, Monitor, Detect, Support & Improve. The circle reads "Security that evolves with your business." "Proven" from his mock-up is left out, since it is unsupported.
+- **Removed.** The "Security is not just technology" section (People / Process / Technology circles).
+- **Unchanged.** The layers, "Why cyber security matters" and the final band, apart from the CTA label. The first FAQ answer now names the new stages.
+- **Tali.** Its Cyber Security answers mirror the new copy and stages.
+
+**To confirm with Mack.** The emotional line, and that the new CTA labels should stay page-only.

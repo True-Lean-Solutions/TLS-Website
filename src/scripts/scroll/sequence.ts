@@ -8,6 +8,11 @@
  *                                    element's data-stage steps 0, 1, 2… and
  *                                    CSS draws each stage.
  *
+ *   [data-sequence-loop="4500"] ... loops instead (Cyber Security hero,
+ *                                    2026-11-02): while the element is on
+ *                                    screen it plays, holds the last stage
+ *                                    this long (ms), clears and plays again.
+ *
  * The element carries .is-seq while the hook runs; without it (reduced
  * motion, no JS) CSS shows the finished picture. Scrolling back above the
  * element resets it, so it plays again on the way down.
@@ -37,6 +42,40 @@ function sequence(el: HTMLElement): Cleanup {
 
   el.classList.add('is-seq');
   stage('0');
+
+  if (el.dataset.sequenceLoop !== undefined) {
+    const hold = Number(el.dataset.sequenceLoop) || 3000;
+    const CLEAR = 800; // stage 0 fades everything out before the next run
+    let running = false;
+    const cycle = () => {
+      stage('0');
+      timers = times.map((t, i) => window.setTimeout(() => stage(String(i)), CLEAR + t));
+      timers.push(window.setTimeout(cycle, CLEAR + times[times.length - 1] + hold));
+    };
+    const start = () => {
+      if (running) return;
+      running = true;
+      cycle();
+    };
+    const stop = () => {
+      running = false;
+      timers.forEach(clearTimeout);
+      timers = [];
+    };
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: 'top bottom',
+      end: 'bottom top', // on screen at all
+      onToggle: (self) => (self.isActive ? start() : stop()),
+      onRefresh: (self) => self.isActive && start(),
+    });
+    return () => {
+      st.kill();
+      stop();
+      el.classList.remove('is-seq');
+      delete el.dataset.stage;
+    };
+  }
 
   const st = ScrollTrigger.create({
     trigger: el,

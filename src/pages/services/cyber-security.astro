@@ -13,6 +13,13 @@
  * light), not the references' security-operations photos (v2.3 §13 rules out
  * cyber/SOC imagery). The signature section builds its stack with the scroll
  * (src/scripts/scroll/security.ts); without motion every visual is complete.
+ *
+ * Mack Akhani's changes (Telegram, 2026-11-02; docs/references/pages/
+ * services/cyber-security/mack-2026-11-02/): the hero reads "Protect what
+ * matters most" and its picture arrives one thing at a time (your people,
+ * data, systems, operations), then TLS; a new "The Real Risk" section; the
+ * methodology's new four stages; "Security is not just technology" removed;
+ * the CTA is "Discuss Your Security Needs", and the FAQ keeps one CTA.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Eyebrow from '../../components/Eyebrow.astro';
@@ -24,10 +31,8 @@ import type { IconName } from '../../components/iconTypes';
 import { cta, href } from '../../data/site';
 
 const title = 'True Lean Solutions — Cyber Security';
-const lede =
-  'Strengthen your security posture, reduce risk and keep your operations running with practical, business-focused cybersecurity solutions.';
 const description =
-  'Protect what your business depends on. True Lean Solutions helps you strengthen your security posture, reduce risk and keep your operations running, across people, processes and technology.';
+  'Protect what matters most. Stay ahead of cyber threats: True Lean Solutions helps you protect your people, secure your data and keep your business running.';
 
 type Accent = 'red' | 'blue' | 'violet' | 'green';
 const tone: Record<Accent, string> = { red: 'var(--red)', blue: 'var(--blue)', violet: 'var(--cs-violet)', green: 'var(--cs-green)' };
@@ -76,9 +81,10 @@ const deck = slab(HO, 74, 20, 36);
 const deckGlow = ring(HO, 52, 36);
 const sats = (
   [
+    // Mack's order (2026-11-02): they arrive one at a time, then TLS.
+    { c: [0, 200], label: 'Your people', icon: 'users' },
     { c: [-200, 0], label: 'Your data', icon: 'database' },
     { c: [0, -200], label: 'Your systems', icon: 'server' },
-    { c: [0, 200], label: 'Your people', icon: 'users' },
     { c: [200, 0], label: 'Your operations', icon: 'workflow' },
   ] as { c: Pt; label: string; icon: IconName }[]
 ).map((s, i) => {
@@ -111,33 +117,42 @@ const outcomes: { title: string; text: string; icon: IconName; c: Accent; link: 
   { title: 'Meet Compliance Requirements', text: 'Align with industry standards and regulatory needs.', icon: 'checklist', c: 'green', link: 'M50 50 L76 74' },
 ];
 
-/* Our approach: three circles that meet in the middle. */
-const pillars: { k: string; title: string; text: string; icon: IconName; c: Accent; cx: number; cy: number; dx: number; dy: number; lx: number; ly: number }[] = [
-  {
-    k: 'people',
-    title: 'People',
-    text: 'Security depends on everyday decisions. Your team should know what to look for and what to do.',
-    icon: 'users',
-    c: 'red',
-    cx: 230, cy: 150, dx: 0, dy: -1, lx: 230, ly: 100,
-  },
-  {
-    k: 'process',
-    title: 'Process',
-    text: 'Clear policies turn good intentions into consistent practice: for access, for change and for incidents.',
-    icon: 'document',
-    c: 'violet',
-    cx: 162, cy: 268, dx: -0.87, dy: 0.5, lx: 122, ly: 306,
-  },
-  {
-    k: 'technology',
-    title: 'Technology',
-    text: 'Controls work best when they fit how you operate. We set them up around your business, not the other way round.',
-    icon: 'server',
-    c: 'blue',
-    cx: 298, cy: 268, dx: 0.87, dy: 0.5, lx: 338, ly: 306,
-  },
+/* The Real Risk (Mack, 2026-11-02): what leaders worry about. */
+const risks: { title: string; text: string; icon: IconName; c: string }[] = [
+  { title: 'Cyberattacks & breaches', text: 'Ransomware, data theft, and business disruption.', icon: 'alert', c: '#ff6b6b' },
+  { title: 'Data exposure', text: 'Sensitive information in the wrong hands.', icon: 'database', c: '#4fb6ff' },
+  { title: 'Operational downtime', text: 'Systems that go offline when you need them most.', icon: 'gear', c: '#f59e0b' },
+  { title: 'Compliance pressure', text: 'Meeting industry and regulatory requirements.', icon: 'checklist', c: '#a78bfa' },
+  { title: 'Financial and brand impact', text: 'Costly recovery, lost trust, and customer churn.', icon: 'chart', c: '#f472b6' },
+  { title: 'People and access risk', text: 'The right access for the right people — without added risk.', icon: 'users', c: '#22d3ee' },
 ];
+/* Its picture: an isometric laptop raising the alarm, drawn on the hero's grid. */
+const AO: Pt = [260, 292];
+/** A box (half-sizes ax, by) from height z0 to z1: top, front-left and front-right faces. */
+function box(o: Pt, ax: number, by: number, z0: number, z1: number) {
+  const p = (x: number, y: number, z: number) => iso(o, x, y, z);
+  return {
+    top: poly([p(-ax, -by, z1), p(ax, -by, z1), p(ax, by, z1), p(-ax, by, z1)]),
+    left: poly([p(-ax, by, z0), p(ax, by, z0), p(ax, by, z1), p(-ax, by, z1)]),
+    right: poly([p(ax, -by, z0), p(ax, by, z0), p(ax, by, z1), p(ax, -by, z1)]),
+    edge: `M${at(p(-ax, by, z1))} L${at(p(ax, by, z1))} L${at(p(ax, -by, z1))}`,
+  };
+}
+const LA = 118;
+const LB = 78;
+const LH = 150;
+const lapBase = box(AO, LA, LB, 0, 9);
+const keys = [-40, -14, 12].map((y) => `M${at(iso(AO, -LA + 22, y, 9))} L${at(iso(AO, LA - 22, y, 9))}`);
+/** A point on the screen's face (the plane y = -LB), x across, z up. */
+const scr = (x: number, z: number) => iso(AO, x, -LB + 1, 9 + z);
+const lapLid = poly([scr(-LA, 0), scr(LA, 0), scr(LA, LH), scr(-LA, LH)]);
+const lapLidBack = poly([iso(AO, -LA, -LB - 7, 9), iso(AO, LA, -LB - 7, 9), iso(AO, LA, -LB - 7, 9 + LH), iso(AO, -LA, -LB - 7, 9 + LH)]);
+const lapDisplay = poly([scr(-LA + 10, 10), scr(LA - 10, 10), scr(LA - 10, LH - 10), scr(-LA + 10, LH - 10)]);
+const alarmTri = poly([scr(0, LH * 0.8), scr(-38, LH * 0.28), scr(38, LH * 0.28)]);
+const alarmBang = `M${at(scr(0, LH * 0.64))} L${at(scr(0, LH * 0.45))}`;
+const alarmDot = scr(0, LH * 0.36);
+const alarmCenter = scr(0, LH * 0.5);
+const alarmRings = [150, 190, 230].map((r) => ring(AO, r));
 
 /* Security at every layer: six layers, built bottom to top. */
 const LO: Pt = [450, 505];
@@ -174,10 +189,11 @@ const layerHalo = ring(LO, 84, LAYER_TOP);
 
 /* How we help: four stages on one continuous loop. */
 const stages: { title: string; text: string; icon: IconName; c: Accent; x: number; y: number }[] = [
-  { title: 'Assess & Plan', text: 'Understand your current security posture, identify risks and define a clear plan.', icon: 'search', c: 'red', x: 50, y: 12.5 },
-  { title: 'Implement & Secure', text: 'Deploy the right security controls, policies and processes for your business.', icon: 'lock', c: 'blue', x: 87.5, y: 50 },
-  { title: 'Monitor & Detect', text: 'Detect threats early and respond before they impact your business.', icon: 'analytics', c: 'violet', x: 50, y: 87.5 },
-  { title: 'Support & Improve', text: 'Ongoing support, training and continuous improvement as your business grows.', icon: 'chart', c: 'green', x: 12.5, y: 50 },
+  // Mack's updated methodology (2026-11-02).
+  { title: 'Understand Your Needs', text: 'We listen, assess your challenges, and identify what matters most to your business.', icon: 'search', c: 'red', x: 50, y: 12.5 },
+  { title: 'Identify the Right Solutions', text: 'We recommend practical, tailored solutions that address your risks and align with your goals.', icon: 'lightbulb', c: 'blue', x: 87.5, y: 50 },
+  { title: 'Implement & Integrate', text: 'We put the right security solutions in place with minimal disruption to your operations.', icon: 'gear', c: 'violet', x: 50, y: 87.5 },
+  { title: 'Secure, Monitor, Detect, Support & Improve', text: 'We continuously protect your business, detect emerging threats, provide support, and strengthen your defenses.', icon: 'shield', c: 'green', x: 12.5, y: 50 },
 ];
 
 /* FAQ: answers from this page's own copy and the approved positioning only. */
@@ -185,7 +201,7 @@ const faqs: { q: string; a: string[] }[] = [
   {
     q: 'What cyber security services do you offer?',
     a: [
-      'End-to-end support in four stages: we assess your current security posture and define a clear plan; implement the right security controls, policies and processes; monitor so threats are detected early and handled before they impact your business; and provide ongoing support, training and continuous improvement as your business grows.',
+      'End-to-end support in four stages: we understand your needs and what matters most to your business; identify the right, practical solutions for your risks and goals; implement and integrate them with minimal disruption to your operations; then continuously secure, monitor, detect, support and improve, so your defenses keep getting stronger.',
     ],
   },
   {
@@ -237,16 +253,16 @@ const faqs: { q: string; a: string[] }[] = [
           <span aria-current="page">Cyber Security</span>
         </nav>
         <Eyebrow label="Cyber Security" />
-        <h1>Protect what <span class="accent">your business depends on.</span></h1>
-        <p class="cs-lede">{lede}</p>
+        <h1>Protect what <span class="accent">matters most.</span></h1>
+        <p class="cs-lede"><strong>Stay ahead of cyber threats.</strong> Protect your people, secure your data, and keep your business running.</p>
         <div class="cs-actions">
-          <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
+          <Button href={cta.security.href} variant="primary" arrow>{cta.security.label}</Button>
           <Button href={cta.email.href} variant="ghost-light" external>{cta.email.label}</Button>
         </div>
       </div>
 
       <div class="cs-hero-art">
-        <div class="cs-hero-scene" data-hero-photo>
+        <div class="cs-hero-scene" data-hero-photo data-sequence="0,400,1150,1900,2650,3500,3900,4400" data-sequence-loop="4500">
           <svg viewBox={`${HV.x} ${HV.y} ${HV.w} ${HV.h}`} aria-hidden="true">
             <defs>
               <radialGradient id="csh-fade" cx="0.5" cy="0.55" r="0.5">
@@ -280,11 +296,6 @@ const faqs: { q: string; a: string[] }[] = [
                 <stop offset="0" stop-color="#9fdcff" />
                 <stop offset="1" stop-color="#2f8fe6" />
               </linearGradient>
-              <linearGradient id="csh-beam" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#7cc4ff" stop-opacity="0" />
-                <stop offset="0.5" stop-color="#7cc4ff" stop-opacity="0.75" />
-                <stop offset="1" stop-color="#7cc4ff" stop-opacity="0.1" />
-              </linearGradient>
               <radialGradient id="csh-pool">
                 <stop offset="0" stop-color="#4fb6ff" stop-opacity="0.55" />
                 <stop offset="1" stop-color="#4fb6ff" stop-opacity="0" />
@@ -299,7 +310,7 @@ const faqs: { q: string; a: string[] }[] = [
 
             {
               sats.filter((s) => s.back).map((s) => (
-                <g class="cs-sat" style={`--i: ${s.i}`}>
+                <g class="cs-sat" data-i={s.i} style={`--i: ${s.i}`}>
                   <polygon class="cs-sat-l" points={s.shape.left} />
                   <polygon class="cs-sat-r" points={s.shape.right} />
                   <polygon class="cs-sat-top" points={s.shape.top} />
@@ -327,19 +338,20 @@ const faqs: { q: string; a: string[] }[] = [
               <polygon class="cs-plat-inset" points={deck.inset} />
               <path class="cs-plat-edge" d={deck.edge} />
               <ellipse class="cs-pool" {...deckGlow} fill="url(#csh-pool)" />
-              <image
-                href={href('/brand/tls-mark.png')}
-                x="-38"
-                y="-38"
-                width="76"
-                height="76"
-                transform={`matrix(${r1(COS * 1000) / 1000} 0.5 ${-r1(COS * 1000) / 1000} 0.5 ${HO[0]} ${HO[1] - 36})`}
-              />
+              <!-- Hemang (2026-11-02): the shield lies on the base, stuck to it; TLS, in 3D,
+                   above it. Turned 45° in the deck's plane so it faces the viewer and its
+                   check still reads as a check once laid flat. -->
+              <g class="cs-base-shield" transform={`matrix(${r1(COS * 1000) / 1000} 0.5 ${-r1(COS * 1000) / 1000} 0.5 ${HO[0]} ${HO[1] - 36}) rotate(-45) translate(0 -47) scale(0.62)`}>
+                <path class="cs-base-glow" d={SHIELD} filter="url(#csh-soft)" />
+                <path class="cs-shield-body" d={SHIELD} fill="url(#csh-shield)" stroke="url(#csh-shield-line)" />
+                <path class="cs-shield-inner" d={SHIELD} transform="translate(0 21) scale(0.72)" />
+                <path class="cs-shield-check" d={CHECK} />
+              </g>
             </g>
 
             {
               sats.filter((s) => !s.back).map((s) => (
-                <g class="cs-sat" style={`--i: ${s.i}`}>
+                <g class="cs-sat" data-i={s.i} style={`--i: ${s.i}`}>
                   <polygon class="cs-sat-l" points={s.shape.left} />
                   <polygon class="cs-sat-r" points={s.shape.right} />
                   <polygon class="cs-sat-top" points={s.shape.top} />
@@ -348,18 +360,15 @@ const faqs: { q: string; a: string[] }[] = [
               ))
             }
 
-            <rect class="cs-beam" x="357" y="236" width="6" height="56" fill="url(#csh-beam)" />
-            <g class="cs-shield" transform="translate(360 100) scale(0.9)">
-              <path class="cs-shield-glow" d={SHIELD} filter="url(#csh-soft)" />
-              <path class="cs-shield-body" d={SHIELD} fill="url(#csh-shield)" stroke="url(#csh-shield-line)" />
-              <path class="cs-shield-inner" d={SHIELD} transform="translate(0 21) scale(0.72)" />
-              <path class="cs-shield-check" d={CHECK} />
+            <g class="cs-emblem">
+              <circle class="cs-emblem-glow" cx="360" cy="150" r="54" filter="url(#csh-soft)" />
+              <ellipse class="cs-emblem-ring" cx="360" cy="196" rx="64" ry="16" />
             </g>
           </svg>
           <ul class="cs-sat-tags" aria-label="What your business depends on" data-float="1">
             {
               sats.map((s) => (
-                <li style={`--x: ${s.x}%; --y: ${s.y}%; --i: ${s.i}`}>
+                <li data-i={s.i} style={`--x: ${s.x}%; --y: ${s.y}%; --i: ${s.i}`}>
                   <span class="cs-glyph cs-glyph--sm" aria-hidden="true">
                     <Icon name={s.icon} size={16} />
                   </span>
@@ -368,6 +377,15 @@ const faqs: { q: string; a: string[] }[] = [
               ))
             }
           </ul>
+          <div class="cs-logo3d" aria-hidden="true">
+            <div class="cs-logo3d-spin">
+              {Array.from({ length: 12 }, (_, k) => <img src={href('/brand/tls-mark.png')} alt="" width="160" height="160" style={`--k: ${k}`} />)}
+            </div>
+          </div>
+          <p class="cs-promise">
+            <span class="cs-promise-mark" aria-hidden="true"><Icon name="shield" size={15} /></span>
+            You built it. We help you protect it.
+          </p>
         </div>
       </div>
     </div>
@@ -390,7 +408,91 @@ const faqs: { q: string; a: string[] }[] = [
     </div>
   </section>
 
-  <!-- 2. Why cyber security matters -->
+  <!-- 2. The real risk (Mack, 2026-11-02) -->
+  <section class="cs-risk" aria-labelledby="cs-risk-title">
+    <svg class="cs-waves cs-risk-waves" viewBox="0 0 1440 360" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="csr-wave" x1="0" x2="1">
+          <stop offset="0" stop-color="#D94040" stop-opacity="0.7" />
+          <stop offset="0.5" stop-color="#873662" stop-opacity="0.3" />
+          <stop offset="1" stop-color="#1288CF" stop-opacity="0.75" />
+        </linearGradient>
+      </defs>
+      {waves(9).map((d) => <path d={d} stroke="url(#csr-wave)" />)}
+    </svg>
+    <div class="wrap cs-risk-grid">
+      <div class="cs-risk-copy">
+        <div class="section-heading" data-reveal="">
+          <Eyebrow label="The Real Risk" />
+          <h2 id="cs-risk-title">The threats are real. <span class="accent">The impact can be costly.</span></h2>
+          <p class="lead">A single security gap can disrupt operations, damage your reputation, and put your business at risk. Many leaders are worrying about:</p>
+        </div>
+        <ul class="cs-risks" data-reveal="stagger">
+          {
+            risks.map((r) => (
+              <li class="ix-card ix-card--quiet ix-light" style={`--c: ${r.c}`}>
+                <span class="cs-risk-icon" aria-hidden="true">
+                  <Icon name={r.icon} size={22} />
+                </span>
+                <div>
+                  <h3>{r.title}</h3>
+                  <p>{r.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="cs-actions" data-reveal="">
+          <Button href={cta.security.href} variant="primary" arrow>{cta.security.label}</Button>
+        </div>
+      </div>
+
+      <figure class="cs-alarm" aria-hidden="true">
+        <svg viewBox="0 0 520 470">
+          <defs>
+            <radialGradient id="csa-floor">
+              <stop offset="0" stop-color="#D94040" stop-opacity="0.38" />
+              <stop offset="0.6" stop-color="#873662" stop-opacity="0.12" />
+              <stop offset="1" stop-color="#873662" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="csa-display" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2a0f1c" />
+              <stop offset="1" stop-color="#0b1022" />
+            </linearGradient>
+            <linearGradient id="csa-edge" gradientUnits="userSpaceOnUse" x1="120" y1="0" x2="420" y2="0">
+              <stop offset="0" stop-color="#ff6b6b" />
+              <stop offset="0.5" stop-color="#b86bd8" />
+              <stop offset="1" stop-color="#4fb6ff" />
+            </linearGradient>
+            <filter id="csa-soft" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="14" /></filter>
+          </defs>
+          <ellipse {...ring(AO, 250)} fill="url(#csa-floor)" />
+          {alarmRings.map((r, i) => <ellipse class="cs-alarm-ring" style={`--i: ${i}`} {...r} />)}
+          <polygon class="cs-lap-back" points={lapLidBack} />
+          <polygon class="cs-lap-lid" points={lapLid} />
+          <polygon class="cs-lap-display" points={lapDisplay} fill="url(#csa-display)" />
+          <circle class="cs-alarm-glow" cx={alarmCenter[0]} cy={alarmCenter[1]} r="58" filter="url(#csa-soft)" />
+          <g class="cs-alarm-sign">
+            <polygon class="cs-alarm-tri" points={alarmTri} />
+            <path class="cs-alarm-bang" d={alarmBang} />
+            <circle class="cs-alarm-dot" cx={alarmDot[0]} cy={alarmDot[1]} r="4.2" />
+          </g>
+          <polygon class="cs-lap-l" points={lapBase.left} />
+          <polygon class="cs-lap-r" points={lapBase.right} />
+          <polygon class="cs-lap-top" points={lapBase.top} />
+          {keys.map((d) => <path class="cs-lap-keys" d={d} />)}
+          <path class="cs-lap-edge" d={lapBase.edge} />
+        </svg>
+        <ul class="cs-threats" data-float="1">
+          <li style="--x: 8%; --y: 18%; --i: 0">Ransomware</li>
+          <li style="--x: 70%; --y: 8%; --i: 1">Data theft</li>
+          <li style="--x: 74%; --y: 74%; --i: 2">Business disruption</li>
+        </ul>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 3. Why cyber security matters -->
   <section class="section cs-why">
     <svg class="cs-waves cs-why-waves" viewBox="0 0 1440 360" preserveAspectRatio="none" aria-hidden="true">
       <defs>
@@ -434,60 +536,6 @@ const faqs: { q: string; a: string[] }[] = [
             Your business
           </span>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. Our approach: people, process, technology -->
-  <section class="section cs-ppt">
-    <div class="wrap cs-ppt-grid">
-      <figure class="cs-venn" data-converge aria-hidden="true">
-        <svg viewBox="0 0 460 430">
-          <defs>
-            <linearGradient id="csp-core" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0" stop-color="#D94040" />
-              <stop offset="0.5" stop-color="#873662" />
-              <stop offset="1" stop-color="#1288CF" />
-            </linearGradient>
-          </defs>
-          {
-            pillars.map((p) => (
-              <g class="cs-circle" data-k={p.k} data-dx={p.dx} data-dy={p.dy} style={`--c: ${tone[p.c]}`}>
-                <circle cx={p.cx} cy={p.cy} r="116" />
-                <text x={p.lx} y={p.ly}>
-                  {p.title}
-                </text>
-              </g>
-            ))
-          }
-          <g class="cs-venn-core">
-            <circle cx="230" cy="229" r="44" />
-            <text x="230" y="233">Resilience</text>
-          </g>
-        </svg>
-      </figure>
-      <div>
-        <SectionHeading
-          eyebrow="Our Approach"
-          title="Security is not just "
-          accent="technology."
-          lead="Strong security comes from people, processes and technology working together. We look at all three, so protection fits how your business actually runs."
-        />
-        <ul class="cs-pillars" data-reveal="stagger">
-          {
-            pillars.map((p) => (
-              <li data-k={p.k} style={`--c: ${tone[p.c]}`}>
-                <span class="cs-glyph cs-glyph--soft" aria-hidden="true">
-                  <Icon name={p.icon} size={20} />
-                </span>
-                <div>
-                  <h3>{p.title}</h3>
-                  <p>{p.text}</p>
-                </div>
-              </li>
-            ))
-          }
-        </ul>
       </div>
     </div>
   </section>
@@ -608,7 +656,7 @@ const faqs: { q: string; a: string[] }[] = [
 
       <div class="cs-layers-close" data-reveal="">
         <p>Security is strongest when every layer works together.</p>
-        <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
+        <Button href={cta.security.href} variant="primary" arrow>{cta.security.label}</Button>
       </div>
     </div>
   </section>
@@ -623,9 +671,11 @@ const faqs: { q: string; a: string[] }[] = [
           accent="for your business."
           lead="We take a practical, risk-based approach to help you build a stronger security posture across people, processes and technology."
         />
-        <Button href={cta.primary.href} variant="secondary" arrow>{cta.primary.label}</Button>
+        <Button href={cta.security.href} variant="secondary" arrow>{cta.security.label}</Button>
       </div>
-      <div class="cs-cycle" data-progress>
+      <!-- Complete once the whole cycle is on screen (Hemang, 2026-11-02: it
+           finished only as the visitor left). -->
+      <div class="cs-cycle" data-progress data-progress-start="top 85%" data-progress-end="bottom 92%">
         <figure class="cs-ring">
           <svg viewBox="0 0 400 400" aria-hidden="true">
             <defs>
@@ -651,8 +701,8 @@ const faqs: { q: string; a: string[] }[] = [
             ))
           }
           <figcaption class="cs-ring-core">
-            <strong>Security doesn't stop at go-live.</strong>
-            <span>Each stage feeds the next, so your protection keeps pace as your business grows.</span>
+            <strong>Security that evolves with your business.</strong>
+            <span>An end-to-end approach, from understanding your needs to continuous support.</span>
           </figcaption>
         </figure>
         <ol class="cs-stages">
@@ -693,8 +743,7 @@ const faqs: { q: string; a: string[] }[] = [
             <h3>Still have questions?</h3>
             <p>Talk to our team about your business and where security fits.</p>
             <div class="cs-actions">
-              <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
-              <Button href={cta.email.href} variant="ghost-light" external>{cta.email.label}</Button>
+              <Button href={cta.securityAdvisor.href} variant="primary" arrow>{cta.securityAdvisor.label}</Button>
             </div>
           </div>
         </aside>
@@ -723,7 +772,7 @@ const faqs: { q: string; a: string[] }[] = [
       <div class="cs-final-cta" data-reveal="">
         <p>Tell us how your business runs and what concerns you. We'll help you understand the risks, prioritize what matters and plan practical next steps.</p>
         <div class="cs-actions">
-          <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
+          <Button href={cta.security.href} variant="primary" arrow>{cta.security.label}</Button>
           <Button href={cta.email.href} variant="ghost-light" external>{cta.email.label}</Button>
         </div>
       </div>
@@ -881,6 +930,10 @@ const faqs: { q: string; a: string[] }[] = [
     line-height: 1.6;
     color: var(--cs-on-dark);
   }
+  .cs-lede strong {
+    font-weight: 500; /* Roboto ships 300/400/500: no faux bold */
+    color: #fff;
+  }
   .cs-hero-art {
     position: relative;
     margin-right: calc(-1 * clamp(0px, 4vw, 3rem));
@@ -967,14 +1020,65 @@ const faqs: { q: string; a: string[] }[] = [
     stroke-width: 2;
     stroke-linejoin: round;
   }
-  .cs-beam {
-    opacity: 0.9;
+  .cs-emblem-glow {
+    fill: #3aa0ff;
+    opacity: 0.5;
   }
-  .cs-shield-glow {
+  .cs-emblem-ring {
+    fill: none;
+    stroke: rgba(170, 220, 255, 0.45);
+    stroke-width: 1.4;
+    stroke-dasharray: 3 5;
+  }
+  .cs-base-glow {
     fill: none;
     stroke: #3aa0ff;
     stroke-width: 14;
     opacity: 0.55;
+  }
+  /* The TLS mark in 3D: twelve copies stacked in depth (front bright, the
+     rest darkening into an extruded edge), turning slowly so the depth shows.
+     Centered on the emblem at (360, 150) of the 600 × 444 scene. */
+  .cs-logo3d {
+    position: absolute;
+    left: 50%;
+    top: calc((150 - 78) / 444 * 100%);
+    width: 19%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    perspective: 700px;
+    pointer-events: none;
+  }
+  .cs-logo3d-spin {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(8deg) rotateY(-22deg);
+  }
+  .cs-logo3d img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: translateZ(calc(var(--k) * -1.5px));
+    filter: brightness(calc(0.62 - var(--k) * 0.035)) saturate(1.15);
+  }
+  .cs-logo3d img:first-child {
+    filter: drop-shadow(0 0 14px rgba(79, 182, 255, 0.55)) saturate(1.15);
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .cs-logo3d-spin {
+      animation: cs-logo-turn 7s ease-in-out infinite alternate;
+    }
+  }
+  @keyframes cs-logo-turn {
+    from {
+      transform: rotateX(10deg) rotateY(-34deg) translateY(2%);
+    }
+    to {
+      transform: rotateX(6deg) rotateY(34deg) translateY(-3%);
+    }
   }
   .cs-shield-body,
   .cs-crown-body {
@@ -1023,20 +1127,17 @@ const faqs: { q: string; a: string[] }[] = [
     color: #eef3ff;
     --c: #6cc0ff;
   }
+  /* The hero picture builds one thing at a time, on a loop (Mack and Hemang,
+     2026-11-02; sequence.ts, data-sequence-loop). Stages: 0 clear · 1 your
+     people · 2 your data · 3 your systems · 4 your operations · 5 the shield
+     lights the base · 6 TLS (in 3D) lands above it · 7 protection flows out and the line
+     appears; it holds, clears and starts again. Without .is-seq (reduced
+     motion, no JS) the picture is complete and still. */
   @media screen and (prefers-reduced-motion: no-preference) {
     .cs-hero-art {
-      animation: cs-rise 1300ms var(--ix-ease) 60ms backwards;
+      animation: cs-rise 1100ms var(--ix-ease) 60ms backwards;
     }
-    .cs-sat {
-      animation: cs-pop 700ms var(--ix-ease) calc(500ms + var(--i) * 110ms) backwards;
-    }
-    .cs-sat-tags li {
-      animation: cs-fade 700ms var(--ix-ease) calc(800ms + var(--i) * 120ms) backwards;
-    }
-    .cs-shield {
-      animation: cs-fade 1100ms var(--ix-ease) 350ms backwards;
-    }
-    .cs-shield-glow {
+    .cs-emblem-glow {
       animation: cs-breathe 5s ease-in-out 1.5s infinite alternate;
     }
     .cs-sweep {
@@ -1048,21 +1149,48 @@ const faqs: { q: string; a: string[] }[] = [
       animation: cs-flow 3.2s linear calc(var(--i) * 0.8s) infinite;
     }
   }
+  .is-seq :is(.cs-sat, .cs-sat-tags li, .cs-flow, .cs-base-shield, .cs-pool, .cs-plat-edge, .cs-emblem, .cs-logo3d, .cs-promise) {
+    transition:
+      opacity 600ms ease,
+      translate 700ms var(--ix-ease),
+      filter 900ms ease;
+  }
+  /* Each of the four arrives at its own stage (people 1, data 2, systems 3,
+     operations 4). */
+  .is-seq[data-stage='0'] :is(.cs-sat, .cs-sat-tags li),
+  .is-seq[data-stage='1'] :is(.cs-sat, .cs-sat-tags li):not([data-i='0']),
+  .is-seq[data-stage='2'] :is(.cs-sat, .cs-sat-tags li):is([data-i='2'], [data-i='3']),
+  .is-seq[data-stage='3'] :is(.cs-sat, .cs-sat-tags li)[data-i='3'] {
+    opacity: 0;
+    translate: 0 -14px;
+  }
+  /* The shield lights the base at 5; TLS lands above it at 6. */
+  .is-seq:is([data-stage='0'], [data-stage='1'], [data-stage='2'], [data-stage='3'], [data-stage='4']) :is(.cs-base-shield, .cs-pool, .cs-plat-edge) {
+    opacity: 0;
+  }
+  .is-seq[data-stage='5'] .cs-base-shield {
+    filter: drop-shadow(0 0 14px rgba(120, 200, 255, 0.9));
+  }
+  .is-seq:not([data-stage='6'], [data-stage='7']) .cs-emblem {
+    opacity: 0;
+    translate: 0 -34px;
+  }
+  .is-seq:not([data-stage='6'], [data-stage='7']) .cs-logo3d {
+    opacity: 0;
+    translate: -50% calc(-50% - 34px);
+  }
+  /* Protection flows out to each, and the line appears, at 7. */
+  .is-seq:not([data-stage='7']) .cs-flow {
+    opacity: 0;
+  }
+  .is-seq:not([data-stage='7']) .cs-promise {
+    opacity: 0;
+    translate: -50% 12px;
+  }
   @keyframes cs-rise {
     from {
       opacity: 0;
       transform: translateY(26px) scale(0.98);
-    }
-  }
-  @keyframes cs-pop {
-    from {
-      opacity: 0;
-      transform: translateY(-14px);
-    }
-  }
-  @keyframes cs-fade {
-    from {
-      opacity: 0;
     }
   }
   @keyframes cs-breathe {
@@ -1085,6 +1213,39 @@ const faqs: { q: string; a: string[] }[] = [
     to {
       stroke-dashoffset: -100;
     }
+  }
+  /* The emotional line under the picture (Mack: "connects emotionally").
+     Ordinary hero copy, never styled as the tagline. */
+  .cs-promise {
+    position: absolute;
+    left: 50%;
+    bottom: -0.5rem;
+    translate: -50% 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0;
+    padding: 0.45rem 0.95rem 0.45rem 0.45rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: clamp(0.8rem, 0.7rem + 0.35vw, 0.95rem);
+    color: #fff;
+    background: rgba(12, 20, 42, 0.82);
+    border: 1px solid rgba(160, 210, 255, 0.35);
+    box-shadow: 0 16px 40px -18px rgba(18, 136, 207, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .cs-promise-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--grad);
   }
   .cs-benefits {
     list-style: none;
@@ -1163,7 +1324,273 @@ const faqs: { q: string; a: string[] }[] = [
     }
   }
 
-  /* ---------- 2. Why it matters ---------- */
+  /* ---------- 2. The real risk ---------- */
+  .cs-risk {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: clamp(4rem, 7vw, 6rem);
+    color: #fff;
+    background:
+      radial-gradient(40% 55% at 85% 45%, rgba(217, 64, 64, 0.2), transparent 70%),
+      radial-gradient(40% 60% at 0% 100%, rgba(18, 136, 207, 0.14), transparent 70%),
+      var(--cs-navy);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .cs-risk h2 {
+    color: #fff;
+  }
+  .cs-risk h2 .accent {
+    display: block;
+  }
+  .cs-risk :global(.eyebrow),
+  .cs-risk .lead {
+    color: var(--cs-on-dark);
+  }
+  .cs-risk .lead {
+    margin-top: var(--gap-lead);
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  .cs-risk-waves {
+    bottom: -60px;
+    height: 220px;
+    opacity: 0.55;
+  }
+  .cs-risk-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: center;
+  }
+  .cs-risk .section-heading {
+    max-width: 44rem;
+    margin-bottom: 1.75rem;
+  }
+  .cs-risks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+  .cs-risks li {
+    --ix-light-size: 200px;
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    padding: 1.1rem 1rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 18px 40px -26px rgba(0, 0, 0, 0.9);
+  }
+  .cs-risk-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    color: var(--c);
+    background: color-mix(in srgb, var(--c) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+    box-shadow: 0 10px 26px -12px var(--c);
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  .cs-risks h3 {
+    margin-bottom: 0.3rem;
+    font-size: 1rem;
+    line-height: 1.3;
+    color: #fff;
+  }
+  .cs-risks p {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--cs-on-dark);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    :root .cs-risks li:hover {
+      border-color: color-mix(in srgb, var(--c) 55%, transparent);
+      box-shadow: 0 22px 48px -24px color-mix(in srgb, var(--c) 70%, #000);
+    }
+    .cs-risks li:hover .cs-risk-icon {
+      transform: scale(1.08) rotate(-4deg);
+    }
+  }
+  /* The laptop raising the alarm. */
+  .cs-alarm {
+    position: relative;
+    margin: 0;
+  }
+  .cs-alarm svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .cs-alarm-ring {
+    fill: none;
+    stroke: rgba(255, 107, 107, 0.35);
+    stroke-width: 1.4;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .cs-lap-back {
+    fill: #070b18;
+  }
+  .cs-lap-lid {
+    fill: #1a2446;
+    stroke: rgba(160, 200, 255, 0.25);
+    stroke-width: 1.2;
+  }
+  .cs-lap-display {
+    stroke: rgba(255, 107, 107, 0.4);
+    stroke-width: 1;
+  }
+  .cs-alarm-glow {
+    fill: #ff4d4d;
+    opacity: 0.55;
+  }
+  .cs-alarm-tri {
+    fill: rgba(255, 77, 77, 0.12);
+    stroke: #ff5a5a;
+    stroke-width: 4;
+    stroke-linejoin: round;
+  }
+  .cs-alarm-bang {
+    stroke: #ff5a5a;
+    stroke-width: 5;
+    stroke-linecap: round;
+  }
+  .cs-alarm-dot {
+    fill: #ff5a5a;
+  }
+  .cs-lap-top {
+    fill: #1c2a55;
+    stroke: rgba(255, 255, 255, 0.1);
+  }
+  .cs-lap-l {
+    fill: #10203f;
+  }
+  .cs-lap-r {
+    fill: #0a1630;
+  }
+  .cs-lap-keys {
+    stroke: rgba(160, 200, 255, 0.22);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 9 5;
+  }
+  .cs-lap-edge {
+    fill: none;
+    stroke: url(#csa-edge);
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+  .cs-threats {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    pointer-events: none;
+  }
+  .cs-threats li {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.78rem;
+    color: #ffd9d9;
+    background: rgba(40, 10, 20, 0.75);
+    border: 1px solid rgba(255, 107, 107, 0.4);
+    box-shadow: 0 12px 30px -14px rgba(255, 77, 77, 0.8);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .cs-threats li::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ff5a5a;
+    box-shadow: 0 0 0 3px rgba(255, 90, 90, 0.25);
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .cs-alarm-ring {
+      animation: cs-alarm-wave 3.6s ease-out calc(var(--i) * 1.2s) infinite;
+    }
+    .cs-alarm-glow {
+      animation: cs-alarm-pulse 1.8s ease-in-out infinite alternate;
+    }
+    .cs-alarm-sign {
+      animation: cs-alarm-blink 1.8s ease-in-out infinite alternate;
+    }
+    .cs-threats li::before {
+      animation: cs-alarm-blink 1.2s ease-in-out calc(var(--i) * 0.4s) infinite alternate;
+    }
+  }
+  @keyframes cs-alarm-wave {
+    from {
+      opacity: 0.9;
+      scale: 0.55;
+    }
+    to {
+      opacity: 0;
+      scale: 1.15;
+    }
+  }
+  @keyframes cs-alarm-pulse {
+    from {
+      opacity: 0.25;
+    }
+    to {
+      opacity: 0.7;
+    }
+  }
+  @keyframes cs-alarm-blink {
+    from {
+      opacity: 0.55;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @media (max-width: 1100px) {
+    .cs-risk-grid {
+      grid-template-columns: 1fr;
+    }
+    .cs-alarm {
+      max-width: 460px;
+      margin-inline: auto;
+      order: -1;
+    }
+  }
+  @media (max-width: 900px) {
+    .cs-risks {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    /* Phones keep it simple: the cards carry the message. */
+    .cs-alarm {
+      display: none;
+    }
+  }
+  @media (max-width: 560px) {
+    .cs-risks {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- 3. Why it matters ---------- */
   .cs-why {
     position: relative;
     isolation: isolate;
@@ -1282,107 +1709,6 @@ const faqs: { q: string; a: string[] }[] = [
     }
     .cs-outcome h3 {
       margin-top: 0.15rem;
-    }
-  }
-
-  /* ---------- 3. People, process, technology ---------- */
-  .cs-ppt {
-    background:
-      linear-gradient(rgba(13, 13, 13, 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
-      linear-gradient(90deg, rgba(13, 13, 13, 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
-      var(--section);
-  }
-  .cs-ppt-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: clamp(2rem, 5vw, 4.5rem);
-    align-items: center;
-  }
-  .cs-venn {
-    margin: 0;
-    width: 100%;
-    max-width: 520px;
-    justify-self: center;
-  }
-  .cs-venn svg {
-    display: block;
-    width: 100%;
-    height: auto;
-    overflow: visible;
-  }
-  .cs-circle circle {
-    fill: color-mix(in srgb, var(--c) 13%, transparent);
-    stroke: var(--c);
-    stroke-width: 1.6;
-    mix-blend-mode: multiply;
-    transition:
-      fill var(--ix-base) var(--ix-ease),
-      stroke-width var(--ix-base) var(--ix-ease);
-  }
-  .cs-circle text,
-  .cs-venn-core text {
-    font-family: var(--font-head);
-    font-weight: 700;
-    text-anchor: middle;
-    fill: var(--ink);
-  }
-  .cs-circle text {
-    font-size: 19px;
-  }
-  .cs-venn-core circle {
-    fill: #fff;
-    stroke: url(#csp-core);
-    stroke-width: 2.5;
-    filter: drop-shadow(0 10px 18px rgba(13, 13, 13, 0.14));
-  }
-  .cs-venn-core text {
-    font-size: 13px;
-    letter-spacing: 0.02em;
-  }
-  .cs-pillars {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 0.5rem;
-  }
-  .cs-pillars li {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem 1.1rem;
-    border-radius: 16px;
-    border: 1px solid transparent;
-    transition:
-      background-color var(--ix-base) var(--ix-ease),
-      border-color var(--ix-base) var(--ix-ease);
-  }
-  .cs-pillars h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.25rem;
-  }
-  .cs-pillars p {
-    color: var(--text-2);
-    line-height: 1.6;
-  }
-  @media (hover: hover) {
-    .cs-pillars li:hover {
-      background: #fff;
-      border-color: var(--border);
-    }
-    .cs-ppt:has(.cs-pillars li[data-k='people']:hover) .cs-circle[data-k='people'] circle,
-    .cs-ppt:has(.cs-pillars li[data-k='process']:hover) .cs-circle[data-k='process'] circle,
-    .cs-ppt:has(.cs-pillars li[data-k='technology']:hover) .cs-circle[data-k='technology'] circle {
-      fill: color-mix(in srgb, var(--c) 30%, transparent);
-      stroke-width: 3;
-    }
-  }
-  @media (max-width: 900px) {
-    .cs-ppt-grid {
-      grid-template-columns: 1fr;
-    }
-    .cs-venn {
-      max-width: 420px;
-      order: 2;
     }
   }
 
@@ -1895,14 +2221,23 @@ const faqs: { q: string; a: string[] }[] = [
   .cs-ask .cs-actions {
     margin-top: 1.1rem;
   }
+  /* One CTA (Mack, 2026-11-02), a long one: the icon sits above the copy so
+     the button has the full width to stay on one line. */
+  .cs-ask {
+    flex-direction: column;
+  }
+  .cs-ask .cs-actions :global(.btn) {
+    white-space: nowrap;
+  }
   @media (max-width: 900px) {
     .cs-faq-grid {
       grid-template-columns: 1fr;
     }
   }
-  @media (max-width: 420px) {
-    .cs-ask {
-      flex-direction: column;
+  @media (max-width: 480px) {
+    .cs-ask .cs-actions :global(.btn) {
+      white-space: normal;
+      text-align: center;
     }
   }
 

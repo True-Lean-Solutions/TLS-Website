@@ -37,6 +37,9 @@ export const cta = {
   primary: { label: 'Discuss Your Project', href: '/contact/' },
   services: { label: 'See Our Solutions', href: '/services/' },
   email: { label: 'Email Us', href: `mailto:${site.email}` },
+  // Cyber Security page only (Mack Akhani, 2026-11-02).
+  security: { label: 'Discuss Your Security Needs', href: '/contact/' },
+  securityAdvisor: { label: 'Get in Touch with Our Security Advisor', href: '/contact/' },
 } as const;
 
 /**

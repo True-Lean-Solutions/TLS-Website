@@ -8,7 +8,9 @@
  *   [data-hero-photo] .. the hero photo drifts down and in as the page scrolls
  *   [data-float] ....... a layer drifts against the scroll (speed: 1–3)
  *   [data-progress] .... a process line fills as the visitor scrolls through
- *                        it; each [data-step] lights as the line reaches it
+ *                        it; each [data-step] lights as the line reaches it.
+ *                        `data-progress-start` / `-end` move the window
+ *                        (defaults "top 78%" / "bottom 52%")
  *   .mi-network ........ the knowledge network gathers around its core
  *   [data-chain] ....... stages arrive one after another, arrows first
  *   [data-cont] ........ the scattered handover lands, then the answer
@@ -123,7 +125,7 @@ export function initProductPage(on: { desktop: boolean }): Cleanup {
       p: 1,
       ease: 'none',
       onUpdate: paint,
-      scrollTrigger: { trigger: line, start: 'top 78%', end: 'bottom 52%', scrub: 0.6 },
+      scrollTrigger: { trigger: line, start: line.dataset.progressStart ?? 'top 78%', end: line.dataset.progressEnd ?? 'bottom 52%', scrub: 0.6 },
     });
     cleanups.push(() => {
       tw.scrollTrigger?.kill();
