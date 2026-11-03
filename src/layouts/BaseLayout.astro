@@ -5,6 +5,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site, href as withBase, canonicalUrl } from '../data/site';
 import { categoryMeta } from '../data/insights';
+import { solutions } from '../data/services';
+import { siteSchema, serviceSchema } from '../data/schema';
 import '../styles/global.css';
 
 interface Props {
@@ -34,6 +36,12 @@ const cleanPath = path.startsWith(import.meta.env.BASE_URL)
   ? '/' + path.slice(import.meta.env.BASE_URL.length).replace(/^\//, '')
   : path;
 const canonical = canonicalUrl(cleanPath);
+
+// Service structured data for the eight solution pages, matched off the
+// canonical solutions list (same set shown in the Solutions menu). The page's
+// own description becomes the Service description, so markup tracks the page.
+const solution = solutions.find((s) => s.href === cleanPath);
+const serviceLd = solution ? serviceSchema(solution.title, description, cleanPath) : null;
 
 // Footer: three newest published posts, from the same collection as Insights
 // (title, link, cover and category exactly as the post has them).
@@ -103,6 +111,9 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(siteSchema)} />
+    {serviceLd && <script type="application/ld+json" set:html={JSON.stringify(serviceLd)} />}
 
     <slot name="head" />
   </head>

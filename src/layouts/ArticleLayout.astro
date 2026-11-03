@@ -23,7 +23,7 @@ const jsonLd = {
   description: data.excerpt,
   datePublished: data.date.toISOString(),
   dateModified: data.date.toISOString(),
-  author: { '@type': 'Person', name: data.author ?? site.name },
+  author: { '@type': 'Person', name: data.author ?? site.name, url: canonicalUrl('/about-us/') },
   ...(ogImage ? { image: [ogImage] } : {}),
   publisher: {
     '@type': 'Organization',
