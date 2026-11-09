@@ -105,8 +105,9 @@ export const moreSolutions: Service[] = [
     href: '/services/cyber-security/',
     icon: 'security',
     accent: 'blue',
-    // No source copy yet: name only until it exists (Hemang, 2026-09-28).
-    blurb: '',
+    // The Cyber Security hero's lede (Mack Akhani, 2026-11-02); the card was
+    // name-only until approved copy existed (Hemang, 2026-09-28).
+    blurb: 'Stay ahead of cyber threats. Protect your people, secure your data, and keep your business running.',
   },
 ];
 
