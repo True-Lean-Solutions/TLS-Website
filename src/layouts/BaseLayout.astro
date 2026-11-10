@@ -61,7 +61,11 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/png" href={withBase('/brand/tls-mark.png')} />
+    <!-- Small icon files (T1.2). The 1024 px tls-mark.png stays in public/ for
+         external references but is no longer linked from pages. -->
+    <link rel="icon" type="image/png" sizes="32x32" href={withBase('/favicon-32.png')} />
+    <link rel="icon" type="image/png" sizes="96x96" href={withBase('/brand/tls-mark-96.png')} />
+    <link rel="apple-touch-icon" sizes="180x180" href={withBase('/apple-touch-icon.png')} />
 
     <!-- Interaction layer (see src/styles/motion.css).
          1. Opt in to scroll reveals before first paint; if the motion script
