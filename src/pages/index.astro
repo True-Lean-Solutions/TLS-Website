@@ -15,6 +15,7 @@ import CommonChallenges from '../components/CommonChallenges.astro';
 import { cta, href } from '../data/site';
 import { services } from '../data/services';
 import { testimonials } from '../data/testimonials';
+import { HOME_HERO, srcsetFor, preloadFor } from '../data/images';
 
 // Meta — source: TLS: Website Pages (2026-09-27), 1w1w7ClLF7Ts7M-FSFJeopTP6Z_13FhXn_q9Qxy2hlT0
 const title =
@@ -67,12 +68,19 @@ const steps = [
 ];
 ---
 
-<BaseLayout title={title} description={description} path="/">
+<BaseLayout
+  title={title}
+  description={description}
+  path="/"
+  preloadImage={preloadFor(HOME_HERO.src, HOME_HERO.sizes)}
+>
   <!-- 1. Hero -->
   <section class="hero">
     <img
       class="hero-photo"
-      src={href('/hero/hero-team.webp')}
+      src={href(HOME_HERO.src)}
+      srcset={srcsetFor(HOME_HERO.src)}
+      sizes={HOME_HERO.sizes}
       alt="A consulting team reviewing a solution together at a laptop"
       width="1400"
       height="788"

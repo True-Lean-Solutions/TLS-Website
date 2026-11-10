@@ -7,6 +7,7 @@ import { site, href as withBase, canonicalUrl } from '../data/site';
 import { categoryMeta } from '../data/insights';
 import { solutions } from '../data/services';
 import { siteSchema, serviceSchema } from '../data/schema';
+import { srcsetFor, type PreloadImage } from '../data/images';
 import '../styles/global.css';
 
 interface Props {
@@ -20,6 +21,8 @@ interface Props {
   noindex?: boolean;
   /** Open Graph type; "article" for Insights posts. */
   ogType?: string;
+  /** The page's LCP image, preloaded from <head> (srcset/sizes must match the <img>). */
+  preloadImage?: PreloadImage;
 }
 
 const {
@@ -29,6 +32,7 @@ const {
   ogImage = canonicalUrl('/og-default.png'),
   noindex = false,
   ogType = 'website',
+  preloadImage,
 } = Astro.props;
 
 // Normalize the given path to a canonical (production-domain) URL.
@@ -52,6 +56,7 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
     title: p.data.title,
     href: withBase(`/insights/${p.id}/`),
     cover: p.data.cover ? withBase(p.data.cover) : undefined,
+    coverSrcset: p.data.cover ? srcsetFor(p.data.cover) : undefined,
     category: categoryMeta[p.data.category].label,
   }));
 ---
@@ -93,6 +98,19 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
         window.addEventListener('pagereveal', function (e) { nameHeader(e.viewTransition); });
       })(document.documentElement);
     </script>
+
+    {
+      preloadImage && (
+        <link
+          rel="preload"
+          as="image"
+          href={preloadImage.src}
+          imagesrcset={preloadImage.srcset}
+          imagesizes={preloadImage.sizes}
+          fetchpriority="high"
+        />
+      )
+    }
 
     <title>{title}</title>
     <meta name="description" content={description} />

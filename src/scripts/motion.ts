@@ -68,23 +68,28 @@ function initReveal() {
 
   const io = new IntersectionObserver(
     (entries) => {
+      // Anything scrolled past too fast to ever intersect (scrollbar drag,
+      // End key, a hard fling) is shown in place, never left hidden above.
+      // Layout is read for all of them first, then classes are written, so
+      // one batch costs one layout instead of one per element (forced reflow).
+      const passed = [...pending].filter((el) => el.getBoundingClientRect().bottom < 0);
       let step = 0;
       for (const entry of entries) {
         if (entry.isIntersecting) show(entry.target, step++);
       }
-      // Anything scrolled past too fast to ever intersect (scrollbar drag,
-      // End key, a hard fling) is shown in place, never left hidden above.
-      for (const el of pending) {
-        if (el.getBoundingClientRect().bottom < 0) show(el, -1);
+      for (const el of passed) {
+        if (pending.has(el)) show(el, -1);
       }
     },
     { rootMargin: '0px 0px -8% 0px' }
   );
 
-  for (const el of targets) {
-    // Already scrolled past (restored scroll position, anchor jump): show it
-    // without animating, so nothing above the reader is left invisible.
-    if (el.getBoundingClientRect().bottom < 0) {
+  // Already scrolled past (restored scroll position, anchor jump): show it
+  // without animating, so nothing above the reader is left invisible.
+  // All reads first, then the writes (see the observer above).
+  const above = targets.map((el) => el.getBoundingClientRect().bottom < 0);
+  for (const [i, el] of targets.entries()) {
+    if (above[i]) {
       el.classList.add('is-in', 'ix-instant');
     } else {
       pending.add(el);

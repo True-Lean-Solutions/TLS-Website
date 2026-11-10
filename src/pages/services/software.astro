@@ -1,4 +1,5 @@
 ---
+import { SOLUTION_HERO, preloadFor } from '../../data/images';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import InfoCard from '../../components/InfoCard.astro';
@@ -39,7 +40,7 @@ const build = [
 ];
 ---
 
-<BaseLayout title={title} description={description} path="/services/software/">
+<BaseLayout title={title} description={description} path="/services/software/" preloadImage={preloadFor(SOLUTION_HERO.src, SOLUTION_HERO.sizes)}>
   <SolutionHero
     eyebrow="Custom Software"
     title="Build exactly what you need —"

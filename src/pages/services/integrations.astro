@@ -1,4 +1,5 @@
 ---
+import { SOLUTION_HERO, preloadFor } from '../../data/images';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import InfoCard from '../../components/InfoCard.astro';
@@ -33,7 +34,7 @@ const steps = [
 ];
 ---
 
-<BaseLayout title={title} description={description} path="/services/integrations/">
+<BaseLayout title={title} description={description} path="/services/integrations/" preloadImage={preloadFor(SOLUTION_HERO.src, SOLUTION_HERO.sizes)}>
   <SolutionHero
     eyebrow="System Integration"
     title="Your tools should work together —"

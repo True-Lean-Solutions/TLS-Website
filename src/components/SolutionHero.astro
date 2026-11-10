@@ -12,6 +12,7 @@ import Icon from './Icon.astro';
 import type { IconName } from './iconTypes';
 import type { Accent } from '../data/services';
 import { href } from '../data/site';
+import { SOLUTION_HERO, srcsetFor } from '../data/images';
 
 interface Cta {
   label: string;
@@ -48,7 +49,7 @@ const {
   icon,
   accent = 'red',
   size = 'lg',
-  image = { src: '/solutions/hero-solutions.webp', width: 1774, height: 887 },
+  image = { src: SOLUTION_HERO.src, width: 1774, height: 887 },
   position = {},
 } = Astro.props;
 
@@ -83,6 +84,8 @@ const style = [
   <img
     class="sh-bg"
     src={href(image.src)}
+    srcset={srcsetFor(image.src)}
+    sizes={SOLUTION_HERO.sizes}
     alt=""
     width={image.width}
     height={image.height}

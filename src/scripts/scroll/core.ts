@@ -97,15 +97,18 @@ export function glideTo(el: HTMLElement) {
 /**
  * Layout can change after first paint (web fonts, lazy images); recompute
  * every trigger once those settle so pins and scrubs start in the right place.
+ *
+ * ScrollTrigger already refreshes itself on window `load`, so this adds a
+ * refresh only for web fonts that finish *after* load. (It used to refresh on
+ * both `load` and fonts-ready as well, which measured the whole page two or
+ * three times during start-up: Lighthouse's forced-reflow finding, T2.2.)
  */
 export function refreshWhenSettled() {
-  let queued = 0;
-  const refresh = () => {
-    cancelAnimationFrame(queued);
-    queued = requestAnimationFrame(() => ScrollTrigger.refresh());
-  };
-  document.fonts?.ready.then(refresh);
-  window.addEventListener('load', refresh, { once: true });
+  let loaded = document.readyState === 'complete';
+  if (!loaded) window.addEventListener('load', () => (loaded = true), { once: true });
+  document.fonts?.ready.then(() => {
+    if (loaded) requestAnimationFrame(() => ScrollTrigger.refresh());
+  });
 }
 
 export { gsap, ScrollTrigger, SplitText };

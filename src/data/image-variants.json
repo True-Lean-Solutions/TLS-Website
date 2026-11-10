@@ -1,0 +1,133 @@
+{
+  "/hero/hero-team.webp": {
+    "width": 1400,
+    "height": 788,
+    "variants": [
+      480,
+      768,
+      1200
+    ]
+  },
+  "/solutions/hero-solutions.webp": {
+    "width": 1774,
+    "height": 887,
+    "variants": [
+      480,
+      768,
+      1200,
+      1600
+    ]
+  },
+  "/insights/covers/automating-recruitment-with-ai.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/commission-cascade-every-tier-one-way.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/custom-integrations-connect-instead-of-replace.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/go-rust-enterprise-systems.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/hidden-cost-of-good-enough.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/home-grown-erp-vs-off-the-shelf.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/modernizing-legacy-salesforce-org.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/one-accountable-owner.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/peer-to-peer-architecture-enterprise.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/refactoring-legacy-system-to-go.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/six-account-tiers-one-source-of-truth.webp": {
+    "width": 900,
+    "height": 503,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/what-financial-systems-integration-requires.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/why-cheaper-developers-cost-more.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/covers/why-your-software-implementation-failed.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  }
+}

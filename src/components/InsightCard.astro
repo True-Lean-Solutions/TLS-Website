@@ -1,4 +1,5 @@
 ---
+import { srcsetFor, CARD_COVER_SIZES } from '../data/images';
 import { href as withBase } from '../data/site';
 import { categoryMeta, formatDate, type Post } from '../data/insights';
 
@@ -16,7 +17,7 @@ const topicsAttr = data.topics.join('|');
   <a class="cover-link" href={url} tabindex="-1" aria-hidden="true">
     {
       data.cover ? (
-        <img class="cover" src={withBase(data.cover)} alt="" width="600" height="338" loading="lazy" />
+        <img class="cover" src={withBase(data.cover)} srcset={srcsetFor(data.cover)} sizes={CARD_COVER_SIZES} alt="" width="600" height="338" loading="lazy" />
       ) : (
         <span class="cover placeholder" />
       )

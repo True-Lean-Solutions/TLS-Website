@@ -1,4 +1,5 @@
 ---
+import { SOLUTION_HERO, preloadFor } from '../../data/images';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import SolutionHero from '../../components/SolutionHero.astro';
@@ -50,7 +51,7 @@ const services = [
 ];
 ---
 
-<BaseLayout title={title} description={description} path="/services/">
+<BaseLayout title={title} description={description} path="/services/" preloadImage={preloadFor(SOLUTION_HERO.src, SOLUTION_HERO.sizes)}>
   <!-- Cinematic hero (SolutionHero). Copy — Hemang (2026-09-28), from Mack's
        mock-up in SOLUTIONS (Drive 16e-mNdSFPZwzHvqeJhGRmbcycAHLEXeR); CTA per
        v2.3 §09. -->

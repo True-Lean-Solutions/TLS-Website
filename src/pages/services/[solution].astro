@@ -4,6 +4,7 @@
  * per solution — hero + CTA — using only the card copy"), until each has full
  * page copy. The four original solutions keep their own page files.
  */
+import { SOLUTION_HERO, preloadFor } from '../../data/images';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SolutionHero from '../../components/SolutionHero.astro';
 import CtaBand from '../../components/CtaBand.astro';
@@ -60,7 +61,7 @@ const title = `True Lean Solutions — ${solution.title}`;
 const description = lede ?? `Talk to True Lean Solutions about ${solution.title}.`;
 ---
 
-<BaseLayout title={title} description={description} path={solution.href}>
+<BaseLayout title={title} description={description} path={solution.href} preloadImage={preloadFor(SOLUTION_HERO.src, SOLUTION_HERO.sizes)}>
   <SolutionHero
     eyebrow={solution.title}
     title={plain}
