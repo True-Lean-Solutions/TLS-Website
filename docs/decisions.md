@@ -926,7 +926,7 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Contact form untouched.** T1.1 (GA4) and T1.3 (form hardening) are blocked on inputs I1/I4, and "never show success on error" conflicts with the fire-and-forget contract. That needs its own decision when they unblock.
 
 **Choices made from the brief's rules.**
-- **Booking link (T1.5)** is a quiet text line, "Prefer to talk it through? Book a free 30-minute call.", the existing `/contact/` copy, under the CTA buttons on Home, every service page and the mobile menu. It is not a third pill, so the primary CTA keeps its weight.
+- **Booking link (T1.5)**: a "Prefer to talk it through? Book a free 30-minute call." line under the CTA buttons was added, then removed the same day at Hemang's request. Only the mobile menu row "Book a free 30-minute call" remains.
 - **No `offers` in the AI product pages' Service JSON-LD (T2.4).** Neither page shows a price itself (prices appear only on AI & Automation), and the AI Visibility page is to carry no pricing until approved.
 - **Advisory Q&A now linked** from Dr. Potts's cards on Technology Strategy and About (T2.5), in its own commit. Until now it was deliberately unlinked pending Dr. Potts's approval; drop commit `fix(seo): T2.5 link the advisory Q&A` if that still stands.
 - **The Q&A's existing `FAQPage` JSON-LD is kept.** The brief forbids adding FAQPage; this one predates it and serves AI search. Open item.
