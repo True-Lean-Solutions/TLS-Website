@@ -91,7 +91,16 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={title} description={description} path={PATH_URL}>
+<BaseLayout
+  title={title}
+  description={description}
+  path={PATH_URL}
+  breadcrumbs={[
+    { name: 'Solutions', path: '/services/' },
+    { name: 'Technology Strategy', path: '/services/technology-strategy/' },
+    { name: 'Advisory Q&A', path: PATH_URL },
+  ]}
+>
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </Fragment>

@@ -6,7 +6,7 @@ import Footer from '../components/Footer.astro';
 import { site, href as withBase, canonicalUrl } from '../data/site';
 import { categoryMeta } from '../data/insights';
 import { solutions } from '../data/services';
-import { siteSchema, serviceSchema } from '../data/schema';
+import { siteSchema, serviceSchema, breadcrumbSchema, type Crumb } from '../data/schema';
 import { srcsetFor, type PreloadImage } from '../data/images';
 import '../styles/global.css';
 
@@ -23,6 +23,13 @@ interface Props {
   ogType?: string;
   /** The page's LCP image, preloaded from <head> (srcset/sizes must match the <img>). */
   preloadImage?: PreloadImage;
+  /** Service JSON-LD for a product page outside the solutions list (T2.4). */
+  serviceName?: string;
+  /**
+   * BreadcrumbList trail after Home (T2.4). Solution pages get
+   * Solutions › {name} automatically; other pages pass their own.
+   */
+  breadcrumbs?: Crumb[];
 }
 
 const {
@@ -33,6 +40,8 @@ const {
   noindex = false,
   ogType = 'website',
   preloadImage,
+  serviceName,
+  breadcrumbs,
 } = Astro.props;
 
 // Normalize the given path to a canonical (production-domain) URL.
@@ -45,7 +54,10 @@ const canonical = canonicalUrl(cleanPath);
 // canonical solutions list (same set shown in the Solutions menu). The page's
 // own description becomes the Service description, so markup tracks the page.
 const solution = solutions.find((s) => s.href === cleanPath);
-const serviceLd = solution ? serviceSchema(solution.title, description, cleanPath) : null;
+const serviceTitle = solution?.title ?? serviceName;
+const serviceLd = serviceTitle ? serviceSchema(serviceTitle, description, cleanPath) : null;
+const trail = breadcrumbs ?? (solution ? [{ name: 'Solutions', path: '/services/' }, { name: solution.title, path: cleanPath }] : null);
+const breadcrumbLd = trail ? breadcrumbSchema(trail) : null;
 
 // Footer: three newest published posts, from the same collection as Insights
 // (title, link, cover and category exactly as the post has them).
@@ -136,6 +148,7 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
 
     <script type="application/ld+json" set:html={JSON.stringify(siteSchema)} />
     {serviceLd && <script type="application/ld+json" set:html={JSON.stringify(serviceLd)} />}
+    {breadcrumbLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />}
 
     <slot name="head" />
   </head>

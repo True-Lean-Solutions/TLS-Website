@@ -48,6 +48,11 @@ const pageTitle = [`${data.title} | True Lean Solutions`, `${data.title} | TLS`]
   path={`/insights/${post.id}/`}
   ogImage={ogImage}
   ogType="article"
+  breadcrumbs={[
+    { name: 'Insights', path: '/insights/' },
+    { name: cat.label, path: `/insights/${data.category}/` },
+    { name: data.title, path: `/insights/${post.id}/` },
+  ]}
   preloadImage={data.cover ? preloadFor(data.cover, ARTICLE_COVER_SIZES) : undefined}
 >
   <Fragment slot="head">

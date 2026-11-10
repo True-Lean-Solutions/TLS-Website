@@ -52,7 +52,13 @@ const services = [
 ];
 ---
 
-<BaseLayout title={title} description={description} path="/services/" preloadImage={preloadFor(SOLUTION_HERO.src, SOLUTION_HERO.sizes)}>
+<BaseLayout
+  title={title}
+  description={description}
+  path="/services/"
+  preloadImage={preloadFor(SOLUTION_HERO.src, SOLUTION_HERO.sizes)}
+  breadcrumbs={[{ name: 'Solutions', path: '/services/' }]}
+>
   <!-- Cinematic hero (SolutionHero). Copy — Hemang (2026-09-28), from Mack's
        mock-up in SOLUTIONS (Drive 16e-mNdSFPZwzHvqeJhGRmbcycAHLEXeR); CTA per
        v2.3 §09. -->

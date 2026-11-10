@@ -124,7 +124,13 @@ const chain: { label: string; text: string; icon: IconName }[] = [
 ];
 ---
 
-<BaseLayout title={title} description={description} path="/services/meeting-intelligence/">
+<BaseLayout
+  title={title}
+  description={description}
+  path="/services/meeting-intelligence/"
+  serviceName="Meeting Intelligence"
+  breadcrumbs={[{ name: 'Solutions', path: '/services/' }, { name: 'AI & Automation', path: '/services/enterprise-ai/' }, { name: 'Meeting Intelligence', path: '/services/meeting-intelligence/' }]}
+>
   <!-- 1. Hero: the enterprise meeting challenge -->
   <section class="mi-hero">
     <figure class="mi-hero-media">

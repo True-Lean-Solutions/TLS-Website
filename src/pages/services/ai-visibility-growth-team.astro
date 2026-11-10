@@ -76,7 +76,13 @@ const reasons: { title: string; text: string; icon: IconName }[] = [
 ];
 ---
 
-<BaseLayout title={title} description={description} path="/services/ai-visibility-growth-team/">
+<BaseLayout
+  title={title}
+  description={description}
+  path="/services/ai-visibility-growth-team/"
+  serviceName="AI Visibility Growth Team"
+  breadcrumbs={[{ name: 'Solutions', path: '/services/' }, { name: 'AI & Automation', path: '/services/enterprise-ai/' }, { name: 'AI Visibility Growth Team', path: '/services/ai-visibility-growth-team/' }]}
+>
   <!-- 1. Hero -->
   <section class="av-hero">
     <div class="av-hero-glow" aria-hidden="true"></div>
