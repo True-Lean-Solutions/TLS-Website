@@ -12,6 +12,7 @@ export interface FooterPost {
   title: string;
   href: string;
   cover?: string;
+  coverSrcset?: string;
   category: string;
 }
 interface Props {
@@ -28,7 +29,7 @@ const { posts } = Astro.props;
         <li>
           <a class="fi-item" href={p.href}>
             <span class="fi-thumb">
-              {p.cover ? <img src={p.cover} alt="" width="900" height="600" loading="lazy" decoding="async" /> : <span class="fi-ph" />}
+              {p.cover ? <img src={p.cover} srcset={p.coverSrcset} sizes="76px" alt="" width="900" height="600" loading="lazy" decoding="async" /> : <span class="fi-ph" />}
             </span>
             <span class="fi-body">
               <span class="fi-title">{p.title}</span>

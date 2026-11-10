@@ -30,7 +30,8 @@ import FaqList from '../../components/FaqList.astro';
 import type { IconName } from '../../components/iconTypes';
 import { cta, href } from '../../data/site';
 
-const title = 'True Lean Solutions — Cyber Security';
+// Title and description: SEO brief T2.3 (2026-11-11), drafted from this page's own copy; pending Hemang's approval.
+const title = 'Cyber Security for Growing Businesses | True Lean Solutions';
 const description =
   'Protect what matters most. Stay ahead of cyber threats: True Lean Solutions helps you protect your people, secure your data and keep your business running.';
 
@@ -379,7 +380,7 @@ const faqs: { q: string; a: string[] }[] = [
           </ul>
           <div class="cs-logo3d" aria-hidden="true">
             <div class="cs-logo3d-spin">
-              {Array.from({ length: 12 }, (_, k) => <img src={href('/brand/tls-mark.png')} alt="" width="160" height="160" style={`--k: ${k}`} />)}
+              {Array.from({ length: 12 }, (_, k) => <img src={href('/brand/tls-mark-320.webp')} alt="" width="160" height="160" style={`--k: ${k}`} />)}
             </div>
           </div>
           <p class="cs-promise">

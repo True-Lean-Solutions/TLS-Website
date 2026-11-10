@@ -4,6 +4,7 @@ import BlockRenderer from '../components/BlockRenderer.astro';
 import InsightCard from '../components/InsightCard.astro';
 import { site, href as withBase, canonicalUrl } from '../data/site';
 import { categoryMeta, formatDate, type Post } from '../data/insights';
+import { srcsetFor, preloadFor, ARTICLE_COVER_SIZES } from '../data/images';
 
 interface Props {
   post: Post;
@@ -35,14 +36,24 @@ const jsonLd = {
   },
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
 };
+
+// <title> (SEO brief T2.3): the headline stays exactly as written; the brand
+// suffix shrinks or drops so the title stays near 60 characters in results.
+const pageTitle = [`${data.title} | True Lean Solutions`, `${data.title} | TLS`].find((t) => t.length <= 60) ?? data.title;
 ---
 
 <BaseLayout
-  title={`${data.title} — True Lean Solutions`}
+  title={pageTitle}
   description={data.excerpt}
   path={`/insights/${post.id}/`}
   ogImage={ogImage}
   ogType="article"
+  breadcrumbs={[
+    { name: 'Insights', path: '/insights/' },
+    { name: cat.label, path: `/insights/${data.category}/` },
+    { name: data.title, path: `/insights/${post.id}/` },
+  ]}
+  preloadImage={data.cover ? preloadFor(data.cover, ARTICLE_COVER_SIZES) : undefined}
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
@@ -64,8 +75,8 @@ const jsonLd = {
 
     {
       data.cover && (
-        <div class="wrap">
-          <img class="cover" src={withBase(data.cover)} alt={data.coverAlt ?? ''} width="1200" height="675" fetchpriority="high" />
+        <div class="wrap cover-wrap">
+          <img class="cover" src={withBase(data.cover)} srcset={srcsetFor(data.cover)} sizes={ARTICLE_COVER_SIZES} alt={data.coverAlt ?? ''} width="1200" height="675" fetchpriority="high" />
         </div>
       )
     }
@@ -232,6 +243,20 @@ const jsonLd = {
   @media (max-width: 640px) {
     .related-grid {
       grid-template-columns: 1fr;
+    }
+  }
+
+  /* The cover is the article's LCP element: it rises with the rest of the
+     header but stays fully opaque from the first frame (brief T2.2), instead
+     of sharing the group's fade-up. */
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .article > .cover-wrap {
+      animation: cover-rise var(--ix-slow) var(--ix-ease) backwards;
+    }
+  }
+  @keyframes cover-rise {
+    from {
+      translate: 0 16px;
     }
   }
 </style>

@@ -53,4 +53,4 @@ blocks:
     markdown: |
       ## Systems that should be talking to each other, but aren't?
 
-      We build integration layers that are boring in the best way — reliable, monitored, and built to survive the next schema change. [Talk to our integration team](/contact/).
+      We build [integration layers](/services/integrations/) that are boring in the best way — reliable, monitored, and built to survive the next schema change. [Talk to our integration team](/contact/).

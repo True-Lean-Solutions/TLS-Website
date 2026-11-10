@@ -31,9 +31,14 @@ const isHeading = (el: Element) => /^H[1-3]$/.test(el.tagName);
  */
 export function maskLines(el: HTMLElement, opts: { stagger?: number; duration?: number } = {}) {
   let revealed = false;
+  // A heading that wraps a link (Insight card titles) must not have its lines
+  // marked aria-hidden: the link would sit inside hidden content. The split
+  // only wraps the same text, so leaving ARIA alone reads identically.
+  const hasFocusable = !!el.querySelector('a[href], button, [tabindex]');
   const split = SplitText.create(el, {
     type: 'lines',
     mask: 'lines',
+    aria: hasFocusable ? 'none' : 'auto',
     linesClass: 'ix-line',
     autoSplit: true,
     onSplit(self) {

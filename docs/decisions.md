@@ -915,3 +915,25 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Tali.** Its Cyber Security answers mirror the new copy and stages.
 
 **To confirm with Mack.** The emotional line, and that the new CTA labels should stay page-only.
+
+## 2026-11-11 — Technical & SEO fix brief (Phases 1–2)
+
+**Source.** Hemang's "TLS Website — Technical & SEO Fix Brief" (evidence 2026-11-10). Branch `fix/seo-technical-brief`, one commit per task.
+
+**Decisions taken with Hemang (2026-11-11).**
+- **Wordmark stays Execution Red `#D94040`.** The brief asked for "Coral Red `#E84040`", which is not in v2.3 (its four colors match the retired v2.2 palette). Hemang: keep the color, don't change the site's appearance. Lighthouse's 4.4:1 flag on the header wordmark therefore stays. WCAG 1.4.3 exempts logotypes.
+- **Meeting Intelligence and AI Visibility Growth Team**: footer Solutions column (under AI & Automation) and a "Featured AI Solutions" line on `/services/`. Still not in the header menus.
+- **Contact form untouched.** T1.1 (GA4) and T1.3 (form hardening) are blocked on inputs I1/I4, and "never show success on error" conflicts with the fire-and-forget contract. That needs its own decision when they unblock.
+
+**Choices made from the brief's rules.**
+- **Booking link (T1.5)**: a "Prefer to talk it through? Book a free 30-minute call." line under the CTA buttons was added, then removed the same day at Hemang's request. Only the mobile menu row "Book a free 30-minute call" remains.
+- **No `offers` in the AI product pages' Service JSON-LD (T2.4).** Neither page shows a price itself (prices appear only on AI & Automation), and the AI Visibility page is to carry no pricing until approved.
+- **Advisory Q&A now linked** from Dr. Potts's cards on Technology Strategy and About (T2.5), in its own commit. Until now it was deliberately unlinked pending Dr. Potts's approval; drop commit `fix(seo): T2.5 link the advisory Q&A` if that still stands.
+- **The Q&A's existing `FAQPage` JSON-LD is kept.** The brief forbids adding FAQPage; this one predates it and serves AI search. Open item.
+- **Home hero photo keeps its fade-in.** Removing it showed no LCP gain locally. The article cover's fade was removed (it still rises): LCP 2.7 → 2.4 s.
+- **Solution hero `sizes`** reflects its real crop (2:1 photo, `object-fit: cover`, 400 px band on phones), so phones fetch the 1600w variant (67 KB, was 160 KB) rather than a visibly soft 768w.
+- **`build.inlineStylesheets: 'always'`** was measured and rejected: no LCP gain, higher TBT.
+
+**New pieces.** `scripts/responsive-images.mjs` regenerates image variants and `src/data/image-variants.json`. Run it after replacing a hero or adding an Insights cover. `src/data/images.ts` holds `srcset`/`sizes`; `BaseLayout` takes `preloadImage`, `serviceName` and `breadcrumbs`.
+
+**Blocked (inputs from the brief §3).** T1.1 (I1 GA4 ID), T1.3 (I4 form routing), T1.4 (I2 phone, I3 address/legal line), T2.1 (I5 Cloudflare).

@@ -15,6 +15,8 @@ import { href } from '../data/site';
 
 const face = href('/tali/tali-face.webp');
 const wave = href('/tali/tali-wave.webp');
+// The 64px launcher picks the 128px face; 3x screens still get the 256px one.
+const faceSet = `${href('/tali/tali-face-128.webp')} 128w, ${face} 256w`;
 // Optional general-AI endpoint (see docs/tali.md). Unset: nothing leaves the browser.
 const ai = import.meta.env.PUBLIC_TALI_AI_ENDPOINT ?? '';
 ---
@@ -30,12 +32,12 @@ const ai = import.meta.env.PUBLIC_TALI_AI_ENDPOINT ?? '';
   </div>
 
   <button type="button" class="tali-launcher" data-launcher aria-label="Chat with Tali" aria-expanded="false" aria-controls="tali-panel">
-    <img src={face} alt="" width="256" height="256" decoding="async" />
+    <img src={face} srcset={faceSet} sizes="64px" alt="" width="256" height="256" decoding="async" fetchpriority="low" />
   </button>
 
   <section id="tali-panel" class="tali-panel" data-panel role="dialog" aria-modal="false" aria-labelledby="tali-title" hidden>
     <header class="tali-head">
-      <span class="tali-avatar"><img src={face} alt="" width="256" height="256" /></span>
+      <span class="tali-avatar"><img src={face} alt="" width="256" height="256" loading="lazy" /></span>
       <div class="tali-id">
         <h2 id="tali-title">Tali</h2>
         <p>True Lean AI Assistant</p>
@@ -55,7 +57,7 @@ const ai = import.meta.env.PUBLIC_TALI_AI_ENDPOINT ?? '';
 
     <div class="tali-log" data-log role="log" aria-live="polite" aria-label="Conversation with Tali" data-lenis-prevent>
       <div class="tali-hello" data-hello>
-        <img src={wave} alt="" width="360" height="393" decoding="async" />
+        <img src={wave} alt="" width="360" height="393" loading="lazy" decoding="async" />
         <p class="tali-hello-title">Hi, I'm <span>Tali!</span> <span aria-hidden="true">👋</span></p>
         <p>Your True Lean AI Assistant.<br />What are you trying to solve?</p>
       </div>
@@ -77,8 +79,45 @@ const ai = import.meta.env.PUBLIC_TALI_AI_ENDPOINT ?? '';
 </div>
 
 <script>
-  import { initTali } from '../scripts/tali/ui';
-  initTali();
+  // Tali loads after the page does (brief T2.2): its code is fetched once the
+  // window `load` event has fired and the browser is idle, or at the first
+  // interaction, whichever comes first, so it never competes with the hero.
+  // A launcher click made before then is replayed once Tali is ready.
+  let started = false;
+  let replayClick = false;
+  const launcher = document.querySelector<HTMLButtonElement>('[data-tali] [data-launcher]');
+
+  function start() {
+    if (started) return;
+    started = true;
+    removeEventListener('pointerdown', start, true);
+    removeEventListener('keydown', start, true);
+    removeEventListener('scroll', start, true);
+    removeEventListener('touchstart', start, true);
+    import('../scripts/tali/ui').then(({ initTali }) => {
+      initTali();
+      if (replayClick) launcher?.click();
+    });
+  }
+
+  launcher?.addEventListener(
+    'click',
+    (e) => {
+      if (document.querySelector('[data-tali]')?.hasAttribute('data-ready')) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      replayClick = true;
+      start();
+    },
+    { capture: true, once: true }
+  );
+  for (const type of ['pointerdown', 'keydown', 'scroll', 'touchstart']) {
+    addEventListener(type, start, { capture: true, passive: true, once: true });
+  }
+  const idle = (fn: () => void) =>
+    'requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 200);
+  if (document.readyState === 'complete') idle(start);
+  else addEventListener('load', () => idle(start), { once: true });
 </script>
 
 <style>

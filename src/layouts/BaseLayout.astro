@@ -6,7 +6,8 @@ import Footer from '../components/Footer.astro';
 import { site, href as withBase, canonicalUrl } from '../data/site';
 import { categoryMeta } from '../data/insights';
 import { solutions } from '../data/services';
-import { siteSchema, serviceSchema } from '../data/schema';
+import { siteSchema, serviceSchema, breadcrumbSchema, type Crumb } from '../data/schema';
+import { srcsetFor, type PreloadImage } from '../data/images';
 import '../styles/global.css';
 
 interface Props {
@@ -20,6 +21,15 @@ interface Props {
   noindex?: boolean;
   /** Open Graph type; "article" for Insights posts. */
   ogType?: string;
+  /** The page's LCP image, preloaded from <head> (srcset/sizes must match the <img>). */
+  preloadImage?: PreloadImage;
+  /** Service JSON-LD for a product page outside the solutions list (T2.4). */
+  serviceName?: string;
+  /**
+   * BreadcrumbList trail after Home (T2.4). Solution pages get
+   * Solutions › {name} automatically; other pages pass their own.
+   */
+  breadcrumbs?: Crumb[];
 }
 
 const {
@@ -29,6 +39,9 @@ const {
   ogImage = canonicalUrl('/og-default.png'),
   noindex = false,
   ogType = 'website',
+  preloadImage,
+  serviceName,
+  breadcrumbs,
 } = Astro.props;
 
 // Normalize the given path to a canonical (production-domain) URL.
@@ -41,7 +54,10 @@ const canonical = canonicalUrl(cleanPath);
 // canonical solutions list (same set shown in the Solutions menu). The page's
 // own description becomes the Service description, so markup tracks the page.
 const solution = solutions.find((s) => s.href === cleanPath);
-const serviceLd = solution ? serviceSchema(solution.title, description, cleanPath) : null;
+const serviceTitle = solution?.title ?? serviceName;
+const serviceLd = serviceTitle ? serviceSchema(serviceTitle, description, cleanPath) : null;
+const trail = breadcrumbs ?? (solution ? [{ name: 'Solutions', path: '/services/' }, { name: solution.title, path: cleanPath }] : null);
+const breadcrumbLd = trail ? breadcrumbSchema(trail) : null;
 
 // Footer: three newest published posts, from the same collection as Insights
 // (title, link, cover and category exactly as the post has them).
@@ -52,6 +68,7 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
     title: p.data.title,
     href: withBase(`/insights/${p.id}/`),
     cover: p.data.cover ? withBase(p.data.cover) : undefined,
+    coverSrcset: p.data.cover ? srcsetFor(p.data.cover) : undefined,
     category: categoryMeta[p.data.category].label,
   }));
 ---
@@ -61,7 +78,11 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/png" href={withBase('/brand/tls-mark.png')} />
+    <!-- Small icon files (T1.2). The 1024 px tls-mark.png stays in public/ for
+         external references but is no longer linked from pages. -->
+    <link rel="icon" type="image/png" sizes="32x32" href={withBase('/favicon-32.png')} />
+    <link rel="icon" type="image/png" sizes="96x96" href={withBase('/brand/tls-mark-96.png')} />
+    <link rel="apple-touch-icon" sizes="180x180" href={withBase('/apple-touch-icon.png')} />
 
     <!-- Interaction layer (see src/styles/motion.css).
          1. Opt in to scroll reveals before first paint; if the motion script
@@ -90,6 +111,19 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
       })(document.documentElement);
     </script>
 
+    {
+      preloadImage && (
+        <link
+          rel="preload"
+          as="image"
+          href={preloadImage.src}
+          imagesrcset={preloadImage.srcset}
+          imagesizes={preloadImage.sizes}
+          fetchpriority="high"
+        />
+      )
+    }
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -114,6 +148,7 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
 
     <script type="application/ld+json" set:html={JSON.stringify(siteSchema)} />
     {serviceLd && <script type="application/ld+json" set:html={JSON.stringify(serviceLd)} />}
+    {breadcrumbLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />}
 
     <slot name="head" />
   </head>

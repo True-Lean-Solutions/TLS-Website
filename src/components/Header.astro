@@ -2,7 +2,7 @@
 import Lockup from './Lockup.astro';
 import Button from './Button.astro';
 import Icon from './Icon.astro';
-import { cta, href as withBase } from '../data/site';
+import { cta, site, href as withBase } from '../data/site';
 import { primaryNav, type NavItem } from '../data/nav';
 import type { Accent } from '../data/services';
 import {
@@ -153,6 +153,12 @@ const menuId = (label: string) => `menu-${label.toLowerCase().replace(/\s+/g, '-
             )
           )
         }
+        {/* Mobile menu only (T1.5): the header CTA is hidden at this width. */}
+        <li class="nav-booking">
+          <a class="nav-link" href={site.booking} target="_blank" rel="noopener noreferrer">
+            Book a free 30-minute call
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -605,8 +611,15 @@ const menuId = (label: string) => `menu-${label.toLowerCase().replace(/\s+/g, '-
     transform: translateY(-7px) rotate(-45deg);
   }
 
+  .nav-booking {
+    display: none;
+  }
+
   /* ---- Responsive ---- */
   @media (max-width: 1120px) {
+    .nav-booking {
+      display: block;
+    }
     .menu-toggle {
       display: block;
       order: 3;

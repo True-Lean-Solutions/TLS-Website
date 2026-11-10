@@ -17,9 +17,10 @@ import { href } from '../../data/site';
  * The reference's "brain" visual is replaced with a knowledge network (the
  * brand guide rules out AI brains and holograms). See docs/decisions.md.
  */
-const title = 'True Lean Solutions — Meeting Intelligence';
+// Title and description: SEO brief T2.3 (2026-11-11), drafted from this page's own copy; pending Hemang's approval.
+const title = 'Private Meeting Intelligence | True Lean Solutions';
 const description =
-  'Capture, preserve and search the knowledge in your Teams, Zoom and Google Meet meetings — deployed in an environment you control.';
+  'Capture, preserve and search the decisions, commitments and follow-ups in your Teams, Zoom and Google Meet meetings, deployed in an environment you control.';
 
 const img = (n: number) => href(`/solutions/meeting-intelligence/participant-${n}.webp`);
 
@@ -122,7 +123,13 @@ const chain: { label: string; text: string; icon: IconName }[] = [
 ];
 ---
 
-<BaseLayout title={title} description={description} path="/services/meeting-intelligence/">
+<BaseLayout
+  title={title}
+  description={description}
+  path="/services/meeting-intelligence/"
+  serviceName="Meeting Intelligence"
+  breadcrumbs={[{ name: 'Solutions', path: '/services/' }, { name: 'AI & Automation', path: '/services/enterprise-ai/' }, { name: 'Meeting Intelligence', path: '/services/meeting-intelligence/' }]}
+>
   <!-- 1. Hero: the enterprise meeting challenge -->
   <section class="mi-hero">
     <figure class="mi-hero-media">
