@@ -36,12 +36,23 @@ interface PageCopy {
   /** Primary CTA label, from Brand Guide v2.3 §09. */
   cta: string;
   band?: { eyebrow: string; heading: string; accent: string; text: string };
+  /** <title> and meta description (SEO brief T2.3); default to the name and lede. */
+  seo?: { title: string; description: string };
 }
 
 const copy: Record<string, PageCopy> = {
   // Headlines: Hemang (2026-09-29), built on each card's copy.
   // v2.3 §09 "Process / Automation" CTA.
-  'workflow-automation': { headline: ['Turn friction into', 'better workflows.'], cta: 'Discuss the Workflow' },
+  'workflow-automation': {
+    headline: ['Turn friction into', 'better workflows.'],
+    cta: 'Discuss the Workflow',
+    // SEO brief T2.3 (2026-11-11), from the page's lede and band; pending Hemang's approval.
+    seo: {
+      title: 'Workflow Automation & Process Redesign | True Lean Solutions',
+      description:
+        'Turn a workflow that creates friction into a better operating process through redesign, automation and tool configuration. Not sure where to start? Talk to us.',
+    },
+  },
 };
 
 const page = copy[slug];
@@ -57,8 +68,8 @@ const band = page.band ?? {
   text: "Most businesses we work with know something isn't working but aren't sure which lever to pull first. Book a free strategy call and we'll help you figure it out.",
 };
 
-const title = `True Lean Solutions — ${solution.title}`;
-const description = lede ?? `Talk to True Lean Solutions about ${solution.title}.`;
+const title = page.seo?.title ?? `${solution.title} | True Lean Solutions`;
+const description = page.seo?.description ?? lede ?? `Talk to True Lean Solutions about ${solution.title}.`;
 ---
 
 <BaseLayout title={title} description={description} path={solution.href} preloadImage={preloadFor(SOLUTION_HERO.src, SOLUTION_HERO.sizes)}>

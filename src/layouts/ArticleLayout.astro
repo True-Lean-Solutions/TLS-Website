@@ -36,10 +36,14 @@ const jsonLd = {
   },
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
 };
+
+// <title> (SEO brief T2.3): the headline stays exactly as written; the brand
+// suffix shrinks or drops so the title stays near 60 characters in results.
+const pageTitle = [`${data.title} | True Lean Solutions`, `${data.title} | TLS`].find((t) => t.length <= 60) ?? data.title;
 ---
 
 <BaseLayout
-  title={`${data.title} — True Lean Solutions`}
+  title={pageTitle}
   description={data.excerpt}
   path={`/insights/${post.id}/`}
   ogImage={ogImage}
