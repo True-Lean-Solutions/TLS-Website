@@ -1,0 +1,54 @@
+---
+/**
+ * Secondary booking prompt that sits under a CTA button row (brief T1.5).
+ * A quiet text line, not a third pill, so the primary CTA keeps the weight.
+ * Copy is the site's existing line from /contact/; the link is the one
+ * booking URL in site.ts and opens in a new tab like every booking link.
+ *  - light : on white/canvas surfaces (text-2 copy, Blue Text link)
+ *  - dark  : on Ink Black bands (Border Gray copy, white link)
+ */
+import { site } from '../data/site';
+
+interface Props {
+  tone?: 'light' | 'dark';
+  class?: string;
+}
+const { tone = 'light', class: className } = Astro.props;
+---
+
+<p class:list={['booking-link', tone, className]}>
+  Prefer to talk it through?
+  <a href={site.booking} target="_blank" rel="noopener noreferrer">Book a free 30-minute call</a>.
+</p>
+
+<style>
+  .booking-link {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .booking-link a {
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  .light {
+    color: var(--text-2);
+  }
+  .light a {
+    color: var(--blue-text);
+  }
+  .light a:hover {
+    color: var(--red-text);
+  }
+  .dark {
+    color: var(--border);
+  }
+  .dark a {
+    color: #fff;
+  }
+  .dark a:hover {
+    color: var(--border);
+  }
+</style>

@@ -5,14 +5,17 @@
  */
 import Eyebrow from './Eyebrow.astro';
 import HeroArt from './HeroArt.astro';
+import BookingLink from './BookingLink.astro';
 
 interface Props {
   eyebrow?: string;
   heading: string;
   accent?: string;
   text?: string;
+  /** Show the "Book a free 30-minute call" line under the buttons (T1.5). */
+  booking?: boolean;
 }
-const { eyebrow, heading, accent, text } = Astro.props;
+const { eyebrow, heading, accent, text, booking = false } = Astro.props;
 ---
 
 <section class="section">
@@ -25,6 +28,7 @@ const { eyebrow, heading, accent, text } = Astro.props;
         <div class="actions">
           <slot />
         </div>
+        {booking && <BookingLink />}
       </div>
       <div class="cta-art"><HeroArt /></div>
     </div>

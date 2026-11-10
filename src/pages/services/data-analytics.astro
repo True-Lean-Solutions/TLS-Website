@@ -21,6 +21,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Eyebrow from '../../components/Eyebrow.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import Button from '../../components/Button.astro';
+import BookingLink from '../../components/BookingLink.astro';
 import Icon from '../../components/Icon.astro';
 import DashboardMock from '../../components/DashboardMock.astro';
 import type { IconName } from '../../components/iconTypes';
@@ -926,6 +927,7 @@ const finalLine = ['Strategy', 'Data Engineering', 'Power BI', 'Governance', 'En
           <Button href={contact} variant="primary" arrow>Start a Conversation</Button>
           <Button href={cta.email.href} variant="ghost-light" external>{cta.email.label}</Button>
         </div>
+        <BookingLink tone="dark" />
       </div>
     </div>
     <div class="wrap">
