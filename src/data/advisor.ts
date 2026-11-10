@@ -18,6 +18,8 @@ export const advisor = {
   title: 'Advisor, Technology Strategy & Enterprise Transformation',
   photo: '/team/wally-potts.webp',
   linkedin: 'https://www.linkedin.com/in/wallyp/',
+  /** The unlisted interview-style Q&A, linked from his cards (brief T2.5). */
+  qa: { label: 'Read the advisory Q&A with Dr. Wally Potts', href: '/services/technology-strategy/advisory-qa/' },
   /** Three short paragraphs (resume summary, Leidos, HP, Veterans Engineering). */
   bio: [
     'Dr. Potts advises and mentors True Lean Solutions on technology strategy, enterprise transformation and operational excellence.',

@@ -15,6 +15,8 @@ export interface Person {
   photo: string; // path under public/, resolved with href()
   /** Omit when there is no profile to link: the card then shows no LinkedIn button. */
   linkedin?: string;
+  /** An internal page about this person, shown as a text link under the bio. */
+  link?: { label: string; href: string };
 }
 
 export const coreTeam: Person[] = [
@@ -64,6 +66,7 @@ export const advisors: Person[] = [
     bio: [...advisor.bio],
     photo: advisor.photo,
     linkedin: advisor.linkedin,
+    link: advisor.qa,
   },
   {
     name: 'Nirav Kambodi',
