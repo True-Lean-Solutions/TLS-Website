@@ -6,8 +6,8 @@ import SolutionHero from '../../components/SolutionHero.astro';
 import ServiceCard from '../../components/ServiceCard.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import Button from '../../components/Button.astro';
-import { cta } from '../../data/site';
-import { moreSolutions } from '../../data/services';
+import { cta, href } from '../../data/site';
+import { moreSolutions, aiProducts } from '../../data/services';
 
 // Meta — source: TLS: Website Pages (2026-09-27), 1w1w7ClLF7Ts7M-FSFJeopTP6Z_13FhXn_q9Qxy2hlT0
 // Title and description: SEO brief T2.3 (2026-11-11), drafted from this page's own copy; pending Hemang's approval.
@@ -82,6 +82,15 @@ const services = [
       <div class="cards" data-reveal="stagger">
         {[...services, ...moreSolutions].map((s) => <ServiceCard {...s} />)}
       </div>
+      <p class="sol-products">
+        Featured AI Solutions:
+        {aiProducts.map((p, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true"> · </span>}
+            <a href={href(p.href)}>{p.title}</a>
+          </>
+        ))}
+      </p>
     </div>
   </section>
 
@@ -98,6 +107,24 @@ const services = [
 </BaseLayout>
 
 <style>
+  /* The two AI products (brief T2.5): a quiet line under the grid. */
+  .sol-products {
+    margin-top: 1.75rem;
+    text-align: center;
+    color: var(--text-2);
+    font-size: 0.95rem;
+  }
+  .sol-products a {
+    color: var(--blue-text);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  .sol-products a:hover {
+    color: var(--red-text);
+  }
+
   /* The intro keeps its page-title size now that the hero holds the h1. */
   .sol-intro :global(.section-heading h2) {
     font-size: var(--step-5);

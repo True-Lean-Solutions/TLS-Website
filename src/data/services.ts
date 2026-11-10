@@ -113,3 +113,13 @@ export const moreSolutions: Service[] = [
 
 /** All eight, in order: the four core solutions, then the four above. */
 export const solutions: Service[] = [...services, ...moreSolutions];
+
+/**
+ * The two AI products behind "Learn More" on the AI & Automation page's
+ * Featured AI Solutions (decisions 2026-10-02). Not in the header menus
+ * (Hemang, 2026-11-11: footer and the Solutions page only).
+ */
+export const aiProducts: { title: string; href: string }[] = [
+  { title: 'Meeting Intelligence', href: '/services/meeting-intelligence/' },
+  { title: 'AI Visibility Growth Team', href: '/services/ai-visibility-growth-team/' },
+];

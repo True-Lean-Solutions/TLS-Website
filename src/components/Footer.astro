@@ -15,7 +15,7 @@ import FooterInsights, { type FooterPost } from './FooterInsights.astro';
 import FooterSocials from './FooterSocials.astro';
 import { site, cta, href as withBase } from '../data/site';
 import { primaryNav, legalLinks } from '../data/nav';
-import { solutions } from '../data/services';
+import { solutions, aiProducts } from '../data/services';
 
 interface Props {
   /** Three newest published posts; the column is hidden when empty. */
@@ -24,7 +24,11 @@ interface Props {
 const { latestPosts = [] } = Astro.props;
 const year = new Date().getFullYear();
 const quick = primaryNav.map(({ label, href }) => ({ label, href }));
-const solutionLinks = solutions.map((s) => ({ label: s.title, href: s.href }));
+// The two AI products sit right under AI & Automation (brief T2.5).
+const solutionLinks = solutions.flatMap((s) => [
+  { label: s.title, href: s.href },
+  ...(s.href === '/services/enterprise-ai/' ? aiProducts.map((p) => ({ label: p.title, href: p.href })) : []),
+]);
 ---
 
 <footer class="site-footer">
