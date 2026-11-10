@@ -17,7 +17,7 @@ const topicsAttr = data.topics.join('|');
   <a class="cover-link" href={url} tabindex="-1" aria-hidden="true">
     {
       data.cover ? (
-        <img class="cover" src={withBase(data.cover)} srcset={srcsetFor(data.cover)} sizes={CARD_COVER_SIZES} alt="" width="600" height="338" loading="lazy" />
+        <img class="cover" src={withBase(data.cover)} srcset={srcsetFor(data.cover)} sizes={CARD_COVER_SIZES} alt={data.coverAlt ?? ""} width="600" height="338" loading="lazy" />
       ) : (
         <span class="cover placeholder" />
       )

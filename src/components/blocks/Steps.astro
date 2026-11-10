@@ -12,6 +12,9 @@ const accents: Record<Accent, string> = {
   blue: '--c: var(--blue); --ct: var(--blue-tint); --ctext: var(--blue-text);',
   plum: '--c: var(--plum); --ct: var(--plum-tint); --ctext: var(--plum);',
 };
+// Item titles sit one level below the block heading, or directly under the
+// article's h2 when the block has none (no skipped levels; brief T2.6).
+const ItemHeading = heading ? 'h4' : 'h3';
 ---
 
 <div class="steps-block block-wide" style={accents[accent]}>
@@ -22,7 +25,7 @@ const accents: Record<Accent, string> = {
         <li>
           <span class="n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
           <div class="body">
-            <h4>{it.title}</h4>
+            <ItemHeading class="item-h">{it.title}</ItemHeading>
             <p>{it.body}</p>
           </div>
         </li>
@@ -59,7 +62,7 @@ const accents: Record<Accent, string> = {
     font-size: 0.95rem;
     flex: none;
   }
-  h4 {
+  .item-h {
     font-family: var(--font-head);
     font-weight: 700;
     font-size: 1.05rem;

@@ -22,6 +22,9 @@ const accents: Record<Accent, string> = {
   plum: '--c: var(--plum); --ct: var(--plum-tint);',
 };
 const rotate: Accent[] = ['red', 'blue', 'plum'];
+// Item titles sit one level below the block heading, or directly under the
+// article's h2 when the block has none (no skipped levels; brief T2.6).
+const ItemHeading = heading ? 'h4' : 'h3';
 ---
 
 <div class="card-block block-wide">
@@ -34,7 +37,7 @@ const rotate: Accent[] = ['red', 'blue', 'plum'];
             <span class="ic glass-icon"><Icon name={it.icon as IconName} size={24} /></span>
           )}
           <span class="rule" aria-hidden="true" />
-          <h4>{it.title}</h4>
+          <ItemHeading class="item-h">{it.title}</ItemHeading>
           <p>{it.body}</p>
         </div>
       ))
@@ -78,7 +81,7 @@ const rotate: Accent[] = ['red', 'blue', 'plum'];
     background: var(--c);
     margin-bottom: 0.9rem;
   }
-  h4 {
+  .item-h {
     font-family: var(--font-head);
     font-weight: 700;
     font-size: 1.05rem;
