@@ -25,7 +25,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Eyebrow from '../../components/Eyebrow.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import Button from '../../components/Button.astro';
-import BookingLink from '../../components/BookingLink.astro';
 import Icon from '../../components/Icon.astro';
 import FaqList from '../../components/FaqList.astro';
 import type { IconName } from '../../components/iconTypes';
@@ -777,7 +776,6 @@ const faqs: { q: string; a: string[] }[] = [
           <Button href={cta.security.href} variant="primary" arrow>{cta.security.label}</Button>
           <Button href={cta.email.href} variant="ghost-light" external>{cta.email.label}</Button>
         </div>
-        <BookingLink tone="dark" />
       </div>
     </div>
   </section>

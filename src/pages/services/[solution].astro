@@ -84,8 +84,7 @@ const description = page.seo?.description ?? lede ?? `Talk to True Lean Solution
     accent={solution.accent}
   />
 
-  <CtaBand
-    booking eyebrow={band.eyebrow} heading={band.heading} accent={band.accent} text={band.text}>
+  <CtaBand eyebrow={band.eyebrow} heading={band.heading} accent={band.accent} text={band.text}>
     <Button href={cta.primary.href} variant="primary" arrow>{page.cta}</Button>
     <Button href={cta.email.href} variant="secondary" external>{cta.email.label}</Button>
   </CtaBand>

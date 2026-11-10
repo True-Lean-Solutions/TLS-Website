@@ -3,7 +3,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Eyebrow from '../../components/Eyebrow.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import Button from '../../components/Button.astro';
-import BookingLink from '../../components/BookingLink.astro';
 import Icon from '../../components/Icon.astro';
 import type { IconName } from '../../components/iconTypes';
 import { href } from '../../data/site';
@@ -433,7 +432,6 @@ const chain: { label: string; text: string; icon: IconName }[] = [
           <Eyebrow label="From Productivity to Enterprise Intelligence" />
           <h2>Meeting Intelligence Today. <span class="accent">Enterprise Intelligence Tomorrow.</span></h2>
           <p>Meeting Intelligence creates a foundation of searchable organizational context — turning everyday conversations into knowledge that can support people, teams and future AI capabilities.</p>
-          <BookingLink />
         </div>
         <div class="mi-actions mi-future-actions" data-reveal="">
           <Button href="/contact/" variant="primary" arrow>Discuss Meeting Intelligence</Button>

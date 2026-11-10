@@ -3,7 +3,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Eyebrow from '../../components/Eyebrow.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import Button from '../../components/Button.astro';
-import BookingLink from '../../components/BookingLink.astro';
 import Icon from '../../components/Icon.astro';
 import type { IconName } from '../../components/iconTypes';
 import { href } from '../../data/site';
@@ -305,7 +304,6 @@ const reasons: { title: string; text: string; icon: IconName }[] = [
           <Eyebrow label="Let's Grow Your AI Visibility" />
           <h2>Ready to Improve How AI Finds Your Brand?</h2>
           <p>Start with a clear view of your current visibility and discover practical opportunities to strengthen your brand's presence across AI-driven search.</p>
-          <BookingLink tone="dark" class="av-booking" />
         </div>
         <div class="av-band-cta">
           <Button href="/contact/" variant="primary" arrow>Get Your AI Visibility Baseline</Button>
@@ -1109,12 +1107,6 @@ const reasons: { title: string; text: string; icon: IconName }[] = [
   }
   .av-band :global(.eyebrow .rule) {
     background: #fff;
-  }
-  /* Booking line on the gradient: the band's own light lilac, AA on its
-     darkest stop (#0e6dad). */
-  .av-band :global(.booking-link.av-booking) {
-    color: #ece8ff;
-    font-size: 0.95rem;
   }
   .av-band p {
     margin-top: var(--gap-lead);
