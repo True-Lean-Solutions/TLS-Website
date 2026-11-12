@@ -19,8 +19,12 @@ export const site = {
   phone: '(941) 777-5326',
   phoneHref: 'tel:+19417775326',
 
-  /** Booking link behind the primary CTA (v2.3 / CLAUDE.md § Contact form). */
-  booking: 'https://calendar.app.google/4V1G48o4zR2NRFSA9',
+  /**
+   * "Book a call" link: Mack's Zoho Bookings page (Hemang, 2026-11-13; replaced
+   * the Google Calendar link). The 30-minute length is set on the Zoho
+   * Bookings service, not here.
+   */
+  booking: 'https://techtranspire.zohobookings.com/#/4733816000000230048',
 
   social: {
     linkedin: 'https://www.linkedin.com/company/108455615/',

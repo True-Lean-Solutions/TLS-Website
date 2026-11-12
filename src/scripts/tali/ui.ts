@@ -11,6 +11,7 @@
  */
 import type { Engine, Reply } from './engine';
 import { PROMPT_TIMING as T, WELCOME_TITLE, SCROLL_TITLE, promptsFor } from './prompts';
+import { site } from '../../data/site';
 
 type Msg = { role: 'user'; text: string } | { role: 'tali'; reply: Reply };
 
@@ -123,7 +124,7 @@ export function initTali() {
     const a = el('a', cls, l.label);
     a.href = url(l.href);
     // The next step (Contact, booking) is the one filled button.
-    if (cls === 'tm-link' && (l.href === '/contact/' || l.href.includes('calendar.app.google'))) a.classList.add('is-primary');
+    if (cls === 'tm-link' && (l.href === '/contact/' || l.href === site.booking)) a.classList.add('is-primary');
     if (l.external || /^https?:/.test(l.href)) {
       a.target = '_blank';
       a.rel = 'noopener noreferrer';

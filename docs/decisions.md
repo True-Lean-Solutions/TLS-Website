@@ -937,3 +937,10 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 **New pieces.** `scripts/responsive-images.mjs` regenerates image variants and `src/data/image-variants.json`. Run it after replacing a hero or adding an Insights cover. `src/data/images.ts` holds `srcset`/`sizes`; `BaseLayout` takes `preloadImage`, `serviceName` and `breadcrumbs`.
 
 **Blocked (inputs from the brief §3).** T1.1 (I1 GA4 ID), T1.3 (I4 form routing), T1.4 (I2 phone, I3 address/legal line), T2.1 (I5 Cloudflare).
+
+## 2026-11-13: Booking link moves to Zoho Bookings
+
+- **Decision (Hemang):** every "Book a call" link now opens Mack's Zoho Bookings page, `https://techtranspire.zohobookings.com/#/4733816000000230048`. It replaces the Google Calendar link (`calendar.app.google/4V1G48o4zR2NRFSA9`).
+- **Where it's used:** the Contact page's "Book a call" button, the mobile menu's "Book a free 30-minute call" row, the Technology Strategy "Book a Free 30-Minute Call" buttons, and Tali's booking link. Everything reads `site.booking`; Tali's copy, which used to hard-code the URL, now imports it.
+- **30-minute limit:** a website link can't set a meeting's length. The length lives on the Zoho Bookings service, so that service must be set to 30 minutes for the "30-minute call" labels to stay true.
+- **Note:** the URL is on a `techtranspire` subdomain. It's a link only, with no Tech Transpire logo, color or email on the site. Changing it would need a TLS-branded Zoho Bookings page.
