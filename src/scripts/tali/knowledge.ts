@@ -15,6 +15,7 @@
  * src/data/team.ts. Insights posts come from the content collection at build
  * time (src/pages/tali/insights.json.ts).
  */
+import { site } from '../../data/site';
 
 export interface Link {
   label: string;
@@ -48,7 +49,7 @@ export interface Entity {
 
 export const CONTACT = {
   page: { label: 'Discuss Your Project', href: '/contact/' },
-  booking: { label: 'Book a free 30-minute call', href: 'https://calendar.app.google/4V1G48o4zR2NRFSA9', external: true },
+  booking: { label: 'Book a free 30-minute call', href: site.booking, external: true },
   email: 'success@trueleansolutions.com',
   phone: '(941) 777-5326',
 } as const;

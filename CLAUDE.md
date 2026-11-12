@@ -232,7 +232,7 @@ Keep this mechanism exactly. It was debugged three times in Phase 1, and replaci
   - `submitted` (ISO timestamp, set by script)
 - **Honeypot.** A visually hidden `website` input. If it is filled, show success and send nothing.
 - **Status panels.** The success panel uses `role="status"` and the error panel uses `role="alert"`. A `<noscript>` note gives the email address.
-- **Booking link** for "Discuss Your Project": `https://calendar.app.google/4V1G48o4zR2NRFSA9`.
+- **Booking link** ("Book a call"): `https://techtranspire.zohobookings.com/#/4733816000000230048`, Mack's Zoho Bookings page (Hemang, 2026-11-13; replaced the Google Calendar link). Defined once as `site.booking`. Calls are 30 minutes at most, set on the Zoho Bookings service.
 
 ## Workflow
 
