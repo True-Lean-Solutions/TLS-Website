@@ -2,7 +2,7 @@
  * Client logos. Real clients only — never add a logo without a source.
  * source: Drive IDs in docs/sources.md §4 (Client logo: NRI, UV Concepts; the
  * "Final Logos" folder for the rest; KSR Group's updated logo from Hemang,
- * 2026-10-05). Tech Transpire's logo is in that folder but never shown
+ * 2026-10-05; Foresight Food from Hemang, 2026-11-17). Tech Transpire's logo is in that folder but never shown
  * (CLAUDE.md: no Tech Transpire branding).
  */
 export interface Client {
@@ -109,6 +109,15 @@ export const clients: Client[] = [
     width: 771,
     height: 392,
     displayHeight: 50,
+  },
+  {
+    // Logo from Brandon Jahner's email signature, sent by Hemang 2026-11-17
+    // (white background keyed out). Small source: kept at native size.
+    name: 'Foresight Food',
+    logo: '/clients/foresight-food.webp',
+    width: 180,
+    height: 139,
+    displayHeight: 48,
   },
 ];
 

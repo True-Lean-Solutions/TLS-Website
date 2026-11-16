@@ -7,6 +7,9 @@
  * Correction (Hemang, 2026-09-30): the Excel-VBA stock tracker review is
  * Dharmesh Thakkar's (Founder, J Sterling's Wellness Spa); the reviews sheet
  * had it under Mayank Pujara by mistake. Text, date and rating unchanged.
+ * Brandon Jahner (Foresight Food): text, name and title from his email to
+ * Hemang and Mack, sent by Hemang 2026-11-17. The email gives no star rating,
+ * so none is shown; `date` is the day it was received.
  */
 export interface Testimonial {
   name: string;
@@ -17,7 +20,8 @@ export interface Testimonial {
   position: string;
   initials: string;
   date: string; // ISO
-  stars: number;
+  /** Only when the client gave a rating; omitted, the card shows no stars. */
+  stars?: number;
   quote: string;
 }
 
@@ -82,5 +86,14 @@ export const testimonials: Testimonial[] = [
     stars: 5,
     quote:
       'True Lean Solutions understood our business quickly and delivered a professional website we are proud to share with prospects. They also support and continuously enhance the custom CRM that runs our operations, bringing client records, project documents, and approval workflows into one system designed around how our solar infrastructure business actually works. Their communication is straightforward, they are responsive, and the work gets done without us having to chase it.',
+  },
+  {
+    name: 'Brandon Jahner',
+    company: 'Foresight Food',
+    position: 'Food Product Development Consultant',
+    initials: 'B.J.',
+    date: '2026-11-17',
+    quote:
+      "I hired True Lean Solutions to turn ShelfProof, my food industry software concept, into a working prototype I could put in front of customers, and the result exceeded my expectations.\n\nIn four working sessions over a single week, their developer, Hemang, built live while I talked through feedback. He doesn't just transcribe requirements; he pushes back, asks the right questions, and helps work through the problem. He picked up my industry's terminology quickly and applied it well, and he worked as a true peer when we discussed how the program should be organized.\n\nMack brings more than a build team. He introduced me to useful industry contacts, drops into our calls to check in, and offers real founder-to-founder advice. He comes across as genuine, and it shows in how his team works.\n\nI came away with a working preview I can use as a sales tool. I'd recommend True Lean Solutions to business owners who want a hands-on, collaborative build partner.",
   },
 ];

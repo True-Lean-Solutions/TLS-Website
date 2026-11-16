@@ -944,3 +944,11 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Where it's used:** the Contact page's "Book a call" button, the mobile menu's "Book a free 30-minute call" row, the Technology Strategy "Book a Free 30-Minute Call" buttons, and Tali's booking link. Everything reads `site.booking`; Tali's copy, which used to hard-code the URL, now imports it.
 - **30-minute limit:** a website link can't set a meeting's length. The length lives on the Zoho Bookings service, so that service must be set to 30 minutes for the "30-minute call" labels to stay true.
 - **Note:** the URL is on a `techtranspire` subdomain. It's a link only, with no Tech Transpire logo, color or email on the site. Changing it would need a TLS-branded Zoho Bookings page.
+
+## 2026-11-17: Foresight Food review and logo
+
+- **Added (Hemang):** Brandon Jahner's review (Food Product Development Consultant, Foresight Food) joins the "What our clients say" reel on Home, verbatim from his email to Hemang and Mack. Foresight Food's logo joins the client logo strip (thirteen logos) and Tali's client list.
+- **No stars on this card.** The email gives no rating, and a rating can't be invented, so `stars` is now optional and a card without one shows no star row. Add `stars: 5` to his entry in `src/data/testimonials.ts` if he confirms a rating.
+- **Date** is 2026-11-17, the day the review was received. The card doesn't show it.
+- **Logo:** `public/clients/foresight-food.webp`, from the 180×139 JPEG in his email signature, with the white background keyed out. A larger or vector original would look sharper; swap it in if one arrives.
+- **The review names Mack and Hemang.** It's published verbatim, as with the other reviews that name Hemang.

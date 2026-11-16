@@ -92,6 +92,7 @@ export const COMPANY = {
     "J Sterling's Wellness Spa",
     'Centric3',
     'Dwibros Infracon Private Limited',
+    'Foresight Food',
   ],
 };
 
