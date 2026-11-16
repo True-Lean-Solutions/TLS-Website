@@ -30,15 +30,17 @@ const long = t.quote.length > 300;
   data-clone={clone ? '' : undefined}
 >
   <span class="rc-mark" aria-hidden="true">&ldquo;</span>
-  <div class="rc-stars" role="img" aria-label={`${t.stars} out of 5 stars`}>
-    {
-      Array.from({ length: t.stars }).map(() => (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 2.5l2.9 6.2 6.6.8-4.9 4.5 1.3 6.6L12 18.9 6.1 21.2l1.3-6.6L2.5 9.5l6.6-.8z" />
-        </svg>
-      ))
-    }
-  </div>
+  {
+    t.stars && (
+      <div class="rc-stars" role="img" aria-label={`${t.stars} out of 5 stars`}>
+        {Array.from({ length: t.stars }).map(() => (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2.5l2.9 6.2 6.6.8-4.9 4.5 1.3 6.6L12 18.9 6.1 21.2l1.3-6.6L2.5 9.5l6.6-.8z" />
+          </svg>
+        ))}
+      </div>
+    )
+  }
   <blockquote class="rc-quote">
     {t.quote.split('\n\n').map((p) => <p>{p}</p>)}
   </blockquote>
