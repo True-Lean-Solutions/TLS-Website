@@ -4,7 +4,7 @@ category: perspectives
 excerpt: Resilience is a design choice, not a coincidence.
 cover: /insights/covers/peer-to-peer-architecture-enterprise.webp
 thumbnail: /insights/thumbs/peer-to-peer-architecture-enterprise.webp
-coverAlt: An abstract illustration of a peer-to-peer network
+coverAlt: An isometric illustration of a failing central server beside a peer-to-peer network that keeps running when one node fails
 author: Hemang Dwivedi
 readTime: 3 min read
 topics:
