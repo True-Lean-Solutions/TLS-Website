@@ -83,7 +83,7 @@ const pageTitle = [`${data.title} | True Lean Solutions`, `${data.title} | TLS`]
     {
       data.cover && (
         <div class="wrap cover-wrap">
-          <img class="cover" src={withBase(data.cover)} srcset={srcsetFor(data.cover)} sizes={ARTICLE_COVER_SIZES} alt={data.coverAlt ?? ''} width="1200" height="675" fetchpriority="high" />
+          <img class="cover" src={withBase(data.cover)} srcset={srcsetFor(data.cover)} sizes={ARTICLE_COVER_SIZES} alt={data.coverAlt ?? ''} width="1800" height="1200" fetchpriority="high" />
         </div>
       )
     }
@@ -427,7 +427,7 @@ const pageTitle = [`${data.title} | True Lean Solutions`, `${data.title} | TLS`]
     width: 100%;
     max-width: 960px;
     margin: 2rem auto 0;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 3 / 2; /* the article banners' shape (2026-11-18): shown whole */
     object-fit: cover;
     border-radius: var(--radius-lg);
   }

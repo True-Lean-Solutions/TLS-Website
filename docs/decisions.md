@@ -977,3 +977,9 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Clock-safe timing.** The 3-second rule compares `form_ts` with `submitted`, both from the visitor's clock. Only the 7-day maximum age uses the server's clock, with leeway.
 - **Backend (Apps Script, outside this repo):** rejects silently (same success response, no email) and logs each rejection. For the first two weeks it logs every rejected submission in full to a "Rejected" sheet tab for a false-positive audit; a constant switches it to one-line logging.
 - **Rollout:** frontend first (the old script ignores the extra fields), then the script via Manage deployments → Edit → New version, keeping the same URL.
+
+## 2026-11-18: Article banners
+
+- **Added (Hemang):** each post's `cover` is now its designed banner from the Drive folder "Title Images" (`1ZJ_CyDeE4YGOC9JcmNg2QJG8ZYRW7okv`), imported once. They are 1800×1200 isometric illustrations, in line with v2.3 §13 (no robots or brains). The files replace the old covers at the same paths, so posts keep their `cover` values. The smaller copies (480–1600 px) were regenerated.
+- **Shown whole:** the article cover frame is now 3:2, the banners' shape (it was 16:9, which would crop icons at the top and bottom). Every `coverAlt` was rewritten to describe its new banner.
+- **Banners also appear in** link previews (Open Graph) and Technology Strategy's case-study visual (Six Account Tiers). Cards keep the separate thumbnails.
