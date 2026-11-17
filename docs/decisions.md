@@ -968,3 +968,12 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Where they show:** Insights cards (the Insights and category pages, and related posts), the footer's Latest Insights, and Technology Strategy's "Ideas and perspectives" list. Those frames are now 3:2, the thumbnails' shape, so nothing in the designs is cropped.
 - **Unchanged:** article banners and link previews still use `cover`. Hemang is sending separate banners for inside the articles. Technology Strategy's large case-study visual counts as a banner and keeps its cover too.
 - **Text inside two thumbnails goes beyond its post (to confirm):** Six Account Tiers says "delivered on schedule", which the case study doesn't say. Peer-to-Peer shows "<100ms input latency on a local network" without the post's "in prototype testing".
+
+## 2026-11-18: Contact form spam protection
+
+- **Why:** spam reached success@trueleansolutions.com through the contact form. The honeypot only ran in the browser and was never sent, but bots POST straight to the public Apps Script URL and never load the page.
+- **Frontend (`ContactForm.astro`):** a hidden `form_ts` field (set to `Date.now()` on page load) and the existing `website` honeypot are now sent with every submission. Nothing else changed: field names, validation, styling, the success and error panels, and fire-and-forget sending are as before.
+- **Honeypot name kept as `website`.** The suggested `company_website` would match Chrome's "company" autofill and could silently discard real leads.
+- **Clock-safe timing.** The 3-second rule compares `form_ts` with `submitted`, both from the visitor's clock. Only the 7-day maximum age uses the server's clock, with leeway.
+- **Backend (Apps Script, outside this repo):** rejects silently (same success response, no email) and logs each rejection. For the first two weeks it logs every rejected submission in full to a "Rejected" sheet tab for a false-positive audit; a constant switches it to one-line logging.
+- **Rollout:** frontend first (the old script ignores the extra fields), then the script via Manage deployments → Edit → New version, keeping the same URL.

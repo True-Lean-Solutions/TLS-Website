@@ -230,7 +230,9 @@ Keep this mechanism exactly. It was debugged three times in Phase 1, and replaci
   - `challenge` (required, max 1000 characters, live counter)
   - `timeline` (required select: "As soon as possible", "Within 1–3 months", "Within 3–6 months", "Just exploring for now")
   - `submitted` (ISO timestamp, set by script)
-- **Honeypot.** A visually hidden `website` input. If it is filled, show success and send nothing.
+  - `form_ts` (hidden; `Date.now()` when the page loaded, set by script; spam time trap, 2026-11-18)
+- **Honeypot.** A visually hidden `website` input. If it is filled, show success and send nothing. It is also sent (empty) with every real submission, so the Apps Script can check it.
+- **Server-side spam check** (Hemang, 2026-11-18; lives in the Apps Script, not this repo). It treats a submission as spam, returns the normal success response and sends no email when: `website` is filled; `form_ts` is missing or not a number; `submitted` is under 3 seconds after `form_ts` (both from the visitor's clock); or `form_ts` is over 7 days old by the server's clock, with leeway for clock skew. It strips `website` and `form_ts` from the email. Change the script only via Manage deployments → Edit → New version, so the URL stays the same.
 - **Status panels.** The success panel uses `role="status"` and the error panel uses `role="alert"`. A `<noscript>` note gives the email address.
 - **Booking link** ("Book a call"): `https://techtranspire.zohobookings.com/#/4733816000000230048`, Mack's Zoho Bookings page (Hemang, 2026-11-13; replaced the Google Calendar link). Defined once as `site.booking`. Calls are 30 minutes at most, set on the Zoho Bookings service.
 
