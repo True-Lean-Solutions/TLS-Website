@@ -15,6 +15,7 @@
  *             Data & Analytics' data pipeline ...... pipeline.ts
  *             scroll-scrubbed diagrams ([data-scrub]) scrub.ts
  *             timed motion graphics ([data-sequence]) sequence.ts
+ *             Insights article section list ...... article.ts
  */
 import { gsap, ScrollTrigger, MQ, initSmoothScroll, refreshWhenSettled, scrollPosition, scrollToY } from './core';
 import { initHeadingReveals } from './text';
@@ -31,6 +32,7 @@ import { initSecurityPage } from './security';
 import { initPipelines } from './pipeline';
 import { initScrubs } from './scrub';
 import { initSequences } from './sequence';
+import { initArticleNav } from './article';
 
 /** Solutions page: horizontal card track (off: the cards show as a grid). */
 const SOLUTIONS_TRACK = false;
@@ -72,6 +74,7 @@ function keepPlace(y: number) {
 export function initScroll() {
   initSmoothScroll();
   initChrome(); // progress + compact header follow scroll for everyone
+  initArticleNav(); // Insights articles: section list jumps + current section, for everyone
   revealOnFocus();
 
   const mm = gsap.matchMedia();

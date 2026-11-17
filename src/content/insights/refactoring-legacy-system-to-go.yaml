@@ -3,12 +3,17 @@ date: 2026-07-27
 category: perspectives
 excerpt: Performance problems are rarely about the language — until they are.
 cover: /insights/covers/refactoring-legacy-system-to-go.webp
+thumbnail: /insights/thumbs/refactoring-legacy-system-to-go.webp
 coverAlt: An abstract illustration of modernizing a codebase
 author: Hemang Dwivedi
 readTime: 3 min read
 topics:
   - Software Development
 source: 14NZRBiXe6DBGFHqvz6_-bSHNEiL6TVbk
+takeaways:
+  - 'An enterprise system''s real bottleneck was concurrent requests under load, the problem Go''s runtime is built around.'
+  - 'We mapped every consumer, kept outputs identical during the transition and cut over in phases, with per-service rollback.'
+  - 'A language migration is a systems project. Most of the risk is what the old system did that nobody wrote down.'
 blocks:
   - type: richtext
     markdown: |

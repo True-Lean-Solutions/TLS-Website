@@ -3,12 +3,17 @@ date: 2026-05-01
 category: perspectives
 excerpt: Most software projects fail before a single line of code is written. Here's why the real problem is almost never technical — and what to define before you build.
 cover: /insights/covers/why-your-software-implementation-failed.webp
+thumbnail: /insights/thumbs/why-your-software-implementation-failed.webp
 coverAlt: An abstract illustration of a software project plan
 author: Hemang Dwivedi
 readTime: 4 min read
 topics:
   - Software Development
 source: 1pPBy56Ri9ZImtxMZ2RWwR9T3_UcZicfc
+takeaways:
+  - 'Most failed software projects trace back to one cause: the problem wasn''t clearly defined before building started.'
+  - 'Building before you understand how the business works leads to the wrong problem, well solved.'
+  - 'Before any build, be sure you understand the root cause, not the symptom or the tool you think you need.'
 blocks:
   - type: richtext
     markdown: |

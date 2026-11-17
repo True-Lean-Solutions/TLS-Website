@@ -27,7 +27,7 @@ import TeamCard from '../../components/TeamCard.astro';
 import type { IconName } from '../../components/iconTypes';
 import { cta, href, site, canonicalUrl } from '../../data/site';
 import { solutions } from '../../data/services';
-import { categoryMeta, getPublishedPosts } from '../../data/insights';
+import { cardImage, categoryMeta, getPublishedPosts } from '../../data/insights';
 import { advisor, proofTiles, results } from '../../data/advisor';
 import { parseMetric, formatMetric } from '../../scripts/metric';
 
@@ -884,7 +884,7 @@ const jsonLd = {
             {insights.map((p) => (
               <li>
                 <a href={href(`/insights/${p.id}/`)} class="ts-post ix-card ix-card--quiet">
-                  {p.data.cover && <img src={href(p.data.cover)} alt="" width="320" height="200" loading="lazy" decoding="async" />}
+                  {cardImage(p.data) && <img src={href(cardImage(p.data)!)} alt="" width="900" height="600" loading="lazy" decoding="async" />}
                   <span class="ts-post-body">
                     <span class="ts-post-cat">{categoryMeta[p.data.category].label}</span>
                     <strong>{p.data.title}</strong>
@@ -2690,9 +2690,10 @@ const jsonLd = {
   }
   .ts-post img {
     flex: none;
-    width: 112px;
+    width: 120px;
     height: auto;
-    aspect-ratio: 1;
+    aspect-ratio: 3 / 2;
+    align-self: center; /* keep the 3:2 shape; don't stretch to the card's height */
     object-fit: cover;
     border-radius: 12px;
   }

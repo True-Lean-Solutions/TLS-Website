@@ -10,23 +10,25 @@ import ImageBlock from './blocks/ImageBlock.astro';
 
 interface Props {
   blocks: Block[];
+  /** Heading ids per block, from articleOutline() (articles only). */
+  headingIds?: string[][];
 }
-const { blocks } = Astro.props;
+const { blocks, headingIds = [] } = Astro.props;
 ---
 
 <div class="blocks">
   {
-    blocks.map((b) => (
+    blocks.map((b, i) => (
       <>
-        {b.type === 'richtext' && <RichText markdown={b.markdown} />}
+        {b.type === 'richtext' && <RichText markdown={b.markdown} headingIds={headingIds[i]} />}
         {b.type === 'cards' && (
-          <CardGrid heading={b.heading} columns={b.columns} items={b.items} />
+          <CardGrid heading={b.heading} headingId={headingIds[i]?.[0]} columns={b.columns} items={b.items} />
         )}
         {b.type === 'stats' && (
-          <StatGroup heading={b.heading} accent={b.accent} items={b.items} />
+          <StatGroup heading={b.heading} headingId={headingIds[i]?.[0]} accent={b.accent} items={b.items} />
         )}
         {b.type === 'steps' && (
-          <Steps heading={b.heading} accent={b.accent} items={b.items} />
+          <Steps heading={b.heading} headingId={headingIds[i]?.[0]} accent={b.accent} items={b.items} />
         )}
         {b.type === 'callout' && (
           <Callout title={b.title} body={b.body} tag={b.tag} variant={b.variant} />

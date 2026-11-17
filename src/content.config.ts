@@ -78,7 +78,17 @@ const insights = defineCollection({
     date: z.coerce.date(),
     category: z.enum(['perspectives', 'case-studies', 'guides', 'news']),
     excerpt: z.string(),
+    /**
+     * "The 30-Second Read": three short takeaways shown beside the article.
+     * Written only from the post's own text; never a new claim.
+     */
+    takeaways: z.array(z.string()).default([]),
     cover: z.string().optional(),
+    /**
+     * Card image (Insights cards, related posts, the footer's Latest
+     * Insights, Technology Strategy's list). 3:2. Falls back to `cover`.
+     */
+    thumbnail: z.string().optional(),
     coverAlt: z.string().optional(),
     topics: z.array(z.string()).default([]),
     author: z.string().optional(),

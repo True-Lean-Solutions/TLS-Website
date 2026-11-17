@@ -3,12 +3,17 @@ date: 2026-08-17
 category: perspectives
 excerpt: Split ownership doesn't split the risk — it multiplies it.
 cover: /insights/covers/one-accountable-owner.webp
+thumbnail: /insights/thumbs/one-accountable-owner.webp
 coverAlt: An abstract illustration of shared project ownership
 author: Hemang Dwivedi
 readTime: 3 min read
 topics:
   - Process Automation
 source: 1utEowNV-IhLp5mFaORQiMuaAlYGtCz19
+takeaways:
+  - 'When a client, a vendor and a new team share a project, everyone owns a piece and nobody owns the outcome.'
+  - 'It shows up as unclear escalation, competing incentives and slower decisions, even when everyone means well.'
+  - 'The fix is structural: name one accountable owner, agree on escalation early and keep decisions in one place.'
 blocks:
   - type: richtext
     markdown: |

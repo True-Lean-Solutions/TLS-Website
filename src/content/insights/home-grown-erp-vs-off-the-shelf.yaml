@@ -3,12 +3,17 @@ date: 2026-08-03
 category: perspectives
 excerpt: Not every business fits inside someone else's workflow.
 cover: /insights/covers/home-grown-erp-vs-off-the-shelf.webp
+thumbnail: /insights/thumbs/home-grown-erp-vs-off-the-shelf.webp
 coverAlt: An abstract illustration of a custom business platform
 author: Hemang Dwivedi
 readTime: 3 min read
 topics:
   - Software Development
 source: 1Xz8CDSHJgOHR-B9-V1nRTvUyESnNXyDA
+takeaways:
+  - 'Off-the-shelf ERP suits the average case. When your workflow doesn''t fit, the workarounds tax effort instead of saving it.'
+  - 'Custom makes sense when you customize more than you configure, licensing outpaces build cost, or integrations are extensive.'
+  - 'With a custom system, the workflow, the data model and the roadmap are yours. With a platform, they''re the vendor''s.'
 blocks:
   - type: richtext
     markdown: |

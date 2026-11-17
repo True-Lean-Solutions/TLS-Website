@@ -4,7 +4,7 @@ import Tali from '../components/Tali.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site, href as withBase, canonicalUrl } from '../data/site';
-import { categoryMeta } from '../data/insights';
+import { categoryMeta, cardImage } from '../data/insights';
 import { solutions } from '../data/services';
 import { siteSchema, serviceSchema, breadcrumbSchema, type Crumb } from '../data/schema';
 import { srcsetFor, type PreloadImage } from '../data/images';
@@ -67,8 +67,8 @@ const latestPosts = (await getCollection('insights', (p) => !p.data.draft))
   .map((p) => ({
     title: p.data.title,
     href: withBase(`/insights/${p.id}/`),
-    cover: p.data.cover ? withBase(p.data.cover) : undefined,
-    coverSrcset: p.data.cover ? srcsetFor(p.data.cover) : undefined,
+    cover: cardImage(p.data) ? withBase(cardImage(p.data)!) : undefined,
+    coverSrcset: cardImage(p.data) ? srcsetFor(cardImage(p.data)!) : undefined,
     category: categoryMeta[p.data.category].label,
   }));
 ---

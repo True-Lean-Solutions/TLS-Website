@@ -28,6 +28,10 @@ const SOURCES = [
     .readdirSync(path.join(PUBLIC, 'insights/covers'))
     .filter((f) => f.endsWith('.webp') && !VARIANT.test(f))
     .map((f) => `/insights/covers/${f}`),
+  ...fs
+    .readdirSync(path.join(PUBLIC, 'insights/thumbs'))
+    .filter((f) => f.endsWith('.webp') && !VARIANT.test(f))
+    .map((f) => `/insights/thumbs/${f}`),
 ];
 
 const manifest = {};

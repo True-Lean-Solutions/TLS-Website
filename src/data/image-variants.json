@@ -129,5 +129,117 @@
       480,
       768
     ]
+  },
+  "/insights/thumbs/automating-recruitment-with-ai.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/commission-cascade-every-tier-one-way.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/custom-integrations-connect-instead-of-replace.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/go-rust-enterprise-systems.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/hidden-cost-of-good-enough.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/home-grown-erp-vs-off-the-shelf.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/modernizing-legacy-salesforce-org.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/one-accountable-owner.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/peer-to-peer-architecture-enterprise.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/refactoring-legacy-system-to-go.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/six-account-tiers-one-source-of-truth.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/what-financial-systems-integration-requires.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/why-cheaper-developers-cost-more.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
+  },
+  "/insights/thumbs/why-your-software-implementation-failed.webp": {
+    "width": 900,
+    "height": 600,
+    "variants": [
+      480,
+      768
+    ]
   }
 }

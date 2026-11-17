@@ -1,7 +1,7 @@
 ---
 import { srcsetFor, CARD_COVER_SIZES } from '../data/images';
 import { href as withBase } from '../data/site';
-import { categoryMeta, formatDate, type Post } from '../data/insights';
+import { categoryMeta, cardImage, formatDate, type Post } from '../data/insights';
 
 interface Props {
   post: Post;
@@ -11,13 +11,16 @@ const { data } = post;
 const cat = categoryMeta[data.category];
 const url = withBase(`/insights/${post.id}/`);
 const topicsAttr = data.topics.join('|');
+const img = cardImage(data);
+// Thumbnails carry the post's title in the design; covers are illustrations.
+const imgAlt = data.thumbnail ? data.title : (data.coverAlt ?? '');
 ---
 
 <article class="insight-card ix-card ix-light" data-topics={topicsAttr}>
   <a class="cover-link" href={url} tabindex="-1" aria-hidden="true">
     {
-      data.cover ? (
-        <img class="cover" src={withBase(data.cover)} srcset={srcsetFor(data.cover)} sizes={CARD_COVER_SIZES} alt={data.coverAlt ?? ""} width="600" height="338" loading="lazy" />
+      img ? (
+        <img class="cover" src={withBase(img)} srcset={srcsetFor(img)} sizes={CARD_COVER_SIZES} alt={imgAlt} width="900" height="600" loading="lazy" />
       ) : (
         <span class="cover placeholder" />
       )
@@ -52,7 +55,7 @@ const topicsAttr = data.topics.join('|');
   .cover {
     display: block;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 3 / 2; /* the thumbnails' shape: nothing in them is cropped */
     object-fit: cover;
     background: var(--section);
     transition: transform 700ms var(--ix-ease);

@@ -3,12 +3,17 @@ date: 2026-06-15
 category: perspectives
 excerpt: The gap between the demo and production is where most AI initiatives break.
 cover: /insights/covers/automating-recruitment-with-ai.webp
+thumbnail: /insights/thumbs/automating-recruitment-with-ai.webp
 coverAlt: An abstract illustration of an AI-assisted recruitment pipeline
 author: Hemang Dwivedi
 readTime: 3 min read
 topics:
   - Process Automation
 source: 1vrogSrVTdhw2BrrhgHB17DldaQ--dYrC
+takeaways:
+  - 'AI pays off on the repetitive work: candidate discovery, personalized outreach and pipeline tracking.'
+  - 'A human approval step before outreach isn''t a bottleneck. It''s what keeps the system trustworthy.'
+  - 'AI amplifies the process underneath it, so fix the workflow and build measurement in from the start.'
 blocks:
   - type: richtext
     markdown: |

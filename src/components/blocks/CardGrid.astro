@@ -11,10 +11,12 @@ interface Item {
 }
 interface Props {
   heading?: string;
+  /** Anchor id for the heading (the article's "In This Article" list links here). */
+  headingId?: string;
   columns?: number;
   items: Item[];
 }
-const { heading, columns = 3, items } = Astro.props;
+const { heading, headingId, columns = 3, items } = Astro.props;
 
 const accents: Record<Accent, string> = {
   red: '--c: var(--red); --ct: var(--red-tint);',
@@ -28,7 +30,7 @@ const ItemHeading = heading ? 'h4' : 'h3';
 ---
 
 <div class="card-block block-wide">
-  {heading && <h3 class="block-h">{heading}</h3>}
+  {heading && <h3 class="block-h" id={headingId}>{heading}</h3>}
   <div class:list={['grid', columns === 2 ? 'g2' : 'g3']}>
     {
       items.map((it, i) => (

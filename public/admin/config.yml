@@ -44,8 +44,10 @@ collections:
           - { label: Guides, value: guides }
           - { label: News, value: news }
       - { label: Excerpt (meta description), name: excerpt, widget: text, hint: 'Aim for ~150 characters. Used as the search/social description.' }
+      - { label: The 30-Second Read, name: takeaways, widget: list, required: false, hint: 'Three short takeaways shown beside the article. Use only what the post itself says.' }
       - { label: Cover image, name: cover, widget: image, required: false, hint: '16:9 works best. Used for the card and social preview.' }
       - { label: Cover alt text, name: coverAlt, widget: string, required: false, hint: 'Describe the image for screen readers and SEO.' }
+      - { label: Thumbnail, name: thumbnail, widget: image, required: false, hint: '3:2 (e.g. 900x600). Shown on Insights cards, related posts and the footer. Falls back to the cover.' }
       - { label: Author, name: author, widget: string, required: false }
       - { label: Read time, name: readTime, widget: string, required: false, hint: 'e.g. "4 min read".' }
       - { label: Topics, name: topics, widget: list, required: false, hint: 'Powers "Browse by Topic". e.g. Software Development, Process Automation.' }
