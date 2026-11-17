@@ -37,7 +37,8 @@ export function preloadFor(src: string, sizes: string): PreloadImage {
  * - Solution hero: full bleed, but `object-fit: cover` on a 2:1 photo, so the
  *   width it needs is set by its height on tablets (≤720px tall) and phones
  *   (a 400px band), not by the viewport.
- * - Article cover: the content column, capped at 960px.
+ * - Article cover: aligned with the article's columns: 1120px, or 760px on
+ *   tablets, and the full width (less the gutters) between and below.
  * - Insight cards: three columns, two ≤900px, one ≤640px.
  */
 export const HOME_HERO = { src: '/hero/hero-team.webp', sizes: '(max-width: 900px) 100vw, 60vw' };
@@ -45,5 +46,6 @@ export const SOLUTION_HERO = {
   src: '/solutions/hero-solutions.webp',
   sizes: '(max-width: 640px) 800px, (max-width: 1024px) 1440px, 100vw',
 };
-export const ARTICLE_COVER_SIZES = '(max-width: 1008px) calc(100vw - 48px), 960px';
+export const ARTICLE_COVER_SIZES =
+  '(max-width: 792px) calc(100vw - 32px), (max-width: 1024px) 760px, (max-width: 1152px) calc(100vw - 32px), 1120px';
 export const CARD_COVER_SIZES = '(max-width: 640px) calc(100vw - 32px), (max-width: 900px) 50vw, 400px';

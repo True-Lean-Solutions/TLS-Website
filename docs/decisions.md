@@ -952,3 +952,19 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Date** is 2026-11-17, the day the review was received. The card doesn't show it.
 - **Logo:** `public/clients/foresight-food.webp`, from the 180×139 JPEG in his email signature, with the white background keyed out. A larger or vector original would look sharper; swap it in if one arrives.
 - **The review names Mack and Hemang.** It's published verbatim, as with the other reviews that name Hemang.
+
+## 2026-11-18: Article summary and section list
+
+- **Added (Hemang):** every Insights article now has a left column beside the text.
+  - **"The 30-Second Read"**: three numbered takeaways (`takeaways` in each post's front matter, editable in the CMS). All 14 were written from each post's own text. They add no new claim, number or client.
+  - **"In This Article"**: the post's sections (its `##` headings and titled card, step and stat blocks), each a jump link. It stays in view while reading and marks the current section. A click glides to the section below the sticky header, or jumps there with reduced motion. Script: `src/scripts/scroll/article.ts`, which runs for everyone.
+- **Phones and tablets (≤1024px):** the summary sits above the article and the section list folds into a tap-to-open panel.
+- **Alignment:** the title and cover now share the columns' left edge (1120px; 760px on tablets), so the cover is a little wider on desktop. `ARTICLE_COVER_SIZES` was updated to match.
+- **Heading ids** come from `src/data/article-outline.ts`, which also renders the posts' Markdown (HTML in a template string trips the `.astro` compiler).
+
+## 2026-11-18: Insights thumbnails
+
+- **Added (Hemang):** each post has its own designed thumbnail (`thumbnail`, 900×600 WebP in `public/insights/thumbs/`). Hemang shared them in the Drive folder "Website Blog Images" (`1oooo05Rkt7OouLgHLq_cuShJocHpzmd5`); they were imported once, with no Drive hotlinks.
+- **Where they show:** Insights cards (the Insights and category pages, and related posts), the footer's Latest Insights, and Technology Strategy's "Ideas and perspectives" list. Those frames are now 3:2, the thumbnails' shape, so nothing in the designs is cropped.
+- **Unchanged:** article banners and link previews still use `cover`. Hemang is sending separate banners for inside the articles. Technology Strategy's large case-study visual counts as a banner and keeps its cover too.
+- **Text inside two thumbnails goes beyond its post (to confirm):** Six Account Tiers says "delivered on schedule", which the case study doesn't say. Peer-to-Peer shows "<100ms input latency on a local network" without the post's "in prototype testing".

@@ -5,6 +5,7 @@ import InsightCard from '../components/InsightCard.astro';
 import { site, href as withBase, canonicalUrl } from '../data/site';
 import { categoryMeta, formatDate, type Post } from '../data/insights';
 import { srcsetFor, preloadFor, ARTICLE_COVER_SIZES } from '../data/images';
+import { articleOutline } from '../data/article-outline';
 
 interface Props {
   post: Post;
@@ -39,6 +40,12 @@ const jsonLd = {
 
 // <title> (SEO brief T2.3): the headline stays exactly as written; the brand
 // suffix shrinks or drops so the title stays near 60 characters in results.
+// Beside the article: "The 30-Second Read" (the post's takeaways) and
+// "In This Article" (its sections, each a jump link; src/scripts/scroll/article.ts).
+const outline = articleOutline(data.blocks);
+const showToc = outline.items.length > 1;
+const hasAside = data.takeaways.length > 0 || showToc;
+
 const pageTitle = [`${data.title} | True Lean Solutions`, `${data.title} | TLS`].find((t) => t.length <= 60) ?? data.title;
 ---
 
@@ -58,7 +65,7 @@ const pageTitle = [`${data.title} | True Lean Solutions`, `${data.title} | TLS`]
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </Fragment>
-  <article class="article" data-reveal="load">
+  <article class:list={['article', { 'with-aside': hasAside }]} data-reveal="load">
     <div class="wrap">
       <header class="head">
         <a class="cat" href={withBase(`/insights/${data.category}/`)}>{cat.label}</a>
@@ -82,19 +89,75 @@ const pageTitle = [`${data.title} | True Lean Solutions`, `${data.title} | TLS`]
     }
 
     <div class="wrap">
-      <div class="article-content">
-        <BlockRenderer blocks={data.blocks} />
+      <div class:list={['article-grid', { 'has-aside': hasAside }]}>
+        {
+          hasAside && (
+            <aside class="aside" aria-label="Article summary and sections">
+              {data.takeaways.length > 0 && (
+                <section class="brief" aria-labelledby="brief-h">
+                  <h2 class="brief-h" id="brief-h">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="13" r="8" />
+                      <path d="M12 9v4l2.5 2.5M9.5 2h5M12 2v3" />
+                    </svg>
+                    The 30-Second Read
+                  </h2>
+                  <ol class="brief-list">
+                    {data.takeaways.map((t) => (
+                      <li>{t}</li>
+                    ))}
+                  </ol>
+                </section>
+              )}
+              {showToc && (
+                <>
+                  <nav class="toc toc-desk" aria-labelledby="toc-h" data-toc>
+                    <h2 class="toc-h" id="toc-h">In This Article</h2>
+                    <ol class="toc-list">
+                      {outline.items.map((it) => (
+                        <li>
+                          <a href={'#' + it.id}>{it.text}</a>
+                        </li>
+                      ))}
+                    </ol>
+                  </nav>
+                  <nav class="toc toc-mob" aria-label="In This Article" data-toc>
+                    <details class="toc-fold">
+                      <summary>
+                        <span class="toc-h">In This Article</span>
+                        <span class="toc-count">{outline.items.length} sections</span>
+                      </summary>
+                      <ol class="toc-list">
+                        {outline.items.map((it) => (
+                          <li>
+                            <a href={'#' + it.id}>{it.text}</a>
+                          </li>
+                        ))}
+                      </ol>
+                    </details>
+                  </nav>
+                </>
+              )}
+            </aside>
+          )
+        }
+
+        <div class="main-col">
+          <div class="article-content">
+            <BlockRenderer blocks={data.blocks} headingIds={outline.headingIds} />
+          </div>
+
+          {
+            data.topics.length > 0 && (
+              <ul class="topics" aria-label="Topics">
+                {data.topics.map((t) => <li>{t}</li>)}
+              </ul>
+            )
+          }
+
+          <p class="back"><a href={withBase('/insights/')}>← All insights</a></p>
+        </div>
       </div>
-
-      {
-        data.topics.length > 0 && (
-          <ul class="topics" aria-label="Topics">
-            {data.topics.map((t) => <li>{t}</li>)}
-          </ul>
-        )
-      }
-
-      <p class="back"><a href={withBase('/insights/')}>← All insights</a></p>
     </div>
   </article>
 
@@ -124,6 +187,218 @@ const pageTitle = [`${data.title} | True Lean Solutions`, `${data.title} | TLS`]
   }
   .article-content {
     margin-top: 2.5rem;
+  }
+
+  /* ---- "The 30-Second Read" and "In This Article" ----
+     Desktop: a left column beside the article; the section list stays in
+     view while reading. Tablet and phone: the summary sits above the article
+     and the section list folds into a tap-to-open panel. */
+  .article-grid.has-aside {
+    display: grid;
+    grid-template-columns: 272px minmax(0, 1fr);
+    gap: 3.5rem;
+    max-width: 1120px;
+    margin: 2.75rem auto 0;
+  }
+  .has-aside .article-content {
+    margin-top: 0;
+  }
+  /* Title, cover and the two columns share one left edge. */
+  .with-aside .head {
+    max-width: 1120px;
+  }
+  .with-aside .head h1 {
+    max-width: 22ch;
+  }
+  .with-aside .cover {
+    max-width: 1120px;
+  }
+  /* Prose lines up with the wide blocks instead of centering in the column. */
+  .has-aside .article-content :global(.block-reading),
+  .has-aside .article-content :global(.block-wide) {
+    margin-inline: 0;
+  }
+  .has-aside .topics,
+  .has-aside .back {
+    max-width: none;
+    margin-inline: 0;
+  }
+  .aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    min-width: 0;
+  }
+
+  .brief {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 1.4rem 1.35rem 1.3rem;
+    overflow: hidden;
+  }
+  .brief::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: var(--grad-h);
+  }
+  .brief-h,
+  .toc-h {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-head);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0;
+  }
+  .brief-h svg {
+    color: var(--red-text);
+    flex: none;
+  }
+  .brief-list {
+    list-style: none;
+    counter-reset: brief;
+    margin: 1.05rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.95rem;
+  }
+  .brief-list li {
+    counter-increment: brief;
+    display: grid;
+    grid-template-columns: 1.75rem 1fr;
+    gap: 0.35rem;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+  .brief-list li::before {
+    content: counter(brief, decimal-leading-zero);
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.78rem;
+    line-height: 1.95;
+    color: var(--red-text);
+  }
+
+  .toc-desk {
+    position: sticky;
+    top: calc(var(--header-h) + 1.75rem);
+  }
+  .toc-list {
+    list-style: none;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    border-left: 2px solid var(--border);
+  }
+  .toc-list a {
+    position: relative;
+    display: block;
+    padding: 0.45rem 0 0.45rem 1rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: var(--text-2);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .toc-list a::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 0.35rem;
+    bottom: 0.35rem;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--red);
+    transform: scaleY(0);
+    transition: transform 0.25s ease;
+  }
+  .toc-list a:hover {
+    color: var(--ink);
+  }
+  .toc-list a[aria-current='location'] {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .toc-list a[aria-current='location']::before {
+    transform: scaleY(1);
+  }
+  .toc-mob {
+    display: none;
+  }
+
+  @media (max-width: 1024px) {
+    .article-grid.has-aside {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
+      max-width: 760px;
+    }
+    .with-aside .head,
+    .with-aside .cover {
+      max-width: 760px;
+    }
+    .aside {
+      gap: 1rem;
+    }
+    .toc-desk {
+      display: none;
+    }
+    .toc-mob {
+      display: block;
+    }
+    .toc-fold {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 0 1.35rem;
+    }
+    .toc-fold summary {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      min-height: 3.25rem;
+      cursor: pointer;
+      list-style: none;
+    }
+    .toc-fold summary::-webkit-details-marker {
+      display: none;
+    }
+    .toc-fold summary::after {
+      content: '';
+      width: 0.5rem;
+      height: 0.5rem;
+      border-right: 2px solid var(--text-2);
+      border-bottom: 2px solid var(--text-2);
+      transform: translateY(-25%) rotate(45deg);
+      transition: transform 0.2s ease;
+      flex: none;
+    }
+    .toc-fold[open] summary::after {
+      transform: translateY(25%) rotate(-135deg);
+    }
+    .toc-count {
+      margin-left: auto;
+      font-size: 0.82rem;
+      color: var(--text-2);
+    }
+    .toc-fold .toc-list {
+      margin: 0 0 1.1rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .toc-list a,
+    .toc-list a::before,
+    .toc-fold summary::after {
+      transition: none;
+    }
   }
   .cat {
     font-family: var(--font-head);

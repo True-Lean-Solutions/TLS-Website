@@ -1,10 +1,12 @@
 ---
-import { marked } from 'marked';
+import { renderMarkdown } from '../../data/article-outline';
 interface Props {
   markdown: string;
+  /** Ids for this block's headings, in order (from src/data/article-outline.ts). */
+  headingIds?: string[];
 }
-const { markdown } = Astro.props;
-const html = marked.parse(markdown, { async: false }) as string;
+const { markdown, headingIds = [] } = Astro.props;
+const html = renderMarkdown(markdown, headingIds);
 ---
 
 <div class="rich block-reading" set:html={html} />

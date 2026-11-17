@@ -3,12 +3,17 @@ date: 2026-08-10
 category: perspectives
 excerpt: Most systems don't need to be replaced. They need to talk to each other properly.
 cover: /insights/covers/custom-integrations-connect-instead-of-replace.webp
+thumbnail: /insights/thumbs/custom-integrations-connect-instead-of-replace.webp
 coverAlt: An abstract illustration of connected systems
 author: Hemang Dwivedi
 readTime: 3 min read
 topics:
   - Process Automation
 source: 1ScuD6IZFAhmxNcrD_s8k7QhaSOIV1-Ds
+takeaways:
+  - 'Replacing a system means migration, retraining and a rough patch. A well-built integration avoids all of that.'
+  - 'Durable integrations map the real data flow, name one source of truth per data type and plan for failure.'
+  - 'Many "we need to replace this" conversations are really "these systems don''t talk to each other" conversations.'
 blocks:
   - type: richtext
     markdown: |

@@ -3,10 +3,12 @@ import type { Accent } from '../../data/services';
 
 interface Props {
   heading?: string;
+  /** Anchor id for the heading (the article's "In This Article" list links here). */
+  headingId?: string;
   accent?: Accent;
   items: { value: string; label: string }[];
 }
-const { heading, accent = 'red', items } = Astro.props;
+const { heading, headingId, accent = 'red', items } = Astro.props;
 const accents: Record<Accent, string> = {
   red: '--c: var(--red);',
   blue: '--c: var(--blue);',
@@ -15,7 +17,7 @@ const accents: Record<Accent, string> = {
 ---
 
 <div class="stat-group block-wide" style={accents[accent]}>
-  {heading && <h3 class="block-h">{heading}</h3>}
+  {heading && <h3 class="block-h" id={headingId}>{heading}</h3>}
   <div class="grid">
     {
       items.map((it) => (

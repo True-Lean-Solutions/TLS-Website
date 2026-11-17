@@ -70,6 +70,11 @@ export function allTopics(posts: Post[]): string[] {
 }
 
 /** Format an ISO date as e.g. "August 10, 2026" (US). */
+/** The image a post shows as a card: its thumbnail, else its cover. */
+export function cardImage(data: Post['data']): string | undefined {
+  return data.thumbnail ?? data.cover;
+}
+
 export function formatDate(d: Date): string {
   return d.toLocaleDateString('en-US', {
     year: 'numeric',

@@ -3,12 +3,17 @@ date: 2026-09-02
 category: case-studies
 excerpt: Commission looks like a percentage field until you build it across six tiers. Then it's four problems, and getting one wrong costs you margin or an argument you can't settle.
 cover: /insights/covers/commission-cascade-every-tier-one-way.webp
+thumbnail: /insights/thumbs/commission-cascade-every-tier-one-way.webp
 coverAlt: An abstract illustration of a tiered commission structure
 author: Ketul Akhani
 readTime: 5 min read
 topics:
   - Software Development
 source: 1idKy-3K0VQcA-xLmud-FQ9GPxQ-d2x9J
+takeaways:
+  - 'Commission across six tiers is really four problems: cascading defaults, a one-way rate rule, date disputes and settled history.'
+  - 'We stored every rate as an effective-dated record and checked each change against the whole subtree before it committed.'
+  - 'Settlement reads the rate in force at the time, so past payouts never change and "what applied when" always has an answer.'
 blocks:
   - type: stats
     heading: At a glance

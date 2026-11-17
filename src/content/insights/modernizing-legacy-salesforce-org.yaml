@@ -3,12 +3,17 @@ date: 2026-07-13
 category: perspectives
 excerpt: Legacy doesn't mean broken. It means undocumented.
 cover: /insights/covers/modernizing-legacy-salesforce-org.webp
+thumbnail: /insights/thumbs/modernizing-legacy-salesforce-org.webp
 coverAlt: An abstract illustration of modernizing a CRM system
 author: Hemang Dwivedi
 readTime: 3 min read
 topics:
   - Process Automation
 source: 1cyunrOGtuZFNBWQbuBj52hWsEj7p4KH3
+takeaways:
+  - 'Rebuilding a Salesforce org that drives revenue forces retraining and re-validation mid-quarter, and rarely pays for itself.'
+  - 'We mapped every customization first, then fixed root causes in small, tracked changes while the org stayed live.'
+  - 'Legacy doesn''t mean broken. It means undocumented. Map first, then modify.'
 blocks:
   - type: richtext
     markdown: |
