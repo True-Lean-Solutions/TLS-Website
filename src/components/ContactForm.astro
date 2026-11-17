@@ -4,6 +4,13 @@
  * do not change: POST URLSearchParams (never JSON), fire-and-forget, honeypot,
  * exact field names. It was debugged three times in Phase 1.
  *
+ * Spam protection (Hemang, 2026-11-18): the honeypot (`website`, always sent,
+ * empty for people) and `form_ts` (Date.now() when the page loaded) go to the
+ * Apps Script, which is the real check: bots that POST straight to the
+ * endpoint never run this page. Its rules: honeypot filled, or `form_ts`
+ * missing, under 3 seconds before `submitted` (same clock), or over 7 days
+ * old → treated as success, no email. See docs/decisions.md.
+ *
  * Presentation (2026-09-29): the one form reads as a four-stage conversation
  * (About you → Timeline → The problem → Let's talk). Each stage is a labelled
  * group. The current stage follows scroll position and focus, and each change
@@ -31,6 +38,8 @@ const [s1, s2, s3, s4] = contactStages.map((s, i) => ({
 ---
 
 <form class="contact-form" novalidate data-endpoint={site.contactEndpoint}>
+  {/* Time trap: set to Date.now() when the page loads (script below). */}
+  <input type="hidden" name="form_ts" id="cf-form-ts" value="" />
   {/* Stages 01–03 share a box with the compact step indicator, so the indicator
       lets go before 04 (it never sits over Send message or the confirmation). */}
   <div class="stages">
@@ -123,7 +132,9 @@ const [s1, s2, s3, s4] = contactStages.map((s, i) => ({
     </div>
   </div>
 
-  {/* Honeypot — visually hidden; if filled, we show success and send nothing. */}
+  {/* Honeypot — off-screen, skipped by Tab, hidden from screen readers. If
+      filled, we show success and send nothing; it is also sent (empty) so the
+      Apps Script can check it for bots that post directly. */}
   <div class="hp" aria-hidden="true">
     <label for="cf-website">Website</label>
     <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
@@ -904,6 +915,10 @@ const [s1, s2, s3, s4] = contactStages.map((s, i) => ({
     const error = form.querySelector<HTMLElement>('.error');
     const submit = form.querySelector<HTMLButtonElement>('.submit');
     const honeypot = form.querySelector<HTMLInputElement>('#cf-website');
+    // Time trap: when the form was loaded. The Apps Script compares it with
+    // `submitted` (same clock, so a visitor's clock skew can't matter).
+    const formTs = form.querySelector<HTMLInputElement>('#cf-form-ts');
+    if (formTs) formTs.value = String(Date.now());
     const stages = [...form.querySelectorAll<HTMLElement>('.stage')];
     const strip = form.querySelector<HTMLElement>('.strip');
     const stripParts = strip ? [...strip.querySelectorAll<HTMLElement>('.strip-n, .strip-t')] : [];
@@ -1100,9 +1115,10 @@ const [s1, s2, s3, s4] = contactStages.map((s, i) => ({
         return;
       }
 
+      // Every field, including the (empty) honeypot `website` and `form_ts`,
+      // which the Apps Script checks and strips before emailing.
       const params = new URLSearchParams();
       new FormData(form).forEach((value, key) => {
-        if (key === 'website') return;
         params.append(key, value.toString());
       });
       params.append('submitted', new Date().toISOString());
