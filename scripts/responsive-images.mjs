@@ -18,7 +18,8 @@ const MANIFEST = path.join(ROOT, 'src/data/image-variants.json');
 
 const WIDTHS = [480, 768, 1200, 1600];
 const QUALITY = 74;
-const VARIANT = /-(\d+)\.webp$/;
+// Only this script's own width suffixes: a slug may end in a number ("…-into-2027").
+const VARIANT = new RegExp(`-(${WIDTHS.join('|')})\.webp$`);
 
 /** Public paths (from public/) of the images that get variants. */
 const SOURCES = [

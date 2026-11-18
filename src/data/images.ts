@@ -19,6 +19,12 @@ export function srcsetFor(src: string): string | undefined {
   return parts.join(', ');
 }
 
+/** An image's own pixel size, when it is in the manifest (so frames can match its shape). */
+export function dimsFor(src: string): { width: number; height: number } | undefined {
+  const e = images[src];
+  return e ? { width: e.width, height: e.height } : undefined;
+}
+
 /** The data a `<link rel="preload" as="image">` needs for the LCP image. */
 export interface PreloadImage {
   src: string;

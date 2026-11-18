@@ -1057,3 +1057,12 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **"How it works" is a scroll story (`Journey.astro`, `JourneyScene.astro`, `scroll/journey.ts`):** on desktop the steps scroll past while an isometric scene stays pinned and changes with the step in view. Tablets, phones and reduced motion get the finished scene and a plain list. `ProcessRail.astro` was removed (replaced).
 - **Shared isometric helpers** moved to `src/components/service/iso.ts`.
 - **No new copy claims:** scene labels are status words and the page's existing capability names. No dependency was added.
+
+## 2026-11-18: "Don't Carry That Problem Into 2027" perspective and field guide
+
+- **Added (Hemang):** the year-end campaign's long-form guide as a Perspectives post, `dont-carry-that-problem-into-2027` (source: Drive file `1ix2gAzOFRTWJRqRuc93QZp38y_B-LnB3`, in the campaign folder `1UQ63sjAYtzabJ4SSxhYrxD1M3unNMQPo`). Dated 2026-11-16, the campaign launch day its week-by-week plan starts from.
+- **Copy** is the document's, with these changes only: US spelling (center, labor, fulfillment, organizations, inquiries); links to this site made relative; the document's own "In this guide" list and "Key takeaways" box left out of the body because the page shows them as "In This Article" and "The 30-Second Read" (the five takeaways are used verbatim).
+- **TLS figures** in it (73%, about $3 million a year, 20+ hours, 15 hours a week, 3 days to 4 hours, the stock-tracking fix) all match copy already published and verified. **Third-party statistics** (Asana, Standish, CB Insights, Goldman Sachs, Thryv, U.S. Census Bureau, Verizon, MuleSoft) are the document's, linked to its sources, and were not independently checked.
+- **Images:** the campaign's "Blog hero image" (1920×1080) is the article banner; the card thumbnail is the same image padded to 3:2. The article cover frame now takes each image's own shape (`dimsFor`), so 16:9 and 3:2 covers both show whole.
+- **Field Guide PDF** (18 pages) is in `public/resources/` and offered by a new `download` content block (`blocks/Download.astro`, also in the CMS). It is a direct, ungated download: no email capture exists on the site (newsletter capture was dropped from v1).
+- **Rich text** gained table and checklist styles. `scripts/responsive-images.mjs` now recognizes only its own width suffixes, so a slug ending in a number ("…-into-2027") still gets variants.

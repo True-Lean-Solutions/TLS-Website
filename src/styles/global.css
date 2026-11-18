@@ -157,6 +157,68 @@ a:hover {
   border-radius: var(--radius);
   margin: 1.5rem 0;
 }
+/* Tables (guides): a bordered card that scrolls sideways on narrow screens
+   instead of widening the page. */
+.rich table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.rich th,
+.rich td {
+  padding: 0.7rem 0.95rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+  min-width: 7.5rem;
+}
+.rich th {
+  font-family: var(--font-head);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  background: var(--section);
+  white-space: nowrap;
+}
+.rich tr:last-child td {
+  border-bottom: 0;
+}
+@media (max-width: 700px) {
+  .rich table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+/* Checklists (`- [ ]` items): boxes to tick off, no bullets. */
+.rich ul:has(> li > input[type='checkbox']) {
+  list-style: none;
+  margin-left: 0;
+}
+.rich li:has(> input[type='checkbox']) {
+  position: relative;
+  padding-left: 1.9rem;
+}
+.rich li > input[type='checkbox'] {
+  appearance: none;
+  position: absolute;
+  left: 0;
+  top: 0.32em;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  border: 1.5px solid var(--border-2);
+  border-radius: 4px;
+  background: var(--surface);
+}
 .rich code {
   background: var(--section);
   padding: 0.1em 0.35em;
