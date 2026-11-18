@@ -143,7 +143,9 @@ export const solutions: Service[] = [...services, ...moreSolutions];
 /**
  * The two AI products behind "Learn More" on the AI & Automation page's
  * Featured AI Solutions (decisions 2026-10-02). Not in the header menus
- * (Hemang, 2026-11-11: footer and the Solutions page only).
+ * (Hemang, 2026-11-11), and not in the footer either (Hemang, 2026-11-19:
+ * they are part of AI & Automation, not solutions of their own). Linked from
+ * the AI & Automation page and the Solutions page.
  */
 export const aiProducts: { title: string; href: string }[] = [
   { title: 'Meeting Intelligence', href: '/services/meeting-intelligence/' },

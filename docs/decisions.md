@@ -1102,3 +1102,9 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
   - Still not claimed: 24/7 cover, response times, SLAs, a SOC or managed detection and response, formal site reliability engineering, compliance certification, cabling standards.
 - **Partners** remain unnamed, including in the matrix (Partner A and Partner B): this repository is public.
 - **Regression check:** section-by-section screenshots before and after at 1440 and 390 px. Sections above the first insertion are pixel-identical; later ones differ only by one-pixel text anti-aliasing from their new vertical offset. No existing component file changed.
+
+## 2026-11-19: AI products removed from the footer's Solutions list
+
+- **Asked (Hemang):** Meeting Intelligence and AI Visibility Growth Team were listed in the footer under Solutions, at the same level as the ten solutions. They are part of AI & Automation, not solutions of their own, so they should not appear there.
+- **Now:** the footer's Solutions column lists the ten solutions only. This reverses the footer half of the 2026-11-11 decision.
+- **Still linked:** both product pages are reached from "Learn More" on the AI & Automation page and from the line under the portfolio on `/services/`. They stay in the sitemap.
