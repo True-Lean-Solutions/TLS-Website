@@ -1071,3 +1071,12 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 
 - **Reported (Hemang):** the scrolling band under the two heroes looked broken. Its second row was outlined type, and the font's overlapping letter contours showed inside the outlines.
 - **Now:** two rows of solid glass chips, each with the capability's icon, gliding in opposite directions with the scroll and fading at the edges (`ScrollBand.astro`, `items` with `label` and `icon`). The capabilities listed are unchanged.
+
+## 2026-11-18: FAQ accordion for Insights posts
+
+- **Asked (Hemang):** the FAQ section of the 2027 post should be a list of questions that open to show their answers, with a well-designed reveal.
+- **New `faq` content block** (`blocks/FaqBlock.astro`; in the schema and the CMS as "FAQ (questions that open)"). Each question is a card; one is open at a time and all start closed.
+- **Reveal:** the card's height eases open, a red-to-blue rail draws down its side, the number badge turns ink, the plus turns into a red minus, and the answer rises in out of a soft blur. Reduced motion gets the plain toggle.
+- **Built on native `<details>`**, so it works without JavaScript, by keyboard, with screen readers and with find-in-page. The answers stay in the page's HTML for search engines.
+- **The 2027 post** now uses it for its seven questions. The wording is unchanged, and the "Frequently asked questions" heading stays in "In This Article".
+- **Note for scoped CSS:** Astro does not process `:global()` inside `:not()`, and the browser then drops the whole rule. State is carried by attributes (`[open]`, `[data-closing]`) instead.

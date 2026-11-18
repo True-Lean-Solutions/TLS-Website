@@ -71,6 +71,12 @@ const download = z.object({
   note: z.string().optional(),
 });
 
+/** Questions and answers as an accordion (answers: plain text, blank line between paragraphs). */
+const faq = z.object({
+  type: z.literal('faq'),
+  items: z.array(z.object({ q: z.string(), a: z.string() })),
+});
+
 const block = z.discriminatedUnion('type', [
   richtext,
   stats,
@@ -80,6 +86,7 @@ const block = z.discriminatedUnion('type', [
   quote,
   imageBlock,
   download,
+  faq,
 ]);
 
 export type Block = z.infer<typeof block>;
