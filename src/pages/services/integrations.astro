@@ -20,16 +20,16 @@ const description =
 const accents = ['red', 'blue', 'plum'] as const;
 
 const whoFor = [
-  { title: 'Manual data transfer', text: 'Your team spends hours each week manually moving data between systems — exporting from one tool, reformatting, importing into another.' },
+  { title: 'Manual data transfer', text: 'Your team spends hours each week manually moving data between systems, exporting from one tool, reformatting, importing into another.' },
   { title: 'Disconnected reporting', text: "You can't get a clear picture of business performance without pulling reports from multiple places and combining them manually." },
   { title: 'Process breakdowns at handoffs', text: "Work gets dropped or delayed when it moves between departments or tools because there's no automated connection between them." },
-  { title: 'Scaling pains', text: 'Processes that worked fine at 5 people are breaking down at 15 — because they were built on manual coordination, not integrated systems.' },
+  { title: 'Scaling pains', text: 'Processes that worked fine at 5 people are breaking down at 15, because they were built on manual coordination, not integrated systems.' },
 ];
 
 const steps = [
-  { number: '01', title: 'Systems Audit', text: 'We map every tool you use, how data flows between them today, and where the manual gaps are — a clear picture of what needs to connect and in what order.' },
-  { number: '02', title: 'Integration Design', text: 'We design the architecture — which systems connect, what data flows where, and how to handle edge cases — keeping it as simple as possible while solving the real problems.' },
-  { number: '03', title: 'Build & Connect', text: 'We implement using the right approach for your stack — native connectors, middleware like Zapier or Make, custom APIs, or direct database integrations.' },
+  { number: '01', title: 'Systems Audit', text: 'We map every tool you use, how data flows between them today, and where the manual gaps are, a clear picture of what needs to connect and in what order.' },
+  { number: '02', title: 'Integration Design', text: 'We design the architecture (which systems connect, what data flows where, and how to handle edge cases) keeping it as simple as possible while solving the real problems.' },
+  { number: '03', title: 'Build & Connect', text: 'We implement using the right approach for your stack, native connectors, middleware like Zapier or Make, custom APIs, or direct database integrations.' },
   { number: '04', title: 'Test & Validate', text: 'Every integration is tested end-to-end before going live. We validate data accuracy, test failure scenarios, and make sure your team understands the new flows.' },
   { number: '05', title: 'Monitor & Optimize', text: 'We stay involved post-launch to monitor for issues, handle edge cases that emerge in production, and optimize flows as your business evolves.' },
 ];
@@ -38,7 +38,7 @@ const steps = [
 <BaseLayout title={title} description={description} path="/services/integrations/" preloadImage={preloadFor(SOLUTION_HERO.src, SOLUTION_HERO.sizes)}>
   <SolutionHero
     eyebrow="System Integration"
-    title="Your tools should work together —"
+    title="Your tools should work together, "
     highlight="so your team doesn't have to."
     description="Most small businesses run on 5–15 disconnected tools. Data lives in silos, your team copies information between systems by hand, and decisions get made on outdated information. We fix that."
     primaryCta={{ label: "Discuss Your Integration", href: cta.primary.href }}

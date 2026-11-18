@@ -29,7 +29,7 @@ import { cta, href } from '../../data/site';
 // Title and description: SEO brief T2.3 (2026-11-11), drafted from this page's own copy; pending Hemang's approval.
 const title = 'Data Analytics & Power BI Dashboards | True Lean Solutions';
 const description =
-  'Turn data into better decisions — connect, organize and visualize your data, from analytics strategy and engineering to Power BI dashboards and governance.';
+  'Turn data into better decisions: connect, organize and visualize your data, from analytics strategy and engineering to Power BI dashboards and governance.';
 const lede =
   'Your data already contains answers. We help you connect it, organize it, visualize it, and turn it into intelligence your teams can actually use.';
 const contact = cta.primary.href;
@@ -62,7 +62,7 @@ const journey = ['Connect', 'Engineer', 'Analyze', 'Visualize', 'Decide'];
    illustration of what the capability does (drawn below, played by the
    [data-live-art] hook in src/scripts/scroll/product.ts). */
 const capabilities: { k: string; n: string; title: string; tag: string; text: string; icon: IconName; c: Accent; to: string }[] = [
-  { k: 'strategy', n: '01', title: 'Analytics Strategy', tag: 'Know what to measure—and why.', text: 'Align analytics priorities, KPIs, governance and investments with business outcomes.', icon: 'target', c: 'red', to: '#strategy' },
+  { k: 'strategy', n: '01', title: 'Analytics Strategy', tag: 'Know what to measure, and why.', text: 'Align analytics priorities, KPIs, governance and investments with business outcomes.', icon: 'target', c: 'red', to: '#strategy' },
   { k: 'engineering', n: '02', title: 'Data Engineering', tag: 'Build a foundation you can trust.', text: 'Connect, clean and structure data for reliable analytics at scale.', icon: 'database', c: 'blue', to: '#foundation' },
   { k: 'bi', n: '03', title: 'Business Intelligence', tag: 'See what matters.', text: 'Turn complex data into clear dashboards, scorecards and operational insights.', icon: 'analytics', c: 'violet', to: '#bi' },
   { k: 'gov', n: '04', title: 'Data Governance', tag: 'Make data trusted and controlled.', text: 'Improve quality, lineage, access and governance across your analytics environment.', icon: 'shield', c: 'cyan', to: '#trust' },
@@ -293,7 +293,7 @@ const finalLine = ['Strategy', 'Data Engineering', 'Power BI', 'Governance', 'En
         eyebrow="Data & Analytics Capabilities"
         title="From Raw Data to "
         accent="Business Intelligence."
-        lead="One connected capability—from strategy and data engineering to dashboards, governance and adoption."
+        lead="One connected capability, from strategy and data engineering to dashboards, governance and adoption."
       />
       <ul class="da-bento" data-glow-grid data-reveal="stagger">
         {
@@ -709,7 +709,7 @@ const finalLine = ['Strategy', 'Data Engineering', 'Power BI', 'Governance', 'En
                   <Icon name={s.icon} size={22} />
                 </span>
                 <h3>
-                  <span class="visually-hidden">{String(i + 1).padStart(2, '0')} — </span>
+                  <span class="visually-hidden">{String(i + 1).padStart(2, '0')}: </span>
                   {s.title}
                 </h3>
                 <p>{s.text}</p>

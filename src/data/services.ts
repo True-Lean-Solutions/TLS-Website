@@ -29,7 +29,7 @@ export const services: Service[] = [
     icon: 'ai',
     accent: 'red',
     blurb:
-      'Put AI to work on your business data — governed, secured, and under your control.',
+      'Put AI to work on your business data, governed, secured, and under your control.',
   },
   {
     title: 'Custom Software',
@@ -75,7 +75,7 @@ export const moreSolutions: Service[] = [
     accent: 'blue',
     // source: Brand Guide v2.3, capability "Process Improvement & Automation"
     blurb:
-      'Turn a workflow that creates friction into a better operating process — through redesign, automation, and tool configuration.',
+      'Turn a workflow that creates friction into a better operating process, through redesign, automation, and tool configuration.',
   },
   {
     title: 'Technology Strategy',
@@ -86,7 +86,7 @@ export const moreSolutions: Service[] = [
     // drafted from existing positioning only (v2.3 §01; Home hero: "we help
     // make sure you're building what you actually need"), Hemang 2026-09-28
     blurb:
-      'Work out what you actually need before you build — challenge assumptions early, then define the right solution.',
+      'Work out what you actually need before you build, challenge assumptions early, then define the right solution.',
   },
   {
     title: 'Data & Analytics',
@@ -97,7 +97,7 @@ export const moreSolutions: Service[] = [
     // source: TLS Website: Data & Analytics (Mack, 2026-09-28),
     // 1ukO2kvtwRtS00MqQ84yRgNMEZtv2PG1ESHGLrOmMt7Y — hero copy
     blurb:
-      'Connect, organize, and visualize your data — and turn it into intelligence your teams can actually use.',
+      'Connect, organize, and visualize your data, and turn it into intelligence your teams can actually use.',
   },
   {
     // Renamed from "Cyber Security" (Hemang, 2026-11-18: service portfolio
@@ -124,7 +124,7 @@ export const moreSolutions: Service[] = [
     icon: 'headset',
     accent: 'plum',
     blurb:
-      'Keep your people, devices and systems running — with responsive support, proactive maintenance, and a team that already knows your environment.',
+      'Keep your people, devices and systems running, with responsive support, proactive maintenance, and a team that already knows your environment.',
   },
   {
     title: 'Cloud & Infrastructure',
@@ -133,7 +133,7 @@ export const moreSolutions: Service[] = [
     icon: 'infrastructure',
     accent: 'red',
     blurb:
-      'Build a foundation you can rely on — cloud, networks, connectivity and business communications that grow with you.',
+      'Build a foundation you can rely on, cloud, networks, connectivity and business communications that grow with you.',
   },
 ];
 

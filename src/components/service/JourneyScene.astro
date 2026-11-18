@@ -1,0 +1,533 @@
+---
+/**
+ * The pinned scenes for the "How it works" scroll stories (Journey.astro,
+ * 2026-11-18). Each is one isometric picture that changes with the step in
+ * view (data-step on the Journey, set by journey.ts):
+ *
+ *   it ...... scattered systems are mapped, risks fixed, everything lines up
+ *             around a support hub, monitoring runs, then it improves.
+ *   cloud ... on-site systems are mapped, a cloud layout is designed, the
+ *             workloads move across, it is documented, then it runs.
+ *
+ * The markup is the finished picture; the "not yet" states apply only under
+ * .is-journey, so reduced motion, phones and no JS see it complete.
+ */
+import Icon from '../Icon.astro';
+import { iso, box, ring, floorGrid, at, pct, type Pt } from './iso';
+
+interface Props {
+  variant: 'it' | 'cloud';
+}
+const { variant } = Astro.props;
+const W = 640;
+const H = 520;
+
+/* ---- it ---- */
+const O: Pt = [320, 290];
+const heights = [30, 48, 24, 54, 36, 28, 46, 34];
+const scatter: Pt[] = [[-30, -20], [16, -34], [34, 12], [-38, 18], [30, 28], [-14, 38], [24, -16], [-22, -10]];
+const risky = [1, 4, 6];
+const cells: Pt[] = [];
+for (const j of [-1, 0, 1]) for (const i of [-1, 0, 1]) if (i || j) cells.push([i * 96, j * 96]);
+const sys = cells
+  .map((c, k) => ({ c, k, b: box(O, c, 28, 28, 0, heights[k]), link: `M${at(iso(O, c[0] * 0.3, c[1] * 0.3))} L${at(iso(O, c[0] * 0.74, c[1] * 0.74))}` }))
+  .sort((p, q) => p.c[0] + p.c[1] - (q.c[0] + q.c[1]));
+const hub = box(O, [0, 0], 34, 34, 0, 22);
+const hubCap = iso(O, 0, 0, 22);
+const grid = floorGrid(O, 192, 48);
+const scan = `M${at(iso(O, -180, -180))} L${at(iso(O, 180, -180))}`;
+const rings = [70, 130, 190].map((r) => ring(O, r));
+
+/* ---- cloud ---- */
+const OA: Pt = [205, 392];
+const OB: Pt = [446, 232];
+const slabA = box(OA, [0, 0], 118, 118, -12, 0);
+const slabB = box(OB, [0, 0], 104, 104, -10, 0);
+const wl = [
+  { c: [-52, -52] as Pt, h: 40, move: true },
+  { c: [52, -52] as Pt, h: 58, move: true },
+  { c: [-52, 52] as Pt, h: 30, move: false },
+  { c: [52, 52] as Pt, h: 44, move: true },
+].map((w, k) => ({ ...w, k, b: box(OA, w.c, 26, 26, 0, w.h), ghost: box(OB, w.c, 26, 26, 0, 0.01).top, cap: iso(OB, w.c[0], w.c[1], w.h) }));
+const mv = `--mx: ${OB[0] - OA[0]}px; --my: ${OB[1] - OA[1]}px`;
+const route = `M${at(iso(OA, 60, -118))} Q${OA[0] + 150} ${OA[1] - 150} ${at(iso(OB, -104, 30))}`;
+const words = variant === 'it' ? ['Mapped', 'Stabilized', 'One front door', 'Monitored', 'Improving'] : ['Mapped', 'Designed', 'Migrated', 'Documented', 'Running'];
+---
+
+<figure class:list={['js', `js--${variant}`]} aria-hidden="true">
+  <div class="js-scene">
+    {
+      variant === 'it' && (
+        <>
+          <svg viewBox={`0 0 ${W} ${H}`}>
+            <defs>
+              <radialGradient id="js-fade-it" cx="50%" cy="56%" r="52%">
+                <stop offset="0.4" stop-color="#fff" />
+                <stop offset="1" stop-color="#000" />
+              </radialGradient>
+              <mask id="js-mask-it">
+                <rect width={W} height={H} fill="url(#js-fade-it)" />
+              </mask>
+            </defs>
+            <g mask="url(#js-mask-it)">
+              {grid.map((d) => <path class="js-grid" d={d} />)}
+              {rings.map((r, i) => <ellipse class="js-ring" {...r} style={`--i: ${i}`} />)}
+              <path class="js-scan" d={scan} />
+            </g>
+            {sys.map((s) => <path class="js-link" d={s.link} pathLength="100" />)}
+            {sys.map((s) => <path class="js-pulse" d={s.link} pathLength="100" style={`--i: ${s.k}`} />)}
+            <g class="js-hub">
+              <polygon class="js-hub-l" points={hub.left} />
+              <polygon class="js-hub-r" points={hub.right} />
+              <polygon class="js-hub-t" points={hub.top} />
+            </g>
+            {sys.map((s) => (
+              <g class:list={['js-sys', { 'js-risk': risky.includes(s.k) }]} style={`--dx: ${scatter[s.k][0]}px; --dy: ${scatter[s.k][1]}px`}>
+                <polygon class="js-l" points={s.b.left} />
+                <polygon class="js-r" points={s.b.right} />
+                <polygon class="js-t" points={s.b.top} />
+                <path class="js-edge" d={s.b.edge} />
+                <circle class="js-dot" cx={s.b.cap[0]} cy={s.b.cap[1]} r="4.5" />
+              </g>
+            ))}
+          </svg>
+          <span class="js-hub-chip" style={`left: ${pct(hubCap[0], W)}; top: ${pct(hubCap[1], H)}`}>
+            <Icon name="headset" size={22} />
+          </span>
+          <span class="js-chip js-chip--up">
+            <svg width="44" height="18" viewBox="0 0 44 18">
+              <path d="M2 15 L12 11 L20 13 L30 6 L42 2" />
+            </svg>
+            Improving
+          </span>
+        </>
+      )
+    }
+    {
+      variant === 'cloud' && (
+        <>
+          <svg viewBox={`0 0 ${W} ${H}`}>
+            <defs>
+              <linearGradient id="js-glass" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#8fd8ff" stop-opacity="0.5" />
+                <stop offset="1" stop-color="#1288CF" stop-opacity="0.16" />
+              </linearGradient>
+            </defs>
+            <g class="js-cloudslab">
+              <polygon class="js-glass-side" points={slabB.left} />
+              <polygon class="js-glass-side" points={slabB.right} />
+              <polygon class="js-glass-t" points={slabB.top} />
+              <path class="js-glass-rim" d={slabB.edge} />
+            </g>
+            {wl.filter((w) => w.move).map((w) => <polygon class="js-ghost" points={w.ghost} />)}
+            <polygon class="js-ground-l" points={slabA.left} />
+            <polygon class="js-ground-r" points={slabA.right} />
+            <polygon class="js-ground-t" points={slabA.top} />
+            <path class="js-route" d={route} />
+            <path class="js-route-pulse" d={route} pathLength="100" />
+            {wl.map((w) => (
+              <g class:list={['js-wl', { 'js-move': w.move }]} style={`${mv}; --i: ${w.k}`}>
+                <polygon class="js-l" points={w.b.left} />
+                <polygon class="js-r" points={w.b.right} />
+                <polygon class="js-t" points={w.b.top} />
+                <path class="js-edge" d={w.b.edge} />
+                <circle class="js-dot" cx={w.b.cap[0]} cy={w.b.cap[1]} r="4.5" />
+              </g>
+            ))}
+          </svg>
+          <span class="js-tagline js-tagline--b" style={`left: ${pct(OB[0], W)}; top: ${pct(OB[1] - 132, H)}`}>Cloud</span>
+          <span class="js-tagline" style={`left: ${pct(OA[0], W)}; top: ${pct(OA[1] + 86, H)}`}>On site</span>
+          <span class="js-chip js-chip--doc">
+            <Icon name="document" size={16} />
+            Documented
+          </span>
+        </>
+      )
+    }
+  </div>
+  <p class="js-status">
+    {words.map((w, i) => <span data-i={i}>{w}</span>)}
+  </p>
+</figure>
+
+<style>
+  .js {
+    --ok: #34d399;
+    position: relative;
+    margin: 0;
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(60% 55% at 70% 20%, rgba(18, 136, 207, 0.28), transparent 70%),
+      radial-gradient(50% 50% at 10% 100%, rgba(217, 64, 64, 0.2), transparent 70%),
+      #0a1020;
+    box-shadow:
+      0 40px 80px -40px rgba(13, 13, 13, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+  }
+  .js-scene {
+    position: relative;
+    aspect-ratio: 640 / 520;
+  }
+  .js-scene > svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .js-grid {
+    stroke: rgba(120, 190, 255, 0.16);
+    fill: none;
+  }
+  .js-l,
+  .js-r,
+  .js-t,
+  .js-edge,
+  .js-dot {
+    transition:
+      fill 0.6s ease,
+      stroke 0.6s ease,
+      opacity 0.6s ease;
+  }
+  .js-t {
+    fill: #5d83c4;
+  }
+  .js-l {
+    fill: #2c4374;
+  }
+  .js-r {
+    fill: #1d2f57;
+  }
+  .js-edge {
+    fill: none;
+    stroke: rgba(190, 225, 255, 0.75);
+    stroke-width: 1.2;
+  }
+  .js-dot {
+    fill: var(--ok);
+    stroke: rgba(52, 211, 153, 0.3);
+    stroke-width: 5;
+  }
+  .js-sys,
+  .js-wl,
+  .js-hub {
+    transition:
+      transform 1s cubic-bezier(0.6, 0, 0.2, 1),
+      opacity 0.6s ease;
+  }
+  .js-hub-t {
+    fill: #5cc3ff;
+  }
+  .js-hub-l {
+    fill: #0e6dad;
+  }
+  .js-hub-r {
+    fill: #0a4f80;
+  }
+  .js-hub-chip {
+    position: absolute;
+    translate: -50% -70%;
+    color: #fff;
+    display: inline-flex;
+    transition: opacity 0.6s ease 0.3s;
+  }
+  .js-link {
+    fill: none;
+    stroke: rgba(170, 215, 255, 0.7);
+    stroke-width: 1.6;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.9s var(--ix-ease) 0.5s;
+  }
+  .js-pulse,
+  .js-route-pulse {
+    fill: none;
+    stroke: #9bdcff;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 5 95;
+    stroke-dashoffset: 100;
+    filter: drop-shadow(0 0 4px #5cc3ff);
+  }
+  .js-ring {
+    fill: none;
+    stroke: rgba(92, 195, 255, 0.3);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .js-scan {
+    stroke: #fff;
+    stroke-width: 2;
+    opacity: 0;
+    filter: drop-shadow(0 0 6px #9bdcff);
+  }
+  .js-chip {
+    position: absolute;
+    right: 1.1rem;
+    top: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(16, 22, 38, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-size: 0.78rem;
+    transition:
+      opacity 0.5s ease,
+      transform 0.6s var(--ix-ease);
+  }
+  .js-chip--doc {
+    right: auto;
+    left: 1.1rem;
+  }
+  .js-chip svg path {
+    fill: none;
+    stroke: var(--ok);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .js-ground-t {
+    fill: #2a3552;
+  }
+  .js-ground-l {
+    fill: #161d31;
+  }
+  .js-ground-r {
+    fill: #0f1526;
+  }
+  .js-glass-t {
+    fill: url(#js-glass);
+    stroke: rgba(155, 220, 255, 0.5);
+  }
+  .js-glass-side {
+    fill: rgba(255, 255, 255, 0.07);
+  }
+  .js-glass-rim {
+    fill: none;
+    stroke: #9bdcff;
+    stroke-width: 1.4;
+    filter: drop-shadow(0 0 6px rgba(92, 195, 255, 0.9));
+  }
+  .js-cloudslab,
+  .js-ghost,
+  .js-route {
+    transition: opacity 0.7s ease;
+  }
+  .js-ghost {
+    fill: rgba(255, 255, 255, 0.06);
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-dasharray: 3 3;
+    opacity: 0;
+  }
+  .js-route {
+    fill: none;
+    stroke: rgba(155, 220, 255, 0.6);
+    stroke-width: 1.6;
+    stroke-dasharray: 4 6;
+  }
+  .js-move {
+    transform: translate(var(--mx), var(--my));
+    transition-delay: calc(var(--i) * 0.14s);
+  }
+  .js-move .js-t {
+    fill: #bfe8ff;
+  }
+  .js-move .js-l {
+    fill: #3aa6e6;
+  }
+  .js-move .js-r {
+    fill: #1778bd;
+  }
+  .js-tagline {
+    position: absolute;
+    translate: -50% 0;
+    font-family: var(--font-head);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .js-tagline--b {
+    color: #9bdcff;
+  }
+  .js-status {
+    position: relative;
+    height: 3.1rem;
+    margin: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .js-status span {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-head);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #fff;
+    opacity: 0;
+    transition:
+      opacity 0.4s ease,
+      transform 0.5s var(--ix-ease);
+  }
+  .js-status span:last-child {
+    opacity: 1;
+  }
+
+  /* ---- Ambience (final and monitoring states) ---- */
+  @media (prefers-reduced-motion: no-preference) {
+    .js-pulse {
+      animation: js-run 2.4s linear infinite;
+      animation-delay: calc(var(--i) * -0.3s);
+    }
+    .js-route-pulse {
+      animation: js-run 2.2s linear infinite;
+    }
+    .js-ring {
+      animation: js-ring 4.5s ease-out infinite;
+      animation-delay: calc(var(--i) * -1.5s);
+    }
+  }
+  @keyframes js-run {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes js-ring {
+    from {
+      transform: scale(0.5);
+      opacity: 0.9;
+    }
+    to {
+      transform: scale(1.1);
+      opacity: 0;
+    }
+  }
+  @keyframes js-scan {
+    from {
+      transform: translate(0, 0);
+      opacity: 0.9;
+    }
+    to {
+      transform: translate(-312px, 180px);
+      opacity: 0.9;
+    }
+  }
+
+  /* ---- The story: "not yet" states by step ---- */
+  :global(.is-journey) .js-status span {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  :global(.is-journey[data-step='0']) .js-status span[data-i='0'],
+  :global(.is-journey[data-step='1']) .js-status span[data-i='1'],
+  :global(.is-journey[data-step='2']) .js-status span[data-i='2'],
+  :global(.is-journey[data-step='3']) .js-status span[data-i='3'],
+  :global(.is-journey[data-step='4']) .js-status span[data-i='4'] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* it — 0: scattered, gray, risks showing, a scan passing over. */
+  :global(.is-journey:is([data-step='0'], [data-step='1'])) .js-sys {
+    transform: translate(var(--dx), var(--dy));
+  }
+  :global(.is-journey:is([data-step='0'], [data-step='1'])) .js--it .js-t {
+    fill: #56617a;
+  }
+  :global(.is-journey:is([data-step='0'], [data-step='1'])) .js--it .js-l {
+    fill: #343c52;
+  }
+  :global(.is-journey:is([data-step='0'], [data-step='1'])) .js--it .js-r {
+    fill: #252b3d;
+  }
+  :global(.is-journey[data-step='0']) .js-scan {
+    animation: js-scan 2.6s ease-in-out infinite alternate;
+  }
+  :global(.is-journey[data-step='0']) .js-risk .js-t {
+    fill: #ff8f8f;
+  }
+  :global(.is-journey[data-step='0']) .js-risk .js-l {
+    fill: #d94040;
+  }
+  :global(.is-journey[data-step='0']) .js-risk .js-r {
+    fill: #a82f2f;
+  }
+  :global(.is-journey[data-step='0']) .js--it .js-dot {
+    opacity: 0;
+  }
+  /* 1: risks fixed (their beacons turn green first). */
+  :global(.is-journey[data-step='1']) .js-sys:not(.js-risk) .js-dot {
+    opacity: 0;
+  }
+  :global(.is-journey[data-step='1']) .js-risk .js-edge {
+    stroke: var(--ok);
+  }
+  /* 2: lined up around the hub. Before it: no hub, no links. */
+  :global(.is-journey:is([data-step='0'], [data-step='1'])) :is(.js-hub, .js-hub-chip) {
+    opacity: 0;
+  }
+  :global(.is-journey:is([data-step='0'], [data-step='1'])) .js-hub {
+    transform: translateY(18px);
+  }
+  :global(.is-journey:is([data-step='0'], [data-step='1'])) .js-link {
+    stroke-dashoffset: 100;
+    transition-delay: 0s;
+  }
+  /* 3: monitoring. Before it: no pulses or ripples. */
+  :global(.is-journey:is([data-step='0'], [data-step='1'], [data-step='2'])) :is(.js-pulse, .js-ring) {
+    opacity: 0;
+    animation: none;
+  }
+  /* 4: improving. Before it: no chip. */
+  :global(.is-journey:not([data-step='4'])) .js-chip--up {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  :global(.is-journey[data-step='4']) .js--it .js-t {
+    fill: #7fb4ff;
+  }
+
+  /* cloud — 0: everything on site; the cloud is only an outline. */
+  :global(.is-journey:is([data-step='0'], [data-step='1'])) .js-move {
+    transform: none;
+  }
+  :global(.is-journey:is([data-step='0'], [data-step='1'])) .js-move .js-t {
+    fill: #5d83c4;
+  }
+  :global(.is-journey:is([data-step='0'], [data-step='1'])) .js-move .js-l {
+    fill: #2c4374;
+  }
+  :global(.is-journey:is([data-step='0'], [data-step='1'])) .js-move .js-r {
+    fill: #1d2f57;
+  }
+  :global(.is-journey[data-step='0']) .js-cloudslab {
+    opacity: 0.3;
+  }
+  :global(.is-journey[data-step='0']) .js-route {
+    opacity: 0;
+  }
+  :global(.is-journey:is([data-step='0'], [data-step='1'], [data-step='2'], [data-step='3'])) .js--cloud .js-dot {
+    opacity: 0;
+  }
+  /* 1: the design: where each workload will go. */
+  :global(.is-journey[data-step='1']) .js-ghost {
+    opacity: 1;
+  }
+  /* 3: documented. Before it: no chip. */
+  :global(.is-journey:is([data-step='0'], [data-step='1'], [data-step='2'])) .js-chip--doc {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  /* 4: running. Before it: no traffic on the route. */
+  :global(.is-journey:not([data-step='4'])) .js-route-pulse {
+    opacity: 0;
+    animation: none;
+  }
+</style>

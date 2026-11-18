@@ -50,7 +50,7 @@ export const PROBLEMS: Problem[] = [
             chips: ['It feeds a report', 'Someone reviews and approves it', 'It goes into another system', 'Not sure'],
           }
         : {
-            text: 'That sounds like a repetitive data-entry workflow — the kind of work that can often be automated. Where does the information start, and where does it need to end up?',
+            text: 'That sounds like a repetitive data-entry workflow, the kind of work that can often be automated. Where does the information start, and where does it need to end up?',
             chips: ['Email to a spreadsheet', 'Forms to a CRM', 'Between two business systems', 'Something else'],
           },
     recommend: ['workflow', 'integration'],
@@ -64,13 +64,13 @@ export const PROBLEMS: Problem[] = [
       chips: ['Purchase approvals', 'Customer approvals', 'Internal requests', 'Something else'],
     }),
     recommend: ['workflow', 'integration'],
-    why: 'Approvals that run on email, reminders and spreadsheets are a common place to redesign and automate the workflow — so requests route themselves and nothing waits in an inbox.',
+    why: 'Approvals that run on email, reminders and spreadsheets are a common place to redesign and automate the workflow, so requests route themselves and nothing waits in an inbox.',
   },
   {
     id: 'disconnected',
     detect: /\b((do not|does not|cannot|never|will not) (talk|connect|sync|integrate|work together|communicate)|disconnected|not connected|siloed|silos|out of sync|not in sync)\b/,
     ask: () => ({
-      text: "That's a common one — when tools don't talk to each other, someone ends up moving information between them by hand. Which systems are involved?",
+      text: "That's a common one, when tools don't talk to each other, someone ends up moving information between them by hand. Which systems are involved?",
       chips: ['A CRM', 'Accounting or finance', 'Spreadsheets', 'Something else'],
     }),
     recommend: ['integration', 'workflow'],
@@ -150,7 +150,7 @@ export const PROBLEMS: Problem[] = [
     id: 'open',
     detect: /\b(i|we) (have|got|am having|are having|face|am facing|are facing) (a |an |some )?(problem|issue|challenge|question|situation)s?\b|\b(having|have) (trouble|issues|problems|difficulty)\b|\bstruggling\b|\bneed (some )?help\b|\bi have a problem\b/,
     ask: () => ({
-      text: "Sure — what's going on? Tell me a bit about it, or pick what's closest:",
+      text: "Sure, what's going on? Tell me a bit about it, or pick what's closest:",
       chips: [],
     }),
     recommend: ['strategy'],

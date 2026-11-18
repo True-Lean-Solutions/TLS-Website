@@ -1,7 +1,7 @@
 title: Why Your Software Implementation Failed
 date: 2026-05-01
 category: perspectives
-excerpt: Most software projects fail before a single line of code is written. Here's why the real problem is almost never technical — and what to define before you build.
+excerpt: Most software projects fail before a single line of code is written. Here's why the real problem is almost never technical, and what to define before you build.
 cover: /insights/covers/why-your-software-implementation-failed.webp
 thumbnail: /insights/thumbs/why-your-software-implementation-failed.webp
 coverAlt: An isometric illustration of a cracked system with a question mark over its missing plan
@@ -17,7 +17,7 @@ takeaways:
 blocks:
   - type: richtext
     markdown: |
-      Every failed software project has a post-mortem. And in almost every one we've seen, the root cause gets buried under technical language — the integration was too complex, the vendor underdelivered, the timeline was unrealistic. These aren't wrong. But they aren't the real answer either.
+      Every failed software project has a post-mortem. And in almost every one we've seen, the root cause gets buried under technical language, the integration was too complex, the vendor underdelivered, the timeline was unrealistic. These aren't wrong. But they aren't the real answer either.
 
       The real answer is almost always the same: the problem was never clearly defined before the first line of code was written.
 
@@ -27,7 +27,7 @@ blocks:
     items:
       - icon: alert
         title: Problem defined too late
-        body: A business identifies a pain point, selects a technology, kicks off a project — and scope unravels mid-delivery.
+        body: A business identifies a pain point, selects a technology, kicks off a project, and scope unravels mid-delivery.
       - icon: process
         title: Execution before clarity
         body: Teams rush into building without fully understanding how the business actually operates, end to end.
@@ -38,9 +38,9 @@ blocks:
     markdown: |
       ## What we do differently
 
-      When we built a custom CRM for an infrastructure and logistics client, the first thing we did was not open a code editor. We spent time mapping exactly how their business operated — how clients were tracked, how documents moved, how projects were managed end to end. Only once that was understood did we design the system.
+      When we built a custom CRM for an infrastructure and logistics client, the first thing we did was not open a code editor. We spent time mapping exactly how their business operated, how clients were tracked, how documents moved, how projects were managed end to end. Only once that was understood did we design the system.
 
-      The result was a purpose-built platform that matched their actual workflow, not a generic tool they had to adapt to. That distinction — building what the business needs versus building what the brief says — is the difference between software that gets used and software that gets abandoned.
+      The result was a purpose-built platform that matched their actual workflow, not a generic tool they had to adapt to. That distinction, building what the business needs versus building what the brief says, is the difference between software that gets used and software that gets abandoned.
 
       ## The question to ask before every build
 
@@ -48,7 +48,7 @@ blocks:
   - type: callout
     variant: light
     title: Clarity before code, every time.
-    body: We map your business first, then design the system — not the other way around.
+    body: We map your business first, then design the system, not the other way around.
     tag: Discovery · Design · Delivery
   - type: richtext
     markdown: |

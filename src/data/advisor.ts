@@ -24,7 +24,7 @@ export const advisor = {
   bio: [
     'Dr. Potts advises and mentors True Lean Solutions on technology strategy, enterprise transformation and operational excellence.',
     'He brings 15+ years of enterprise technology and operations leadership across Fortune 50, federal, healthcare and private equity-backed organizations, including a $472M enterprise services portfolio at Leidos and 9,000+ applications migrated to hybrid cloud platforms at HP.',
-    'Most recently, he led M&A execution — due diligence, data room development and integration planning — for the sale of Veterans Engineering to Aretum, after scaling its backlog from $6M to $170M+.',
+    'Most recently, he led M&A execution (due diligence, data room development and integration planning) for the sale of Veterans Engineering to Aretum, after scaling its backlog from $6M to $170M+.',
   ],
   alumniOf: ['Baylor University', 'University of Arkansas', 'Brigham Young University'],
 } as const;

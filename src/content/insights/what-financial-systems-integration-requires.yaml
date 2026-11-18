@@ -25,7 +25,7 @@ blocks:
     accent: blue
     items:
       - title: Field-level mismatches
-        body: A string in one system is an integer in another. Dates formatted differently. Required fields that are nullable in the source. Every mismatch needs explicit handling — not just a type cast.
+        body: A string in one system is an integer in another. Dates formatted differently. Required fields that are nullable in the source. Every mismatch needs explicit handling, not just a type cast.
       - title: Pagination and authentication at scale
         body: Most enterprise APIs are rate-limited and require token refresh cycles. An integration that works in testing against small data sets behaves differently processing thousands of records against a production endpoint.
       - title: Failure handling and observability
@@ -41,13 +41,13 @@ blocks:
     items:
       - icon: gear
         title: Layered architecture
-        body: Data access, mapping, transformation, and API consumption separated into distinct layers — so each can be debugged, tested, and extended independently.
+        body: Data access, mapping, transformation, and API consumption separated into distinct layers, so each can be debugged, tested, and extended independently.
       - icon: shield
         title: Defensive field mapping
         body: Every field mapping accounts for nullability, type mismatches, and format variations. Edge cases handled before they become incidents.
       - icon: alert
         title: Failure-first design
-        body: Retry strategies, error logging, and observability designed in from day one — not added when the first production incident forces it.
+        body: Retry strategies, error logging, and observability designed in from day one, not added when the first production incident forces it.
       - icon: check
         title: Built for change
         body: Vendor schemas change. APIs update. The architecture accounts for this so the system does not require a rewrite every time upstream changes.
@@ -57,12 +57,12 @@ blocks:
       - value: "2"
         label: Enterprise payroll platforms integrated in production.
       - value: 100%
-        label: Automated — manual data transfer processes eliminated.
+        label: "Automated: manual data transfer processes eliminated."
       - value: "0"
         label: Downstream reconciliation errors after stabilization.
   - type: callout
     variant: dark
-    title: Our standard — production-ready from day one, not just demo-ready
+    title: "Our standard: production-ready from day one, not just demo-ready"
     body: We design for what the integration will face in the real world, not just what the requirements document describes.
     tag: Enterprise integration · Financial systems · Production-grade
   - type: richtext

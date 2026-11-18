@@ -1,0 +1,561 @@
+---
+/**
+ * Cloud & Infrastructure hero scene (2026-11-18): the foundation as three
+ * floating isometric layers — workplace, network, cloud. One cycle loops
+ * while it is on screen (sequence.ts): the layers arrive bottom to top, a
+ * server workload rises into the cloud, and a continuity copy is made. As the
+ * visitor scrolls away the layers spread apart (--p from the hero's scrub).
+ * Reduced motion or no JS: the finished picture.
+ */
+import { iso, box, at, pct, type Pt, type Box } from './iso';
+
+const W = 720;
+const H = 600;
+const O: Pt = [360, 480];
+const A = 150;
+const Z = { place: 12, net: 158, cloud: 310 };
+
+type Item = { c: Pt; a: number; b: number; h: number; k?: string };
+const mk = (base: number, items: Item[]) =>
+  [...items]
+    .sort((p, q) => p.c[0] + p.c[1] - (q.c[0] + q.c[1]))
+    .map((it) => ({ ...it, box: box(O, it.c, it.a, it.b, base, base + it.h) as Box }));
+
+const place = mk(Z.place, [
+  { c: [-70, -40], a: 38, b: 38, h: 58, k: 'office' },
+  { c: [84, -54], a: 22, b: 22, h: 68, k: 'rack' },
+  { c: [-44, 84], a: 30, b: 18, h: 9 },
+  { c: [62, 74], a: 30, b: 18, h: 9 },
+]);
+const net = mk(Z.net, [
+  { c: [0, 0], a: 22, b: 22, h: 18, k: 'hub' },
+  { c: [-96, -96], a: 10, b: 10, h: 7 },
+  { c: [96, -96], a: 10, b: 10, h: 7 },
+  { c: [-96, 96], a: 10, b: 10, h: 7 },
+  { c: [96, 96], a: 10, b: 10, h: 7 },
+]);
+const cloud = mk(Z.cloud, [
+  { c: [-72, -34], a: 32, b: 32, h: 24, k: 'apps' },
+  { c: [44, -66], a: 26, b: 26, h: 32, k: 'data' },
+  { c: [74, 62], a: 26, b: 26, h: 32, k: 'copy' },
+]);
+const slabs = {
+  place: box(O, [0, 0], A, A, 0, Z.place),
+  net: box(O, [0, 0], A, A, Z.net - 8, Z.net),
+  cloud: box(O, [0, 0], A, A, Z.cloud - 10, Z.cloud),
+};
+// Office windows on the left face.
+const windows = [26, 44].flatMap((z) => [-22, 0, 22].map((x) => `M${at(iso(O, -70 + x - 6, -2, Z.place + z))} L${at(iso(O, -70 + x + 6, -2, Z.place + z))}`));
+// Circuit traces on the network layer.
+const traces = [
+  [-96, -96],
+  [96, -96],
+  [-96, 96],
+  [96, 96],
+].map(([x, y]) => `M${at(iso(O, 0, 0, Z.net))} L${at(iso(O, x, 0, Z.net))} L${at(iso(O, x, y, Z.net))}`);
+// Light beams between the layers.
+const beam = (x: number, y: number, z0: number, z1: number) => `M${at(iso(O, x, y, z0))} L${at(iso(O, x, y, z1))}`;
+const beams = [beam(0, 0, Z.place, Z.net - 8), beam(0, 0, Z.net + 18, Z.cloud - 10), beam(84, -54, Z.place + 68, Z.net - 8)];
+// The migrating workload: from the rack's top to a slot on the cloud layer.
+const cubeFrom: Pt = [84, -54];
+const cubeTo: Pt = [-8, 44];
+const cube = box(O, cubeFrom, 14, 14, Z.place + 72, Z.place + 96);
+const p0 = iso(O, cubeFrom[0], cubeFrom[1], Z.place + 72);
+const p1 = iso(O, cubeTo[0], cubeTo[1], Z.cloud);
+const move = `--mx: ${(p1[0] - p0[0]).toFixed(1)}px; --my: ${(p1[1] - p0[1]).toFixed(1)}px`;
+const slot = box(O, cubeTo, 14, 14, Z.cloud, Z.cloud + 0.01);
+const dataCap = iso(O, 44, -66, Z.cloud + 32);
+const copyCap = iso(O, 74, 62, Z.cloud + 32);
+const sync = `M${at(dataCap)} Q${(dataCap[0] + copyCap[0]) / 2 + 46} ${(dataCap[1] + copyCap[1]) / 2 - 34} ${at(copyCap)}`;
+const labels = [
+  { k: 'cloud', t: 'Cloud', p: iso(O, A, -A, Z.cloud) },
+  { k: 'net', t: 'Network', p: iso(O, A, -A, Z.net) },
+  { k: 'place', t: 'Workplace', p: iso(O, A, -A, Z.place) },
+];
+---
+
+<figure class="st" aria-labelledby="st-cap" data-sequence="0,500,1400,2400,3500,4700" data-sequence-loop="3400">
+  <div class="st-scene">
+    <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+      <defs>
+        <linearGradient id="st-glass" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#8fd8ff" stop-opacity="0.42"></stop>
+          <stop offset="1" stop-color="#1288CF" stop-opacity="0.14"></stop>
+        </linearGradient>
+        <linearGradient id="st-net" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#c4b5fd" stop-opacity="0.34"></stop>
+          <stop offset="1" stop-color="#7c5cf0" stop-opacity="0.12"></stop>
+        </linearGradient>
+        <linearGradient id="st-ground" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#2c3854"></stop>
+          <stop offset="1" stop-color="#1a2238"></stop>
+        </linearGradient>
+        <filter id="st-blur" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="14"></feGaussianBlur>
+        </filter>
+      </defs>
+
+      <ellipse class="st-pool" cx={O[0]} cy={O[1] + 30} rx="250" ry="70" filter="url(#st-blur)" />
+
+      <!-- Workplace -->
+      <g class="st-layer st-layer--place">
+        <polygon class="st-ground-l" points={slabs.place.left} />
+        <polygon class="st-ground-r" points={slabs.place.right} />
+        <polygon class="st-ground-t" points={slabs.place.top} />
+        <path class="st-rim" d={slabs.place.edge} />
+        {place.map((it) => (
+          <g data-k={it.k}>
+            <polygon class="st-b-l" points={it.box.left} />
+            <polygon class="st-b-r" points={it.box.right} />
+            <polygon class="st-b-t" points={it.box.top} />
+            <path class="st-b-edge" d={it.box.edge} />
+          </g>
+        ))}
+        {windows.map((d) => <path class="st-window" d={d} />)}
+      </g>
+
+      <g class="st-beams">
+        <path class="st-beam" d={beams[0]} />
+        <path class="st-beam" d={beams[2]} />
+      </g>
+
+      <!-- Network -->
+      <g class="st-layer st-layer--net">
+        <polygon class="st-glass-side" points={slabs.net.left} />
+        <polygon class="st-glass-side" points={slabs.net.right} />
+        <polygon class="st-net-t" points={slabs.net.top} />
+        <path class="st-rim st-rim--net" d={slabs.net.edge} />
+        {traces.map((d, i) => <path class="st-trace" d={d} pathLength="100" style={`--i: ${i}`} />)}
+        {net.map((it) => (
+          <g data-k={it.k}>
+            <polygon class="st-n-l" points={it.box.left} />
+            <polygon class="st-n-r" points={it.box.right} />
+            <polygon class="st-n-t" points={it.box.top} />
+          </g>
+        ))}
+      </g>
+
+      <g class="st-beams st-beams--up">
+        <path class="st-beam" d={beams[1]} />
+      </g>
+
+      <!-- Cloud -->
+      <g class="st-layer st-layer--cloud">
+        <polygon class="st-glass-side" points={slabs.cloud.left} />
+        <polygon class="st-glass-side" points={slabs.cloud.right} />
+        <polygon class="st-cloud-t" points={slabs.cloud.top} />
+        <path class="st-rim st-rim--cloud" d={slabs.cloud.edge} />
+        <polygon class="st-slot" points={slot.top} />
+        {cloud.map((it) => (
+          <g data-k={it.k} class="st-cblock">
+            <polygon class="st-c-l" points={it.box.left} />
+            <polygon class="st-c-r" points={it.box.right} />
+            <polygon class="st-c-t" points={it.box.top} />
+            <path class="st-c-edge" d={it.box.edge} />
+          </g>
+        ))}
+        <path class="st-sync" d={sync} />
+      </g>
+
+      <!-- The workload that migrates -->
+      <g class="st-cube" style={move}>
+        <polygon class="st-cube-l" points={cube.left} />
+        <polygon class="st-cube-r" points={cube.right} />
+        <polygon class="st-cube-t" points={cube.top} />
+      </g>
+    </svg>
+
+    {labels.map((l) => (
+      <span class:list={['st-label', `st-label--${l.k}`]} style={`left: ${pct(l.p[0], W)}; top: ${pct(l.p[1], H)}`}>
+        {l.t}
+      </span>
+    ))}
+    <span class="st-tag" style={`left: ${pct(p1[0], W)}; top: ${pct(p1[1] - 30, H)}`}>Migrated</span>
+  </div>
+
+  <div class="st-legend glass-panel glass-panel--dark ix-light" aria-hidden="true">
+    <p class="st-legend-title">Built in layers</p>
+    <ol>
+      <li>Workplace</li>
+      <li>Network</li>
+      <li>Cloud</li>
+      <li>Continuity</li>
+    </ol>
+  </div>
+  <figcaption id="st-cap" class="visually-hidden">
+    Illustration: a technology foundation in three layers. The workplace (an office, desks and a server rack) sits at the
+    bottom, the network connects it in the middle, and the cloud holds apps and data at the top. A server workload
+    migrates up to the cloud and a backup copy of the data is kept for continuity.
+  </figcaption>
+</figure>
+
+<style>
+  .st {
+    position: relative;
+    margin: 0;
+  }
+  .st-scene {
+    position: relative;
+    aspect-ratio: 720 / 600;
+    width: 100%;
+  }
+  .st-scene svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .st-pool {
+    fill: rgba(124, 92, 240, 0.4);
+  }
+  /* Layers: parallax apart on scroll (translate), arrive in sequence (transform). */
+  .st-layer {
+    transition:
+      opacity 0.7s var(--ix-ease),
+      transform 0.9s var(--ix-ease);
+  }
+  .st-layer--cloud,
+  .st-label--cloud,
+  .st-tag {
+    translate: 0 calc(var(--p, 0) * -70px);
+  }
+  .st-layer--net,
+  .st-label--net {
+    translate: 0 calc(var(--p, 0) * -24px);
+  }
+  .st-layer--place,
+  .st-label--place {
+    translate: 0 calc(var(--p, 0) * 26px);
+  }
+  .st-ground-t {
+    fill: url(#st-ground);
+  }
+  .st-ground-l {
+    fill: #161d31;
+  }
+  .st-ground-r {
+    fill: #0f1526;
+  }
+  .st-rim {
+    fill: none;
+    stroke: rgba(170, 200, 255, 0.5);
+    stroke-width: 1.4;
+    stroke-linejoin: round;
+  }
+  .st-rim--net {
+    stroke: #c4b5fd;
+    filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.9));
+  }
+  .st-rim--cloud {
+    stroke: #9bdcff;
+    filter: drop-shadow(0 0 7px rgba(92, 195, 255, 0.9));
+  }
+  .st-glass-side {
+    fill: rgba(255, 255, 255, 0.07);
+  }
+  .st-net-t {
+    fill: url(#st-net);
+    stroke: rgba(196, 181, 253, 0.4);
+  }
+  .st-cloud-t {
+    fill: url(#st-glass);
+    stroke: rgba(155, 220, 255, 0.45);
+  }
+  .st-b-t {
+    fill: #46587c;
+  }
+  .st-b-l {
+    fill: #2a3655;
+  }
+  .st-b-r {
+    fill: #1c2540;
+  }
+  .st-b-edge {
+    fill: none;
+    stroke: rgba(190, 215, 255, 0.5);
+    stroke-width: 1.1;
+  }
+  .st-window {
+    stroke: #ffd98a;
+    stroke-width: 3;
+    stroke-linecap: round;
+    opacity: 0.85;
+  }
+  .st-n-t {
+    fill: #c4b5fd;
+  }
+  .st-n-l {
+    fill: #7c5cf0;
+  }
+  .st-n-r {
+    fill: #5b3fd0;
+  }
+  .st-trace {
+    fill: none;
+    stroke: #c4b5fd;
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+    filter: drop-shadow(0 0 3px rgba(167, 139, 250, 0.9));
+  }
+  .st-c-t {
+    fill: #bfe8ff;
+  }
+  .st-c-l {
+    fill: #3aa6e6;
+  }
+  .st-c-r {
+    fill: #1778bd;
+  }
+  .st-c-edge {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.1;
+    opacity: 0.8;
+  }
+  .st-slot {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.55);
+    stroke-dasharray: 3 3;
+  }
+  .st-sync {
+    fill: none;
+    stroke: #34d399;
+    stroke-width: 2;
+    stroke-dasharray: 4 5;
+    stroke-linecap: round;
+  }
+  .st-beam {
+    stroke: rgba(155, 220, 255, 0.75);
+    stroke-width: 1.6;
+    stroke-dasharray: 3 6;
+    stroke-linecap: round;
+  }
+  .st-beams {
+    opacity: calc(1 - var(--p, 0) * 3);
+  }
+  .st-cube {
+    transform: translate(var(--mx), var(--my));
+    translate: 0 calc(var(--p, 0) * -70px);
+  }
+  .st-cube-t {
+    fill: #ffb3b3;
+  }
+  .st-cube-l {
+    fill: #d94040;
+  }
+  .st-cube-r {
+    fill: #a82f2f;
+  }
+  .st-cube polygon {
+    filter: drop-shadow(0 0 6px rgba(217, 64, 64, 0.8));
+  }
+
+  .st-label,
+  .st-tag {
+    position: absolute;
+    white-space: nowrap;
+    font-family: var(--font-head);
+    font-weight: 700;
+  }
+  .st-label {
+    margin: -0.7rem 0 0 0.9rem;
+    padding-left: 1.4rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.86);
+    transition: opacity 0.6s ease;
+  }
+  .st-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 1rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+  .st-label--cloud {
+    color: #9bdcff;
+  }
+  .st-label--net {
+    color: #c4b5fd;
+  }
+  .st-tag {
+    transform: translate(-50%, -100%);
+    padding: 0.24rem 0.6rem;
+    border-radius: 999px;
+    background: var(--red-text);
+    color: #fff;
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    transition: opacity 0.4s ease;
+  }
+
+  .st-legend {
+    width: min(100%, 440px);
+    margin: -1.5rem auto 0;
+    padding: 0.9rem 1.15rem 1rem;
+  }
+  .st-legend-title {
+    font-family: var(--font-head);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .st-legend ol {
+    list-style: none;
+    margin: 0.65rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .st-legend li {
+    padding-top: 0.6rem;
+    border-top: 2px solid #9bdcff;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.92);
+    transition: opacity 0.45s ease;
+  }
+  .st-legend li:nth-child(1) {
+    border-top-color: #8fa3c8;
+  }
+  .st-legend li:nth-child(2) {
+    border-top-color: #c4b5fd;
+  }
+  .st-legend li:nth-child(4) {
+    border-top-color: #34d399;
+  }
+
+  /* ---- Ambience ---- */
+  @media (prefers-reduced-motion: no-preference) {
+    .st-sync {
+      animation: st-flow 1.2s linear infinite;
+    }
+    .st-beam {
+      animation: st-flow 1.6s linear infinite reverse;
+    }
+    .st-scene {
+      animation: st-hover 7s ease-in-out infinite alternate;
+    }
+  }
+  @keyframes st-flow {
+    to {
+      stroke-dashoffset: -18;
+    }
+  }
+  @keyframes st-hover {
+    to {
+      transform: translateY(-8px);
+    }
+  }
+
+  /* ---- The build (only while the sequence hook runs) ---- */
+  .st:global(.is-seq) .st-layer {
+    opacity: 0;
+    transform: translateY(-34px);
+  }
+  .st:global(.is-seq) :is(.st-label, .st-beams, .st-tag, .st-sync, .st-slot) {
+    opacity: 0;
+  }
+  .st:global(.is-seq) .st-cube {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  .st:global(.is-seq) .st-trace {
+    stroke-dashoffset: 100;
+  }
+  .st:global(.is-seq) [data-k='copy'] {
+    opacity: 0.25;
+  }
+  .st:global(.is-seq) .st-legend li {
+    opacity: 0.35;
+  }
+  /* 1: the workplace. */
+  .st:global(.is-seq):not([data-stage='0']) :is(.st-layer--place, .st-label--place) {
+    opacity: 1;
+    transform: none;
+  }
+  .st:global(.is-seq):not([data-stage='0']) .st-legend li:nth-child(1) {
+    opacity: 1;
+  }
+  /* 2: the network. */
+  .st:is([data-stage='2'], [data-stage='3'], [data-stage='4'], [data-stage='5']) :is(.st-layer--net, .st-label--net) {
+    opacity: 1;
+    transform: none;
+  }
+  .st:is([data-stage='2'], [data-stage='3'], [data-stage='4'], [data-stage='5']) .st-trace {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.9s var(--ix-ease) calc(0.3s + var(--i) * 0.1s);
+  }
+  .st:is([data-stage='2'], [data-stage='3'], [data-stage='4'], [data-stage='5']) .st-beams:not(.st-beams--up) {
+    opacity: calc(1 - var(--p, 0) * 3);
+    transition: opacity 0.6s ease 0.5s;
+  }
+  .st:is([data-stage='2'], [data-stage='3'], [data-stage='4'], [data-stage='5']) .st-legend li:nth-child(2) {
+    opacity: 1;
+  }
+  /* 3: the cloud. */
+  .st:is([data-stage='3'], [data-stage='4'], [data-stage='5']) :is(.st-layer--cloud, .st-label--cloud, .st-slot) {
+    opacity: 1;
+    transform: none;
+  }
+  .st:is([data-stage='3'], [data-stage='4'], [data-stage='5']) .st-beams--up {
+    opacity: calc(1 - var(--p, 0) * 3);
+    transition: opacity 0.6s ease 0.5s;
+  }
+  .st:is([data-stage='3'], [data-stage='4'], [data-stage='5']) .st-legend li:nth-child(3) {
+    opacity: 1;
+  }
+  /* 3: the workload appears on the rack; 4: it rises into the cloud. */
+  .st[data-stage='3'] .st-cube {
+    opacity: 1;
+    transition: opacity 0.5s ease 0.4s;
+  }
+  .st:is([data-stage='4'], [data-stage='5']) .st-cube {
+    opacity: 1;
+    transform: translate(var(--mx), var(--my));
+    transition: transform 1.3s cubic-bezier(0.6, 0, 0.2, 1);
+  }
+  .st:is([data-stage='4'], [data-stage='5']) .st-tag {
+    opacity: 1;
+    transition: opacity 0.4s ease 1.1s;
+  }
+  .st:is([data-stage='4'], [data-stage='5']) .st-slot {
+    opacity: 0;
+  }
+  /* 5: a continuity copy. */
+  .st[data-stage='5'] :is([data-k='copy'], .st-sync) {
+    opacity: 1;
+    transition: opacity 0.6s ease;
+  }
+  .st[data-stage='5'] .st-legend li:nth-child(4) {
+    opacity: 1;
+  }
+  /* The finished picture keeps the slot hidden (the workload is in it). */
+  .st:not(:global(.is-seq)) .st-slot {
+    opacity: 0;
+  }
+
+  @media (max-width: 560px) {
+    .st-label {
+      display: none;
+    }
+    .st-legend {
+      margin-top: 0;
+    }
+    .st-legend ol {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .st-tag {
+      font-size: 0.58rem;
+    }
+  }
+</style>

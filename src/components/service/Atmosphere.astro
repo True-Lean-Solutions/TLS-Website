@@ -1,0 +1,178 @@
+---
+/**
+ * The ambient backdrop behind the service heroes (2026-11-18): a perspective
+ * floor that glides toward the viewer, slow aurora fields in the brand's red
+ * and blue, a sparse star field and a band of light lines. Decorative.
+ * It parallaxes with the hero's scroll progress (--p, from scrub.ts) and
+ * holds still with reduced motion.
+ */
+interface Props {
+  hue?: 'blue' | 'violet';
+}
+const { hue = 'blue' } = Astro.props;
+
+// Deterministic star positions (no Math.random: builds stay stable).
+let seed = hue === 'blue' ? 7 : 19;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) % 1000) / 1000;
+const stars = Array.from({ length: 46 }, () => ({ x: rnd() * 100, y: rnd() * 62, r: 0.5 + rnd() * 1.1, d: rnd() * 6 }));
+const waves = Array.from({ length: 7 }, (_, i) => {
+  const y = 40 + i * 14;
+  const a = 26 - i * 2;
+  return `M0 ${y} C240 ${y - a} 480 ${y + a} 720 ${y} S1200 ${y - a} 1440 ${y}`;
+});
+---
+
+<div class:list={['atm', `atm--${hue}`]} aria-hidden="true">
+  <div class="atm-aurora">
+    <span class="atm-a1"></span>
+    <span class="atm-a2"></span>
+    <span class="atm-a3"></span>
+  </div>
+  <svg class="atm-stars" viewBox="0 0 100 62" preserveAspectRatio="none">
+    {stars.map((s) => <circle cx={s.x.toFixed(2)} cy={s.y.toFixed(2)} r={(s.r * 0.09).toFixed(3)} style={`--d: ${s.d.toFixed(2)}s`} />)}
+  </svg>
+  <div class="atm-floor"></div>
+  <svg class="atm-waves" viewBox="0 0 1440 150" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id={`atm-w-${hue}`} x1="0" x2="1">
+        <stop offset="0" stop-color="#D94040" stop-opacity="0.7"></stop>
+        <stop offset="0.5" stop-color="#873662" stop-opacity="0.25"></stop>
+        <stop offset="1" stop-color="#1288CF" stop-opacity="0.75"></stop>
+      </linearGradient>
+    </defs>
+    {waves.map((d) => <path d={d} stroke={`url(#atm-w-${hue})`} />)}
+  </svg>
+</div>
+
+<style>
+  .atm {
+    --a1: rgba(18, 136, 207, 0.55);
+    --a2: rgba(217, 64, 64, 0.34);
+    --a3: rgba(135, 54, 98, 0.4);
+    --line: rgba(120, 190, 255, 0.16);
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .atm--violet {
+    --a1: rgba(124, 92, 240, 0.5);
+    --a2: rgba(18, 136, 207, 0.42);
+    --a3: rgba(217, 64, 64, 0.26);
+    --line: rgba(180, 160, 255, 0.16);
+  }
+  .atm-aurora {
+    position: absolute;
+    inset: -10%;
+    translate: 0 calc(var(--p, 0) * 70px);
+  }
+  .atm-aurora span {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+  }
+  .atm-a1 {
+    width: 46%;
+    height: 62%;
+    right: 2%;
+    top: 4%;
+    background: var(--a1);
+  }
+  .atm-a2 {
+    width: 34%;
+    height: 48%;
+    left: -4%;
+    top: -8%;
+    background: var(--a2);
+  }
+  .atm-a3 {
+    width: 40%;
+    height: 44%;
+    left: 30%;
+    bottom: -12%;
+    background: var(--a3);
+  }
+  .atm-stars {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    translate: 0 calc(var(--p, 0) * 36px);
+  }
+  .atm-stars circle {
+    fill: #fff;
+    opacity: 0.55;
+  }
+  /* The floor: a grid in perspective, fading to the horizon. */
+  .atm-floor {
+    position: absolute;
+    left: -30%;
+    right: -30%;
+    bottom: -6%;
+    height: 62%;
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 64px 64px,
+      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 64px 64px;
+    transform: perspective(640px) rotateX(64deg);
+    transform-origin: 50% 100%;
+    mask-image: linear-gradient(to top, #000 8%, transparent 78%);
+    -webkit-mask-image: linear-gradient(to top, #000 8%, transparent 78%);
+  }
+  .atm-waves {
+    position: absolute;
+    left: 0;
+    bottom: -30px;
+    width: 100%;
+    height: 190px;
+    opacity: 0.6;
+  }
+  .atm-waves path {
+    fill: none;
+    stroke-width: 1.1;
+    vector-effect: non-scaling-stroke;
+  }
+  @media screen and (prefers-reduced-motion: no-preference) {
+    .atm-floor {
+      animation: atm-glide 5s linear infinite;
+    }
+    .atm-a1 {
+      animation: atm-drift 18s ease-in-out infinite alternate;
+    }
+    .atm-a2 {
+      animation: atm-drift 23s ease-in-out infinite alternate-reverse;
+    }
+    .atm-a3 {
+      animation: atm-drift 27s ease-in-out infinite alternate;
+    }
+    .atm-stars circle {
+      animation: atm-twinkle 4.5s ease-in-out infinite alternate;
+      animation-delay: calc(var(--d) * -1);
+    }
+    .atm-waves {
+      animation: atm-sway 20s ease-in-out infinite alternate;
+    }
+  }
+  @keyframes atm-glide {
+    to {
+      background-position:
+        0 64px,
+        0 0;
+    }
+  }
+  @keyframes atm-drift {
+    to {
+      transform: translate3d(6%, 8%, 0) scale(1.12);
+    }
+  }
+  @keyframes atm-twinkle {
+    to {
+      opacity: 0.12;
+    }
+  }
+  @keyframes atm-sway {
+    to {
+      transform: translateX(-3%) scaleY(1.15);
+    }
+  }
+</style>

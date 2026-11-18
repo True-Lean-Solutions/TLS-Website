@@ -1,0 +1,72 @@
+---
+/**
+ * A band of large type that glides sideways with the scroll (2026-11-18):
+ * two rows of the service's capability words moving in opposite directions
+ * (progress --p from scrub.ts). Decorative: the same words are listed in the
+ * capability cards. Without motion the rows sit still.
+ */
+interface Props {
+  words: string[];
+}
+const { words } = Astro.props;
+const half = Math.ceil(words.length / 2);
+const rows = [words.slice(0, half), words.slice(half)];
+---
+
+<div class="band" data-scrub data-scrub-start="top bottom" data-scrub-end="bottom top" aria-hidden="true">
+  {
+    rows.map((row, r) => (
+      <p class:list={['band-row', `band-row--${r}`]}>
+        {[...row, ...row].map((w) => (
+          <span>{w}</span>
+        ))}
+      </p>
+    ))
+  }
+</div>
+
+<style>
+  .band {
+    overflow: clip;
+    padding-block: clamp(2rem, 4vw, 3.25rem);
+    background: var(--ink);
+    border-block: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .band-row {
+    display: flex;
+    gap: 2.5rem;
+    margin: 0;
+    width: max-content;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: clamp(2rem, 5.4vw, 4.4rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    will-change: transform;
+  }
+  .band-row--0 {
+    color: #fff;
+    transform: translateX(calc(var(--p, 0.5) * -22%));
+  }
+  .band-row--1 {
+    color: transparent;
+    -webkit-text-stroke: 1.2px rgba(255, 255, 255, 0.55);
+    transform: translateX(calc(-24% + var(--p, 0.5) * 22%));
+  }
+  .band-row span {
+    display: inline-flex;
+    align-items: center;
+    gap: 2.5rem;
+  }
+  .band-row span::after {
+    content: '';
+    width: 0.32em;
+    height: 0.32em;
+    border-radius: 50%;
+    background: var(--red);
+  }
+  .band-row--1 span::after {
+    background: var(--blue);
+  }
+</style>

@@ -59,12 +59,12 @@ export function socialReply(kind: Social, opts: { text: string; turn: number; st
     case 'isBot':
       return {
         intent: 'identity',
-        text: "Yes — I'm Tali, an AI assistant, not a person. I know True Lean Solutions well, and I can help you think through a business or technology challenge.",
+        text: "Yes, I'm Tali, an AI assistant, not a person. I know True Lean Solutions well, and I can help you think through a business or technology challenge.",
       };
     case 'isHuman':
       return {
         intent: 'identity',
-        text: "No — I'm Tali, an AI assistant. If you'd like to talk to a person, the team is easy to reach.",
+        text: "No, I'm Tali, an AI assistant. If you'd like to talk to a person, the team is easy to reach.",
         links: [CONTACT.page],
       };
     case 'capabilities':

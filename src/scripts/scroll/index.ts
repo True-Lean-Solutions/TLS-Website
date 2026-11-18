@@ -16,6 +16,7 @@
  *             Data & Analytics' data pipeline ...... pipeline.ts
  *             scroll-scrubbed diagrams ([data-scrub]) scrub.ts
  *             timed motion graphics ([data-sequence]) sequence.ts
+ *             scroll stories ([data-journey]) ........ journey.ts
  *             Insights article section list ...... article.ts
  */
 import { gsap, ScrollTrigger, MQ, initSmoothScroll, refreshWhenSettled, scrollPosition, scrollToY } from './core';
@@ -33,6 +34,7 @@ import { initSecurityPage } from './security';
 import { initPipelines } from './pipeline';
 import { initScrubs } from './scrub';
 import { initSequences } from './sequence';
+import { initJourneys } from './journey';
 import { initArticleNav } from './article';
 
 /** Solutions page: horizontal card track (off: the cards show as a grid). */
@@ -120,6 +122,7 @@ export function initScroll() {
       cleanups.push(initPipelines({ desktop: c.desktop }));
       cleanups.push(initScrubs());
       cleanups.push(initSequences());
+      if (c.desktop) cleanups.push(initJourneys());
       cleanups.push(initHeadingReveals());
       cleanups.push(initCardEntrances(skip));
       if (c.desktop) cleanups.push(initCardDepth(skip));

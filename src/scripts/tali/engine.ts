@@ -164,7 +164,7 @@ const TOOL_NAMES: Record<string, string> = { hubspot: 'HubSpot', sap: 'SAP', net
 
 /** The core team (COMPANY.team), findable by first or last name. */
 const TEAM = COMPANY.team.map((line) => {
-  const [name, role] = line.split(' — ');
+  const [name, role] = line.split(', ');
   const keys = norm(name).split(' ').filter((w) => w.length >= 4);
   protect(keys.join(' '));
   return { name, role, keys };
@@ -200,7 +200,7 @@ function entityReply(e: Entity, facet: Facet | null, asked: string): Reply {
     case 'pricing':
       return e.pricing
         ? { ...base, intent: 'entity.pricing', text: `${e.pricing} For anything specific to your situation, the team can walk you through it.`, links: [e.cta ?? CONTACT.page, pageLink(e)] }
-        : { ...base, intent: 'entity.pricing.none', text: `${e.name} is scoped to the work, so there's no published price — everything we do is scoped and priced for the constraints you work under. The quickest way to an estimate is a short call with the team.`, links: contactLinks(e.cta) };
+        : { ...base, intent: 'entity.pricing.none', text: `${e.name} is scoped to the work, so there's no published price, everything we do is scoped and priced for the constraints you work under. The quickest way to an estimate is a short call with the team.`, links: contactLinks(e.cta) };
     case 'control':
       if (e.control) return { ...base, intent: 'entity.control', text: e.control };
       break;
@@ -224,7 +224,7 @@ function contactReply(e?: Entity): Reply {
   return {
     intent: 'contact',
     mood: 'success',
-    text: `The best next step is a conversation with the team. Tell us what you're trying to solve on the Contact page, or book a free 30-minute call — enough to figure out where to start. You can also email ${CONTACT.email} or call ${CONTACT.phone}.`,
+    text: `The best next step is a conversation with the team. Tell us what you're trying to solve on the Contact page, or book a free 30-minute call. It's enough to figure out where to start. You can also email ${CONTACT.email} or call ${CONTACT.phone}.`,
     links: contactLinks(e?.cta),
     chips: ['Which solution fits my business?', 'Explore TLS solutions'],
   };
@@ -314,7 +314,7 @@ export function createEngine(opts: {
   function hybridReply(c: Concept, onPage = false): Reply {
     if (c.company === 'approach') {
       state.concept = undefined;
-      return { ...APPROACH, intent: 'hybrid', text: `${c.def}\n\nIt's also at the core of how True Lean Solutions works — ${APPROACH.text.charAt(0).toLowerCase()}${APPROACH.text.slice(1)}` };
+      return { ...APPROACH, intent: 'hybrid', text: `${c.def}\n\nIt's also at the core of how True Lean Solutions works: ${APPROACH.text.charAt(0).toLowerCase()}${APPROACH.text.slice(1)}` };
     }
     const e = byId(c.entity ?? '');
     if (!e) return conceptReply(c);
@@ -324,7 +324,7 @@ export function createEngine(opts: {
     return {
       intent: 'hybrid',
       mood: 'solution',
-      text: `${c.def}\n\nYes — TLS works on this through ${the(e)}. ${e.overview}`,
+      text: `${c.def}\n\nYes, TLS works on this through ${the(e)}. ${e.overview}`,
       note: e.id === 'workflow' ? "If you tell me what process you're trying to improve, I can help you explore what might fit." : "If you tell me a bit about your situation, I can help you work out what might fit.",
       links: [pageLink(e)],
       chips: followFor(e),
@@ -343,7 +343,7 @@ export function createEngine(opts: {
     return {
       intent: 'compare',
       text: v(["Here's the simplest way to think about it:", 'Good question. In short:', "Here's how they differ:"]),
-      points: cs.length >= 2 ? cs.map((c) => c.def) : es.map((e) => `${e.name} — ${firstSentence(e.overview)}`),
+      points: cs.length >= 2 ? cs.map((c) => c.def) : es.map((e) => `${e.name}: ${firstSentence(e.overview)}`),
       note: "If you tell me what you're trying to connect or build, I can help you work out which direction fits.",
       chips: related.slice(0, 2).map((e) => `Tell me about ${e.name}`),
     };
@@ -466,13 +466,13 @@ export function createEngine(opts: {
       if (!ai && (about === 'security' || /\b(attack|threat|breach|hack|secur)/.test(t)))
         return {
           intent: 'guarantee',
-          text: 'No one can honestly promise that a business will never be attacked. What strong security does is reduce risk: protect what matters most, detect threats early and respond before they impact your business — and keep improving as threats change.',
+          text: 'No one can honestly promise that a business will never be attacked. What strong security does is reduce risk: protect what matters most, detect threats early and respond before they impact your business, and keep improving as threats change.',
           links: [pageLink(byId('security')!), CONTACT.page],
         };
       return {
         intent: 'guarantee',
         text: ai
-          ? 'No one can honestly guarantee how AI platforms rank or cite a business — those platforms decide what they show. What the AI Visibility Growth Team works on is strengthening the signals that support credible recommendations and citations, and measuring progress over time.'
+          ? 'No one can honestly guarantee how AI platforms rank or cite a business, those platforms decide what they show. What the AI Visibility Growth Team works on is strengthening the signals that support credible recommendations and citations, and measuring progress over time.'
           : "I can't promise specific outcomes. Every engagement is scoped to your situation, and the team can walk you through what to realistically expect.",
         links: ai ? [pageLink(byId('visibility')!)] : [CONTACT.page],
       };
@@ -482,7 +482,7 @@ export function createEngine(opts: {
       // Tali can't act outside the chat: say so, and point to where it's done.
       return {
         intent: 'action.unavailable',
-        text: "I can't do that myself from here — but you can book a free 30-minute call directly, or share what you need on the Contact page and the team will take it from there.",
+        text: "I can't do that myself from here, but you can book a free 30-minute call directly, or share what you need on the Contact page and the team will take it from there.",
         links: [CONTACT.booking, CONTACT.page],
       };
     }
@@ -500,7 +500,7 @@ export function createEngine(opts: {
       return { intent: 'why', text: 'What sets True Lean Solutions apart:', points: COMPANY.values, links: [{ label: 'About us', href: '/about-us/' }], chips: ['How do you work?', 'Which solution fits my business?'] };
     }
     if ((has(t, RX.size) || has(t, RX.kinds)) && (u.tlsDirected || u.question)) {
-      const lead = has(t, RX.kinds) ? 'Growing small and mid-sized businesses' : 'Yes — True Lean Solutions is built for growing businesses';
+      const lead = has(t, RX.kinds) ? 'Growing small and mid-sized businesses' : 'Yes, True Lean Solutions is built for growing businesses';
       return {
         intent: 'audience.company',
         text: `${lead}: ${COMPANY.values[0].replace(/^Built for growing businesses: /, '')}`,
@@ -521,7 +521,7 @@ export function createEngine(opts: {
     if (has(t, RX.prepare)) {
       return {
         intent: 'prepare',
-        text: "Just the problem you're trying to solve. The contact form asks about your business challenge and your timeline. Most businesses we work with know something isn't working but aren't sure which lever to pull first — that's a fine place to start.",
+        text: "Just the problem you're trying to solve. The contact form asks about your business challenge and your timeline. Most businesses we work with know something isn't working but aren't sure which lever to pull first. That's a fine place to start.",
         links: contactLinks(current()?.cta),
         chips: ['Which solution is right for me?'],
       };
@@ -562,13 +562,13 @@ export function createEngine(opts: {
       const concept = conceptById(state.concept);
       if (concept?.company === 'approach') {
         state.concept = undefined;
-        return { ...APPROACH, intent: 'approach', text: `Yes — it's at the core of how True Lean Solutions works. ${APPROACH.text}` };
+        return { ...APPROACH, intent: 'approach', text: `Yes, it's at the core of how True Lean Solutions works. ${APPROACH.text}` };
       }
       const e = current();
       if (e) {
         setTopic(e);
         if (facet) return entityReply(e, facet, t);
-        return { ...entityReply(e, null, t), text: `${concept ? `Yes — TLS works on this through ${the(e)}.` : `Yes — that's ${e.name}.`}\n\n${e.overview}` };
+        return { ...entityReply(e, null, t), text: `${concept ? `Yes, TLS works on this through ${the(e)}.` : `Yes, that's ${e.name}.`}\n\n${e.overview}` };
       }
       return { intent: 'clarify', text: 'Which service do you mean?', chips: ['Explore TLS solutions', 'Which solution fits my business?'] };
     }
@@ -604,7 +604,7 @@ export function createEngine(opts: {
       const name = TOOL_NAMES[tool] ?? tool.charAt(0).toUpperCase() + tool.slice(1);
       return {
         intent: 'entity.unconfirmed',
-        text: `I can't confirm a ready-made connection to ${name} from what I know. Integration work uses native connectors, middleware like Zapier or Make, custom APIs, or direct database integrations — the team can confirm what fits your setup.`,
+        text: `I can't confirm a ready-made connection to ${name} from what I know. Integration work uses native connectors, middleware like Zapier or Make, custom APIs, or direct database integrations, the team can confirm what fits your setup.`,
         links: [pageLink(e), CONTACT.page],
         chips: ['How does an integration project run?'],
       };
@@ -650,7 +650,7 @@ export function createEngine(opts: {
       state.concept = undefined;
       return {
         intent: 'company',
-        text: `${COMPANY.positioning} ${COMPANY.short}\n\nWe work across AI & automation, custom software, system integration and technical talent — and we start by making sure we're solving the right problem.`,
+        text: `${COMPANY.positioning} ${COMPANY.short}\n\nWe work across AI & automation, custom software, system integration and technical talent, and we start by making sure we're solving the right problem.`,
         links: [{ label: 'About us', href: '/about-us/' }, { label: 'Our solutions', href: '/services/' }],
         chips: ['Explore TLS solutions', 'How do you work?', 'Which solution fits my business?'],
       };
@@ -667,7 +667,7 @@ export function createEngine(opts: {
     if (has(t, RX.clients)) return { intent: 'clients', text: "Some of the organizations we've worked with:", points: COMPANY.clients, links: [{ label: 'See what our clients say', href: '/' }], chips: ['Do you have case studies?', 'I want to discuss a project'] };
     if (has(t, RX.team)) return { intent: 'team', text: 'Our core team includes:', points: COMPANY.team, links: [{ label: 'Meet the team', href: '/about-us/' }], chips: ['How did True Lean Solutions start?', 'How do you work?'] };
     if (has(t, RX.approach) && !topicEntity) return { ...APPROACH, intent: 'approach', links: [{ label: 'Why True Lean Solutions', href: '/' }] };
-    if (has(t, RX.location)) return { intent: 'location', text: 'You can see where our team delivers from on our About page — and we work with clients remotely.', links: [{ label: 'Global delivery', href: '/about-us/' }, CONTACT.page] };
+    if (has(t, RX.location)) return { intent: 'location', text: 'You can see where our team delivers from on our About page, and we work with clients remotely.', links: [{ label: 'Global delivery', href: '/about-us/' }, CONTACT.page] };
     if (has(t, RX.insights)) {
       const r = insightReply(t);
       if (r) return r;
@@ -681,12 +681,12 @@ export function createEngine(opts: {
     }
     if (has(t, RX.generalPricing)) return pricingOverview();
     // "Tell me more" with nothing in play: ask what, don't guess.
-    if (RX.more.test(t)) return { intent: 'fallback', text: 'Sure — what would you like to know more about?', chips: startersFor(opts.path).slice(0, 3) };
+    if (RX.more.test(t)) return { intent: 'fallback', text: 'Sure, what would you like to know more about?', chips: startersFor(opts.path).slice(0, 3) };
     if (facet === 'pricing') {
       // "How much does it cost?" with nothing in play: ask, don't guess.
       state.awaiting = 'pricing';
       state.goal = 'evaluate';
-      return { intent: 'pricing.clarify', text: 'Sure — which TLS solution are you asking about?', chips: ['Meeting Intelligence', 'AI Visibility Growth Team', 'A custom project'] };
+      return { intent: 'pricing.clarify', text: 'Sure, which TLS solution are you asking about?', chips: ['Meeting Intelligence', 'AI Visibility Growth Team', 'A custom project'] };
     }
     if (has(t, RX.approach) || (facet === 'process' && !topicEntity)) return { ...APPROACH, intent: 'approach' };
 

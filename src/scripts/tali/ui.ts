@@ -260,7 +260,7 @@ export function initTali() {
       renderTali(
         {
           intent: 'error',
-          text: "Sorry — I'm having trouble right now. You can still reach the team directly on the Contact page.",
+          text: "Sorry, I'm having trouble right now. You can still reach the team directly on the Contact page.",
           links: [{ label: 'Discuss Your Project', href: '/contact/' }],
         },
         true,

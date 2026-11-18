@@ -22,14 +22,14 @@ const accents = ['red', 'blue', 'plum'] as const;
 const whoFor = [
   { title: 'No in-house technical recruiter', text: "You need to hire technical talent but don't have an in-house recruiter or HR team with the expertise to evaluate technology candidates." },
   { title: "You're losing candidates to larger companies", text: "You're finding great candidates but losing them to enterprise offers before you can move fast enough." },
-  { title: "You've had bad hires", text: "You've hired developers or IT staff who looked good on paper but didn't work out — and you need a more rigorous screening process." },
-  { title: 'You need flexibility', text: 'You need contract, contract-to-hire, or permanent staff depending on the engagement — not a one-size-fits-all recruiting model.' },
+  { title: "You've had bad hires", text: "You've hired developers or IT staff who looked good on paper but didn't work out, and you need a more rigorous screening process." },
+  { title: 'You need flexibility', text: 'You need contract, contract-to-hire, or permanent staff depending on the engagement, not a one-size-fits-all recruiting model.' },
 ];
 
 const steps = [
-  { number: '01', title: 'Role Definition', text: 'We define the role clearly — not just the technical requirements, but the business context, team dynamics, and success criteria. A well-defined role attracts the right candidates.' },
-  { number: '02', title: 'Sourcing & Screening', text: 'We leverage our network and recruiting tools to identify qualified candidates. Every candidate is technically screened before they reach you — no resume spam.' },
-  { number: '03', title: 'Shortlist & Present', text: 'We present a curated shortlist with our assessment of each candidate — technical fit, communication style, availability, and rate expectations.' },
+  { number: '01', title: 'Role Definition', text: 'We define the role clearly, not just the technical requirements, but the business context, team dynamics, and success criteria. A well-defined role attracts the right candidates.' },
+  { number: '02', title: 'Sourcing & Screening', text: 'We leverage our network and recruiting tools to identify qualified candidates. Every candidate is technically screened before they reach you, no resume spam.' },
+  { number: '03', title: 'Shortlist & Present', text: 'We present a curated shortlist with our assessment of each candidate, technical fit, communication style, availability, and rate expectations.' },
   { number: '04', title: 'Interview Support', text: 'We coordinate the interview process, provide structured interview guidance, and give you honest feedback on each candidate based on what we hear from them.' },
   { number: '05', title: 'Offer & Onboarding', text: 'We help you structure competitive offers, navigate counteroffers, and support onboarding to maximize the chance of a successful placement.' },
 ];
@@ -49,9 +49,9 @@ const roles = [
 <BaseLayout title={title} description={description} path="/services/technical-talent/" preloadImage={preloadFor(SOLUTION_HERO.src, SOLUTION_HERO.sizes)}>
   <SolutionHero
     eyebrow="Technical Talent"
-    title="The right person for the role —"
+    title="The right person for the role, "
     highlight="at the right time."
-    description="Finding strong technology talent is hard for any business. For small businesses competing against enterprises for the same candidates, it's even harder — unless you have a recruiting partner who understands both sides."
+    description="Finding strong technology talent is hard for any business. For small businesses competing against enterprises for the same candidates, it's even harder, unless you have a recruiting partner who understands both sides."
     primaryCta={{ label: "Talk to Us About the Role", href: cta.primary.href }}
     secondaryCta={{ label: 'Email Us', href: cta.email.href, external: true }}
     icon="talent"
@@ -62,7 +62,7 @@ const roles = [
     <div class="wrap">
       <SectionHeading eyebrow="What It Is" title="IT recruiting sized for " accent="small businesses." />
       <div class="prose" data-reveal="stagger">
-        <p>TLS provides IT recruiting services designed specifically for small businesses. We source, screen, and place technology professionals — developers, architects, project managers, QA engineers, and more — in roles that are scoped and priced for your business size.</p>
+        <p>TLS provides IT recruiting services designed specifically for small businesses. We source, screen, and place technology professionals (developers, architects, project managers, QA engineers, and more) in roles that are scoped and priced for your business size.</p>
         <p>We don't just fill seats. We match the right person to the right role based on your technical needs, team culture, and growth plans.</p>
       </div>
     </div>

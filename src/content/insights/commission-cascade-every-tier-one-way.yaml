@@ -31,7 +31,7 @@ blocks:
     markdown: |
       ## The client
 
-      The same platform operator, building the revenue-share engine that sat underneath the transactional product. Revenue was split across a distribution chain — the organization, its agents, and their sub-agents — with the end user's rate determined by wherever they sat in that chain.
+      The same platform operator, building the revenue-share engine that sat underneath the transactional product. Revenue was split across a distribution chain (the organization, its agents, and their sub-agents) with the end user's rate determined by wherever they sat in that chain.
 
       ## The challenge
 
@@ -41,13 +41,13 @@ blocks:
     items:
       - icon: process
         title: Defaults that cascade to accounts that don't exist yet
-        body: A rate set at organization level had to apply to every account currently beneath it and to every account created afterwards — so the default had to resolve rather than propagate.
+        body: A rate set at organization level had to apply to every account currently beneath it and to every account created afterwards, so the default had to resolve rather than propagate.
       - icon: shield
         title: A constraint that only permits movement one way
         body: Any tier could raise its own rate but never set one below the level above it. Enforcing that meant validating a proposed change against the entire subtree beneath it, not just its immediate parent.
       - icon: clock
         title: Disputes are about dates, not rates
-        body: When a party questions what they were paid, the argument is almost never about the current rate — it's about which rate applied on a particular day. That makes the change history the product.
+        body: When a party questions what they were paid, the argument is almost never about the current rate. It's about which rate applied on a particular day. That makes the change history the product.
       - icon: alert
         title: Settled history has to stay settled
         body: A rate change made today cannot retroactively alter transactions already settled under the previous rate. Settlement had to resolve against the rate in force at the time of the transaction.
@@ -56,7 +56,7 @@ blocks:
     accent: red
     items:
       - title: Modeled the rate as an effective-dated record, not a field
-        body: Every rate is a row with an effective date and time rather than a value that gets overwritten. Changing a rate appends history instead of destroying it — so the audit trail is a consequence of the design.
+        body: Every rate is a row with an effective date and time rather than a value that gets overwritten. Changing a rate appends history instead of destroying it, so the audit trail is a consequence of the design.
       - title: Made the constraint a pre-commit validation across the subtree
         body: Before any change commits, the system walks every level beneath the changing tier and rejects the write if the result would leave any descendant below the ceiling set above it. No interface path can bypass it.
       - title: Resolved rates at read time by walking the hierarchy

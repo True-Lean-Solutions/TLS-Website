@@ -8,7 +8,7 @@ const { text, attribution } = Astro.props;
 
 <figure class="pull block-reading">
   <blockquote>{text}</blockquote>
-  {attribution && <figcaption>— {attribution}</figcaption>}
+  {attribution && <figcaption>{attribution}</figcaption>}
 </figure>
 
 <style>
