@@ -1066,3 +1066,8 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Images:** the campaign's "Blog hero image" (1920×1080) is the article banner; the card thumbnail is the same image padded to 3:2. The article cover frame now takes each image's own shape (`dimsFor`), so 16:9 and 3:2 covers both show whole.
 - **Field Guide PDF** (18 pages) is in `public/resources/` and offered by a new `download` content block (`blocks/Download.astro`, also in the CMS). It is a direct, ungated download: no email capture exists on the site (newsletter capture was dropped from v1).
 - **Rich text** gained table and checklist styles. `scripts/responsive-images.mjs` now recognizes only its own width suffixes, so a slug ending in a number ("…-into-2027") still gets variants.
+
+## 2026-11-19: Capability band redesigned (Managed IT, Cloud & Infrastructure)
+
+- **Reported (Hemang):** the scrolling band under the two heroes looked broken. Its second row was outlined type, and the font's overlapping letter contours showed inside the outlines.
+- **Now:** two rows of solid glass chips, each with the capability's icon, gliding in opposite directions with the scroll and fading at the edges (`ScrollBand.astro`, `items` with `label` and `icon`). The capabilities listed are unchanged.

@@ -138,8 +138,19 @@ const outcomes: Outcome[] = [
     <StackScene />
   </ServiceHero>
 
-  <!-- 1b. A band of the capabilities, gliding with the scroll -->
-  <ScrollBand words={['Cloud migration', 'Network design', 'Structured cabling', 'VoIP', 'Virtual desktops', 'Office moves', 'Business continuity', 'Hybrid cloud']} />
+  <!-- 1b. A band of capability chips, gliding with the scroll -->
+  <ScrollBand
+    items={[
+      { label: 'Cloud migration', icon: 'cloud' },
+      { label: 'Network design', icon: 'infrastructure' },
+      { label: 'Structured cabling', icon: 'integration' },
+      { label: 'VoIP', icon: 'phone' },
+      { label: 'Virtual desktops', icon: 'monitor' },
+      { label: 'Office moves', icon: 'building' },
+      { label: 'Business continuity', icon: 'shield' },
+      { label: 'Hybrid cloud', icon: 'server' },
+    ]}
+  />
 
   <!-- 2. Business challenges -->
   <section class="section">

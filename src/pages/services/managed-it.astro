@@ -128,8 +128,19 @@ const outcomes: Outcome[] = [
     <OpsScene />
   </ServiceHero>
 
-  <!-- 1b. A band of the capabilities, gliding with the scroll -->
-  <ScrollBand words={['Help desk', 'Monitoring', 'Microsoft 365', 'Device management', 'Backup and recovery', 'Onboarding', 'Maintenance', 'Co-managed IT']} />
+  <!-- 1b. A band of capability chips, gliding with the scroll -->
+  <ScrollBand
+    items={[
+      { label: 'Help desk', icon: 'headset' },
+      { label: 'Monitoring', icon: 'monitor' },
+      { label: 'Microsoft 365', icon: 'mail' },
+      { label: 'Device management', icon: 'laptop' },
+      { label: 'Backup and recovery', icon: 'database' },
+      { label: 'Onboarding', icon: 'user' },
+      { label: 'Maintenance', icon: 'gear' },
+      { label: 'Co-managed IT', icon: 'users' },
+    ]}
+  />
 
   <!-- 2. Business challenges -->
   <section class="section">
