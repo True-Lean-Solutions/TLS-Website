@@ -13,20 +13,21 @@
  * JS: the finished picture.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Eyebrow from '../../components/Eyebrow.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import Button from '../../components/Button.astro';
-import Icon from '../../components/Icon.astro';
 import InfoCard from '../../components/InfoCard.astro';
-import ProcessRail, { type RailStep } from '../../components/service/ProcessRail.astro';
+import ServiceHero from '../../components/service/ServiceHero.astro';
+import StackScene from '../../components/service/StackScene.astro';
+import ScrollBand from '../../components/service/ScrollBand.astro';
+import Journey, { type JourneyStep } from '../../components/service/Journey.astro';
+import JourneyScene from '../../components/service/JourneyScene.astro';
 import FlowMap, { type FlowItem, type FlowStage } from '../../components/service/FlowMap.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import CapabilityGroups, { type CapabilityGroup } from '../../components/service/CapabilityGroups.astro';
 import EngagementModels, { type EngagementModel } from '../../components/service/EngagementModels.astro';
 import OutcomeList, { type Outcome } from '../../components/service/OutcomeList.astro';
 import ConnectedServices from '../../components/service/ConnectedServices.astro';
-import type { IconName } from '../../components/iconTypes';
-import { cta, href, site } from '../../data/site';
+import { cta, site } from '../../data/site';
 
 // Draft copy (2026-11-18), pending Hemang's approval.
 const title = 'Cloud & IT Infrastructure Services | True Lean Solutions';
@@ -35,33 +36,6 @@ const description =
 // v2.3 §09, "Implementation" context.
 const ctaLabel = 'Discuss Your Implementation Need';
 
-/* Hero diagram, viewBox 520 × 420: three tiers joined through the network. */
-type Tile = { id: string; label: string; icon: IconName; x: number; y: number; tier: 'place' | 'net' | 'cloud' };
-const HUB = { x: 260, y: 215 };
-const tiles: Tile[] = [
-  { id: 'apps', label: 'Cloud apps', icon: 'cloud', x: 130, y: 82, tier: 'cloud' },
-  { id: 'data', label: 'Data', icon: 'database', x: 260, y: 82, tier: 'cloud' },
-  { id: 'copy', label: 'Backup copy', icon: 'shield', x: 390, y: 82, tier: 'cloud' },
-  { id: 'internet', label: 'Internet', icon: 'zap', x: 92, y: 215, tier: 'net' },
-  { id: 'voice', label: 'Phones & Teams', icon: 'phone', x: 428, y: 215, tier: 'net' },
-  { id: 'office', label: 'Office', icon: 'building', x: 110, y: 350, tier: 'place' },
-  { id: 'remote', label: 'Remote team', icon: 'laptop', x: 260, y: 350, tier: 'place' },
-  { id: 'servers', label: 'Server room', icon: 'server', x: 410, y: 350, tier: 'place' },
-];
-const at = (id: string) => tiles.find((t) => t.id === id)!;
-const line = (a: { x: number; y: number }, b: { x: number; y: number }) => `M${a.x} ${a.y} L${b.x} ${b.y}`;
-const links = [
-  { tier: 'net', d: line(at('office'), HUB) },
-  { tier: 'net', d: line(at('remote'), HUB) },
-  { tier: 'net', d: line(at('servers'), HUB) },
-  { tier: 'net', d: line(at('internet'), HUB) },
-  { tier: 'net', d: line(HUB, at('voice')) },
-  { tier: 'cloud', d: line(HUB, at('apps')) },
-  { tier: 'cloud', d: line(HUB, at('data')) },
-];
-const migrate = `M${at('servers').x} ${at('servers').y} L${HUB.x} ${HUB.y} L${at('apps').x} ${at('apps').y}`;
-const backup = `M${at('data').x + 34} ${at('data').y} L${at('copy').x - 34} ${at('copy').y}`;
-const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(2)}%`;
 
 const challenges = [
   { title: 'Your infrastructure grew by accident', text: 'A server here, a second office there, a cloud subscription someone signed up for. It mostly works, but nobody has the whole picture.' },
@@ -106,7 +80,7 @@ const groups: CapabilityGroup[] = [
 ];
 
 const accents = ['red', 'blue', 'plum'] as const;
-const steps: RailStep[] = [
+const steps: JourneyStep[] = [
   { title: 'Map what you have', text: 'We document your current setup (locations, network, servers, cloud services) and how it all connects.', icon: 'search' },
   { title: 'Design the foundation', text: 'We design for where the business is going, then plan the order of work so nothing critical goes down.', icon: 'compass' },
   { title: 'Build and migrate', text: 'We install, configure and migrate in planned stages, with a rollback plan at each one.', icon: 'building' },
@@ -152,88 +126,20 @@ const outcomes: Outcome[] = [
 ---
 
 <BaseLayout title={title} description={description} path="/services/cloud-infrastructure/">
-  <!-- 1. Hero: the foundation, in layers -->
-  <section class="ci-hero">
-    <div class="wrap ci-hero-grid">
-      <div class="ci-copy" data-reveal="load">
-        <nav class="ci-crumbs" aria-label="Breadcrumb">
-          <a href={href('/services/')}>Solutions</a>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page">Cloud &amp; Infrastructure</span>
-        </nav>
-        <Eyebrow label="Cloud & Infrastructure" />
-        <h1>A foundation that <span class="accent">holds up as you grow.</span></h1>
-        <p class="ci-lede">
-          Cloud environments, networks, connectivity and business communications, designed and built as one foundation,
-          so the business on top of it can grow without starting over.
-        </p>
-        <div class="ci-actions">
-          <Button href={cta.primary.href} variant="primary" arrow>{ctaLabel}</Button>
-          <Button href={cta.email.href} variant="secondary" external>{cta.email.label}</Button>
-        </div>
-      </div>
+  <!-- 1. Hero: the cinematic scene (ServiceHero + StackScene) -->
+  <ServiceHero
+    name="Cloud & Infrastructure"
+    title="A foundation that "
+    accent="holds up as you grow."
+    lede="Cloud environments, networks, connectivity and business communications, designed and built as one foundation, so the business on top of it can grow without starting over."
+    ctaLabel={ctaLabel}
+    hue="violet"
+  >
+    <StackScene />
+  </ServiceHero>
 
-      <figure class="ci-art" aria-labelledby="ci-art-cap" data-sequence="0,500,1400,2400,3500,4700" data-sequence-loop="3400">
-        <div class="ci-scene">
-          <svg class="ci-lines" viewBox="0 0 520 420" aria-hidden="true">
-            <defs>
-              <radialGradient id="ci-fade">
-                <stop offset="0.5" stop-color="#fff" />
-                <stop offset="1" stop-color="#000" />
-              </radialGradient>
-              <mask id="ci-mask"><rect x="0" y="0" width="520" height="420" fill="url(#ci-fade)" /></mask>
-              <pattern id="ci-grid" width="26" height="26" patternUnits="userSpaceOnUse">
-                <path d="M26 0H0V26" fill="none" stroke="rgba(13,13,13,0.05)" />
-              </pattern>
-            </defs>
-            <rect x="0" y="0" width="520" height="420" fill="url(#ci-grid)" mask="url(#ci-mask)" />
-            <!-- Tier bands -->
-            <rect class="ci-band ci-band--cloud" x="34" y="26" width="452" height="112" rx="26" />
-            <rect class="ci-band ci-band--net" x="34" y="182" width="452" height="66" rx="20" />
-            <rect class="ci-band ci-band--place" x="34" y="300" width="452" height="100" rx="20" />
-            <text class="ci-tier" x="52" y="48">Cloud</text>
-            <text class="ci-tier" x="52" y="200">Network</text>
-            <text class="ci-tier" x="52" y="320">Workplace</text>
-            <text class="ci-platforms" x="468" y="48" text-anchor="end">AWS · Azure · Google Cloud</text>
-            {links.map((l) => <path class:list={['ci-link', `ci-link--${l.tier}`]} d={l.d} pathLength="100" />)}
-            <path class="ci-backup" d={backup} pathLength="100" />
-            <path class="ci-migrate" d={migrate} pathLength="100" />
-          </svg>
-
-          <div class="ci-hub" style={`left: ${pct(HUB.x, 520)}; top: ${pct(HUB.y, 420)}`}>
-            <Icon name="integration" size={22} />
-            <span>Network</span>
-          </div>
-          {
-            tiles.map((t) => (
-              <div class:list={['ci-tile', `ci-tile--${t.tier}`]} data-tile={t.id} style={`left: ${pct(t.x, 520)}; top: ${pct(t.y, 420)}`}>
-                <span class="ci-tile-icon">
-                  <Icon name={t.icon} size={18} />
-                </span>
-                <span class="ci-tile-label">{t.label}</span>
-              </div>
-            ))
-          }
-          <span class="ci-tag ci-tag--moved" style={`left: ${pct(at('servers').x, 520)}; top: ${pct(at('servers').y, 420)}`}>Migrated</span>
-        </div>
-
-        <div class="ci-legend glass-panel ix-light" aria-hidden="true">
-          <p class="ci-legend-title">Built in layers</p>
-          <ol>
-            <li>Workplace</li>
-            <li>Network</li>
-            <li>Cloud</li>
-            <li>Continuity</li>
-          </ol>
-        </div>
-        <figcaption id="ci-art-cap" class="visually-hidden">
-          Illustration: a technology foundation in three layers, the workplace (office, remote team, server room), the
-          network that connects them with internet and phones, and the cloud (apps, data and a backup copy). A server
-          workload migrates to the cloud and a backup copy of the data is kept for continuity.
-        </figcaption>
-      </figure>
-    </div>
-  </section>
+  <!-- 1b. A band of the capabilities, gliding with the scroll -->
+  <ScrollBand words={['Cloud migration', 'Network design', 'Structured cabling', 'VoIP', 'Virtual desktops', 'Office moves', 'Business continuity', 'Hybrid cloud']} />
 
   <!-- 2. Business challenges -->
   <section class="section">
@@ -280,7 +186,9 @@ const outcomes: Outcome[] = [
   <section class="section">
     <div class="wrap">
       <SectionHeading eyebrow="How It Works" title="Planned in order, " accent="built without surprises." />
-      <ProcessRail steps={steps} />
+      <Journey steps={steps}>
+        <JourneyScene variant="cloud" />
+      </Journey>
     </div>
   </section>
 
@@ -335,362 +243,3 @@ const outcomes: Outcome[] = [
     <Button href={site.booking} variant="secondary" external>Book a Free 30-Minute Call</Button>
   </CtaBand>
 </BaseLayout>
-
-<style>
-  /* ---- Hero ---------------------------------------------------------- */
-  .ci-hero {
-    position: relative;
-    isolation: isolate;
-    overflow: clip;
-    background:
-      radial-gradient(40% 60% at 82% 30%, rgba(18, 136, 207, 0.09), transparent 72%),
-      radial-gradient(30% 45% at 8% 90%, rgba(217, 64, 64, 0.06), transparent 70%),
-      var(--bg);
-    border-bottom: 1px solid var(--border);
-    padding-block: clamp(2.25rem, 4vw, 3.5rem) clamp(2.5rem, 5vw, 4rem);
-  }
-  .ci-hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    gap: clamp(1.5rem, 4vw, 3.5rem);
-    align-items: center;
-    min-height: clamp(520px, 42vw, 620px);
-  }
-  .ci-crumbs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    font-size: 0.875rem;
-    color: var(--text-2);
-  }
-  .ci-crumbs a {
-    color: var(--blue-text);
-    text-decoration: none;
-  }
-  .ci-crumbs a:hover {
-    text-decoration: underline;
-  }
-  .ci-copy h1 {
-    margin-top: 0.9rem;
-    font-size: clamp(2.3rem, 4.6vw, 3.6rem);
-    line-height: 1.06;
-    letter-spacing: -0.02em;
-    max-width: 14ch;
-  }
-  .ci-copy h1 .accent {
-    color: var(--red);
-  }
-  .ci-lede {
-    margin-top: 1.4rem;
-    max-width: 44ch;
-    font-size: 1.1rem;
-    line-height: 1.65;
-    color: var(--text-2);
-  }
-  .ci-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.85rem;
-    margin-top: 2rem;
-  }
-
-  .ci-art {
-    position: relative;
-    margin: 0;
-  }
-  .ci-scene {
-    position: relative;
-    aspect-ratio: 520 / 420;
-    width: 100%;
-  }
-  .ci-lines {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-  .ci-band {
-    stroke-width: 1;
-    transition: opacity 0.6s var(--ix-ease);
-  }
-  .ci-band--cloud {
-    fill: rgba(18, 136, 207, 0.06);
-    stroke: rgba(18, 136, 207, 0.22);
-  }
-  .ci-band--net {
-    fill: rgba(135, 54, 98, 0.05);
-    stroke: rgba(135, 54, 98, 0.2);
-    stroke-dasharray: 4 5;
-  }
-  .ci-band--place {
-    fill: rgba(13, 13, 13, 0.03);
-    stroke: rgba(13, 13, 13, 0.12);
-  }
-  .ci-tier {
-    font-family: var(--font-head);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    fill: var(--text-2);
-  }
-  .ci-platforms {
-    font-family: var(--font-body);
-    font-size: 10px;
-    fill: var(--text-2);
-  }
-  .ci-link {
-    fill: none;
-    stroke: rgba(13, 13, 13, 0.28);
-    stroke-width: 1.4;
-    stroke-dasharray: 100;
-    stroke-dashoffset: 0;
-  }
-  .ci-link--cloud {
-    stroke: rgba(18, 136, 207, 0.55);
-  }
-  .ci-backup {
-    fill: none;
-    stroke: var(--plum);
-    stroke-width: 2;
-    stroke-dasharray: 3 4;
-  }
-  .ci-migrate {
-    fill: none;
-    stroke: var(--red);
-    stroke-width: 2.4;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 100;
-    stroke-dashoffset: 0;
-  }
-
-  .ci-hub,
-  .ci-tile,
-  .ci-tag {
-    position: absolute;
-    transform: translate(-50%, -50%);
-  }
-  .ci-hub {
-    display: grid;
-    justify-items: center;
-    gap: 0.15rem;
-    padding: 0.55rem 0.8rem 0.45rem;
-    border-radius: 14px;
-    background: var(--ink);
-    color: #fff;
-    font-family: var(--font-head);
-    font-size: 0.66rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    box-shadow: 0 10px 24px -10px rgba(13, 13, 13, 0.45);
-  }
-  .ci-tile {
-    display: grid;
-    justify-items: center;
-    gap: 0.25rem;
-    width: 17%;
-    padding: 0.55rem 0.3rem 0.5rem;
-    border-radius: 12px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    box-shadow: 0 8px 18px -12px rgba(13, 13, 13, 0.3);
-    text-align: center;
-    transition:
-      opacity 0.5s var(--ix-ease),
-      transform 0.6s var(--ix-ease),
-      border-color 0.4s ease;
-  }
-  .ci-tile-icon {
-    display: inline-flex;
-    color: var(--ink);
-  }
-  .ci-tile--cloud .ci-tile-icon {
-    color: var(--blue);
-  }
-  .ci-tile--net .ci-tile-icon {
-    color: var(--plum);
-  }
-  .ci-tile-label {
-    font-size: 0.7rem;
-    line-height: 1.2;
-    color: var(--ink);
-  }
-  .ci-tag {
-    margin-top: -2.9rem;
-    padding: 0.22rem 0.6rem;
-    border-radius: 999px;
-    background: var(--red-text);
-    color: #fff;
-    font-family: var(--font-head);
-    font-size: 0.66rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    transition: opacity 0.4s ease;
-  }
-
-  .ci-legend {
-    width: min(100%, 440px);
-    margin: -1rem auto 0;
-    padding: 0.9rem 1.15rem 1rem;
-  }
-  .ci-legend-title {
-    font-family: var(--font-head);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink);
-  }
-  .ci-legend ol {
-    list-style: none;
-    margin: 0.65rem 0 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.5rem;
-  }
-  .ci-legend li {
-    padding-top: 0.6rem;
-    border-top: 2px solid var(--blue);
-    font-size: 0.8rem;
-    color: var(--ink);
-    transition:
-      opacity 0.45s ease,
-      border-color 0.45s ease;
-  }
-  .ci-legend li:nth-child(1) {
-    border-top-color: var(--ink);
-  }
-  .ci-legend li:nth-child(2) {
-    border-top-color: var(--plum);
-  }
-  .ci-legend li:nth-child(4) {
-    border-top-color: var(--red);
-  }
-
-  /* ---- The build (only while the sequence hook runs) -------------------- */
-  /* 0: clear. Each later stage adds a layer; nothing removes one. */
-  .ci-art:global(.is-seq) :is(.ci-tile, .ci-hub, .ci-band, .ci-tier, .ci-platforms) {
-    opacity: 0;
-  }
-  .ci-art:global(.is-seq) :is(.ci-link, .ci-migrate) {
-    stroke-dashoffset: 100;
-  }
-  .ci-art:global(.is-seq) .ci-backup,
-  .ci-art:global(.is-seq) .ci-tag {
-    opacity: 0;
-  }
-  .ci-art:global(.is-seq) .ci-legend li {
-    opacity: 0.35;
-  }
-  /* 1: the workplace. */
-  .ci-art:global(.is-seq):not([data-stage='0']) :is(.ci-tile--place, .ci-band--place) {
-    opacity: 1;
-  }
-  .ci-art:global(.is-seq):not([data-stage='0']) .ci-tier:nth-of-type(3) {
-    opacity: 1;
-  }
-  .ci-art:global(.is-seq):not([data-stage='0']) .ci-legend li:nth-child(1) {
-    opacity: 1;
-  }
-  /* 2: the network connects it. */
-  .ci-art:global(.is-seq):is([data-stage='2'], [data-stage='3'], [data-stage='4'], [data-stage='5']) :is(.ci-hub, .ci-tile--net, .ci-band--net) {
-    opacity: 1;
-  }
-  .ci-art:global(.is-seq):is([data-stage='2'], [data-stage='3'], [data-stage='4'], [data-stage='5']) .ci-tier:nth-of-type(2) {
-    opacity: 1;
-  }
-  .ci-art:global(.is-seq):is([data-stage='2'], [data-stage='3'], [data-stage='4'], [data-stage='5']) .ci-link--net {
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 0.9s var(--ix-ease);
-  }
-  .ci-art:is([data-stage='2'], [data-stage='3'], [data-stage='4'], [data-stage='5']) .ci-legend li:nth-child(2) {
-    opacity: 1;
-  }
-  /* 3: the cloud on top. */
-  .ci-art:global(.is-seq):is([data-stage='3'], [data-stage='4'], [data-stage='5']) :is(.ci-tile--cloud, .ci-band--cloud, .ci-platforms) {
-    opacity: 1;
-  }
-  .ci-art:global(.is-seq):is([data-stage='3'], [data-stage='4'], [data-stage='5']) .ci-tier:nth-of-type(1) {
-    opacity: 1;
-  }
-  .ci-art:global(.is-seq):is([data-stage='3'], [data-stage='4'], [data-stage='5']) .ci-link--cloud {
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 0.9s var(--ix-ease);
-  }
-  .ci-art:is([data-stage='3'], [data-stage='4'], [data-stage='5']) .ci-legend li:nth-child(3) {
-    opacity: 1;
-  }
-  /* 4: a server workload migrates to the cloud. */
-  .ci-art:global(.is-seq):is([data-stage='4'], [data-stage='5']) .ci-migrate {
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 1.2s var(--ix-ease);
-  }
-  .ci-art:global(.is-seq):is([data-stage='4'], [data-stage='5']) .ci-tag {
-    opacity: 1;
-  }
-  .ci-art:global(.is-seq):is([data-stage='4'], [data-stage='5']) [data-tile='servers'] {
-    opacity: 0.55;
-  }
-  .ci-art:global(.is-seq):is([data-stage='4'], [data-stage='5']) [data-tile='apps'] {
-    border-color: var(--red);
-  }
-  /* 5: and a continuity copy is made. */
-  .ci-art:global(.is-seq)[data-stage='5'] .ci-backup {
-    opacity: 1;
-    animation: ci-flow 1.4s linear infinite;
-  }
-  .ci-art[data-stage='5'] .ci-legend li:nth-child(4) {
-    opacity: 1;
-  }
-  @keyframes ci-flow {
-    to {
-      stroke-dashoffset: -14;
-    }
-  }
-  /* The finished picture (no motion): the workload already in the cloud. */
-  .ci-art:not(:global(.is-seq)) [data-tile='servers'] {
-    opacity: 0.55;
-  }
-  .ci-art:not(:global(.is-seq)) [data-tile='apps'] {
-    border-color: var(--red);
-  }
-
-  @media (max-width: 960px) {
-    .ci-hero-grid {
-      grid-template-columns: 1fr;
-      min-height: 0;
-    }
-    .ci-art {
-      max-width: 620px;
-      width: 100%;
-      margin-inline: auto;
-    }
-  }
-  @media (max-width: 520px) {
-    .ci-tile {
-      width: 15%;
-      padding: 0.45rem 0.2rem;
-    }
-    .ci-tile-label,
-    .ci-platforms,
-    .ci-tier {
-      display: none;
-    }
-    .ci-hub {
-      padding: 0.45rem 0.5rem 0.35rem;
-      font-size: 0.56rem;
-    }
-    .ci-tag {
-      margin-top: -2.2rem;
-      font-size: 0.58rem;
-    }
-    .ci-legend ol {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-</style>

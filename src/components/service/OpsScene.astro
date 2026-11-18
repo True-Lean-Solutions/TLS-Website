@@ -1,0 +1,553 @@
+---
+/**
+ * Managed IT hero scene (2026-11-18): an isometric operations floor. Six
+ * systems stand around a support hub, joined to it along the floor. One cycle
+ * loops while it is on screen (scroll layer: sequence.ts): monitoring pulses
+ * run, an issue shows on the server, travels to support, the fix travels
+ * back, and it resolves. Status words only: no times, counts or ticket ids,
+ * so it never reads as live data. Reduced motion or no JS: the resolved,
+ * healthy picture.
+ */
+import Icon from '../Icon.astro';
+import type { IconName } from '../iconTypes';
+import { iso, box, ring, floorGrid, at, pct, type Pt, type Box } from './iso';
+
+const W = 720;
+const H = 560;
+const O: Pt = [360, 300];
+const R = 200;
+
+interface Station {
+  id: string;
+  label: string;
+  icon: IconName;
+  deg: number;
+  /** Stacked boxes: [half x, half y, z0, z1]. */
+  parts: [number, number, number, number][];
+}
+const stations: Station[] = [
+  { id: 'servers', label: 'Servers', icon: 'server', deg: 0, parts: [[26, 26, 0, 78]] },
+  { id: 'apps', label: 'Business apps', icon: 'software', deg: 60, parts: [[32, 32, 0, 18], [20, 20, 18, 40]] },
+  { id: 'phones', label: 'Phones & mobile', icon: 'phone', deg: 120, parts: [[16, 26, 0, 52]] },
+  { id: 'backup', label: 'Backups', icon: 'database', deg: 180, parts: [[26, 26, 0, 20], [26, 26, 26, 46]] },
+  { id: 'devices', label: 'People & devices', icon: 'laptop', deg: 240, parts: [[32, 24, 0, 9]] },
+  { id: 'm365', label: 'Microsoft 365', icon: 'mail', deg: 300, parts: [[30, 30, 0, 14]] },
+];
+const built = stations.map((s) => {
+  const rad = (s.deg * Math.PI) / 180;
+  const c: Pt = [Math.round(R * Math.cos(rad)), Math.round(R * Math.sin(rad))];
+  const boxes: Box[] = s.parts.map(([a, b, z0, z1]) => box(O, c, a, b, z0, z1));
+  const top = s.parts[s.parts.length - 1][3];
+  const cap = iso(O, c[0], c[1], top);
+  const from = iso(O, c[0] * 0.34, c[1] * 0.34);
+  const to = iso(O, c[0] * 0.8, c[1] * 0.8);
+  // The laptop gets a screen standing on its back edge.
+  const screen =
+    s.id === 'devices'
+      ? [iso(O, c[0] - 30, c[1] - 24, 9), iso(O, c[0] + 30, c[1] - 24, 9), iso(O, c[0] + 30, c[1] - 24, 50), iso(O, c[0] - 30, c[1] - 24, 50)].map((p) => p.join(',')).join(' ')
+      : null;
+  // Server stripes on the left face.
+  const stripes = s.id === 'servers' ? [20, 38, 56].map((z) => `M${at(iso(O, c[0] - 18, c[1] + 26, z))} L${at(iso(O, c[0] + 18, c[1] + 26, z))}`) : [];
+  return { ...s, c, boxes, cap, shadow: ring(O, 44, 0, c), link: `M${at(from)} L${at(to)}`, back: `M${at(to)} L${at(from)}`, screen, stripes };
+});
+const grid = floorGrid(O, 320, 64);
+const hubBase = box(O, [0, 0], 64, 64, 0, 16);
+const hubTop = box(O, [0, 0], 44, 44, 16, 30);
+const ripples = [100, 170, 250].map((r) => ring(O, r));
+const hubCap = iso(O, 0, 0, 30);
+const server = built[0];
+---
+
+<figure class="ops" aria-labelledby="ops-cap" data-sequence="0,700,2000,3200,4400,5600" data-sequence-loop="3400">
+  <div class="ops-scene">
+    <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+      <defs>
+        <radialGradient id="ops-fade" cx="50%" cy="54%" r="52%">
+          <stop offset="0.35" stop-color="#fff"></stop>
+          <stop offset="1" stop-color="#000"></stop>
+        </radialGradient>
+        <mask id="ops-mask"><rect width={W} height={H} fill="url(#ops-fade)"></rect></mask>
+        <linearGradient id="ops-top" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#3a4b6b"></stop>
+          <stop offset="1" stop-color="#232f47"></stop>
+        </linearGradient>
+        <linearGradient id="ops-hub" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#5cc3ff"></stop>
+          <stop offset="1" stop-color="#1288CF"></stop>
+        </linearGradient>
+        <filter id="ops-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="6"></feGaussianBlur>
+        </filter>
+      </defs>
+
+      <g mask="url(#ops-mask)">
+        {grid.map((d) => <path class="ops-grid" d={d} />)}
+        {ripples.map((r, i) => <ellipse class="ops-ripple" {...r} style={`--i: ${i}`} />)}
+      </g>
+
+      {built.map((s) => (
+        <g data-link={s.id}>
+          <path class="ops-link" d={s.link} />
+          <path class="ops-pulse" d={s.link} pathLength="100" />
+        </g>
+      ))}
+      <path class="ops-ticket" d={server.back} pathLength="100" />
+      <path class="ops-fix" d={server.link} pathLength="100" />
+
+      <!-- The hub -->
+      <ellipse class="ops-hub-glow" {...ring(O, 96)} filter="url(#ops-glow)" />
+      <polygon class="ops-face-l" points={hubBase.left} />
+      <polygon class="ops-face-r" points={hubBase.right} />
+      <polygon class="ops-face-t" points={hubBase.top} />
+      <polygon class="ops-hub-l" points={hubTop.left} />
+      <polygon class="ops-hub-r" points={hubTop.right} />
+      <polygon class="ops-hub-t" points={hubTop.top} />
+      <path class="ops-hub-edge" d={hubTop.edge} />
+      <path class="ops-beam" d={`M${at(hubCap)} L${hubCap[0]} ${hubCap[1] - 150}`} />
+
+      {built.map((s) => (
+        <g class="ops-station" data-node={s.id}>
+          <ellipse class="ops-shadow" {...s.shadow} />
+          {s.boxes.map((b) => (
+            <>
+              <polygon class="ops-face-l" points={b.left} />
+              <polygon class="ops-face-r" points={b.right} />
+              <polygon class="ops-face-t" points={b.top} />
+              <path class="ops-edge" d={b.edge} />
+            </>
+          ))}
+          {s.screen && <polygon class="ops-screen" points={s.screen} />}
+          {s.stripes.map((d) => <path class="ops-stripe" d={d} />)}
+          <path class="ops-stem" d={`M${at(s.cap)} L${s.cap[0]} ${s.cap[1] - 26}`} />
+        </g>
+      ))}
+    </svg>
+
+    <div class="ops-hub-chip" style={`left: ${pct(hubCap[0], W)}; top: ${pct(hubCap[1] - 6, H)}`}>
+      <Icon name="headset" size={24} />
+      <span>Support</span>
+    </div>
+    {built.map((s) => (
+      <div class="ops-chip" data-node={s.id} style={`left: ${pct(s.cap[0], W)}; top: ${pct(s.cap[1] - 26, H)}`}>
+        <span class="ops-chip-icon"><Icon name={s.icon} size={15} /></span>
+        <span class="ops-chip-label">{s.label}</span>
+        <span class="ops-dot"></span>
+      </div>
+    ))}
+    <span class="ops-flag ops-flag--issue" style={`left: ${pct(server.cap[0], W)}; top: ${pct(server.cap[1] - 26, H)}`}>Issue detected</span>
+    <span class="ops-flag ops-flag--ok" style={`left: ${pct(server.cap[0], W)}; top: ${pct(server.cap[1] - 26, H)}`}>Resolved</span>
+  </div>
+
+  <div class="ops-log glass-panel glass-panel--dark ix-light" aria-hidden="true">
+    <p class="ops-log-title"><span class="ops-live"></span>Service desk</p>
+    <ol>
+      <li>Issue detected</li>
+      <li>Routed to support</li>
+      <li>Resolved, monitoring continues</li>
+    </ol>
+  </div>
+  <figcaption id="ops-cap" class="visually-hidden">
+    Illustration: the systems a business runs on (people and devices, Microsoft 365, servers, business apps, phones and
+    backups) connected to a support team. An issue on a server is detected, routed to support and resolved, and
+    monitoring continues.
+  </figcaption>
+</figure>
+
+<style>
+  .ops {
+    --ok: #34d399;
+    --warn: #fbbf24;
+    --hot: #ff7a7a;
+    --cool: #5cc3ff;
+    position: relative;
+    margin: 0;
+  }
+  .ops-scene {
+    position: relative;
+    aspect-ratio: 720 / 560;
+    width: 108%;
+    margin-left: -4%;
+  }
+  .ops-scene svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .ops-grid {
+    stroke: rgba(120, 190, 255, 0.14);
+    stroke-width: 1;
+    fill: none;
+  }
+  .ops-ripple {
+    fill: none;
+    stroke: rgba(92, 195, 255, 0.3);
+    stroke-width: 1.2;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .ops-link {
+    stroke: rgba(160, 205, 255, 0.28);
+    stroke-width: 1.4;
+    stroke-dasharray: 3 5;
+  }
+  .ops-pulse,
+  .ops-ticket,
+  .ops-fix {
+    fill: none;
+    stroke-linecap: round;
+    opacity: 0;
+  }
+  .ops-pulse {
+    stroke: var(--cool);
+    stroke-width: 3;
+    stroke-dasharray: 4 96;
+    stroke-dashoffset: 100;
+    filter: drop-shadow(0 0 4px var(--cool));
+  }
+  .ops-ticket,
+  .ops-fix {
+    stroke-width: 3.5;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  .ops-ticket {
+    stroke: var(--hot);
+    filter: drop-shadow(0 0 5px var(--hot));
+  }
+  .ops-fix {
+    stroke: var(--ok);
+    filter: drop-shadow(0 0 5px var(--ok));
+  }
+  .ops-face-t {
+    fill: url(#ops-top);
+  }
+  .ops-face-l {
+    fill: #1b2540;
+  }
+  .ops-face-r {
+    fill: #121a30;
+  }
+  .ops-edge {
+    fill: none;
+    stroke: rgba(160, 215, 255, 0.55);
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+    transition: stroke 0.5s ease;
+  }
+  .ops-screen {
+    fill: rgba(92, 195, 255, 0.22);
+    stroke: rgba(160, 215, 255, 0.6);
+    stroke-width: 1.2;
+  }
+  .ops-stripe {
+    stroke: rgba(92, 195, 255, 0.55);
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition: stroke 0.5s ease;
+  }
+  .ops-shadow {
+    fill: rgba(0, 0, 0, 0.35);
+  }
+  .ops-stem {
+    stroke: rgba(255, 255, 255, 0.3);
+    stroke-width: 1;
+    stroke-dasharray: 2 3;
+  }
+  .ops-hub-glow {
+    fill: rgba(18, 136, 207, 0.45);
+    transition: fill 0.6s ease;
+  }
+  .ops-hub-t {
+    fill: url(#ops-hub);
+  }
+  .ops-hub-l {
+    fill: #0e6dad;
+  }
+  .ops-hub-r {
+    fill: #0a4f80;
+  }
+  .ops-hub-edge {
+    fill: none;
+    stroke: #c9ecff;
+    stroke-width: 1.4;
+  }
+  .ops-beam {
+    stroke: rgba(92, 195, 255, 0.5);
+    stroke-width: 1.4;
+    stroke-dasharray: 2 6;
+  }
+
+  .ops-hub-chip,
+  .ops-chip,
+  .ops-flag {
+    position: absolute;
+    translate: -50% -100%;
+  }
+  .ops-hub-chip {
+    display: grid;
+    justify-items: center;
+    gap: 0.1rem;
+    color: #fff;
+    font-family: var(--font-head);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+    translate: -50% -42%;
+  }
+  .ops-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.32rem 0.6rem 0.32rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(16, 22, 38, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 8px 20px -8px rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    white-space: nowrap;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.92);
+    transition: border-color 0.5s ease;
+  }
+  .ops-chip-icon {
+    display: inline-flex;
+    color: var(--cool);
+  }
+  .ops-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
+    transition:
+      background 0.4s ease,
+      box-shadow 0.4s ease;
+  }
+  /* Flags sit just under the server's label, over the tower itself. */
+  .ops-flag {
+    translate: -50% 35%;
+    padding: 0.26rem 0.65rem;
+    border-radius: 999px;
+    font-family: var(--font-head);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    color: #0d0d0d;
+    opacity: 0;
+    transition:
+      opacity 0.4s ease,
+      transform 0.5s var(--ix-ease);
+  }
+  .ops-flag--issue {
+    background: var(--warn);
+  }
+  .ops-flag--ok {
+    background: var(--ok);
+    opacity: 1; /* the finished picture */
+  }
+
+  .ops-log {
+    position: relative;
+    width: min(100%, 430px);
+    margin: -2.5rem auto 0;
+    padding: 0.95rem 1.15rem 1rem;
+  }
+  .ops-log-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-head);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .ops-live {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--ok);
+  }
+  .ops-log ol {
+    list-style: none;
+    margin: 0.7rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .ops-log li {
+    padding-top: 0.7rem;
+    border-top: 2px solid var(--ok);
+    font-size: 0.78rem;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.9);
+    transition:
+      opacity 0.45s ease,
+      border-color 0.45s ease;
+  }
+
+  /* ---- Always-on ambience (motion allowed) ---- */
+  @media (prefers-reduced-motion: no-preference) {
+    .ops-ripple {
+      animation: ops-ripple 4.5s ease-out infinite;
+      animation-delay: calc(var(--i) * -1.5s);
+    }
+    .ops-station,
+    .ops-chip {
+      animation: ops-float 6s ease-in-out infinite alternate;
+    }
+    :is(.ops-station, .ops-chip):is([data-node='apps'], [data-node='backup'], [data-node='m365']) {
+      animation-delay: -3s;
+    }
+  }
+  @keyframes ops-ripple {
+    from {
+      transform: scale(0.55);
+      opacity: 0.9;
+    }
+    to {
+      transform: scale(1.15);
+      opacity: 0;
+    }
+  }
+  @keyframes ops-float {
+    to {
+      transform: translateY(-5px);
+    }
+  }
+
+  /* ---- The cycle (only while the sequence hook runs) ---- */
+  .ops:global(.is-seq) .ops-flag--ok {
+    opacity: 0;
+  }
+  .ops:global(.is-seq) .ops-log li {
+    opacity: 0.38;
+    border-top-color: rgba(255, 255, 255, 0.2);
+  }
+  .ops:global(.is-seq):not([data-stage='0']) .ops-pulse {
+    opacity: 1;
+    animation: ops-pulse 2.4s linear infinite;
+  }
+  .ops:global(.is-seq) [data-link='apps'] .ops-pulse { animation-delay: -0.5s; }
+  .ops:global(.is-seq) [data-link='phones'] .ops-pulse { animation-delay: -1.1s; }
+  .ops:global(.is-seq) [data-link='backup'] .ops-pulse { animation-delay: -1.6s; }
+  .ops:global(.is-seq) [data-link='devices'] .ops-pulse { animation-delay: -0.8s; }
+  .ops:global(.is-seq) [data-link='m365'] .ops-pulse { animation-delay: -2s; }
+  @keyframes ops-pulse {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  .ops:global(.is-seq)[data-stage='0'] .ops-dot {
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: none;
+  }
+  /* 2–4: an issue on the server. */
+  .ops:is([data-stage='2'], [data-stage='3'], [data-stage='4']) .ops-station[data-node='servers'] :is(.ops-edge, .ops-stripe) {
+    stroke: var(--warn);
+  }
+  .ops:is([data-stage='2'], [data-stage='3'], [data-stage='4']) .ops-chip[data-node='servers'] {
+    border-color: rgba(251, 191, 36, 0.8);
+  }
+  .ops:is([data-stage='2'], [data-stage='3'], [data-stage='4']) .ops-chip[data-node='servers'] .ops-dot {
+    background: var(--warn);
+    box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.28);
+  }
+  .ops:is([data-stage='2'], [data-stage='3'], [data-stage='4']) [data-link='servers'] .ops-pulse {
+    opacity: 0;
+  }
+  .ops:is([data-stage='2'], [data-stage='3']) .ops-flag--issue {
+    opacity: 1;
+    transform: translateY(-6px);
+  }
+  .ops:is([data-stage='2'], [data-stage='3'], [data-stage='4'], [data-stage='5']) .ops-log li:nth-child(1) {
+    opacity: 1;
+    border-top-color: var(--warn);
+  }
+  /* 3: routed to support. */
+  .ops:is([data-stage='3'], [data-stage='4']) .ops-ticket {
+    opacity: 1;
+    stroke-dashoffset: 0;
+    transition:
+      stroke-dashoffset 1s var(--ix-ease),
+      opacity 0.2s ease;
+  }
+  .ops:is([data-stage='3'], [data-stage='4']) .ops-hub-glow {
+    fill: rgba(255, 122, 122, 0.5);
+  }
+  .ops:is([data-stage='3'], [data-stage='4'], [data-stage='5']) .ops-log li:nth-child(2) {
+    opacity: 1;
+    border-top-color: var(--hot);
+  }
+  /* 4: the fix goes back out. */
+  .ops[data-stage='4'] .ops-ticket {
+    opacity: 0.2;
+  }
+  .ops[data-stage='4'] .ops-fix {
+    opacity: 1;
+    stroke-dashoffset: 0;
+    transition:
+      stroke-dashoffset 1s var(--ix-ease),
+      opacity 0.2s ease;
+  }
+  /* 5: resolved; monitoring continues. */
+  .ops[data-stage='5'] .ops-flag--ok {
+    opacity: 1;
+    transform: translateY(-6px);
+  }
+  .ops[data-stage='5'] .ops-log li:nth-child(3) {
+    opacity: 1;
+    border-top-color: var(--ok);
+  }
+
+  @media (max-width: 560px) {
+    .ops-scene {
+      width: 116%;
+      margin-left: -8%;
+    }
+    .ops-chip {
+      padding: 0.3rem 0.4rem;
+      gap: 0.3rem;
+    }
+    .ops-chip-label {
+      display: none;
+    }
+    .ops-flag {
+      font-size: 0.6rem;
+    }
+    .ops-log {
+      margin-top: -1rem;
+    }
+    .ops-log ol {
+      grid-template-columns: 1fr;
+      gap: 0.4rem;
+    }
+    .ops-log li {
+      padding: 0 0 0 0.7rem;
+      border-top: 0;
+      border-left: 2px solid var(--ok);
+    }
+    .ops:global(.is-seq) .ops-log li {
+      border-left-color: rgba(255, 255, 255, 0.2);
+    }
+    .ops:is([data-stage='2'], [data-stage='3'], [data-stage='4'], [data-stage='5']) .ops-log li:nth-child(1) {
+      border-left-color: var(--warn);
+    }
+    .ops:is([data-stage='3'], [data-stage='4'], [data-stage='5']) .ops-log li:nth-child(2) {
+      border-left-color: var(--hot);
+    }
+    .ops[data-stage='5'] .ops-log li:nth-child(3) {
+      border-left-color: var(--ok);
+    }
+  }
+</style>

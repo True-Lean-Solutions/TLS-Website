@@ -1,0 +1,179 @@
+---
+/**
+ * "How it works" as a scroll story (2026-11-18). Desktop: the steps scroll
+ * past on the left while the scene (the default slot) stays pinned on the
+ * right and changes with the step in view (scroll layer: journey.ts sets
+ * data-step on this element and --jp, the progress, for the rail). Tablets,
+ * phones, reduced motion and no JS: the finished scene, then the steps as a
+ * plain list.
+ */
+import Icon from '../Icon.astro';
+import type { IconName } from '../iconTypes';
+
+export interface JourneyStep {
+  title: string;
+  text: string;
+  icon: IconName;
+}
+
+interface Props {
+  steps: JourneyStep[];
+}
+const { steps } = Astro.props;
+---
+
+<div class="jr" data-journey>
+  <ol class="jr-steps">
+    {
+      steps.map((s, i) => (
+        <li class="jr-step" data-journey-step>
+          <span class="jr-num" aria-hidden="true">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <div class="jr-body">
+            <span class="jr-icon" aria-hidden="true">
+              <Icon name={s.icon} size={20} />
+            </span>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  <div class="jr-stage">
+    <div class="jr-sticky">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  .jr {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+  }
+  .jr-steps {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 3.25rem;
+  }
+  /* The rail: a track, and a red-to-blue fill that follows the scroll. */
+  .jr-steps::before,
+  .jr-steps::after {
+    content: '';
+    position: absolute;
+    left: 1.2rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    border-radius: 2px;
+  }
+  .jr-steps::before {
+    background: var(--border-2);
+  }
+  .jr-steps::after {
+    background: linear-gradient(180deg, var(--red), var(--plum), var(--blue));
+    transform: scaleY(var(--jp, 1));
+    transform-origin: top;
+  }
+  .jr-step {
+    position: relative;
+    padding-block: 1.6rem;
+    transition: opacity var(--ix-base) var(--ix-ease);
+  }
+  .jr-num {
+    position: absolute;
+    left: -3.25rem;
+    top: 1.55rem;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--blue);
+    color: var(--blue-text);
+    font-family: var(--font-head);
+    font-size: 0.8rem;
+    font-weight: 700;
+    transition:
+      background var(--ix-base) var(--ix-ease),
+      border-color var(--ix-base) var(--ix-ease),
+      color var(--ix-base) var(--ix-ease),
+      transform var(--ix-base) var(--ix-ease),
+      box-shadow var(--ix-base) var(--ix-ease);
+  }
+  .jr-icon {
+    display: inline-flex;
+    color: var(--red);
+  }
+  .jr-step h3 {
+    margin-top: 0.5rem;
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .jr-step p {
+    margin-top: 0.6rem;
+    max-width: 40ch;
+    color: var(--text-2);
+    font-size: 1.02rem;
+    line-height: 1.65;
+  }
+  .jr-stage {
+    min-width: 0;
+  }
+  .jr-sticky {
+    position: sticky;
+    top: calc(var(--header-h) + 6vh);
+  }
+
+  /* The scroll story (journey.ts adds .is-journey on desktop with motion). */
+  .jr:global(.is-journey) .jr-step {
+    display: flex;
+    align-items: center;
+    min-height: 62vh;
+    opacity: 0.32;
+  }
+  .jr:global(.is-journey) .jr-num {
+    top: 50%;
+    margin-top: -1.25rem;
+    border-color: var(--border-2);
+    color: var(--muted);
+  }
+  .jr:global(.is-journey) .jr-step:global(.is-current) {
+    opacity: 1;
+  }
+  .jr:global(.is-journey) .jr-step:global(.is-current) .jr-num {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+    transform: scale(1.12);
+    box-shadow: 0 0 0 7px rgba(217, 64, 64, 0.12);
+  }
+  .jr:global(.is-journey) .jr-step:global(.is-done) .jr-num {
+    border-color: var(--blue);
+    color: var(--blue-text);
+  }
+
+  @media (max-width: 1023px) {
+    .jr {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .jr-stage {
+      order: -1;
+      max-width: 560px;
+      width: 100%;
+      margin-inline: auto;
+    }
+    .jr-sticky {
+      position: static;
+    }
+  }
+</style>

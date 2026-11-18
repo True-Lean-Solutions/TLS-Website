@@ -1046,3 +1046,14 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Not touched:** testimonials (verbatim; they had none) and code comments.
 - **Post YAML:** values that gained a colon are now quoted, so they still parse.
 - **Rule added** to CLAUDE.md so new copy stays free of them.
+
+## 2026-11-18: Cinematic redesign of Managed IT and Cloud & Infrastructure
+
+- **Asked (Hemang):** the two new pages felt static next to the rest of the site; make them premium with SVG, scroll effects and background effects.
+- **Hero (`ServiceHero.astro`, both pages, dark):** an animated backdrop (`Atmosphere.astro`: a perspective floor gliding toward the viewer, slow aurora fields in brand red and blue, stars, light lines) behind a code-drawn isometric scene. On scroll the copy eases away and the scene lifts (`--p` from `scrub.ts`).
+  - Managed IT: `OpsScene.astro`, an operations floor with six systems around a support hub; the issue → support → resolved cycle loops (`sequence.ts`).
+  - Cloud & Infrastructure: `StackScene.astro`, three floating layers (workplace, network, cloud) that arrive in order, a workload that rises into the cloud, a continuity copy; the layers spread apart on scroll.
+- **`ScrollBand.astro`:** two rows of the capability words gliding in opposite directions with the scroll, under each hero.
+- **"How it works" is a scroll story (`Journey.astro`, `JourneyScene.astro`, `scroll/journey.ts`):** on desktop the steps scroll past while an isometric scene stays pinned and changes with the step in view. Tablets, phones and reduced motion get the finished scene and a plain list. `ProcessRail.astro` was removed (replaced).
+- **Shared isometric helpers** moved to `src/components/service/iso.ts`.
+- **No new copy claims:** scene labels are status words and the page's existing capability names. No dependency was added.
