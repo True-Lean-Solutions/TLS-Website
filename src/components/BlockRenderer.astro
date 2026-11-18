@@ -8,6 +8,7 @@ import Callout from './blocks/Callout.astro';
 import Quote from './blocks/Quote.astro';
 import ImageBlock from './blocks/ImageBlock.astro';
 import Download from './blocks/Download.astro';
+import FaqBlock from './blocks/FaqBlock.astro';
 
 interface Props {
   blocks: Block[];
@@ -38,6 +39,7 @@ const { blocks, headingIds = [] } = Astro.props;
         {b.type === 'download' && (
           <Download eyebrow={b.eyebrow} title={b.title} body={b.body} items={b.items} file={b.file} button={b.button} note={b.note} />
         )}
+        {b.type === 'faq' && <FaqBlock items={b.items} />}
         {b.type === 'image' && (
           <ImageBlock src={b.src} alt={b.alt} caption={b.caption} />
         )}

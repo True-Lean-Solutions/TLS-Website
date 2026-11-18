@@ -1,0 +1,320 @@
+---
+/**
+ * FAQ accordion for Insights posts (2026-11-18). Questions are closed until
+ * asked for; one is open at a time.
+ *
+ * Native <details>, so it works without JavaScript, by keyboard, with screen
+ * readers and with find-in-page. The script below only adds the motion: the
+ * item's height eases open, a gradient rail draws down its side, and the
+ * answer rises in out of a soft blur, line by line. Reduced motion: the plain
+ * native toggle.
+ */
+interface Props {
+  items: { q: string; a: string }[];
+}
+const { items } = Astro.props;
+const paras = (a: string) => a.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+---
+
+<div class="fq block-wide" data-faq>
+  {
+    items.map((f, i) => (
+      <details class="fq-item">
+        <summary>
+          <span class="fq-num" aria-hidden="true">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <h3 class="fq-q">{f.q}</h3>
+          <span class="fq-toggle" aria-hidden="true" />
+        </summary>
+        <div class="fq-a">
+          {paras(f.a).map((p, k) => (
+            <p style={`--i: ${k}`}>{p}</p>
+          ))}
+        </div>
+      </details>
+    ))
+  }
+</div>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+  for (const list of document.querySelectorAll<HTMLElement>('[data-faq]')) {
+    const items = [...list.querySelectorAll<HTMLDetailsElement>('details')];
+    const running = new WeakMap<HTMLDetailsElement, Animation>();
+
+    /** Ease the item's height between two values, then hand it back to CSS. */
+    const glide = (d: HTMLDetailsElement, from: number, to: number, done: () => void) => {
+      running.get(d)?.cancel();
+      d.style.overflow = 'hidden';
+      const anim = d.animate({ height: [`${from}px`, `${to}px`] }, { duration: to > from ? 520 : 380, easing: EASE });
+      running.set(d, anim);
+      anim.onfinish = () => {
+        d.style.overflow = '';
+        running.delete(d);
+        done();
+      };
+    };
+
+    /** The item's own borders, which offsetHeight counts and scrollHeight does not. */
+    const edge = (d: HTMLDetailsElement) => d.offsetHeight - d.clientHeight;
+    const isOpen = (d: HTMLDetailsElement) => d.open && !d.hasAttribute('data-closing');
+    const open = (d: HTMLDetailsElement) => {
+      const from = d.offsetHeight;
+      d.removeAttribute('data-closing');
+      d.open = true;
+      glide(d, from, d.scrollHeight + edge(d), () => {});
+    };
+    const close = (d: HTMLDetailsElement) => {
+      if (!isOpen(d)) return;
+      const summary = d.querySelector('summary')!;
+      // The answer stays in the page until the height has eased shut.
+      d.setAttribute('data-closing', '');
+      glide(d, d.offsetHeight, summary.offsetHeight + edge(d), () => {
+        d.open = false;
+        d.removeAttribute('data-closing');
+      });
+    };
+
+    for (const d of items) {
+      d.querySelector('summary')!.addEventListener('click', (e) => {
+        e.preventDefault();
+        const opening = !isOpen(d);
+        if (reduce.matches) {
+          // No motion: the plain toggle, still one at a time.
+          items.forEach((o) => {
+            running.get(o)?.cancel();
+            running.delete(o);
+            o.style.overflow = '';
+            o.removeAttribute('data-closing');
+            o.open = o === d && opening;
+          });
+          return;
+        }
+        items.forEach((o) => o !== d && close(o));
+        if (opening) open(d);
+        else close(d);
+      });
+    }
+  }
+</script>
+
+<style>
+  .fq {
+    display: grid;
+    gap: 0.7rem;
+    counter-reset: fq;
+  }
+  .fq-item {
+    position: relative;
+    isolation: isolate;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition:
+      border-color var(--ix-base) var(--ix-ease),
+      box-shadow var(--ix-base) var(--ix-ease),
+      background var(--ix-base) var(--ix-ease);
+  }
+  /* The rail: a red-to-blue line that draws down the open item's side. */
+  .fq-item::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 14px;
+    bottom: 14px;
+    width: 3px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, var(--red), var(--plum), var(--blue));
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.6s var(--ix-ease);
+  }
+  /* A soft light behind the open item. */
+  .fq-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background:
+      radial-gradient(70% 120% at 0% 0%, rgba(217, 64, 64, 0.07), transparent 60%),
+      radial-gradient(60% 120% at 100% 100%, rgba(18, 136, 207, 0.08), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.6s var(--ix-ease);
+    pointer-events: none;
+  }
+  .fq-item summary {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.05rem 1.15rem 1.05rem 1.25rem;
+    cursor: pointer;
+    list-style: none;
+    border-radius: inherit;
+  }
+  .fq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .fq-num {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: 1px solid var(--border-2);
+    font-family: var(--font-head);
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--text-2);
+    transition:
+      background var(--ix-base) var(--ix-ease),
+      border-color var(--ix-base) var(--ix-ease),
+      color var(--ix-base) var(--ix-ease);
+  }
+  .fq-q {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.35;
+    font-weight: 600;
+    color: var(--ink);
+    transition: color var(--ix-fast) ease;
+  }
+  /* The toggle: a plus that turns into a minus. */
+  .fq-toggle {
+    position: relative;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--section);
+    transition:
+      background var(--ix-base) var(--ix-ease),
+      transform 0.5s var(--ix-ease);
+  }
+  .fq-toggle::before,
+  .fq-toggle::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 12px;
+    height: 2px;
+    margin: -1px 0 0 -6px;
+    border-radius: 2px;
+    background: var(--ink);
+    transition:
+      transform 0.5s var(--ix-ease),
+      background var(--ix-base) var(--ix-ease);
+  }
+  .fq-toggle::after {
+    transform: rotate(90deg);
+  }
+  /* Hover only where there is a pointer, so a tap leaves no color behind. */
+  @media (hover: hover) {
+    .fq-item summary:hover .fq-toggle {
+      background: var(--border);
+    }
+    .fq-item summary:hover .fq-q {
+      color: var(--red-text);
+    }
+  }
+  .fq-a {
+    padding: 0 3.6rem 1.35rem 4.5rem;
+  }
+  .fq-a p {
+    margin: 0 0 0.8rem;
+    color: var(--text-2);
+    font-size: 1.02rem;
+    line-height: 1.7;
+  }
+  .fq-a p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ---- Open state. [data-closing] is set while an item eases shut. ---- */
+  .fq-item[open]:not([data-closing]) {
+    border-color: var(--border-2);
+    box-shadow: 0 18px 40px -22px rgba(13, 13, 13, 0.28);
+  }
+  .fq-item[open]:not([data-closing])::before {
+    transform: scaleY(1);
+  }
+  .fq-item[open]:not([data-closing])::after {
+    opacity: 1;
+  }
+  .fq-item[open]:not([data-closing]) .fq-num {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+  .fq-item[open]:not([data-closing]) summary .fq-toggle {
+    background: var(--red-text);
+    transform: rotate(180deg);
+  }
+  .fq-item[open]:not([data-closing]) .fq-toggle::before,
+  .fq-item[open]:not([data-closing]) .fq-toggle::after {
+    background: #fff;
+  }
+  .fq-item[open]:not([data-closing]) .fq-toggle::after {
+    transform: rotate(0deg);
+  }
+
+  /* The answer arrives: each paragraph rises out of a soft blur. */
+  @media (prefers-reduced-motion: no-preference) {
+    .fq-item[open]:not([data-closing]) .fq-a p {
+      animation: fq-arrive 0.75s var(--ix-ease) both;
+      animation-delay: calc(0.14s + var(--i) * 0.09s);
+    }
+    .fq-item[data-closing] .fq-a p {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+  }
+  @keyframes fq-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+      filter: blur(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .fq-item summary {
+      gap: 0.75rem;
+      padding: 0.95rem 0.9rem 0.95rem 1rem;
+    }
+    .fq-num {
+      width: 2rem;
+      height: 2rem;
+    }
+    .fq-toggle {
+      width: 2rem;
+      height: 2rem;
+    }
+    .fq-q {
+      font-size: 1rem;
+    }
+    .fq-a {
+      padding: 0 1rem 1.15rem 1rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fq-item,
+    .fq-item::before,
+    .fq-item::after,
+    .fq-toggle,
+    .fq-toggle::before,
+    .fq-toggle::after,
+    .fq-num {
+      transition: none;
+    }
+  }
+</style>

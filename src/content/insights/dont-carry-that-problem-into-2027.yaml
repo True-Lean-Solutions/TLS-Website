@@ -275,34 +275,22 @@ blocks:
       If the last question has no answer, that's probably why the problem made it through the year.
 
       ## Frequently asked questions
-
-      ### What is the best way to identify the root cause of a business problem?
-
-      Write the problem as one sentence without naming a technology, then use the 5 Whys. Ask why the problem happens, then why again about each answer, until you reach a cause you can act on. Check the result with the people who deal with the problem every day.
-
-      ### How do I calculate the cost of manual work in my business?
-
-      Multiply the hours lost per week by the number of people affected, their hourly cost including benefits, and 48 working weeks. Then add the yearly cost of errors and delays. A cautious estimate is enough to make a decision.
-
-      ### Should a small business build custom software or buy an off-the-shelf tool?
-
-      Buy when your process is standard and a tool covers most of what you need. Build when your workflow is part of how you compete and off-the-shelf tools force constant workarounds. Before either, check whether connecting or setting up your existing tools would solve the problem.
-
-      ### What is the difference between system integration and workflow automation?
-
-      System integration connects tools so data moves between them without being re-entered. Workflow automation takes the repetitive steps in a process and runs them without manual effort. Most automation depends on integration, which is why connecting systems usually comes first.
-
-      ### How should a small business start using AI safely?
-
-      Choose one workflow with a clear input and output. Decide where your data is allowed to go, write a short usage policy, and give staff an approved tool with access rules and a record of use. Measure one result for 30 days before expanding.
-
-      ### Can we build an MVP before the end of the year?
-
-      You can usually validate the idea and scope the first phase in the remaining weeks. Building the product itself is better planned for Q1, once you know which assumption the first version has to prove.
-
-      ### What can a business realistically fix in the last six weeks of the year?
-
-      You can define and price one problem, choose the right fix, connect two systems or automate one workflow, and run an AI pilot with one team. Larger builds and system replacements are better scoped now and started in January.
+  - type: faq
+    items:
+      - q: 'What is the best way to identify the root cause of a business problem?'
+        a: 'Write the problem as one sentence without naming a technology, then use the 5 Whys. Ask why the problem happens, then why again about each answer, until you reach a cause you can act on. Check the result with the people who deal with the problem every day.'
+      - q: 'How do I calculate the cost of manual work in my business?'
+        a: 'Multiply the hours lost per week by the number of people affected, their hourly cost including benefits, and 48 working weeks. Then add the yearly cost of errors and delays. A cautious estimate is enough to make a decision.'
+      - q: 'Should a small business build custom software or buy an off-the-shelf tool?'
+        a: 'Buy when your process is standard and a tool covers most of what you need. Build when your workflow is part of how you compete and off-the-shelf tools force constant workarounds. Before either, check whether connecting or setting up your existing tools would solve the problem.'
+      - q: 'What is the difference between system integration and workflow automation?'
+        a: 'System integration connects tools so data moves between them without being re-entered. Workflow automation takes the repetitive steps in a process and runs them without manual effort. Most automation depends on integration, which is why connecting systems usually comes first.'
+      - q: 'How should a small business start using AI safely?'
+        a: 'Choose one workflow with a clear input and output. Decide where your data is allowed to go, write a short usage policy, and give staff an approved tool with access rules and a record of use. Measure one result for 30 days before expanding.'
+      - q: 'Can we build an MVP before the end of the year?'
+        a: 'You can usually validate the idea and scope the first phase in the remaining weeks. Building the product itself is better planned for Q1, once you know which assumption the first version has to prove.'
+      - q: 'What can a business realistically fix in the last six weeks of the year?'
+        a: 'You can define and price one problem, choose the right fix, connect two systems or automate one workflow, and run an AI pilot with one team. Larger builds and system replacements are better scoped now and started in January.'
   - type: richtext
     markdown: |
       ## Get the free field guide

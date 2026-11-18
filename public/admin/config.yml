@@ -132,6 +132,18 @@ collections:
               - { label: File path, name: file, widget: string, hint: 'A file in public/, e.g. /resources/guide.pdf.' }
               - { label: Button label, name: button, widget: string, default: 'Download the free PDF' }
               - { label: Note under the button, name: note, widget: string, required: false }
+          - label: FAQ (questions that open)
+            name: faq
+            widget: object
+            summary: 'FAQ'
+            fields:
+              - label: Questions
+                name: items
+                widget: list
+                summary: '{{fields.q}}'
+                fields:
+                  - { label: Question, name: q, widget: string }
+                  - { label: Answer, name: a, widget: text, hint: 'Plain text. Leave a blank line between paragraphs.' }
           - label: Quote
             name: quote
             widget: object
