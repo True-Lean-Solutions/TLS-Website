@@ -1,0 +1,421 @@
+---
+/**
+ * A service's signature diagram (2026-11-18, after Data & Analytics' "Modern
+ * data foundation"): where things come from → what TLS does with them →
+ * what the business gets, joined by curved connectors on a dark band.
+ *
+ * Desktop: one diagram (viewBox 1100 × 360; cards are HTML placed in % of it,
+ * so the SVG lines meet them at any width). It assembles with the scroll —
+ * sources, then the stages, then the outcomes (scrub.ts: .scrub-path +
+ * [data-at]) — then a slow pulse runs along the lines. Reduced motion / no JS:
+ * complete and still. Phones: three stacked groups with arrows between.
+ */
+import Icon from '../Icon.astro';
+import Eyebrow from '../Eyebrow.astro';
+import type { IconName } from '../iconTypes';
+
+export interface FlowItem {
+  label: string;
+  icon: IconName;
+}
+export interface FlowStage {
+  title: string;
+  sub: string;
+  icon: IconName;
+}
+
+interface Props {
+  id: string;
+  eyebrow: string;
+  title: string;
+  accent: string;
+  lead: string;
+  /** Column headings: sources, stages, outcomes. */
+  columns: [string, string, string];
+  inputs: FlowItem[];
+  stages: FlowStage[];
+  outputs: FlowItem[];
+}
+const { id, eyebrow, title, accent, lead, columns, inputs, stages, outputs } = Astro.props;
+
+const W = 1100;
+const H = 360;
+const MID = H / 2;
+const IN = { x0: 10, x1: 220 };
+const OUT = { x0: 880, x1: 1090 };
+const ST_W = 112;
+const stageX = stages.map((_, k) => 360 + (k * (740 - 360)) / Math.max(1, stages.length - 1));
+const colY = (n: number) => Array.from({ length: n }, (_, i) => MID + (i - (n - 1) / 2) * 78);
+const inY = colY(inputs.length);
+const outY = colY(outputs.length);
+const curve = (x0: number, y0: number, x1: number, y1: number) => {
+  const mx = (x0 + x1) / 2;
+  return `M${x0} ${y0} C${mx} ${y0} ${mx} ${y1} ${x1} ${y1}`;
+};
+const inPaths = inY.map((y) => curve(IN.x1, y, stageX[0] - ST_W / 2, MID));
+const midPaths = stageX.slice(1).map((x, k) => `M${stageX[k] + ST_W / 2} ${MID} L${x - ST_W / 2} ${MID}`);
+const outPaths = outY.map((y) => curve(stageX[stageX.length - 1] + ST_W / 2, MID, OUT.x0, y));
+const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
+const tones = ['#ff7a7a', '#5cc3ff', '#c084fc', '#34d399', '#fbbf24'];
+---
+
+<section class="flow" aria-labelledby={`${id}-title`}>
+  <div class="wrap">
+    <div class="flow-head" data-reveal="">
+      <Eyebrow label={eyebrow} />
+      <h2 id={`${id}-title`}>{title}<span class="accent">{accent}</span></h2>
+      <p>{lead}</p>
+    </div>
+
+    <!-- Desktop / tablet: the diagram -->
+    <div class="flow-map" data-scrub data-scrub-start="top 85%" data-scrub-end="bottom 80%" aria-hidden="true">
+      <div class="flow-cols">
+        <span style={`left: ${pct((IN.x0 + IN.x1) / 2, W)}`}>{columns[0]}</span>
+        <span style={`left: ${pct((stageX[0] + stageX[stageX.length - 1]) / 2, W)}`}>{columns[1]}</span>
+        <span class="is-out" style={`left: ${pct((OUT.x0 + OUT.x1) / 2, W)}`}>{columns[2]}</span>
+      </div>
+      <div class="flow-stage-area">
+        <svg class="flow-lines" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+          <defs>
+            <linearGradient id={`${id}-in`} x1="0" x2="1">
+              <stop offset="0" stop-color="#D94040" stop-opacity="0.35" />
+              <stop offset="1" stop-color="#c084fc" />
+            </linearGradient>
+            <linearGradient id={`${id}-out`} x1="0" x2="1">
+              <stop offset="0" stop-color="#5cc3ff" />
+              <stop offset="1" stop-color="#22d3ee" stop-opacity="0.5" />
+            </linearGradient>
+          </defs>
+          {inPaths.map((d) => <path class="flow-path scrub-path" d={d} stroke={`url(#${id}-in)`} data-from="0.04" data-to="0.36" />)}
+          {midPaths.map((d, k) => (
+            <path class="flow-path flow-path--mid scrub-path" d={d} data-from={(0.36 + k * 0.08).toFixed(2)} data-to={(0.44 + k * 0.08).toFixed(2)} />
+          ))}
+          {outPaths.map((d) => <path class="flow-path scrub-path" d={d} stroke={`url(#${id}-out)`} data-from="0.64" data-to="0.92" />)}
+          <g class="flow-pulses" data-at="0.96">
+            {[...inPaths, ...midPaths, ...outPaths].map((d, k) => (
+              <path class="flow-pulse" d={d} pathLength="100" style={`--k: ${k}`} />
+            ))}
+          </g>
+        </svg>
+
+        {
+          inputs.map((it, i) => (
+            <div class="flow-card flow-card--in" style={`left: ${pct(IN.x0, W)}; width: ${pct(IN.x1 - IN.x0, W)}; top: ${pct(inY[i], H)}; --t: ${tones[i % tones.length]}`} data-at={(0.02 + i * 0.05).toFixed(2)}>
+              <span class="flow-ico"><Icon name={it.icon} size={16} /></span>
+              <span>{it.label}</span>
+            </div>
+          ))
+        }
+        {
+          stages.map((s, k) => (
+            <div class="flow-stage" style={`left: ${pct(stageX[k] - ST_W / 2, W)}; width: ${pct(ST_W, W)}; top: ${pct(MID, H)}`} data-at={(0.34 + k * 0.08).toFixed(2)}>
+              <span class="flow-stage-ico"><Icon name={s.icon} size={20} /></span>
+              <strong>{s.title}</strong>
+              <span>{s.sub}</span>
+            </div>
+          ))
+        }
+        {
+          outputs.map((it, i) => (
+            <div class="flow-card flow-card--out" style={`left: ${pct(OUT.x0, W)}; width: ${pct(OUT.x1 - OUT.x0, W)}; top: ${pct(outY[i], H)}`} data-at={(0.7 + i * 0.05).toFixed(2)}>
+              <span class="flow-ico"><Icon name={it.icon} size={16} /></span>
+              <span>{it.label}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Phones (and the accessible version everywhere): the same content as lists -->
+    <div class="flow-list">
+      <div class="flow-group">
+        <h3>{columns[0]}</h3>
+        <ul>{inputs.map((it) => <li><span class="flow-ico" aria-hidden="true"><Icon name={it.icon} size={16} /></span>{it.label}</li>)}</ul>
+      </div>
+      <div class="flow-group flow-group--stages">
+        <h3>{columns[1]}</h3>
+        <ol>
+          {stages.map((s) => (
+            <li>
+              <span class="flow-ico" aria-hidden="true"><Icon name={s.icon} size={16} /></span>
+              <span><strong>{s.title}</strong> — {s.sub}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div class="flow-group">
+        <h3>{columns[2]}</h3>
+        <ul>{outputs.map((it) => <li><span class="flow-ico" aria-hidden="true"><Icon name={it.icon} size={16} /></span>{it.label}</li>)}</ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .flow {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    color: #fff;
+    padding-block: clamp(4rem, 8vw, 6.5rem);
+    background:
+      radial-gradient(40% 60% at 0% 100%, rgba(217, 64, 64, 0.16), transparent 70%),
+      radial-gradient(45% 60% at 100% 10%, rgba(18, 136, 207, 0.18), transparent 70%),
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 44px 44px,
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 44px 44px,
+      #0b1020;
+  }
+  .flow-head {
+    max-width: 760px;
+  }
+  .flow-head :global(.eyebrow) {
+    color: rgba(255, 255, 255, 0.82);
+  }
+  .flow-head h2 {
+    margin-top: 0.8rem;
+    font-size: var(--step-4);
+    line-height: 1.15;
+    color: #fff;
+  }
+  .flow-head .accent {
+    color: #5cc3ff;
+  }
+  .flow-head p {
+    margin-top: 0.9rem;
+    color: rgba(255, 255, 255, 0.76);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .flow-map {
+    margin-top: clamp(2.25rem, 4vw, 3.25rem);
+  }
+  .flow-cols {
+    position: relative;
+    height: 2rem;
+    margin-bottom: 0.25rem;
+  }
+  .flow-cols span {
+    position: absolute;
+    transform: translateX(-50%);
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    font-family: var(--font-head);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.62);
+  }
+  .flow-cols .is-out {
+    color: #7dd3fc;
+    border-bottom-color: rgba(92, 195, 255, 0.5);
+  }
+  .flow-stage-area {
+    position: relative;
+    aspect-ratio: 1100 / 360;
+  }
+  .flow-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .flow-path {
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .flow-path--mid {
+    stroke: #a78bfa;
+    stroke-width: 2;
+  }
+  .flow-pulse {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-dasharray: 2 98;
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .flow-pulses:global(.is-on) .flow-pulse {
+      opacity: 0.85;
+      animation: flow-pulse 3.2s linear infinite;
+      animation-delay: calc(var(--k) * -0.37s);
+    }
+  }
+  @keyframes flow-pulse {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .flow-card,
+  .flow-stage {
+    position: absolute;
+    transform: translateY(-50%);
+    transition:
+      opacity 0.5s var(--ix-ease),
+      transform 0.6s var(--ix-ease);
+  }
+  .flow-card {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 44px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    font-size: 0.84rem;
+    line-height: 1.25;
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .flow-card--in .flow-ico {
+    color: var(--t);
+    background: color-mix(in srgb, var(--t) 16%, transparent);
+  }
+  .flow-card--out {
+    background: rgba(18, 136, 207, 0.12);
+    border-color: rgba(92, 195, 255, 0.35);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 24px -10px rgba(92, 195, 255, 0.6);
+  }
+  .flow-card--out .flow-ico {
+    color: #7dd3fc;
+    background: rgba(92, 195, 255, 0.14);
+  }
+  .flow-ico {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+  .flow-stage {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 0.35rem;
+    min-height: 132px;
+    padding: 0.85rem 0.6rem;
+    border-radius: 16px;
+    text-align: center;
+    background: linear-gradient(180deg, rgba(167, 139, 250, 0.16), rgba(255, 255, 255, 0.03));
+    border: 1px solid rgba(167, 139, 250, 0.45);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 18px 40px -20px rgba(124, 92, 240, 0.7);
+  }
+  .flow-stage-ico {
+    display: inline-grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: rgba(167, 139, 250, 0.18);
+    color: #ddd6fe;
+  }
+  .flow-stage strong {
+    font-family: var(--font-head);
+    font-size: 0.88rem;
+    line-height: 1.2;
+  }
+  .flow-stage > span:last-child {
+    font-size: 0.72rem;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  /* With the scroll: cards wait until their part of the line arrives. */
+  .flow-map:global(.is-scrub) :is(.flow-card, .flow-stage):not(:global(.is-on)) {
+    opacity: 0;
+    transform: translateY(calc(-50% + 12px));
+  }
+
+  /* The list version: hidden visually on wide screens (the diagram shows the
+     same content), the layout on phones. */
+  .flow-list {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  @media (max-width: 860px) {
+    .flow-map {
+      display: none;
+    }
+    .flow-list {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip: auto;
+      white-space: normal;
+      display: grid;
+      gap: 2.4rem;
+      margin-top: 2.25rem;
+    }
+    .flow-group {
+      position: relative;
+    }
+    .flow-group + .flow-group::before {
+      content: '';
+      position: absolute;
+      top: -1.95rem;
+      left: 14px;
+      width: 2px;
+      height: 1.5rem;
+      background: linear-gradient(180deg, #c084fc, #5cc3ff);
+    }
+    .flow-group h3 {
+      font-family: var(--font-head);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.62);
+      margin-bottom: 0.8rem;
+    }
+    .flow-group ul,
+    .flow-group ol {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.55rem;
+    }
+    .flow-group li {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 0.92rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    .flow-group .flow-ico {
+      background: rgba(255, 255, 255, 0.08);
+      color: #c4b5fd;
+    }
+    .flow-group--stages li {
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.1);
+    }
+    .flow-group:last-child li {
+      border-color: rgba(92, 195, 255, 0.35);
+      background: rgba(18, 136, 207, 0.12);
+    }
+  }
+</style>

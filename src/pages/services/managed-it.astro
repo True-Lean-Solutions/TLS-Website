@@ -19,7 +19,8 @@ import SectionHeading from '../../components/SectionHeading.astro';
 import Button from '../../components/Button.astro';
 import Icon from '../../components/Icon.astro';
 import InfoCard from '../../components/InfoCard.astro';
-import StepRow from '../../components/StepRow.astro';
+import ProcessRail, { type RailStep } from '../../components/service/ProcessRail.astro';
+import FlowMap, { type FlowItem, type FlowStage } from '../../components/service/FlowMap.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import CapabilityGroups, { type CapabilityGroup } from '../../components/service/CapabilityGroups.astro';
 import EngagementModels, { type EngagementModel } from '../../components/service/EngagementModels.astro';
@@ -59,6 +60,7 @@ const groups: CapabilityGroup[] = [
     line: "One place for your team to go when something isn't working — answered by people who know your setup.",
     icon: 'headset',
     accent: 'red',
+    art: 'desk',
     items: ['IT help desk and end-user support', 'Employee onboarding and offboarding', 'Laptop, desktop and mobile device management', 'Hardware refresh and warranty replacement'],
   },
   {
@@ -66,6 +68,7 @@ const groups: CapabilityGroup[] = [
     line: 'Problems caught and dealt with before they become downtime, with the routine work done on schedule.',
     icon: 'monitor',
     accent: 'blue',
+    art: 'health',
     items: ['Proactive monitoring and maintenance', 'Incident management and resolution', 'Microsoft 365 administration', 'Application support and maintenance'],
   },
   {
@@ -73,17 +76,38 @@ const groups: CapabilityGroup[] = [
     line: 'The planning and records that stop a small problem from turning into a long one.',
     icon: 'database',
     accent: 'plum',
+    art: 'backup',
     items: ['Backup and disaster recovery', 'IT asset management and procurement', 'IT documentation', 'Ongoing technology operations'],
   },
 ];
 
 const accents = ['red', 'blue', 'plum'] as const;
-const steps = [
-  { number: '01', title: 'Understand your environment', text: 'We document what you run — people, devices, systems and accounts — and how your team actually works day to day.' },
-  { number: '02', title: 'Stabilize what matters', text: 'We deal with the urgent issues first and close the gaps that put you at risk, like untested backups or unmanaged devices.' },
-  { number: '03', title: 'Transition support', text: 'Your team gets one clear way to ask for help, and we take over the routine work we agree on together.' },
-  { number: '04', title: 'Monitor and maintain', text: 'Systems are monitored and maintained, and when something needs attention, we respond and keep you informed.' },
-  { number: '05', title: 'Review and improve', text: "We review what's working with you and plan the next improvements before they become problems." },
+const steps: RailStep[] = [
+  { title: 'Understand your environment', text: 'We document what you run — people, devices, systems and accounts — and how your team actually works day to day.', icon: 'search' },
+  { title: 'Stabilize what matters', text: 'We deal with the urgent issues first and close the gaps that put you at risk, like untested backups or unmanaged devices.', icon: 'shield' },
+  { title: 'Transition support', text: 'Your team gets one clear way to ask for help, and we take over the routine work we agree on together.', icon: 'headset' },
+  { title: 'Monitor and maintain', text: 'Systems are monitored and maintained, and when something needs attention, we respond and keep you informed.', icon: 'monitor' },
+  { title: 'Review and improve', text: "We review what's working with you and plan the next improvements before they become problems.", icon: 'compass' },
+];
+
+/* Signature: every issue has a path (FlowMap). */
+const flowIn: FlowItem[] = [
+  { label: 'Your team asks for help', icon: 'message' },
+  { label: 'Monitoring flags an issue', icon: 'monitor' },
+  { label: 'Scheduled maintenance', icon: 'clock' },
+  { label: 'Someone joins or leaves', icon: 'user' },
+];
+const flowStages: FlowStage[] = [
+  { title: 'Logged', sub: 'One queue for everything', icon: 'checklist' },
+  { title: 'Prioritized', sub: 'By business impact', icon: 'target' },
+  { title: 'Resolved', sub: 'By people who know your setup', icon: 'headset' },
+  { title: 'Prevented', sub: 'Root cause dealt with', icon: 'shield' },
+];
+const flowOut: FlowItem[] = [
+  { label: 'People back to work', icon: 'users' },
+  { label: 'Systems documented', icon: 'document' },
+  { label: 'Fewer repeat issues', icon: 'chart' },
+  { label: 'Clear view of your IT', icon: 'compass' },
 ];
 
 const models: EngagementModel[] = [
@@ -219,24 +243,32 @@ const outcomes: Outcome[] = [
     </div>
   </section>
 
-  <!-- 4. How it works -->
+  <!-- 4. Signature: every issue has a path -->
+  <FlowMap
+    id="mit-flow"
+    eyebrow="How Support Flows"
+    title="Every issue has a path "
+    accent="to resolution."
+    lead="Requests, alerts and routine work arrive in one place, are handled in order of impact, and leave a record — so the same problem is less likely to come back."
+    columns={['Where it starts', 'How we handle it', 'What you get']}
+    inputs={flowIn}
+    stages={flowStages}
+    outputs={flowOut}
+  />
+
+  <!-- 4b. How it works -->
   <section class="section">
     <div class="wrap">
       <SectionHeading eyebrow="How It Works" title="From inherited setup to " accent="managed environment." />
-      <ol class="steps-grid" data-reveal="stagger">
-        {steps.map((s, i) => <StepRow {...s} accent={accents[i % 3]} />)}
-      </ol>
+      <ProcessRail steps={steps} />
     </div>
   </section>
 
-  <!-- 5. Outcomes (the page's one dark band) -->
-  <section class="mit-outcomes">
+  <!-- 5. Outcomes -->
+  <section class="section section-alt">
     <div class="wrap">
-      <div class="mit-outcomes-head" data-reveal="">
-        <Eyebrow label="What Changes" />
-        <h2>Technology that stays out of the way, <span class="accent">so your team doesn't have to.</span></h2>
-      </div>
-      <OutcomeList outcomes={outcomes} dark />
+      <SectionHeading eyebrow="What Changes" title="Technology that stays out of the way, " accent="so your team doesn't have to." />
+      <OutcomeList outcomes={outcomes} />
     </div>
   </section>
 
@@ -683,26 +715,4 @@ const outcomes: Outcome[] = [
     }
   }
 
-  /* ---- Outcomes: the page's one dark band ------------------------------ */
-  .mit-outcomes {
-    background: var(--ink);
-    color: #fff;
-    padding-block: clamp(4rem, 8vw, 6.5rem);
-  }
-  .mit-outcomes-head {
-    max-width: 760px;
-    margin-bottom: clamp(2.25rem, 4vw, 3.25rem);
-  }
-  .mit-outcomes-head :global(.eyebrow) {
-    color: rgba(255, 255, 255, 0.82);
-  }
-  .mit-outcomes-head h2 {
-    margin-top: 0.8rem;
-    font-size: var(--step-4);
-    line-height: 1.15;
-    color: #fff;
-  }
-  .mit-outcomes-head .accent {
-    color: var(--red);
-  }
 </style>

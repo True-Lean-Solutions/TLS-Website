@@ -18,7 +18,8 @@ import SectionHeading from '../../components/SectionHeading.astro';
 import Button from '../../components/Button.astro';
 import Icon from '../../components/Icon.astro';
 import InfoCard from '../../components/InfoCard.astro';
-import StepRow from '../../components/StepRow.astro';
+import ProcessRail, { type RailStep } from '../../components/service/ProcessRail.astro';
+import FlowMap, { type FlowItem, type FlowStage } from '../../components/service/FlowMap.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import CapabilityGroups, { type CapabilityGroup } from '../../components/service/CapabilityGroups.astro';
 import EngagementModels, { type EngagementModel } from '../../components/service/EngagementModels.astro';
@@ -75,6 +76,7 @@ const groups: CapabilityGroup[] = [
     line: 'Cloud environments sized for what you actually run — and moved there without disrupting the business.',
     icon: 'cloud',
     accent: 'red',
+    art: 'cloud',
     items: ['Cloud migration and deployment', 'Managed cloud on AWS, Microsoft Azure and Google Cloud', 'Hybrid, private and public cloud', 'Virtualization and virtual desktops'],
   },
   {
@@ -82,6 +84,7 @@ const groups: CapabilityGroup[] = [
     line: 'Dependable connections between your people, your places and your systems.',
     icon: 'integration',
     accent: 'blue',
+    art: 'network',
     items: ['Network design and implementation', 'Network refresh and upgrades', 'Internet connectivity planning', 'Server configuration and deployment'],
   },
   {
@@ -89,6 +92,7 @@ const groups: CapabilityGroup[] = [
     line: 'The physical side of IT, planned properly instead of improvised.',
     icon: 'building',
     accent: 'plum',
+    art: 'workplace',
     items: ['Structured cabling', 'Office IT setup and relocation', 'Data center relocation and colocation', 'Hardware procurement'],
   },
   {
@@ -96,17 +100,39 @@ const groups: CapabilityGroup[] = [
     line: 'Phones that move with your people, and a plan for the day something fails.',
     icon: 'phone',
     accent: 'red',
+    art: 'comms',
     items: ['VoIP and unified communications', 'Microsoft Teams phones and conferencing', 'Cloud backup', 'Business continuity planning'],
   },
 ];
 
 const accents = ['red', 'blue', 'plum'] as const;
-const steps = [
-  { number: '01', title: 'Map what you have', text: 'We document your current setup — locations, network, servers, cloud services — and how it all connects.' },
-  { number: '02', title: 'Design the foundation', text: 'We design for where the business is going, then plan the order of work so nothing critical goes down.' },
-  { number: '03', title: 'Build and migrate', text: 'We install, configure and migrate in planned stages, with a rollback plan at each one.' },
-  { number: '04', title: 'Document and hand over', text: 'You get a clear record of what was built, how it fits together and who to call.' },
-  { number: '05', title: 'Run and improve', text: 'Ongoing management through Managed IT Services, or a clean handover to your own team.' },
+const steps: RailStep[] = [
+  { title: 'Map what you have', text: 'We document your current setup — locations, network, servers, cloud services — and how it all connects.', icon: 'search' },
+  { title: 'Design the foundation', text: 'We design for where the business is going, then plan the order of work so nothing critical goes down.', icon: 'compass' },
+  { title: 'Build and migrate', text: 'We install, configure and migrate in planned stages, with a rollback plan at each one.', icon: 'building' },
+  { title: 'Document and hand over', text: 'You get a clear record of what was built, how it fits together and who to call.', icon: 'document' },
+  { title: 'Run and improve', text: 'Ongoing management through Managed IT Services, or a clean handover to your own team.', icon: 'headset' },
+];
+
+/* Signature: from accumulated to designed (FlowMap). */
+const flowIn: FlowItem[] = [
+  { label: 'A server in a closet', icon: 'server' },
+  { label: 'A patchwork network', icon: 'integration' },
+  { label: 'An aging phone system', icon: 'phone' },
+  { label: 'Scattered cloud apps', icon: 'cloud' },
+  { label: 'Backups nobody has tested', icon: 'database' },
+];
+const flowStages: FlowStage[] = [
+  { title: 'Map', sub: 'What you run and why', icon: 'search' },
+  { title: 'Decide', sub: 'Keep, move or retire', icon: 'compass' },
+  { title: 'Build', sub: 'In planned stages', icon: 'building' },
+  { title: 'Run', sub: 'Monitored and maintained', icon: 'headset' },
+];
+const flowOut: FlowItem[] = [
+  { label: 'Cloud environment', icon: 'cloud' },
+  { label: 'Dependable network', icon: 'integration' },
+  { label: 'Unified communications', icon: 'phone' },
+  { label: 'Business continuity', icon: 'shield' },
 ];
 
 const models: EngagementModel[] = [
@@ -224,6 +250,19 @@ const outcomes: Outcome[] = [
     </div>
   </section>
 
+  <!-- 2b. Signature: from accumulated to designed -->
+  <FlowMap
+    id="ci-flow"
+    eyebrow="From Accumulated to Designed"
+    title="Turn what you have into "
+    accent="one foundation."
+    lead="Most environments grew one decision at a time. We map what's there, decide what stays, moves or retires, and rebuild it as one design."
+    columns={['What you have today', 'How we rebuild it', 'What you end up with']}
+    inputs={flowIn}
+    stages={flowStages}
+    outputs={flowOut}
+  />
+
   <!-- 3. Capabilities -->
   <section class="section section-alt">
     <div class="wrap">
@@ -241,9 +280,7 @@ const outcomes: Outcome[] = [
   <section class="section">
     <div class="wrap">
       <SectionHeading eyebrow="How It Works" title="Planned in order, " accent="built without surprises." />
-      <ol class="steps-grid" data-reveal="stagger">
-        {steps.map((s, i) => <StepRow {...s} accent={accents[i % 3]} />)}
-      </ol>
+      <ProcessRail steps={steps} />
     </div>
   </section>
 
