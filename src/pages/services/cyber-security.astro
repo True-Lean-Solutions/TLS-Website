@@ -20,6 +20,13 @@
  * data, systems, operations), then TLS; a new "The Real Risk" section; the
  * methodology's new four stages; "Security is not just technology" removed;
  * the CTA is "Discuss Your Security Needs", and the FAQ keeps one CTA.
+ *
+ * Cybersecurity & Compliance (Hemang, 2026-11-18: service portfolio
+ * expansion): renamed, with two sections added before the FAQ — Compliance &
+ * Governance and Works Together With. Mack's sections are unchanged.
+ * Compliance work is delivered with strategic partners (never named); it is
+ * described as support, never as certification or a guarantee. HIPAA and CMMC
+ * support are to confirm before publishing (docs/decisions.md 2026-11-18).
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Eyebrow from '../../components/Eyebrow.astro';
@@ -27,13 +34,16 @@ import SectionHeading from '../../components/SectionHeading.astro';
 import Button from '../../components/Button.astro';
 import Icon from '../../components/Icon.astro';
 import FaqList from '../../components/FaqList.astro';
+import CapabilityGroups, { type CapabilityGroup } from '../../components/service/CapabilityGroups.astro';
+import ConnectedServices from '../../components/service/ConnectedServices.astro';
 import type { IconName } from '../../components/iconTypes';
 import { cta, href } from '../../data/site';
 
-// Title and description: SEO brief T2.3 (2026-11-11), drafted from this page's own copy; pending Hemang's approval.
-const title = 'Cyber Security for Growing Businesses | True Lean Solutions';
+// Title and description: SEO brief T2.3 (2026-11-11), updated for the
+// rename (2026-11-18), from this page's own copy; pending Hemang's approval.
+const title = 'Cybersecurity & Compliance | True Lean Solutions';
 const description =
-  'Protect what matters most. Stay ahead of cyber threats: True Lean Solutions helps you protect your people, secure your data and keep your business running.';
+  'Protect your people, data and systems: risk assessments, layered security, ongoing protection and compliance support, including HIPAA and CMMC readiness.';
 
 type Accent = 'red' | 'blue' | 'violet' | 'green';
 const tone: Record<Accent, string> = { red: 'var(--red)', blue: 'var(--blue)', violet: 'var(--cs-violet)', green: 'var(--cs-green)' };
@@ -197,6 +207,31 @@ const stages: { title: string; text: string; icon: IconName; c: Accent; x: numbe
   { title: 'Secure, Monitor, Detect, Support & Improve', text: 'We continuously protect your business, detect emerging threats, provide support, and strengthen your defenses.', icon: 'shield', c: 'green', x: 12.5, y: 50 },
 ];
 
+/* Compliance & Governance (2026-11-18): support, never certification. */
+const compliance: CapabilityGroup[] = [
+  {
+    title: 'Know where you stand',
+    line: 'A clear view of your risks and of the requirements you are being asked to meet.',
+    icon: 'search',
+    accent: 'red',
+    items: ['Cybersecurity and IT risk assessments', 'Gap analysis against the requirements you face', 'Prioritized remediation plan'],
+  },
+  {
+    title: 'Close the gaps',
+    line: 'Practical changes to your systems, access and processes, in the order that matters most.',
+    icon: 'compliance',
+    accent: 'blue',
+    items: ['HIPAA compliance support', 'CMMC readiness support', 'Remediation and implementation'],
+  },
+  {
+    title: 'Keep it that way',
+    line: 'Policies people follow and evidence that holds up when someone asks for it.',
+    icon: 'checklist',
+    accent: 'plum',
+    items: ['Security policies and governance', 'Security awareness for your team', 'Ongoing compliance support'],
+  },
+];
+
 /* FAQ: answers from this page's own copy and the approved positioning only. */
 const faqs: { q: string; a: string[] }[] = [
   {
@@ -251,9 +286,9 @@ const faqs: { q: string; a: string[] }[] = [
         <nav class="cs-crumbs" aria-label="Breadcrumb">
           <a href={href('/services/')}>Solutions</a>
           <span aria-hidden="true">/</span>
-          <span aria-current="page">Cyber Security</span>
+          <span aria-current="page">Cybersecurity &amp; Compliance</span>
         </nav>
-        <Eyebrow label="Cyber Security" />
+        <Eyebrow label="Cybersecurity & Compliance" />
         <h1>Protect what <span class="accent">matters most.</span></h1>
         <p class="cs-lede"><strong>Stay ahead of cyber threats.</strong> Protect your people, secure your data, and keep your business running.</p>
         <div class="cs-actions">
@@ -728,7 +763,43 @@ const faqs: { q: string; a: string[] }[] = [
     </div>
   </section>
 
-  <!-- 6. FAQ -->
+  <!-- 6. Compliance & Governance (2026-11-18) -->
+  <section class="section section-alt cs-compliance">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Compliance & Governance"
+        title="Security that also stands up "
+        accent="to scrutiny."
+        lead="More businesses are asked to prove their security, not just practice it — by regulators, insurers and the customers they serve. We help you understand what's required and get ready for it."
+      />
+      <CapabilityGroups groups={compliance} />
+      <p class="cs-compliance-note">
+        We support your compliance work. Formal assessments and certification decisions rest with the relevant
+        assessors and regulators.
+      </p>
+    </div>
+  </section>
+
+  <!-- 7. Works together with (2026-11-18) -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Works Together With"
+        title="Security is part of "
+        accent="the whole foundation."
+        lead="It's strongest when the systems underneath it are well run and well built."
+      />
+      <ConnectedServices
+        links={[
+          ['/services/managed-it/', 'Day-to-day monitoring, maintenance and support that keep protections in place.'],
+          ['/services/cloud-infrastructure/', 'Networks and cloud environments designed with security in mind from the start.'],
+          ['/services/technology-strategy/', 'Senior guidance when security decisions shape the direction of the business.'],
+        ]}
+      />
+    </div>
+  </section>
+
+  <!-- 8. FAQ -->
   <section class="section cs-faq">
     <div class="wrap cs-faq-grid">
       <div>
@@ -753,7 +824,7 @@ const faqs: { q: string; a: string[] }[] = [
     </div>
   </section>
 
-  <!-- 7. Final CTA -->
+  <!-- 9. Final CTA -->
   <section class="cs-final">
     <svg class="cs-waves" viewBox="0 0 1440 360" preserveAspectRatio="none" aria-hidden="true">
       <defs>
@@ -2271,5 +2342,14 @@ const faqs: { q: string; a: string[] }[] = [
     .cs-final-grid {
       grid-template-columns: 1fr;
     }
+  }
+
+  /* Compliance & Governance (2026-11-18) */
+  .cs-compliance-note {
+    margin-top: 1.5rem;
+    max-width: 70ch;
+    color: var(--text-2);
+    font-size: 0.9rem;
+    line-height: 1.6;
   }
 </style>

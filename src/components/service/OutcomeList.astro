@@ -1,0 +1,87 @@
+---
+/**
+ * What changes for the business (2026-11-18): qualitative outcomes only, never
+ * numbers (claims policy). An open list with a short accent rule per item.
+ */
+import Icon from '../Icon.astro';
+import type { IconName } from '../iconTypes';
+
+export interface Outcome {
+  title: string;
+  text: string;
+  icon: IconName;
+}
+
+interface Props {
+  outcomes: Outcome[];
+  /** Light text for a dark section. */
+  dark?: boolean;
+}
+const { outcomes, dark = false } = Astro.props;
+---
+
+<ul class:list={['outcomes', { dark }]} data-reveal="stagger">
+  {
+    outcomes.map((o) => (
+      <li class="outcome">
+        <span class="outcome-icon" aria-hidden="true">
+          <Icon name={o.icon} size={20} />
+        </span>
+        <h3>{o.title}</h3>
+        <p>{o.text}</p>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .outcomes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.25rem 2.5rem;
+  }
+  .outcome {
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--border-2);
+  }
+  .outcome-icon {
+    display: inline-flex;
+    color: var(--red);
+  }
+  .outcome h3 {
+    margin-top: 0.7rem;
+    font-size: 1.05rem;
+  }
+  .outcome p {
+    margin-top: 0.45rem;
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .dark .outcome {
+    border-top-color: rgba(255, 255, 255, 0.18);
+  }
+  .dark .outcome-icon {
+    color: #ff8a8a;
+  }
+  .dark h3 {
+    color: #fff;
+  }
+  .dark p {
+    color: rgba(255, 255, 255, 0.74);
+  }
+  @media (max-width: 900px) {
+    .outcomes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 560px) {
+    .outcomes {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>

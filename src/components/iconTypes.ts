@@ -36,6 +36,13 @@ export const iconNames = [
   'message',
   'user',
   'mail',
+  'headset',
+  'infrastructure',
+  'compliance',
+  'monitor',
+  'laptop',
+  'phone',
+  'building',
 ] as const;
 
 export type IconName = (typeof iconNames)[number];

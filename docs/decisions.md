@@ -983,3 +983,41 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Added (Hemang):** each post's `cover` is now its designed banner from the Drive folder "Title Images" (`1ZJ_CyDeE4YGOC9JcmNg2QJG8ZYRW7okv`), imported once. They are 1800×1200 isometric illustrations, in line with v2.3 §13 (no robots or brains). The files replace the old covers at the same paths, so posts keep their `cover` values. The smaller copies (480–1600 px) were regenerated.
 - **Shown whole:** the article cover frame is now 3:2, the banners' shape (it was 16:9, which would crop icons at the top and bottom). Every `coverAlt` was rewritten to describe its new banner.
 - **Banners also appear in** link previews (Open Graph) and Technology Strategy's case-study visual (Six Account Tiers). Cards keep the separate thumbnails.
+
+## 2026-11-18: Service portfolio expansion (Managed IT, Cloud & Infrastructure, Cybersecurity & Compliance)
+
+**Brief (Hemang):** add Managed IT Services and Cloud & Infrastructure, enhance Cyber Security into Cybersecurity & Compliance, and rethink the Solutions overview as one portfolio. Delivered with strategic delivery partners under the TLS brand. **The partners are never named on the site.**
+
+**What shipped (branch `feat/managed-it-cloud-infra`, draft copy pending approval):**
+- **/services/managed-it/** and **/services/cloud-infrastructure/** are full pages, excluded from `[solution].astro`. Each has its own code-drawn hero with motion (`sequence.ts`), plus challenges, grouped capabilities, how it works, outcomes, engagement models, connected services and a conversation CTA. Breadcrumbs, Service JSON-LD and the sitemap come automatically from `solutions`.
+  - The Managed IT hero is an operations map: an issue is detected, routed to support, resolved, and monitoring continues.
+  - The Cloud & Infrastructure hero builds the foundation in layers, then migrates a workload and makes a continuity copy.
+  - Both use status words only, with no times, numbers or metrics, so neither reads as live data.
+- **Cyber Security → Cybersecurity & Compliance** (label and meta title; the URL is unchanged). Two sections were added before the FAQ: Compliance & Governance, with an explicit "support, not certification" note, and Works Together With. Mack's 2026-11-02 sections are unchanged.
+- **/services/ portfolio:** the ten solutions are grouped on a five-stage lifecycle rail (Plan → Build → Connect → Run → Protect; `src/data/portfolio.ts`).
+  - Cards show each solution's one-line summary. The longer Services Overview blurbs are no longer shown on this page; each page carries its own story.
+  - A "Start from what's in your way" finder highlights the solutions that answer a problem. Every card stays visible and linked, and it's a page-only script.
+  - The rail draws through the stages on scroll (`story.ts` › `initPortfolio`).
+- **Header menu, footer and Tali** list all ten solutions. Tali got entries for both new services and compliance aliases.
+- **Shared components** in `src/components/service/`: CapabilityGroups, EngagementModels, OutcomeList and ConnectedServices. **New icons:** headset, infrastructure, compliance, monitor, laptop, phone and building.
+- **Liquid glass:** the `.glass-panel` utility in `motion.css` (light and `--dark`) is used for the heroes' floating status panels. It follows the liquid-glass skill's CSS treatment (blur, saturation, inner edge, cursor-following sheen). The skill's WebGL engine only refracts images and canvases, and these panels float over live SVG and text, so the engine was not added (no new dependency).
+
+**Capabilities published:** only those the partners advertise.
+- **Managed IT:** help desk, onboarding and offboarding, device management, monitoring and maintenance, incident management, Microsoft 365, application support (also evidenced by Dwibros' review), backup and DR, asset management and procurement, documentation, co-managed IT.
+- **Cloud & Infrastructure:** cloud migration and management (AWS, Azure, Google Cloud), hybrid and private cloud, virtualization and VDI, network design and implementation, network refresh, internet connectivity planning, servers, structured cabling, office and data-center relocation, colocation, VoIP and Teams phones, cloud backup, business continuity planning.
+
+**To confirm before merging (business commitments):**
+- HIPAA compliance support and CMMC readiness support (one partner advertises both).
+- Security awareness for your team (already in Mack's FAQ copy).
+- The three engagement models on each page (fully managed, co-managed, project-based; implementation, migration, ongoing management).
+- Platform names on the Cloud page (AWS, Azure, Google Cloud).
+- That partner-delivered work may be described as "we".
+
+**Left out (unconfirmed or ruled out by the brief):**
+- site reliability engineering (SRE);
+- website support and maintenance as a named service;
+- patch management as a named service;
+- high-availability architecture;
+- LAN, WAN and Wi-Fi as separate offerings;
+- any 24/7, response-time, uptime or SLA statement (one partner advertises 24/7 monitoring and support);
+- any location or industry claim.

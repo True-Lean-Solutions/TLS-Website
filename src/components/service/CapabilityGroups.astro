@@ -1,0 +1,137 @@
+---
+/**
+ * A service's capabilities in a few meaningful groups (2026-11-18). Each group
+ * names the business need first, then the specific capabilities under it.
+ */
+import Icon from '../Icon.astro';
+import type { IconName } from '../iconTypes';
+import type { Accent } from '../../data/services';
+
+export interface CapabilityGroup {
+  title: string;
+  /** What the group does for the business, in a sentence. */
+  line: string;
+  icon: IconName;
+  accent: Accent;
+  items: string[];
+}
+
+interface Props {
+  groups: CapabilityGroup[];
+}
+const { groups } = Astro.props;
+
+const accents: Record<Accent, string> = {
+  red: '--c: var(--red); --c-text: var(--red-text);',
+  blue: '--c: var(--blue); --c-text: var(--blue-text);',
+  plum: '--c: var(--plum); --c-text: var(--plum);',
+};
+---
+
+<ul class:list={['cap-groups', `cap-groups--${groups.length}`]} data-reveal="stagger">
+  {
+    groups.map((g) => (
+      <li class="cap ix-card ix-card--quiet ix-light" style={accents[g.accent]}>
+        <div class="cap-head">
+          <span class="cap-icon glass-icon" aria-hidden="true">
+            <Icon name={g.icon} size={24} />
+          </span>
+          <h3>{g.title}</h3>
+        </div>
+        <p class="cap-line">{g.line}</p>
+        <ul class="cap-items">
+          {g.items.map((it) => (
+            <li>{it}</li>
+          ))}
+        </ul>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .cap-groups {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .cap-groups--2,
+  .cap-groups--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cap {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.6rem 1.6rem 1.4rem;
+  }
+  .cap-head {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .cap-icon {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: var(--radius);
+    color: var(--c);
+  }
+  .cap h3 {
+    font-size: 1.12rem;
+    line-height: 1.3;
+  }
+  .cap-line {
+    margin-top: 0.85rem;
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .cap-items {
+    list-style: none;
+    margin: 1.1rem 0 0;
+    padding: 1.1rem 0 0;
+    border-top: 1px solid var(--border);
+    display: grid;
+    gap: 0.6rem;
+  }
+  .cap-items li {
+    position: relative;
+    padding-left: 1.35rem;
+    font-size: 0.94rem;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .cap-items li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 2px;
+    background: var(--c);
+    transform: rotate(45deg) scale(0.8);
+  }
+  @media (max-width: 1024px) {
+    .cap-groups,
+    .cap-groups--4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 680px) {
+    .cap-groups,
+    .cap-groups--2,
+    .cap-groups--4 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

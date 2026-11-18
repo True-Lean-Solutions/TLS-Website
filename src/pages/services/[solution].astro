@@ -15,7 +15,13 @@ import { moreSolutions, type Service } from '../../data/services';
 export function getStaticPaths() {
   // Technology Strategy, Cyber Security and Data & Analytics have their own
   // full pages. (getStaticPaths runs in its own scope, so this lives inside it.)
-  const ownPage = ['/services/technology-strategy/', '/services/cyber-security/', '/services/data-analytics/'];
+  const ownPage = [
+    '/services/technology-strategy/',
+    '/services/cyber-security/',
+    '/services/data-analytics/',
+    '/services/managed-it/',
+    '/services/cloud-infrastructure/',
+  ];
   return moreSolutions.filter((s) => !ownPage.includes(s.href)).map((s) => ({
     params: { solution: s.href.split('/').filter(Boolean).pop() },
     props: { solution: s },

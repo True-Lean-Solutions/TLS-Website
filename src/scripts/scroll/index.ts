@@ -9,6 +9,7 @@
  *   section   headings, cards, steps, images ...... text.ts, cards.ts, steps.ts, media.ts
  *   story     parallax, pinned + horizontal scenes . media.ts, story.ts, reel.ts
  *   signature heroes, Challenges, Solutions ........ media.ts, story.ts
+ *             Solutions portfolio rail .......... story.ts (initPortfolio)
  *   page      the Contact conversation ............. contact.ts
  *             product pages (Meeting Intelligence) .. product.ts
  *             Cyber Security's layer stack ......... security.ts
@@ -21,7 +22,7 @@ import { gsap, ScrollTrigger, MQ, initSmoothScroll, refreshWhenSettled, scrollPo
 import { initHeadingReveals } from './text';
 import { initCardEntrances, initCardDepth } from './cards';
 import { initHeroes, initMediaReveals, initSpotlights, initLogoDrift } from './media';
-import { initChallengeStory, initSolutionsTrack, initSolutionsGrid } from './story';
+import { initChallengeStory, initSolutionsTrack, initSolutionsGrid, initPortfolio } from './story';
 import { initChrome, initFooterReveal } from './chrome';
 import { initContact } from './contact';
 import { initStepSequences } from './steps';
@@ -112,6 +113,7 @@ export function initScroll() {
         if (g.group) skip.add(g.group);
         cleanups.push(g.cleanup);
       }
+      cleanups.push(initPortfolio());
       cleanups.push(initContact({ desktop: c.desktop }));
       // Before the reveals: it changes the page's layout (tall layer notes).
       cleanups.push(initSecurityPage({ desktop: c.desktop }));

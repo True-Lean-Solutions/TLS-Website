@@ -10,6 +10,7 @@
      .ix-card--quiet        smaller lift for non-link cards
      .ix-group              hover animates the group's glass icon, no lift
      .ix-light              faint radial light that follows the cursor (motion.ts)
+     .glass-panel           liquid-glass surface floating over a picture (+ --dark on dark art)
      [data-reveal]          fade-up on scroll (motion.ts)
      [data-reveal=stagger]  children fade up in sequence as they enter
      [data-reveal=load]     children fade up on page load (CSS only, above the fold)
@@ -254,6 +255,64 @@ html.ix .scroll-progress {
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .ix-light:hover::before {
     opacity: 1;
+  }
+}
+
+/* ==== 3b. Liquid-glass panels (2026-11-18) =============================
+   For small information panels that float over an illustration (the service
+   heroes). After the liquid-glass skill's CSS treatment: the WebGL refraction
+   engine only refracts images or canvases, and these panels float over live
+   SVG and text, so this is blur + saturation, a bright inner edge, a soft rim
+   and a specular highlight that follows the cursor (with .ix-light's --mx/--my).
+   Text on it meets 4.5:1 against the panel's own fill, so it stays legible
+   without the blur (no backdrop-filter support, reduced transparency). */
+.glass-panel {
+  --gp-fill: rgba(255, 255, 255, 0.72);
+  --gp-edge: rgba(255, 255, 255, 0.9);
+  --gp-rim: rgba(13, 13, 13, 0.08);
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--radius-lg);
+  background: var(--gp-fill);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  backdrop-filter: blur(14px) saturate(170%);
+  border: 1px solid var(--gp-rim);
+  box-shadow:
+    inset 0 1px 0 var(--gp-edge),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.18),
+    0 18px 40px -18px rgba(13, 13, 13, 0.28);
+}
+/* Specular sheen: a soft diagonal highlight, brighter where the cursor is. */
+.glass-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(160px circle at var(--mx, 18%) var(--my, 0%), rgba(255, 255, 255, 0.22), transparent 70%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent 42%);
+}
+.glass-panel--dark {
+  --gp-fill: rgba(16, 20, 32, 0.62);
+  --gp-edge: rgba(255, 255, 255, 0.16);
+  --gp-rim: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.glass-panel--dark::after {
+  background:
+    radial-gradient(160px circle at var(--mx, 18%) var(--my, 0%), rgba(255, 255, 255, 0.1), transparent 70%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.07), transparent 42%);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel {
+    --gp-fill: rgba(255, 255, 255, 0.96);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .glass-panel--dark {
+    --gp-fill: rgba(16, 20, 32, 0.96);
   }
 }
 

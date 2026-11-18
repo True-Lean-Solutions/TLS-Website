@@ -3,53 +3,33 @@ import { SOLUTION_HERO, preloadFor } from '../../data/images';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import SolutionHero from '../../components/SolutionHero.astro';
-import ServiceCard from '../../components/ServiceCard.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import Button from '../../components/Button.astro';
+import Icon from '../../components/Icon.astro';
 import { cta, href } from '../../data/site';
-import { moreSolutions, aiProducts } from '../../data/services';
+import { aiProducts, type Accent } from '../../data/services';
+import { stages, challenges, solutionFor } from '../../data/portfolio';
 
 // Meta — source: TLS: Website Pages (2026-09-27), 1w1w7ClLF7Ts7M-FSFJeopTP6Z_13FhXn_q9Qxy2hlT0
-// Title and description: SEO brief T2.3 (2026-11-11), drafted from this page's own copy; pending Hemang's approval.
+// Title: SEO brief T2.3 (2026-11-11). Description redrafted for the ten-solution
+// portfolio (2026-11-18), from the page's own copy; pending Hemang's approval.
 const title = 'Business Technology Solutions | True Lean Solutions';
 const description =
-  'AI and automation, custom software, system integration and technical talent: practical tools for real business problems. Not sure which? We start there.';
+  'Ten solutions across the technology lifecycle: strategy, data, software, AI, integration, automation, managed IT, talent, cybersecurity, cloud and infrastructure.';
 
-// Copy — source: Services - Overview (2026-09-27), 1adf8kbl7pTD1AGhmQZYNl4e9vMiNvL4QTugmMiteBBg
-const services = [
-  {
-    title: 'AI & Automation',
-    href: '/services/enterprise-ai/',
-    icon: 'ai' as const,
-    accent: 'red' as const,
-    blurb:
-      'Give your team AI that works on your business data — with access controls, audit logs, and no public exposure.',
-  },
-  {
-    title: 'Custom Software',
-    href: '/services/software/',
-    icon: 'software' as const,
-    accent: 'blue' as const,
-    blurb:
-      'Web applications, internal tools, customer portals, and platforms designed specifically for your business — your workflows, your data, your customers.',
-  },
-  {
-    title: 'System Integration',
-    href: '/services/integrations/',
-    icon: 'integration' as const,
-    accent: 'plum' as const,
-    blurb:
-      'Connect your disconnected tools and platforms to create seamless workflows, eliminate manual handoffs, and give you real-time visibility across your business.',
-  },
-  {
-    title: 'Technical Talent',
-    href: '/services/technical-talent/',
-    icon: 'talent' as const,
-    accent: 'red' as const,
-    blurb:
-      'Source and place high-quality technology talent sized right for small businesses — no enterprise overhead, just the right person for the role at the right time.',
-  },
-];
+/*
+ * The portfolio (2026-11-18): the ten solutions grouped by where they sit in
+ * a business's technology lifecycle (src/data/portfolio.ts), so the page reads
+ * as one connected offer rather than a grid of cards. Cards carry each
+ * solution's one-line summary; the full story is on its page. The finder
+ * above it highlights the solutions that answer a problem the visitor picks;
+ * every card stays visible and works as a link either way.
+ */
+const accents: Record<Accent, string> = {
+  red: '--c: var(--red);',
+  blue: '--c: var(--blue);',
+  plum: '--c: var(--plum);',
+};
 ---
 
 <BaseLayout
@@ -79,17 +59,70 @@ const services = [
         accent="real business problems."
         lead="Each solution below is a tool for a specific business problem — and if you're not sure which one you need, that's where we start."
       />
-      <div class="cards" data-reveal="stagger">
-        {[...services, ...moreSolutions].map((s) => <ServiceCard {...s} />)}
+
+      <div class="finder" data-finder>
+        <p class="finder-label" id="finder-label">Start from what's in your way</p>
+        <div class="finder-chips" role="group" aria-labelledby="finder-label">
+          {
+            challenges.map((c) => (
+              <button type="button" class="chip" aria-pressed="false" data-challenge={c.id} data-hrefs={c.hrefs.join(' ')}>
+                {c.label}
+              </button>
+            ))
+          }
+          <button type="button" class="chip chip--clear" data-finder-clear hidden>
+            <Icon name="arrow" size={14} class="chip-clear-icon" />
+            Show all solutions
+          </button>
+        </div>
+        <p class="finder-status" aria-live="polite" data-finder-status></p>
       </div>
+
+      <ol class="portfolio" data-portfolio aria-label="Solutions by stage of your technology lifecycle">
+        {
+          stages.map((st, i) => (
+            <li class="stage" data-stage-id={st.id}>
+              <div class="stage-head">
+                <span class="stage-node" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <h3 class="stage-label">{st.label}</h3>
+                <p class="stage-line">{st.line}</p>
+              </div>
+              <ul class="stage-cards">
+                {st.hrefs.map((h) => {
+                  const s = solutionFor(h);
+                  return (
+                    <li>
+                      <a class="pcard ix-card ix-light" href={href(s.href)} data-href={s.href} style={accents[s.accent]}>
+                        <span class="pcard-icon glass-icon" aria-hidden="true">
+                          <Icon name={s.icon} size={22} />
+                        </span>
+                        <h4 class="pcard-title">{s.title}</h4>
+                        <p class="pcard-summary">{s.summary}</p>
+                        <span class="pcard-arrow" aria-hidden="true">
+                          <Icon name="arrow" size={16} />
+                        </span>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </li>
+          ))
+        }
+      </ol>
+
       <p class="sol-products">
         Featured AI Solutions:
-        {aiProducts.map((p, i) => (
-          <>
-            {i > 0 && <span aria-hidden="true"> · </span>}
-            <a href={href(p.href)}>{p.title}</a>
-          </>
-        ))}
+        {
+          aiProducts.map((p, i) => (
+            <>
+              {i > 0 && <span aria-hidden="true"> · </span>}
+              <a href={href(p.href)}>{p.title}</a>
+            </>
+          ))
+        }
       </p>
     </div>
   </section>
@@ -105,10 +138,54 @@ const services = [
   </CtaBand>
 </BaseLayout>
 
+<script>
+  // The finder: pick a problem, and the solutions that answer it light up
+  // (the rest dim, but stay readable and clickable). Pick it again, or
+  // "Show all solutions", to clear.
+  const finder = document.querySelector<HTMLElement>('[data-finder]');
+  const portfolio = document.querySelector<HTMLElement>('[data-portfolio]');
+  if (finder && portfolio) {
+    const chips = [...finder.querySelectorAll<HTMLButtonElement>('[data-challenge]')];
+    const clear = finder.querySelector<HTMLButtonElement>('[data-finder-clear]');
+    const status = finder.querySelector<HTMLElement>('[data-finder-status]');
+    const cards = [...portfolio.querySelectorAll<HTMLAnchorElement>('[data-href]')];
+    const stageEls = [...portfolio.querySelectorAll<HTMLElement>('.stage')];
+    const titleOf = (a: HTMLAnchorElement) => a.querySelector('.pcard-title')?.textContent?.trim() ?? '';
+
+    const apply = (chip: HTMLButtonElement | null) => {
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      if (clear) clear.hidden = !chip;
+      if (!chip) {
+        portfolio.classList.remove('is-filtered');
+        cards.forEach((a) => a.classList.remove('is-match'));
+        stageEls.forEach((s) => s.classList.remove('has-match'));
+        if (status) status.textContent = '';
+        return;
+      }
+      const wanted = (chip.dataset.hrefs ?? '').split(' ');
+      portfolio.classList.add('is-filtered');
+      const matches = cards.filter((a) => wanted.includes(a.dataset.href ?? ''));
+      cards.forEach((a) => a.classList.toggle('is-match', matches.includes(a)));
+      stageEls.forEach((s) => s.classList.toggle('has-match', matches.some((a) => s.contains(a))));
+      // Named in the order the problem lists them (most direct first).
+      const names = wanted.map((h) => matches.find((a) => a.dataset.href === h)).filter(Boolean).map((a) => titleOf(a!));
+      if (status) status.textContent = `Where to start: ${names.join(', ')}.`;
+    };
+
+    chips.forEach((chip) =>
+      chip.addEventListener('click', () => apply(chip.getAttribute('aria-pressed') === 'true' ? null : chip))
+    );
+    clear?.addEventListener('click', () => {
+      apply(null);
+      chips[0]?.focus();
+    });
+  }
+</script>
+
 <style>
-  /* The two AI products (brief T2.5): a quiet line under the grid. */
+  /* The two AI products (brief T2.5): a quiet line under the portfolio. */
   .sol-products {
-    margin-top: 1.75rem;
+    margin-top: 2.25rem;
     text-align: center;
     color: var(--text-2);
     font-size: 0.95rem;
@@ -131,38 +208,304 @@ const services = [
     letter-spacing: -0.02em;
   }
 
-  /* All eight solutions at once: four across on desktop, two on tablets,
-     one on phones. */
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.5rem;
+  /* ---- Finder ------------------------------------------------------------ */
+  .finder {
+    margin: 0 0 clamp(2.25rem, 4vw, 3rem);
   }
-  @media (max-width: 1100px) {
-    .cards {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  .finder-label {
+    font-family: var(--font-head);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .finder-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.9rem;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.92rem;
+    line-height: 1.25;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      border-color var(--ix-fast) ease,
+      background var(--ix-fast) ease,
+      color var(--ix-fast) ease,
+      box-shadow var(--ix-base) var(--ix-ease);
+  }
+  .chip:hover {
+    border-color: var(--ink);
+  }
+  .chip[aria-pressed='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+    box-shadow: 0 8px 20px -10px rgba(13, 13, 13, 0.5);
+  }
+  .chip[hidden] {
+    display: none;
+  }
+  .chip--clear {
+    border-style: dashed;
+    color: var(--text-2);
+  }
+  .chip--clear :global(.chip-clear-icon) {
+    transform: rotate(180deg);
+  }
+  .finder-status {
+    min-height: 1.6em;
+    margin-top: 0.85rem;
+    color: var(--text-2);
+    font-size: 0.95rem;
   }
 
-  /* Horizontal sequence (desktop, when the scene fits the screen; the scroll
-     layer sets .is-track and drives the row with vertical scroll): the same
-     eight cards, in the same order, as one row that runs off the right edge.
-     Tighter section padding so the pinned scene fits below the header. */
-  .sol-intro:global(.is-track) {
-    overflow: clip;
-    padding-block: var(--space-5);
+  /* ---- Portfolio: five stages on one lifecycle rail ---------------------- */
+  .portfolio {
+    --rail-top: 1.25rem;
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: auto auto auto;
+    gap: 0.9rem 1.25rem;
   }
-  .sol-intro:global(.is-track) .cards {
-    display: flex;
-    align-items: stretch;
-    gap: 1.5rem;
+  /* The rail: one line through every stage node, red to blue. */
+  .portfolio::before {
+    content: '';
+    position: absolute;
+    top: var(--rail-top);
+    left: 1.25rem;
+    right: 1.25rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--grad-h);
+    opacity: 0.55;
+    transform: scaleX(var(--rail, 1));
+    transform-origin: left center;
   }
-  .sol-intro:global(.is-track) .cards > :global(*) {
-    flex: 0 0 clamp(300px, 26vw, 370px);
+  /* Desktop: each stage spans the three shared rows (head, card, card) via
+     subgrid, so every row of cards lines up across the five stages. */
+  .stage {
+    position: relative;
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    min-width: 0;
   }
-  @media (max-width: 640px) {
-    .cards {
+  .stage-head {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .stage-node {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border-2);
+    font-family: var(--font-head);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--ink);
+    transition:
+      border-color var(--ix-base) var(--ix-ease),
+      background var(--ix-base) var(--ix-ease),
+      color var(--ix-base) var(--ix-ease);
+  }
+  .stage-label {
+    margin-top: 0.65rem;
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
+  }
+  .stage-line {
+    color: var(--text-2);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    min-height: 2.7em;
+  }
+  .stage-head {
+    margin-bottom: 0.35rem;
+  }
+  .stage-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    grid-row: 2 / span 2;
+    display: grid;
+    grid-template-rows: subgrid;
+  }
+  .pcard {
+    position: relative;
+    display: grid;
+    gap: 0.45rem;
+    height: 100%;
+    padding: 1.2rem 1.15rem 1.15rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      opacity var(--ix-base) var(--ix-ease),
+      border-color var(--ix-base) var(--ix-ease),
+      box-shadow var(--ix-base) var(--ix-ease),
+      transform var(--ix-base) var(--ix-ease);
+  }
+  .pcard-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius);
+    color: var(--c);
+  }
+  .pcard-title {
+    margin-top: 0.3rem;
+    font-size: 1rem;
+    line-height: 1.3;
+    padding-right: 1.25rem;
+  }
+  .pcard-summary {
+    color: var(--text-2);
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+  .pcard-arrow {
+    position: absolute;
+    top: 1.35rem;
+    right: 1.1rem;
+    color: var(--muted);
+    transition:
+      transform var(--ix-base) var(--ix-ease),
+      color var(--ix-fast) ease;
+  }
+  .pcard:is(:hover, :focus-visible) .pcard-arrow {
+    color: var(--c);
+    transform: translateX(3px);
+  }
+
+  /* Finder states: matches lift and take their accent edge; the rest step
+     back (still readable: 0.5 opacity keeps titles above 3:1). */
+  .portfolio.is-filtered .pcard:not(.is-match) {
+    opacity: 0.5;
+    box-shadow: none;
+  }
+  .portfolio.is-filtered .pcard.is-match {
+    border-color: var(--c);
+    box-shadow:
+      0 0 0 1px var(--c),
+      0 16px 34px -16px rgba(13, 13, 13, 0.3);
+    transform: translateY(-2px);
+  }
+  .portfolio.is-filtered .stage.has-match .stage-node {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+
+  /* Tablet: each stage is a row — its name on the left, its two cards beside. */
+  @media (max-width: 1100px) {
+    .portfolio {
       grid-template-columns: 1fr;
+      grid-template-rows: none;
+      gap: 0;
+    }
+    .portfolio::before {
+      top: 1.25rem;
+      bottom: 1.25rem;
+      left: calc(1.25rem - 1px);
+      right: auto;
+      width: 2px;
+      height: auto;
+      background: linear-gradient(180deg, var(--red), var(--plum), var(--blue));
+      transform: scaleY(var(--rail, 1));
+      transform-origin: center top;
+    }
+    .stage {
+      display: grid;
+      grid-row: auto;
+      grid-template-rows: none;
+      grid-template-columns: minmax(180px, 0.32fr) minmax(0, 1fr);
+      gap: 1.5rem;
+      padding-bottom: 2rem;
+    }
+    .stage-head {
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: 1rem;
+      align-content: start;
+    }
+    .stage-node {
+      grid-row: span 2;
+    }
+    .stage-label {
+      margin-top: 0.35rem;
+    }
+    .stage-line {
+      min-height: 0;
+    }
+    .stage-cards {
+      grid-row: auto;
+      grid-template-rows: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+  }
+  /* Phone: name, then the cards stacked, along the same rail. */
+  @media (max-width: 680px) {
+    .stage {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .stage-cards {
+      grid-template-columns: 1fr;
+      padding-left: 3.5rem;
+    }
+    .chip {
+      flex: none;
+      font-size: 0.88rem;
+    }
+    /* One swipeable row instead of eight stacked chips; the page itself never
+       scrolls sideways. */
+    .finder-chips {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      margin-inline: calc(var(--gutter) * -1);
+      padding: 0.15rem var(--gutter) 0.35rem;
+      mask-image: linear-gradient(90deg, transparent 0, #000 var(--gutter), #000 calc(100% - 2rem), transparent);
+    }
+    .finder-chips::-webkit-scrollbar {
+      display: none;
+    }
+    .chip {
+      scroll-snap-align: start;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .portfolio.is-filtered .pcard.is-match {
+      transform: none;
     }
   }
 </style>

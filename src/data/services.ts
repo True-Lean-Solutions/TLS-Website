@@ -100,8 +100,10 @@ export const moreSolutions: Service[] = [
       'Connect, organize, and visualize your data — and turn it into intelligence your teams can actually use.',
   },
   {
-    title: 'Cyber Security',
-    summary: 'Protect systems and information',
+    // Renamed from "Cyber Security" (Hemang, 2026-11-18: service portfolio
+    // expansion); the URL is unchanged.
+    title: 'Cybersecurity & Compliance',
+    summary: 'Security, risk and compliance support',
     href: '/services/cyber-security/',
     icon: 'security',
     accent: 'blue',
@@ -109,9 +111,33 @@ export const moreSolutions: Service[] = [
     // name-only until approved copy existed (Hemang, 2026-09-28).
     blurb: 'Stay ahead of cyber threats. Protect your people, secure your data, and keep your business running.',
   },
+  /*
+   * Two categories added 2026-11-18 (Hemang: service portfolio expansion),
+   * delivered with strategic partners under the TLS brand. Partners are never
+   * named on the site. Capability lines are limited to what the partners
+   * advertise; unconfirmed ones are listed in docs/decisions.md 2026-11-18.
+   */
+  {
+    title: 'Managed IT Services',
+    summary: 'Ongoing IT support and maintenance',
+    href: '/services/managed-it/',
+    icon: 'headset',
+    accent: 'plum',
+    blurb:
+      'Keep your people, devices and systems running — with responsive support, proactive maintenance, and a team that already knows your environment.',
+  },
+  {
+    title: 'Cloud & Infrastructure',
+    summary: 'Cloud, network and office infrastructure',
+    href: '/services/cloud-infrastructure/',
+    icon: 'infrastructure',
+    accent: 'red',
+    blurb:
+      'Build a foundation you can rely on — cloud, networks, connectivity and business communications that grow with you.',
+  },
 ];
 
-/** All eight, in order: the four core solutions, then the four above. */
+/** All ten, in order: the four core solutions, then the six above. */
 export const solutions: Service[] = [...services, ...moreSolutions];
 
 /**

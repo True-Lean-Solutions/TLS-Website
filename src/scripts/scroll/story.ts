@@ -217,3 +217,31 @@ export function initSolutionsGrid(): { cleanup: Cleanup; group: HTMLElement | nu
 }
 
 export { ScrollTrigger };
+
+/**
+ * Solutions page portfolio (2026-11-18): the lifecycle rail draws through the
+ * five stages as the section arrives, and each stage settles in along it,
+ * Plan to Protect, so the ten solutions read as one sequence. Reduced motion:
+ * the authored, complete layout. The rail's length is the --rail custom
+ * property (CSS scales the line by it: across on desktop, down on tablets).
+ */
+export function initPortfolio(): Cleanup {
+  const list = document.querySelector<HTMLElement>('[data-portfolio]');
+  if (!list) return () => {};
+  const stageEls = [...list.querySelectorAll<HTMLElement>(':scope > .stage')];
+  claim(list, 'cards');
+  gsap.set(stageEls, { opacity: 0, y: 32 });
+  gsap.set(list, { '--rail': 0 });
+  const tl = gsap
+    .timeline({ paused: true })
+    .to(list, { '--rail': 1, duration: 1.2, ease: 'power2.inOut' }, 0)
+    .to(stageEls, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.13 }, 0.12);
+  const st = ScrollTrigger.create({ trigger: list, start: 'top 85%', once: true, onEnter: () => tl.play() });
+  return () => {
+    st.kill();
+    tl.kill();
+    gsap.set(stageEls, { clearProps: 'opacity,transform' });
+    gsap.set(list, { clearProps: '--rail' });
+    unclaim(list);
+  };
+}

@@ -442,8 +442,8 @@ export const ENTITIES: Entity[] = [
   },
   {
     id: 'security',
-    name: 'Cyber Security',
-    aliases: ['cyber security', 'cybersecurity', 'cyber', 'security posture', 'security risks', 'security risk', 'threat detection', 'incident response', 'security controls', 'security'],
+    name: 'Cybersecurity & Compliance',
+    aliases: ['cyber security', 'cybersecurity', 'cyber', 'security posture', 'security risks', 'security risk', 'threat detection', 'incident response', 'security controls', 'security', 'compliance', 'hipaa', 'cmmc', 'risk assessment', 'security policies', 'cybersecurity and compliance'],
     url: '/services/cyber-security/',
     // Details, approach and layers: the Cyber Security page (Hemang's brief,
     // 2026-10-06).
@@ -473,6 +473,67 @@ export const ENTITIES: Entity[] = [
     cta: { label: 'Discuss Your Security Needs', href: '/contact/' },
     follow: ['What does cyber security support include?', 'How do you assess security risks?', 'I want to discuss a project'],
   },
+  // The two categories added 2026-11-18 — mirrors their pages (draft copy,
+  // pending Hemang's approval). No response times, uptime or 24/7 claims.
+  {
+    id: 'managed-it',
+    name: 'Managed IT Services',
+    aliases: ['managed it', 'managed it services', 'it support', 'it help desk', 'help desk', 'helpdesk', 'tech support', 'technical support', 'it services', 'msp', 'co-managed it', 'co managed it', 'microsoft 365', 'office 365', 'device management', 'onboarding laptops', 'it maintenance', 'monitoring', 'backup and recovery', 'disaster recovery'],
+    url: '/services/managed-it/',
+    overview:
+      'Reliable IT, without the firefighting. Keep your people, devices and systems running — with responsive support, proactive maintenance, and a team that already knows your environment when something needs attention.',
+    details: {
+      lead: 'What we take care of:',
+      points: [
+        'Support for your people — IT help desk and end-user support, onboarding and offboarding, and device management.',
+        'Systems kept healthy — proactive monitoring and maintenance, incident management, Microsoft 365 administration, and application support.',
+        'Groundwork that prevents outages — backup and disaster recovery, IT asset management and procurement, and IT documentation.',
+      ],
+    },
+    process: {
+      lead: 'From inherited setup to managed environment:',
+      points: [
+        'Understand your environment.',
+        'Stabilize what matters.',
+        'Transition support.',
+        'Monitor and maintain.',
+        'Review and improve.',
+      ],
+    },
+    audience: {
+      lead: 'Ways to work with us:',
+      points: [
+        "Fully managed — we act as your IT team, if you don't have in-house IT.",
+        'Co-managed — we work alongside your in-house IT when they are stretched thin.',
+        'Project-based — a defined job, such as a device refresh, a Microsoft 365 rollout or a backup overhaul.',
+      ],
+    },
+    cta: projectCta,
+    follow: ['What does Managed IT include?', 'Do you work alongside an in-house IT team?', 'I want to discuss a project'],
+  },
+  {
+    id: 'cloud-infra',
+    name: 'Cloud & Infrastructure',
+    aliases: ['cloud', 'cloud infrastructure', 'cloud and infrastructure', 'cloud migration', 'infrastructure', 'it infrastructure', 'network', 'networking', 'network design', 'servers', 'aws', 'azure', 'google cloud', 'voip', 'phone system', 'teams phones', 'structured cabling', 'cabling', 'office move', 'office relocation', 'business continuity', 'virtual desktops'],
+    url: '/services/cloud-infrastructure/',
+    overview:
+      'A foundation that holds up as you grow. Cloud environments, networks, connectivity and business communications — designed and built as one foundation, so the business on top of it can grow without starting over.',
+    details: {
+      lead: 'From the cloud down to the cabling:',
+      points: [
+        'Cloud — migration and deployment, managed cloud on AWS, Microsoft Azure and Google Cloud, hybrid and private cloud, and virtual desktops.',
+        'Network and servers — network design and implementation, network refresh, internet connectivity planning, and server deployment.',
+        'Workplace infrastructure — structured cabling, office IT setup and relocation, and data center relocation and colocation.',
+        'Communications and continuity — VoIP and unified communications, Teams phones, cloud backup, and business continuity planning.',
+      ],
+    },
+    process: {
+      lead: 'Planned in order, built without surprises:',
+      points: ['Map what you have.', 'Design the foundation.', 'Build and migrate in planned stages.', 'Document and hand over.', 'Run and improve, through Managed IT Services or your own team.'],
+    },
+    cta: { label: 'Discuss Your Implementation Need', href: '/contact/' },
+    follow: ['What does Cloud & Infrastructure include?', 'Can you help us move to the cloud?', 'I want to discuss a project'],
+  },
 ];
 
 /** Guided discovery: what a visitor is trying to solve → where to look. */
@@ -485,6 +546,8 @@ export const NEEDS: { label: string; entities: string[]; note: string }[] = [
   { label: 'Meeting knowledge gets lost', entities: ['meeting'], note: 'For decisions and commitments that disappear after meetings:' },
   { label: 'Showing up in AI search', entities: ['visibility'], note: 'For being found, cited, and recommended by AI:' },
   { label: 'Making sense of our data', entities: ['data'], note: 'For turning data into decisions:' },
+  { label: 'Our IT keeps letting us down', entities: ['managed-it', 'cloud-infra'], note: 'For IT support and a foundation that holds up:' },
+  { label: 'Securing the business', entities: ['security'], note: 'For security and compliance support:' },
   { label: "Not sure yet", entities: ['strategy'], note: "That's a good place to start — we help work out the right problem before building." },
 ];
 
