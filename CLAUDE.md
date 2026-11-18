@@ -32,6 +32,7 @@ When sources conflict, the brand guide wins on tagline, color, imagery and claim
   - Real team photos are allowed on About.
   - **AI-generated people are now allowed on the website** (Himanshu, 2026-09-28), reversing decision 9 / v2.3 §13. Match the mock-ups, including their people imagery (e.g. the mock-up 01 hero photo, now shipped). See `docs/decisions.md`. Mountains, robots (Tali, the site assistant, is the only one), brains and circuit boards are still out.
 - **US spelling throughout.**
+- **No em dashes in anything visitors see** (Hemang, 2026-11-18): page copy, posts, titles, meta descriptions, alt text and Tali's replies. Use a comma, colon, full stop or parentheses instead. Verbatim testimonials are the exception. Code comments are unaffected.
 - **Brand strings, contact details and URLs are defined once** in `src/data/site.ts` and imported everywhere.
 
 ## Ask before you build

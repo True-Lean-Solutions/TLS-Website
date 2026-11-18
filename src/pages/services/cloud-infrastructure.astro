@@ -64,16 +64,16 @@ const backup = `M${at('data').x + 34} ${at('data').y} L${at('copy').x - 34} ${at
 const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(2)}%`;
 
 const challenges = [
-  { title: 'Your infrastructure grew by accident', text: 'A server here, a second office there, a cloud subscription someone signed up for. It mostly works — but nobody has the whole picture.' },
+  { title: 'Your infrastructure grew by accident', text: 'A server here, a second office there, a cloud subscription someone signed up for. It mostly works, but nobody has the whole picture.' },
   { title: "The network can't keep up", text: 'Slow connections, dead spots and dropped calls cost time that nobody tracks, and the workarounds become the way things are done.' },
-  { title: 'Moving to the cloud feels risky', text: "You know some systems belong in the cloud — just not which ones, in what order, or how to move them without disrupting work." },
+  { title: 'Moving to the cloud feels risky', text: "You know some systems belong in the cloud, just not which ones, in what order, or how to move them without disrupting work." },
   { title: 'Change would expose the gaps', text: 'Opening an office, relocating or losing a key system would show how much depends on setups nobody documented.' },
 ];
 
 const groups: CapabilityGroup[] = [
   {
     title: 'Cloud',
-    line: 'Cloud environments sized for what you actually run — and moved there without disrupting the business.',
+    line: 'Cloud environments sized for what you actually run, and moved there without disrupting the business.',
     icon: 'cloud',
     accent: 'red',
     art: 'cloud',
@@ -107,7 +107,7 @@ const groups: CapabilityGroup[] = [
 
 const accents = ['red', 'blue', 'plum'] as const;
 const steps: RailStep[] = [
-  { title: 'Map what you have', text: 'We document your current setup — locations, network, servers, cloud services — and how it all connects.', icon: 'search' },
+  { title: 'Map what you have', text: 'We document your current setup (locations, network, servers, cloud services) and how it all connects.', icon: 'search' },
   { title: 'Design the foundation', text: 'We design for where the business is going, then plan the order of work so nothing critical goes down.', icon: 'compass' },
   { title: 'Build and migrate', text: 'We install, configure and migrate in planned stages, with a rollback plan at each one.', icon: 'building' },
   { title: 'Document and hand over', text: 'You get a clear record of what was built, how it fits together and who to call.', icon: 'document' },
@@ -164,7 +164,7 @@ const outcomes: Outcome[] = [
         <Eyebrow label="Cloud & Infrastructure" />
         <h1>A foundation that <span class="accent">holds up as you grow.</span></h1>
         <p class="ci-lede">
-          Cloud environments, networks, connectivity and business communications — designed and built as one foundation,
+          Cloud environments, networks, connectivity and business communications, designed and built as one foundation,
           so the business on top of it can grow without starting over.
         </p>
         <div class="ci-actions">
@@ -227,7 +227,7 @@ const outcomes: Outcome[] = [
           </ol>
         </div>
         <figcaption id="ci-art-cap" class="visually-hidden">
-          Illustration: a technology foundation in three layers — the workplace (office, remote team, server room), the
+          Illustration: a technology foundation in three layers, the workplace (office, remote team, server room), the
           network that connects them with internet and phones, and the cloud (apps, data and a backup copy). A server
           workload migrates to the cloud and a backup copy of the data is kept for continuity.
         </figcaption>

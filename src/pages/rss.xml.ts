@@ -5,7 +5,7 @@ import { getPublishedPosts, categoryMeta } from '../data/insights';
 export async function GET(context: APIContext) {
   const posts = await getPublishedPosts();
   return rss({
-    title: 'True Lean Solutions — Insights',
+    title: 'True Lean Solutions Insights',
     description:
       'Practical notes on integration, automation and hiring for small businesses.',
     site: context.site ?? 'https://www.trueleansolutions.com',

@@ -225,7 +225,7 @@ const reasons: { title: string; text: string; icon: IconName }[] = [
           {stages.map((s, i) => (
             <li data-step>
               <span class="av-stage-dot" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-              <h3><span class="visually-hidden">{String(i + 1).padStart(2, '0')} — </span>{s.title}</h3>
+              <h3><span class="visually-hidden">{String(i + 1).padStart(2, '0')}: </span>{s.title}</h3>
               <p>{s.text}</p>
             </li>
           ))}
@@ -275,7 +275,7 @@ const reasons: { title: string; text: string; icon: IconName }[] = [
         />
       </figure>
       <div>
-        <SectionHeading eyebrow="A Practical Partnership" title="Strategy, Execution, and Measurement — " accent="Working Together." />
+        <SectionHeading eyebrow="A Practical Partnership" title="Strategy, Execution, and Measurement: " accent="Working Together." />
         <div class="av-reasons" data-reveal="stagger">
           {reasons.map((r, i) => (
             <article class="av-reason ix-card ix-card--quiet" style={`--c: ${i === 1 ? 'var(--blue)' : 'var(--av-violet)'}`}>

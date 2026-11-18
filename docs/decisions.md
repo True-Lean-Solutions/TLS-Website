@@ -1037,3 +1037,12 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
   Sources → stages → outcomes, joined by curved connectors that assemble with the scroll, then a slow pulse runs along them. On phones it becomes stacked lists, which are also the screen-reader version everywhere.
 - **Managed IT's outcomes** moved from the dark band to a light section, so the page keeps one dark signature band below the hero.
 - **Copy** is illustration labels and flow lines only: status words and generic examples, with no numbers or new claims.
+
+## 2026-11-18: Em dashes removed from the site
+
+- **Asked (Hemang):** remove em dashes from all over the website.
+- **Done:** all 384 em dashes in visitor-facing text were replaced (page copy, the 14 posts, titles and meta descriptions, alt text, Tali's replies, the RSS and CMS admin titles). Each became the punctuation the sentence called for: a comma, a colon after a label, a full stop before a new clause, or parentheses around an aside that holds a list.
+- **Team roles** now use the site's " · " separator ("Advisor · Growth & Strategy"). Tali's team list is "Name, Role", and its parser splits on that.
+- **Not touched:** testimonials (verbatim; they had none) and code comments.
+- **Post YAML:** values that gained a colon are now quoted, so they still parse.
+- **Rule added** to CLAUDE.md so new copy stays free of them.

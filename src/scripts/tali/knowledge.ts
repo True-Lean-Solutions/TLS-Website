@@ -65,19 +65,19 @@ export const COMPANY = {
     "We stay after go-live: we stay engaged to ensure adoption, refine what we've built, and support your growth.",
   ],
   approach: [
-    'Understanding: how your business actually runs — processes, tools, team, and goals.',
-    'Identifying: where time and money are being lost — inefficient processes, disconnected systems, manual tasks, talent gaps.',
+    'Understanding: how your business actually runs, processes, tools, team, and goals.',
+    'Identifying: where time and money are being lost, inefficient processes, disconnected systems, manual tasks, talent gaps.',
     'Designing: a plan tailored to your size, budget, and current infrastructure.',
-    'Implementing & Optimizing: we deliver, measure, and refine — through go-live and beyond.',
+    'Implementing & Optimizing: we deliver, measure, and refine, through go-live and beyond.',
   ],
   story:
     'True Lean Solutions formally began in 2025 under True Lean LLC, founded by Sajeed Lakhani. Its first major opportunity came through NRI North America, part of Nomura Research Institute. From talent solutions it grew into software engineering, application development, integrations, automation, AI solutions, and technical architecture. Today it operates as a technology execution company within the Akhani LLC family of brands.',
   team: [
-    'Sajeed Lakhani — President & Founder',
-    'Mack Akhani — CEO',
-    'Hemang Dwivedi — Operations and Technology Leader',
-    'Kranthi Kumar Goli — QA Architect',
-    'Shruti Shrivastava — Marketing Manager',
+    'Sajeed Lakhani, President & Founder',
+    'Mack Akhani, CEO',
+    'Hemang Dwivedi, Operations and Technology Leader',
+    'Kranthi Kumar Goli, QA Architect',
+    'Shruti Shrivastava, Marketing Manager',
   ],
   clients: [
     'NRI North America',
@@ -105,13 +105,13 @@ export const ENTITIES: Entity[] = [
     aliases: ['ai', 'ai & automation', 'ai and automation', 'enterprise ai', 'custom ai', 'ai solution', 'ai solutions', 'ai for my business', 'ai automation', 'artificial intelligence', 'wisebric', 'governed ai', 'private ai', 'ai governance', 'ai assistants', 'ai agents', 'ai chat'],
     url: '/services/enterprise-ai/',
     overview:
-      'Put AI to work on your business data — governed, private, and under your control. Enterprise AI is an intelligent layer between your people, your organizational knowledge, your business systems, and approved AI models, all governed through one secure platform.',
+      'Put AI to work on your business data, governed, private, and under your control. Enterprise AI is an intelligent layer between your people, your organizational knowledge, your business systems, and approved AI models, all governed through one secure platform.',
     details: {
       lead: 'From chat to autonomous agents:',
       points: [
-        'Enterprise AI Chat — a secure AI workspace for everyday productivity.',
-        'AI Assistants — purpose-built intelligence for departments, roles, and business functions.',
-        'AI Agents — use approved tools, data, and systems to support or automate defined processes, within controlled boundaries.',
+        'Enterprise AI Chat: a secure AI workspace for everyday productivity.',
+        'AI Assistants: purpose-built intelligence for departments, roles, and business functions.',
+        'AI Agents: use approved tools, data, and systems to support or automate defined processes, within controlled boundaries.',
       ],
     },
     audience: {
@@ -124,9 +124,9 @@ export const ENTITIES: Entity[] = [
       ],
     },
     control:
-      'Built on three pillars — security, governance, and control: private and on-premises deployment, role-based access, full audit logging, and an LLM-agnostic architecture with no vendor lock-in. Your data stays inside your controlled environment.',
+      'Built on three pillars, security, governance, and control: private and on-premises deployment, role-based access, full audit logging, and an LLM-agnostic architecture with no vendor lock-in. Your data stays inside your controlled environment.',
     process: {
-      lead: 'True Lean Solutions is the exclusive US implementation partner for Wisebric, an Enterprise AI governance and orchestration platform. The fastest way in is Meeting Intelligence — no integration required: start with one practical problem, prove the value, and expand when you\'re ready.',
+      lead: 'True Lean Solutions is the exclusive US implementation partner for Wisebric, an Enterprise AI governance and orchestration platform. The fastest way in is Meeting Intelligence, no integration required: start with one practical problem, prove the value, and expand when you\'re ready.',
       points: [],
     },
     cta: { label: 'Book a Demo', href: '/contact/' },
@@ -138,7 +138,7 @@ export const ENTITIES: Entity[] = [
     aliases: ['meeting intelligence', 'meetings', 'meeting', 'minutes', 'meeting minutes', 'transcripts', 'transcription', 'recording', 'record meetings', 'teams zoom', 'zoom', 'google meet', 'microsoft teams', 'mom', 'action items'],
     url: '/services/meeting-intelligence/',
     overview:
-      'Meeting Intelligence turns every meeting into secure, searchable knowledge. It automatically captures, transcribes and organizes your Teams, Zoom and Google Meet meetings — with professional minutes, action items and searchable summaries.',
+      'Meeting Intelligence turns every meeting into secure, searchable knowledge. It automatically captures, transcribes and organizes your Teams, Zoom and Google Meet meetings, with professional minutes, action items and searchable summaries.',
     details: {
       lead: 'What it includes:',
       points: [
@@ -153,11 +153,11 @@ export const ENTITIES: Entity[] = [
     process: {
       lead: 'From conversation to knowledge:',
       points: [
-        'Capture — automatically join and record meetings from Microsoft Teams, Zoom and Google Meet.',
-        'Understand — transcribe conversations and create structured summaries and professional minutes.',
-        'Extract — identify key discussion points, decisions, commitments, action items and important topics.',
-        'Preserve — turn individual meetings into persistent organizational knowledge.',
-        'Search & Ask — find information across your meetings or ask AI a question to retrieve relevant context.',
+        'Capture: automatically join and record meetings from Microsoft Teams, Zoom and Google Meet.',
+        'Understand: transcribe conversations and create structured summaries and professional minutes.',
+        'Extract: identify key discussion points, decisions, commitments, action items and important topics.',
+        'Preserve: turn individual meetings into persistent organizational knowledge.',
+        'Search & Ask: find information across your meetings or ask AI a question to retrieve relevant context.',
       ],
     },
     audience: {
@@ -180,7 +180,7 @@ export const ENTITIES: Entity[] = [
     aliases: ['ai visibility', 'visibility', 'ai search', 'ai search visibility', 'aio', 'ai search optimization', 'chatgpt', 'perplexity', 'gemini', 'google ai', 'seo', 'get cited', 'citations', 'generative search', 'geo', 'recommended by ai'],
     url: '/services/ai-visibility-growth-team/',
     overview:
-      "Your customers are increasingly asking AI before they visit your website. The AI Visibility Growth Team helps your brand become more visible, credible, and discoverable across ChatGPT, Google AI, Gemini, Perplexity, and other AI-driven discovery platforms — similar to SEO, but built for AI search.",
+      "Your customers are increasingly asking AI before they visit your website. The AI Visibility Growth Team helps your brand become more visible, credible, and discoverable across ChatGPT, Google AI, Gemini, Perplexity, and other AI-driven discovery platforms, similar to SEO, but built for AI search.",
     details: {
       lead: 'What the team does:',
       points: [
@@ -195,10 +195,10 @@ export const ENTITIES: Entity[] = [
     process: {
       lead: 'From baseline to growth:',
       points: [
-        'Discover — your business, audience, current digital presence, and visibility goals.',
-        'Establish your baseline — your current AI discovery presence, content, technical foundations, and opportunities.',
-        'Optimize and build — prioritized improvements across content, technical structure, brand authority, and discoverability.',
-        'Measure and refine — review progress, identify gaps, and adapt as AI search evolves.',
+        'Discover: your business, audience, current digital presence, and visibility goals.',
+        'Establish your baseline: your current AI discovery presence, content, technical foundations, and opportunities.',
+        'Optimize and build: prioritized improvements across content, technical structure, brand authority, and discoverability.',
+        'Measure and refine: review progress, identify gaps, and adapt as AI search evolves.',
       ],
     },
     audience: {
@@ -210,7 +210,7 @@ export const ENTITIES: Entity[] = [
       ],
     },
     pricing:
-      'The AI Visibility Growth Team is published at $4,500 / month for 100 hours of expert capacity — a $45/hr effective blended rate.',
+      'The AI Visibility Growth Team is published at $4,500 / month for 100 hours of expert capacity, a $45/hr effective blended rate.',
     cta: { label: 'Get Your AI Visibility Baseline', href: '/contact/' },
     follow: ['What is AI search visibility?', 'What does the service include?', 'How does it work?', 'How can I get an initial assessment?'],
   },
@@ -220,24 +220,24 @@ export const ENTITIES: Entity[] = [
     aliases: ['custom software', 'software', 'software development', 'app', 'application', 'web app', 'portal', 'internal tool', 'build an app', 'saas', 'legacy', 'modernization', 'mvp', 'api', 'develop'],
     url: '/services/software/',
     overview:
-      "Build exactly what you need — not a workaround. When your workflows, processes, or customer experiences are unique to how you operate, custom software lets you build for your business instead of bending it to fit someone else's product.",
+      "Build exactly what you need, not a workaround. When your workflows, processes, or customer experiences are unique to how you operate, custom software lets you build for your business instead of bending it to fit someone else's product.",
     details: {
       lead: 'What we build:',
       points: [
-        'Web & enterprise applications — customer portals, internal workflow systems, SaaS platforms, partner and vendor management systems.',
-        'Legacy system modernization — phased migrations to modern, cloud-ready platforms with minimal downtime.',
-        'API development & integrations — connect your systems and enable seamless data flow.',
-        'Cloud-native applications — optimized for performance, scalability, and resilience.',
+        'Web & enterprise applications: customer portals, internal workflow systems, SaaS platforms, partner and vendor management systems.',
+        'Legacy system modernization: phased migrations to modern, cloud-ready platforms with minimal downtime.',
+        'API development & integrations: connect your systems and enable seamless data flow.',
+        'Cloud-native applications: optimized for performance, scalability, and resilience.',
       ],
     },
     process: {
       lead: 'How a build runs:',
       points: [
-        'Discover & Define — goals, workflows, requirements, and a clear scope upfront.',
-        'Design & Architect — you see and approve designs before code is written.',
-        'Build & Iterate — Agile sprints; you see working software regularly.',
-        'Test & Secure — testing, performance tuning, and security best practices.',
-        "Deploy & Support — smooth deployment and ongoing support. We don't disappear after launch.",
+        'Discover & Define: goals, workflows, requirements, and a clear scope upfront.',
+        'Design & Architect: you see and approve designs before code is written.',
+        'Build & Iterate: Agile sprints; you see working software regularly.',
+        'Test & Secure: testing, performance tuning, and security best practices.',
+        "Deploy & Support: smooth deployment and ongoing support. We don't disappear after launch.",
       ],
     },
     audience: {
@@ -258,24 +258,24 @@ export const ENTITIES: Entity[] = [
     aliases: ['system integration', 'integration', 'integrations', 'integrate', 'connect systems', 'connect my tools', 'zapier', 'make.com', 'middleware', 'sync', 'data sync', 'crm', 'erp', 'salesforce', 'quickbooks', 'existing tools', 'disconnected'],
     url: '/services/integrations/',
     overview:
-      "Your tools should work together — so your team doesn't have to. Most small businesses run on 5–15 disconnected tools; we connect the systems you already run so information moves without anyone rekeying it.",
+      "Your tools should work together, so your team doesn't have to. Most small businesses run on 5–15 disconnected tools; we connect the systems you already run so information moves without anyone rekeying it.",
     audience: {
       lead: 'Signs you need it:',
       points: [
         'Manual data transfer between systems every week.',
-        "Disconnected reporting — no clear picture without combining reports by hand.",
+        "Disconnected reporting: no clear picture without combining reports by hand.",
         'Process breakdowns at handoffs between departments or tools.',
-        'Scaling pains — processes built on manual coordination start breaking.',
+        'Scaling pains: processes built on manual coordination start breaking.',
       ],
     },
     process: {
       lead: 'How we work:',
       points: [
-        'Systems Audit — map every tool and where the manual gaps are.',
-        'Integration Design — which systems connect, what data flows where, edge cases.',
-        'Build & Connect — native connectors, middleware like Zapier or Make, custom APIs, or direct database integrations.',
-        'Test & Validate — end-to-end testing before go-live.',
-        'Monitor & Optimize — we stay involved post-launch.',
+        'Systems Audit: map every tool and where the manual gaps are.',
+        'Integration Design, which systems connect, what data flows where, edge cases.',
+        'Build & Connect: native connectors, middleware like Zapier or Make, custom APIs, or direct database integrations.',
+        'Test & Validate: end-to-end testing before go-live.',
+        'Monitor & Optimize: we stay involved post-launch.',
       ],
     },
     cta: { label: 'Discuss Your Integration', href: '/contact/' },
@@ -287,7 +287,7 @@ export const ENTITIES: Entity[] = [
     aliases: ['technical talent', 'talent', 'hiring', 'hire', 'recruiting', 'recruitment', 'staffing', 'developers', 'developer', 'engineers', 'contractor', 'contract to hire', 'contract-to-hire', 'it recruiting', 'staff augmentation', 'roles', 'place'],
     url: '/services/technical-talent/',
     overview:
-      'The right person for the role — at the right time. Add technical talent when a critical role or delivery capacity is the gap, with contract, contract-to-hire, or permanent staff depending on the engagement.',
+      'The right person for the role, at the right time. Add technical talent when a critical role or delivery capacity is the gap, with contract, contract-to-hire, or permanent staff depending on the engagement.',
     details: {
       lead: 'Roles we place include:',
       points: [
@@ -304,11 +304,11 @@ export const ENTITIES: Entity[] = [
     process: {
       lead: 'How a search runs:',
       points: [
-        'Role Definition — technical requirements plus business context and success criteria.',
-        'Sourcing & Screening — every candidate is technically screened before they reach you.',
-        'Shortlist & Present — a curated shortlist with our assessment of each candidate.',
-        'Interview Support — structured guidance and honest feedback.',
-        'Offer & Onboarding — competitive offers, counteroffers, and onboarding support.',
+        'Role Definition: technical requirements plus business context and success criteria.',
+        'Sourcing & Screening: every candidate is technically screened before they reach you.',
+        'Shortlist & Present: a curated shortlist with our assessment of each candidate.',
+        'Interview Support: structured guidance and honest feedback.',
+        'Offer & Onboarding: competitive offers, counteroffers, and onboarding support.',
       ],
     },
     cta: { label: 'Talk to Us About the Role', href: '/contact/' },
@@ -320,12 +320,12 @@ export const ENTITIES: Entity[] = [
     aliases: ['workflow automation', 'workflow', 'workflows', 'automation', 'automate', 'automating', 'manual work', 'manual process', 'repetitive', 'process improvement', 'operations', 'spreadsheets'],
     url: '/services/workflow-automation/',
     overview:
-      'Turn a workflow that creates friction into a better operating process — through redesign, automation, and tool configuration.',
+      'Turn a workflow that creates friction into a better operating process, through redesign, automation, and tool configuration.',
     process: {
       lead: 'Related solutions that often work together with it:',
       points: [
-        'System Integration — connect the tools you already run so data moves without rekeying.',
-        'Custom Software — when a manual process should become a proper system.',
+        'System Integration: connect the tools you already run so data moves without rekeying.',
+        'Custom Software: when a manual process should become a proper system.',
       ],
     },
     cta: { label: 'Discuss the Workflow', href: '/contact/' },
@@ -340,30 +340,30 @@ export const ENTITIES: Entity[] = [
     // brief, 2026-10-06; audience from its FAQ, 2026-10-28, which Tali took
     // over when the FAQ left the page — draft, ships with that page).
     overview:
-      'Work out what you actually need before you build — challenge assumptions early, then define the right solution. We work closely with your team to understand your business, evaluate your current technology landscape and create a practical plan for what comes next.',
+      'Work out what you actually need before you build, challenge assumptions early, then define the right solution. We work closely with your team to understand your business, evaluate your current technology landscape and create a practical plan for what comes next.',
     details: {
       lead: 'From business goals to a clear technology roadmap:',
       points: [
-        'Assess Current State — understand your business goals, processes and existing systems to identify gaps and opportunities.',
-        'Identify Opportunities — find areas where technology can improve efficiency, visibility and results.',
-        'Create a Roadmap — define the right solutions, priorities, timelines and implementation approach.',
-        'Support Execution — work with your team to ensure successful adoption, measure impact and adjust as you grow.',
+        'Assess Current State: understand your business goals, processes and existing systems to identify gaps and opportunities.',
+        'Identify Opportunities: find areas where technology can improve efficiency, visibility and results.',
+        'Create a Roadmap: define the right solutions, priorities, timelines and implementation approach.',
+        'Support Execution: work with your team to ensure successful adoption, measure impact and adjust as you grow.',
       ],
     },
     audience: {
       lead: 'Who it’s for:',
       points: [
-        'Growing small and mid-sized businesses — everything we do is scoped and priced for the constraints you work under.',
+        'Growing small and mid-sized businesses: everything we do is scoped and priced for the constraints you work under.',
         'Private equity-backed and portfolio companies facing a major technology decision or a sale.',
       ],
     },
     process: {
       lead: 'A structured and practical process:',
       points: [
-        'Discover — understand your goals, challenges and constraints.',
-        'Analyze — evaluate current technology, processes and data.',
-        'Plan — create a clear, prioritized roadmap with solutions.',
-        'Enable — support implementation and measure impact.',
+        'Discover: understand your goals, challenges and constraints.',
+        'Analyze: evaluate current technology, processes and data.',
+        'Plan: create a clear, prioritized roadmap with solutions.',
+        'Enable: support implementation and measure impact.',
       ],
     },
     cta: { label: 'Bring Us the Need', href: '/contact/' },
@@ -384,22 +384,22 @@ export const ENTITIES: Entity[] = [
     details: {
       lead: 'Two areas of focus:',
       points: [
-        'Expedited Exits — compress a five-year business plan into two years and achieve a successful acquisition: a clear two-year roadmap, the initiatives that drive valuation, and people, processes and technology aligned for the exit.',
-        'AI Enablement — put AI and analytics to work across operations, guided by hands-on AIOps leadership.',
+        'Expedited Exits: compress a five-year business plan into two years and achieve a successful acquisition: a clear two-year roadmap, the initiatives that drive valuation, and people, processes and technology aligned for the exit.',
+        'AI Enablement: put AI and analytics to work across operations, guided by hands-on AIOps leadership.',
       ],
     },
     process: {
       lead: 'How an engagement is shared:',
       points: [
         'Dr. Potts leads the strategy and guidance.',
-        'TLS teams and partners carry out the hands-on implementation — from consolidating duplicate applications to merging directory domains.',
+        'TLS teams and partners carry out the hands-on implementation, from consolidating duplicate applications to merging directory domains.',
       ],
     },
     audience: {
       lead: 'It suits:',
       points: [
         'Private equity-backed and portfolio companies facing a major technology decision or a sale.',
-        'Companies preparing for an exit or acquisition — Dr. Potts led M&A execution (due diligence, data room development, enterprise communications and integration planning) for the sale of Veterans Engineering to Aretum.',
+        'Companies preparing for an exit or acquisition: Dr. Potts led M&A execution (due diligence, data room development, enterprise communications and integration planning) for the sale of Veterans Engineering to Aretum.',
       ],
     },
     cta: { label: 'Discuss Your Project', href: '/contact/' },
@@ -415,14 +415,14 @@ export const ENTITIES: Entity[] = [
     overview:
       'Your data already contains answers. We help you connect it, organize it, visualize it, and turn it into intelligence your teams can actually use.',
     details: {
-      lead: 'One connected capability—from strategy and data engineering to dashboards, governance and adoption:',
+      lead: 'One connected capability, from strategy and data engineering to dashboards, governance and adoption:',
       points: [
-        'Analytics Strategy — know what to measure and why: align analytics priorities, KPIs, governance and investments with business outcomes.',
-        'Data Engineering — build a foundation you can trust: connect, clean and structure data for reliable analytics at scale.',
-        'Business Intelligence — see what matters: turn complex data into clear dashboards, scorecards and operational insights.',
-        'Data Governance — make data trusted and controlled: improve quality, lineage, access and governance.',
-        "Analytics Enablement — put insights in people's hands: practical training, adoption and self-service analytics.",
-        'Fractional Analytics Leadership — experienced leadership when you need it, without waiting to build an entire leadership function.',
+        'Analytics Strategy: know what to measure and why. Align analytics priorities, KPIs, governance and investments with business outcomes.',
+        'Data Engineering: build a foundation you can trust. Connect, clean and structure data for reliable analytics at scale.',
+        'Business Intelligence: see what matters. Turn complex data into clear dashboards, scorecards and operational insights.',
+        'Data Governance: make data trusted and controlled. Improve quality, lineage, access and governance.',
+        "Analytics Enablement: put insights in people's hands: practical training, adoption and self-service analytics.",
+        'Fractional Analytics Leadership: experienced leadership when you need it, without waiting to build an entire leadership function.',
       ],
     },
     // Trusted data, from the page's Secure Access and Trusted Data lines.
@@ -431,10 +431,10 @@ export const ENTITIES: Entity[] = [
     process: {
       lead: "Don't start with the dashboard. Start with the decision:",
       points: [
-        'Understand — what decisions need better information?',
-        'Prioritize — which use cases create the most value?',
-        'Design — what data, technology and governance are required?',
-        'Deliver — start with quick wins and scale what works.',
+        'Understand: what decisions need better information?',
+        'Prioritize, which use cases create the most value?',
+        'Design: what data, technology and governance are required?',
+        'Deliver: start with quick wins and scale what works.',
       ],
     },
     cta: projectCta,
@@ -452,24 +452,24 @@ export const ENTITIES: Entity[] = [
     details: {
       lead: 'End-to-end cybersecurity support for your business:',
       points: [
-        'Understand Your Needs — we listen, assess your challenges, and identify what matters most to your business.',
-        'Identify the Right Solutions — we recommend practical, tailored solutions that address your risks and align with your goals.',
-        'Implement & Integrate — we put the right security solutions in place with minimal disruption to your operations.',
-        'Secure, Monitor, Detect, Support & Improve — we continuously protect your business, detect emerging threats, provide support, and strengthen your defenses.',
+        'Understand Your Needs: we listen, assess your challenges, and identify what matters most to your business.',
+        'Identify the Right Solutions: we recommend practical, tailored solutions that address your risks and align with your goals.',
+        'Implement & Integrate: we put the right security solutions in place with minimal disruption to your operations.',
+        'Secure, Monitor, Detect, Support & Improve. We continuously protect your business, detect emerging threats, provide support, and strengthen your defenses.',
       ],
     },
     process: {
-      lead: 'Security that evolves with your business — an end-to-end approach, from understanding your needs to continuous support:',
+      lead: 'Security that evolves with your business, an end-to-end approach, from understanding your needs to continuous support:',
       points: [
-        'Understand Your Needs — we listen, assess your challenges, and identify what matters most to your business.',
-        'Identify the Right Solutions — practical, tailored solutions that address your risks and align with your goals.',
-        'Implement & Integrate — the right security solutions in place with minimal disruption to your operations.',
-        'Secure, Monitor, Detect, Support & Improve — we continuously protect your business, detect emerging threats, provide support, and strengthen your defenses.',
+        'Understand Your Needs: we listen, assess your challenges, and identify what matters most to your business.',
+        'Identify the Right Solutions: practical, tailored solutions that address your risks and align with your goals.',
+        'Implement & Integrate: the right security solutions in place with minimal disruption to your operations.',
+        'Secure, Monitor, Detect, Support & Improve. We continuously protect your business, detect emerging threats, provide support, and strengthen your defenses.',
       ],
     },
     // How TLS approaches security: people, process and technology, at every layer.
     control:
-      'Security is strongest when people, processes and technology work together, so we look at all three. We start with your business — what it depends on and what matters most — then review your current security posture, identify the risks and define a clear plan that deals with the most important ones first. That covers every layer: people and awareness, processes and policies, infrastructure and technology, threat detection and response, data protection, and compliance and governance.',
+      'Security is strongest when people, processes and technology work together, so we look at all three. We start with your business, what it depends on and what matters most, then review your current security posture, identify the risks and define a clear plan that deals with the most important ones first. That covers every layer: people and awareness, processes and policies, infrastructure and technology, threat detection and response, data protection, and compliance and governance.',
     cta: { label: 'Discuss Your Security Needs', href: '/contact/' },
     follow: ['What does cyber security support include?', 'How do you assess security risks?', 'I want to discuss a project'],
   },
@@ -481,13 +481,13 @@ export const ENTITIES: Entity[] = [
     aliases: ['managed it', 'managed it services', 'it support', 'it help desk', 'help desk', 'helpdesk', 'tech support', 'technical support', 'it services', 'msp', 'co-managed it', 'co managed it', 'microsoft 365', 'office 365', 'device management', 'onboarding laptops', 'it maintenance', 'monitoring', 'backup and recovery', 'disaster recovery'],
     url: '/services/managed-it/',
     overview:
-      'Reliable IT, without the firefighting. Keep your people, devices and systems running — with responsive support, proactive maintenance, and a team that already knows your environment when something needs attention.',
+      'Reliable IT, without the firefighting. Keep your people, devices and systems running, with responsive support, proactive maintenance, and a team that already knows your environment when something needs attention.',
     details: {
       lead: 'What we take care of:',
       points: [
-        'Support for your people — IT help desk and end-user support, onboarding and offboarding, and device management.',
-        'Systems kept healthy — proactive monitoring and maintenance, incident management, Microsoft 365 administration, and application support.',
-        'Groundwork that prevents outages — backup and disaster recovery, IT asset management and procurement, and IT documentation.',
+        'Support for your people: IT help desk and end-user support, onboarding and offboarding, and device management.',
+        'Systems kept healthy: proactive monitoring and maintenance, incident management, Microsoft 365 administration, and application support.',
+        'Groundwork that prevents outages: backup and disaster recovery, IT asset management and procurement, and IT documentation.',
       ],
     },
     process: {
@@ -503,9 +503,9 @@ export const ENTITIES: Entity[] = [
     audience: {
       lead: 'Ways to work with us:',
       points: [
-        "Fully managed — we act as your IT team, if you don't have in-house IT.",
-        'Co-managed — we work alongside your in-house IT when they are stretched thin.',
-        'Project-based — a defined job, such as a device refresh, a Microsoft 365 rollout or a backup overhaul.',
+        "Fully managed: we act as your IT team, if you don't have in-house IT.",
+        'Co-managed: we work alongside your in-house IT when they are stretched thin.',
+        'Project-based: a defined job, such as a device refresh, a Microsoft 365 rollout or a backup overhaul.',
       ],
     },
     cta: projectCta,
@@ -517,14 +517,14 @@ export const ENTITIES: Entity[] = [
     aliases: ['cloud', 'cloud infrastructure', 'cloud and infrastructure', 'cloud migration', 'infrastructure', 'it infrastructure', 'network', 'networking', 'network design', 'servers', 'aws', 'azure', 'google cloud', 'voip', 'phone system', 'teams phones', 'structured cabling', 'cabling', 'office move', 'office relocation', 'business continuity', 'virtual desktops'],
     url: '/services/cloud-infrastructure/',
     overview:
-      'A foundation that holds up as you grow. Cloud environments, networks, connectivity and business communications — designed and built as one foundation, so the business on top of it can grow without starting over.',
+      'A foundation that holds up as you grow. Cloud environments, networks, connectivity and business communications, designed and built as one foundation, so the business on top of it can grow without starting over.',
     details: {
       lead: 'From the cloud down to the cabling:',
       points: [
-        'Cloud — migration and deployment, managed cloud on AWS, Microsoft Azure and Google Cloud, hybrid and private cloud, and virtual desktops.',
-        'Network and servers — network design and implementation, network refresh, internet connectivity planning, and server deployment.',
-        'Workplace infrastructure — structured cabling, office IT setup and relocation, and data center relocation and colocation.',
-        'Communications and continuity — VoIP and unified communications, Teams phones, cloud backup, and business continuity planning.',
+        'Cloud: migration and deployment, managed cloud on AWS, Microsoft Azure and Google Cloud, hybrid and private cloud, and virtual desktops.',
+        'Network and servers: network design and implementation, network refresh, internet connectivity planning, and server deployment.',
+        'Workplace infrastructure: structured cabling, office IT setup and relocation, and data center relocation and colocation.',
+        'Communications and continuity: VoIP and unified communications, Teams phones, cloud backup, and business continuity planning.',
       ],
     },
     process: {
@@ -548,7 +548,7 @@ export const NEEDS: { label: string; entities: string[]; note: string }[] = [
   { label: 'Making sense of our data', entities: ['data'], note: 'For turning data into decisions:' },
   { label: 'Our IT keeps letting us down', entities: ['managed-it', 'cloud-infra'], note: 'For IT support and a foundation that holds up:' },
   { label: 'Securing the business', entities: ['security'], note: 'For security and compliance support:' },
-  { label: "Not sure yet", entities: ['strategy'], note: "That's a good place to start — we help work out the right problem before building." },
+  { label: "Not sure yet", entities: ['strategy'], note: "That's a good place to start. We help work out the right problem before building." },
 ];
 
 export const byId = (id: string) => ENTITIES.find((e) => e.id === id);

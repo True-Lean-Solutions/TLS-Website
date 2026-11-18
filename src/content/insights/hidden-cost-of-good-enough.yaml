@@ -23,7 +23,7 @@ blocks:
 
       ## What "good enough" looks like in production
 
-      We have debugged and stabilized production systems where mapping errors in a 401(k) processing pipeline were causing incorrect financial outputs downstream. The original build worked — technically. But it was not built with enough defensiveness against the edge cases that payroll data actually throws at you: nullable fields, inconsistent CSV formats from different vendors, column ordering that changes without notice.
+      We have debugged and stabilized production systems where mapping errors in a 401(k) processing pipeline were causing incorrect financial outputs downstream. The original build worked, technically. But it was not built with enough defensiveness against the edge cases that payroll data actually throws at you: nullable fields, inconsistent CSV formats from different vendors, column ordering that changes without notice.
 
       When those edge cases hit production, the cost was not just rework. It was reconciliation errors, trust loss, and weeks of firefighting that nobody budgeted for.
   - type: cards
@@ -47,16 +47,16 @@ blocks:
     accent: blue
     items:
       - title: Design for real-world conditions
-        body: We build for what the system will actually face — not just what the requirements document describes.
+        body: We build for what the system will actually face, not just what the requirements document describes.
       - title: Handle edge cases before they are incidents
         body: Defensive error handling, validation layers, and null-safe logic are designed in from the start.
       - title: Build for maintainability
         body: Clean architectural separation so the team that inherits the codebase can understand, debug, and extend it safely.
       - title: Quality as the baseline
-        body: We treat quality as the minimum standard — not an optional layer added at the end of delivery.
+        body: We treat quality as the minimum standard, not an optional layer added at the end of delivery.
   - type: callout
     variant: dark
-    title: The question to ask — what does this system need to handle in the real world, not just in the demo?
+    title: "The question to ask: what does this system need to handle in the real world, not just in the demo?"
     body: The proactive cost of quality is almost always lower than the reactive cost of fixing the absence of it.
     tag: Production-ready from day one
   - type: richtext

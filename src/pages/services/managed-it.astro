@@ -50,14 +50,14 @@ const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(2)}%`;
 const challenges = [
   { title: 'IT falls to whoever is least busy', text: 'Someone on your team has become the IT person by default. Their real job waits while they reset passwords and chase printer problems.' },
   { title: "Problems surface when people can't work", text: 'Without monitoring, a failing device or a full disk only gets noticed once it has already stopped someone working.' },
-  { title: 'Every new hire starts differently', text: "Onboarding and offboarding happen a different way each time — so people start without the tools they need, and leavers keep access they shouldn't." },
+  { title: 'Every new hire starts differently', text: "Onboarding and offboarding happen a different way each time, so people start without the tools they need, and leavers keep access they shouldn't." },
   { title: 'Nobody is sure the backups work', text: 'Backups were set up once. Whether you could actually restore from them is a question nobody wants to answer during an outage.' },
 ];
 
 const groups: CapabilityGroup[] = [
   {
     title: 'Support for your people',
-    line: "One place for your team to go when something isn't working — answered by people who know your setup.",
+    line: "One place for your team to go when something isn't working, answered by people who know your setup.",
     icon: 'headset',
     accent: 'red',
     art: 'desk',
@@ -83,7 +83,7 @@ const groups: CapabilityGroup[] = [
 
 const accents = ['red', 'blue', 'plum'] as const;
 const steps: RailStep[] = [
-  { title: 'Understand your environment', text: 'We document what you run — people, devices, systems and accounts — and how your team actually works day to day.', icon: 'search' },
+  { title: 'Understand your environment', text: 'We document what you run (people, devices, systems and accounts) and how your team actually works day to day.', icon: 'search' },
   { title: 'Stabilize what matters', text: 'We deal with the urgent issues first and close the gaps that put you at risk, like untested backups or unmanaged devices.', icon: 'shield' },
   { title: 'Transition support', text: 'Your team gets one clear way to ask for help, and we take over the routine work we agree on together.', icon: 'headset' },
   { title: 'Monitor and maintain', text: 'Systems are monitored and maintained, and when something needs attention, we respond and keep you informed.', icon: 'monitor' },
@@ -139,7 +139,7 @@ const outcomes: Outcome[] = [
         <Eyebrow label="Managed IT Services" />
         <h1>Reliable IT, <span class="accent">without the firefighting.</span></h1>
         <p class="mit-lede">
-          Keep your people, devices and systems running — with responsive support, proactive maintenance, and a team that
+          Keep your people, devices and systems running, with responsive support, proactive maintenance, and a team that
           already knows your environment when something needs attention.
         </p>
         <div class="mit-actions">
@@ -203,12 +203,12 @@ const outcomes: Outcome[] = [
           <ol>
             <li><span>Issue detected</span></li>
             <li><span>Routed to support</span></li>
-            <li><span>Resolved — monitoring continues</span></li>
+            <li><span>Resolved, monitoring continues</span></li>
           </ol>
         </div>
         <figcaption id="mit-art-cap" class="visually-hidden">
-          Illustration: the systems a business runs on — people and devices, Microsoft 365, servers, business apps, phones
-          and backups — connected to a support team. An issue on a server is detected, routed to support and resolved,
+          Illustration: the systems a business runs on, people and devices, Microsoft 365, servers, business apps, phones
+          and backups, connected to a support team. An issue on a server is detected, routed to support and resolved,
           and monitoring continues.
         </figcaption>
       </figure>
@@ -249,7 +249,7 @@ const outcomes: Outcome[] = [
     eyebrow="How Support Flows"
     title="Every issue has a path "
     accent="to resolution."
-    lead="Requests, alerts and routine work arrive in one place, are handled in order of impact, and leave a record — so the same problem is less likely to come back."
+    lead="Requests, alerts and routine work arrive in one place, are handled in order of impact, and leave a record, so the same problem is less likely to come back."
     columns={['Where it starts', 'How we handle it', 'What you get']}
     inputs={flowIn}
     stages={flowStages}
@@ -309,7 +309,7 @@ const outcomes: Outcome[] = [
     eyebrow="Let's talk"
     heading="Tell us what keeps "
     accent="breaking."
-    text="Start with a conversation about how IT works in your business today. We'll tell you plainly where ongoing support would help — and where it wouldn't."
+    text="Start with a conversation about how IT works in your business today. We'll tell you plainly where ongoing support would help, and where it wouldn't."
   >
     <Button href={cta.primary.href} variant="primary" arrow>{cta.primary.label}</Button>
     <Button href={site.booking} variant="secondary" external>Book a Free 30-Minute Call</Button>
