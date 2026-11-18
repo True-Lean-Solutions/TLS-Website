@@ -1,7 +1,7 @@
 ---
 /**
  * Site footer, in five columns separated by hairlines: the TLS brand
- * statement, Quick Links (the header's own navigation), Solutions (all eight),
+ * statement, Quick Links (the header's own navigation), Solutions (all ten),
  * Latest Insights (the three newest posts with their covers), and Contact.
  * Then the legal bar with a back-to-top button. Everything comes from existing
  * sources (site.ts, nav.ts, services.ts, the Insights collection); nothing is
@@ -15,7 +15,7 @@ import FooterInsights, { type FooterPost } from './FooterInsights.astro';
 import FooterSocials from './FooterSocials.astro';
 import { site, cta, href as withBase } from '../data/site';
 import { primaryNav, legalLinks } from '../data/nav';
-import { solutions, aiProducts } from '../data/services';
+import { solutions } from '../data/services';
 
 interface Props {
   /** Three newest published posts; the column is hidden when empty. */
@@ -24,11 +24,10 @@ interface Props {
 const { latestPosts = [] } = Astro.props;
 const year = new Date().getFullYear();
 const quick = primaryNav.map(({ label, href }) => ({ label, href }));
-// The two AI products sit right under AI & Automation (brief T2.5).
-const solutionLinks = solutions.flatMap((s) => [
-  { label: s.title, href: s.href },
-  ...(s.href === '/services/enterprise-ai/' ? aiProducts.map((p) => ({ label: p.title, href: p.href })) : []),
-]);
+// The ten solutions only. The two AI products (Meeting Intelligence, AI
+// Visibility Growth Team) are part of AI & Automation, not solutions of their
+// own, so they are not listed here (Hemang, 2026-11-19).
+const solutionLinks = solutions.map((s) => ({ label: s.title, href: s.href }));
 ---
 
 <footer class="site-footer">
