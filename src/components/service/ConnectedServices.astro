@@ -1,0 +1,111 @@
+---
+/**
+ * "Works together with": the TLS solutions that naturally sit next to this one
+ * (2026-11-18). Each link says why it connects, so the ecosystem reads as one
+ * partner rather than a list of separate offerings.
+ */
+import Icon from '../Icon.astro';
+import { solutions, type Accent } from '../../data/services';
+import { href as withBase } from '../../data/site';
+
+interface Props {
+  /** [solution href, why it connects to this service]. */
+  links: [string, string][];
+}
+const { links } = Astro.props;
+
+const accents: Record<Accent, string> = {
+  red: '--c: var(--red);',
+  blue: '--c: var(--blue);',
+  plum: '--c: var(--plum);',
+};
+const items = links.map(([h, why]) => {
+  const s = solutions.find((x) => x.href === h);
+  if (!s) throw new Error(`ConnectedServices: no solution at ${h}`);
+  return { ...s, why };
+});
+---
+
+<ul class="links" data-reveal="stagger">
+  {
+    items.map((s) => (
+      <li>
+        <a class="link ix-card ix-light" href={withBase(s.href)} style={accents[s.accent]}>
+          <span class="link-icon glass-icon" aria-hidden="true">
+            <Icon name={s.icon} size={22} />
+          </span>
+          <span class="link-body">
+            <span class="link-title">{s.title}</span>
+            <span class="link-why">{s.why}</span>
+          </span>
+          <span class="link-arrow" aria-hidden="true">
+            <Icon name="arrow" size={18} />
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .link {
+    height: 100%;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: start;
+    padding: 1.35rem 1.35rem 1.35rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .link-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius);
+    color: var(--c);
+  }
+  .link-body {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .link-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.02rem;
+  }
+  .link-why {
+    color: var(--text-2);
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+  .link-arrow {
+    color: var(--text-2);
+    margin-top: 0.2rem;
+    transition:
+      transform var(--ix-base) var(--ix-ease),
+      color var(--ix-fast) ease;
+  }
+  .link:is(:hover, :focus-visible) .link-arrow {
+    color: var(--red-text);
+    transform: translateX(3px);
+  }
+  @media (max-width: 1024px) {
+    .links {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

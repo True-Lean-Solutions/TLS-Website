@@ -1,0 +1,104 @@
+---
+/**
+ * How a client can work with TLS on a service (2026-11-18): a few models side
+ * by side, each with the situation it suits. Open columns divided by
+ * hairlines rather than another row of boxes.
+ */
+import Icon from '../Icon.astro';
+import type { IconName } from '../iconTypes';
+
+export interface EngagementModel {
+  title: string;
+  text: string;
+  /** "Suits you when…" — the situation this model fits. */
+  fit: string;
+  icon: IconName;
+}
+
+interface Props {
+  models: EngagementModel[];
+}
+const { models } = Astro.props;
+---
+
+<ul class="models" data-reveal="stagger">
+  {
+    models.map((m) => (
+      <li class="model ix-group">
+        <span class="model-icon glass-icon glass-icon--neutral" aria-hidden="true">
+          <Icon name={m.icon} size={22} />
+        </span>
+        <h3>{m.title}</h3>
+        <p>{m.text}</p>
+        <p class="model-fit">
+          <span>Suits you when</span> {m.fit}
+        </p>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .models {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    border-top: 1px solid var(--border-2);
+  }
+  .model {
+    padding: 1.75rem 1.75rem 0.5rem 0;
+  }
+  .model + .model {
+    padding-left: 1.75rem;
+    border-left: 1px solid var(--border);
+  }
+  .model-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius);
+    color: var(--blue-text);
+  }
+  .model h3 {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+  }
+  .model p {
+    margin-top: 0.55rem;
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .model-fit {
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--border-2);
+  }
+  .model-fit span {
+    display: block;
+    font-family: var(--font-head);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+  }
+  @media (max-width: 860px) {
+    .models {
+      grid-auto-flow: row;
+    }
+    .model,
+    .model + .model {
+      padding: 1.5rem 0;
+      border-left: 0;
+    }
+    .model + .model {
+      border-top: 1px solid var(--border);
+    }
+  }
+</style>
