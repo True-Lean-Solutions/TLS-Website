@@ -7,6 +7,19 @@
  * capabilities (SRE, website maintenance, patch management as a named service)
  * are left out: see docs/decisions.md 2026-11-18.
  *
+ * Technical depth (Hemang's brief after customer feedback, 2026-11-18): the
+ * capability lists say more about how the work is done, and six sections
+ * were added between the existing ones: proactive IT operations, secure IT
+ * operations (identity, devices, Microsoft 365, with the employee
+ * lifecycle), application support and reliability, technologies,
+ * illustrative scenarios and an FAQ. Existing sections, art and motion are
+ * unchanged. Patch management and website support, left out before, are in
+ * now: the brief asks for them and the partner research documents patching.
+ * Still not claimed: 24/7 cover, response times, SLAs, a SOC or managed
+ * detection and response, formal site reliability engineering. Named
+ * technologies come from src/data/tech.ts (confirmed ones only); the
+ * scenarios are labeled illustrative. Evidence: docs/capability-matrix.md.
+ *
  * Hero: an operations map. One cycle plays in a loop while it is on screen
  * (scroll layer: sequence.ts) — healthy systems, an issue detected on a
  * server, routed to support, resolved, monitoring continues. Status words
@@ -28,6 +41,15 @@ import CapabilityGroups, { type CapabilityGroup } from '../../components/service
 import EngagementModels, { type EngagementModel } from '../../components/service/EngagementModels.astro';
 import OutcomeList, { type Outcome } from '../../components/service/OutcomeList.astro';
 import ConnectedServices from '../../components/service/ConnectedServices.astro';
+import DeepDive, { type SpecGroup } from '../../components/service/DeepDive.astro';
+import OpsHealthScene from '../../components/service/OpsHealthScene.astro';
+import EndpointScene from '../../components/service/EndpointScene.astro';
+import ObservabilityScene from '../../components/service/ObservabilityScene.astro';
+import LifecycleStrip, { type LifeStage } from '../../components/service/LifecycleStrip.astro';
+import ScopeNote from '../../components/service/ScopeNote.astro';
+import TechStack from '../../components/service/TechStack.astro';
+import UseCases, { type UseCase } from '../../components/service/UseCases.astro';
+import FaqList from '../../components/FaqList.astro';
 import { cta, site } from '../../data/site';
 
 // Draft copy (2026-11-18), pending Hemang's approval.
@@ -46,27 +68,188 @@ const challenges = [
 const groups: CapabilityGroup[] = [
   {
     title: 'Support for your people',
-    line: "One place for your team to go when something isn't working, answered by people who know your setup.",
+    line: "One place for your team to go when something isn't working, answered by people who know your setup. It covers the accounts, devices and access your people need from their first day to their last.",
     icon: 'headset',
     accent: 'red',
     art: 'desk',
-    items: ['IT help desk and end-user support', 'Employee onboarding and offboarding', 'Laptop, desktop and mobile device management', 'Hardware refresh and warranty replacement'],
+    items: [
+      'IT help desk and remote technical support',
+      'Employee onboarding and offboarding',
+      'Account provisioning and identity administration',
+      'Laptop, desktop and mobile device management',
+      'Device enrollment and software installation',
+      'Hardware refresh and warranty replacement',
+    ],
   },
   {
     title: 'Systems kept healthy',
-    line: 'Problems caught and dealt with before they become downtime, with the routine work done on schedule.',
+    line: 'Monitoring, maintenance and incident handling that find emerging problems early and cut avoidable disruption, with the routine work done on schedule.',
     icon: 'monitor',
     accent: 'blue',
     art: 'health',
-    items: ['Proactive monitoring and maintenance', 'Incident management and resolution', 'Microsoft 365 administration', 'Application support and maintenance'],
+    items: [
+      'Proactive monitoring and maintenance (RMM)',
+      'Server, device and network monitoring',
+      'Patch management and software deployment',
+      'Incident management and root cause analysis',
+      'Microsoft 365 administration',
+      'Application support and maintenance',
+    ],
   },
   {
     title: 'Groundwork that prevents outages',
-    line: 'The planning and records that stop a small problem from turning into a long one.',
+    line: 'The operational work that is easy to skip and makes technology dependable: accurate records, tested recovery and changes planned before they become urgent.',
     icon: 'database',
     accent: 'plum',
     art: 'backup',
-    items: ['Backup and disaster recovery', 'IT asset management and procurement', 'IT documentation', 'Ongoing technology operations'],
+    items: [
+      'Backup and disaster recovery, with restore tests',
+      'IT asset and license management, and procurement',
+      'IT and configuration documentation',
+      'Change management and maintenance schedules',
+      'Vulnerability remediation',
+      'Operational reporting and improvement planning',
+    ],
+  },
+];
+
+/* Proactive IT operations (2026-11-18). */
+const proactive: SpecGroup[] = [
+  {
+    title: 'Monitoring',
+    why: 'A problem is cheaper to fix before someone has to report it.',
+    items: ['Remote monitoring and management (RMM)', 'Servers, employee devices and network equipment', 'Device availability and connectivity', 'CPU, memory and disk capacity thresholds'],
+  },
+  {
+    title: 'Patching and maintenance',
+    why: 'Routine work done on a schedule is what keeps small issues small.',
+    items: ['Operating system and software updates', 'Patch compliance tracking', 'Preventive maintenance windows', 'System health reviews'],
+  },
+  {
+    title: 'Incidents and changes',
+    why: 'Every issue is classified, so urgent work is handled first and nothing is lost.',
+    items: ['Incident classification by business impact', 'Escalation paths', 'Change management', 'Root cause and recurring issue analysis'],
+  },
+  {
+    title: 'Reporting and planning',
+    why: 'You see what is happening in your environment, and what should happen next.',
+    items: ['Operational reporting', 'Capacity planning', 'Asset and license records', 'IT improvement planning'],
+  },
+];
+
+/* Secure IT operations: identity, devices, Microsoft 365, protection (2026-11-18). */
+const secureOps: SpecGroup[] = [
+  {
+    title: 'Identity and access',
+    why: 'The right people get in, with only the access their role needs.',
+    items: ['Multi-factor authentication', 'Conditional access and single sign-on', 'Role-based, least-privilege access', 'Account provisioning and removal', 'Periodic access reviews'],
+  },
+  {
+    title: 'Managed devices',
+    why: 'A device that is enrolled can be configured, updated and, if it is lost, locked.',
+    items: ['Device enrollment and mobile device management', 'Configuration and compliance policies', 'Software deployment and updates', 'Remote lock and wipe for lost devices'],
+  },
+  {
+    title: 'Microsoft 365',
+    why: 'Email, files and meetings are where most work happens, so they are administered and secured together.',
+    items: ['Tenant, user and license administration', 'Exchange Online, SharePoint, OneDrive and Teams', 'Anti-phishing and email filtering', 'SPF, DKIM and DMARC email authentication'],
+  },
+  {
+    title: 'Protection and response',
+    why: 'Fewer known weaknesses, and a clear path to a person when something looks wrong.',
+    items: ['Endpoint protection and detection (EDR)', 'Vulnerability scanning and patch prioritization', 'Backup health checks and restore tests', 'Alert review and escalation within the agreed scope'],
+  },
+];
+const lifecycle: LifeStage[] = [
+  { title: 'Join', line: 'Ready on the first day', icon: 'user', items: ['Account created with the right role', 'Laptop enrolled and prepared', 'Multi-factor authentication set up', 'Approved applications installed'] },
+  { title: 'Work', line: 'Kept current as things change', icon: 'laptop', items: ['Device policies and updates applied', 'Access changed when the role changes', 'Collaboration tools kept working', 'Access reviewed periodically'] },
+  { title: 'Leave', line: 'Closed down properly', icon: 'lock', items: ['Sign-in disabled and active sessions ended', 'Licenses recovered for reuse', 'Company data handed over as your policy sets out', 'Company device returned'] },
+];
+
+/* Application support and reliability (2026-11-18). */
+const appSupport: SpecGroup[] = [
+  {
+    title: 'Websites and web applications',
+    why: 'A website is software too: it needs updates, renewals and someone watching it.',
+    items: ['Availability monitoring', 'Hosting, DNS and SSL/TLS certificates', 'Security and dependency updates', 'Backups and restoration'],
+  },
+  {
+    title: 'Application maintenance',
+    why: 'Applications keep working when their dependencies, data and configuration are looked after.',
+    items: ['Application health and error monitoring', 'API and database monitoring', 'Dependency and configuration management', 'Bug investigation and planned maintenance'],
+  },
+  {
+    title: 'Releases and operations',
+    why: 'Changes go out in a controlled way, with a way back if something goes wrong.',
+    items: ['Release pipelines (CI/CD)', 'Release coordination and deployment checks', 'Rollback planning', 'Production incident investigation'],
+  },
+  {
+    title: 'Reliability',
+    why: 'Understanding why something failed is what stops it failing again.',
+    items: ['Logs, metrics and traces', 'Performance and capacity reviews', 'Root cause analysis', 'Post-incident reviews'],
+  },
+];
+
+/* Illustrative scenarios (2026-11-18): not client projects. */
+const scenarios: UseCase[] = [
+  {
+    title: 'Managed IT stabilization',
+    challenge: 'Support is reactive, the infrastructure is undocumented and every device is set up differently.',
+    approach: ['Asset inventory', 'Monitoring rollout', 'Configuration standards', 'Maintenance schedule', 'Documentation', 'Structured support'],
+    aim: 'Fewer surprises, a documented environment, and support that follows a process instead of memory.',
+    icon: 'headset',
+  },
+  {
+    title: 'Microsoft 365 modernization',
+    challenge: 'Access, devices and collaboration tools differ from person to person, and nobody is sure who can reach what.',
+    approach: ['Tenant assessment', 'Identity standards', 'Multi-factor authentication', 'Device management', 'Onboarding and offboarding', 'Email security'],
+    aim: 'Consistent access and devices for everyone, and a tenant that is easier to secure and administer.',
+    icon: 'mail',
+  },
+  {
+    title: 'Application reliability improvement',
+    challenge: 'A business application keeps producing errors, and the only warning is a complaint from a user.',
+    approach: ['Availability monitoring', 'Error tracking', 'Dependency assessment', 'Performance investigation', 'Deployment improvements'],
+    aim: 'Problems seen before users report them, and fewer repeats of the same failure.',
+    icon: 'monitor',
+  },
+  {
+    title: 'Backup and recovery modernization',
+    challenge: 'Backups run every night, but nobody has restored from them, and nobody has said how quickly systems need to be back.',
+    approach: ['Critical system assessment', 'Backup coverage review', 'Recovery priorities', 'Restore testing', 'Recovery documentation'],
+    aim: 'Backups that have been shown to restore, and recovery expectations the business has agreed.',
+    icon: 'database',
+  },
+];
+
+/* Technical FAQ (2026-11-18). Answers restate what the page already says; no new commitments. */
+const faqs: { q: string; a: string[] }[] = [
+  {
+    q: 'Can you work alongside our existing IT team?',
+    a: ['Yes. In a co-managed arrangement we take on the support, monitoring or projects your in-house team does not have time for, and they keep the work they want to own. Responsibilities are written down, so nothing falls between the two teams.'],
+  },
+  {
+    q: 'Do you support Microsoft 365?',
+    a: ['Yes. We administer Microsoft 365 tenants: users and licenses, Exchange Online, SharePoint, OneDrive and Teams, along with the identity and email security settings that protect them.'],
+  },
+  {
+    q: 'How do you monitor our systems?',
+    a: [
+      'Monitoring software on servers, employee devices and network equipment reports availability, capacity and update status against agreed thresholds. A reading that drifts is logged, prioritized and dealt with, ideally in a maintenance window before it affects anyone.',
+      'What is monitored, and when alerts are handled, is set out in your agreement.',
+    ],
+  },
+  {
+    q: 'Do you maintain websites and business applications?',
+    a: ['Applications we build for you can stay supported and maintained after launch. We can also take on other websites and applications once we have agreed the scope with you.'],
+  },
+  {
+    q: 'How are security alerts handled?',
+    a: ['A person reviews each alert, classifies it and escalates it if it needs more than routine remediation. The work stays within the scope agreed with you, and anything that needs specialist investigation is coordinated through our Cybersecurity & Compliance service.'],
+  },
+  {
+    q: 'How do you know the backups work?',
+    a: ['By restoring from them. A backup job that reports success shows that data was copied, not that a system can be brought back. We check backup health, run restore tests, and document recovery steps and priorities.'],
   },
 ];
 
@@ -170,6 +353,21 @@ const outcomes: Outcome[] = [
     </div>
   </section>
 
+  <!-- 3b. Proactive IT operations (2026-11-18) -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Proactive IT Operations"
+        title="Know what is happening "
+        accent="before it becomes a problem."
+        lead="Good IT support starts before anyone submits a ticket. Systems report their own health, routine maintenance runs on a schedule, and a reading that drifts is dealt with while it is still a small job."
+      />
+      <DeepDive groups={proactive}>
+        <OpsHealthScene />
+      </DeepDive>
+    </div>
+  </section>
+
   <!-- 4. Signature: every issue has a path -->
   <FlowMap
     id="mit-flow"
@@ -182,6 +380,57 @@ const outcomes: Outcome[] = [
     stages={flowStages}
     outputs={flowOut}
   />
+
+  <!-- 4a. Secure IT operations: identity, devices, Microsoft 365 (2026-11-18) -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Secure IT Operations"
+        title="The right access. The right devices. "
+        accent="The right controls."
+        lead="Keeping technology running also means keeping it protected. Unmanaged accounts, unpatched devices, excess access and unchecked backups are operational problems and security problems at once, so we manage identities, devices and collaboration tools together."
+      />
+      <DeepDive groups={secureOps} flip>
+        <EndpointScene />
+        <Fragment slot="after">
+          <LifecycleStrip
+            title="The same care from the first day to the last"
+            lead="Consistent identity and device management matters most at the edges of a person's time with you: when they start, when their role changes and when they leave."
+            stages={lifecycle}
+          />
+          <ScopeNote
+            text="Managed IT covers operational security: the everyday controls above. For security strategy, risk assessment, wider controls and compliance support, see"
+            links={[['/services/cyber-security/', 'Cybersecurity & Compliance']]}
+          />
+        </Fragment>
+      </DeepDive>
+    </div>
+  </section>
+
+  <!-- 4c. Application support and reliability (2026-11-18) -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Beyond the Launch"
+        title="Building it is "
+        accent="only the beginning."
+        lead="Websites, applications and integrations need attention long after they go live. Dependencies change, hosting moves on, security requirements tighten and the business asks for more. Support keeps what was built dependable, for the software we build for you and for other applications by agreement."
+      />
+      <DeepDive groups={appSupport}>
+        <ObservabilityScene />
+        <ScopeNote
+          slot="after"
+          icon="code"
+          text="Support works best when it knows how something was built. See"
+          links={[
+            ['/services/software/', 'Custom Software'],
+            ['/services/integrations/', 'System Integration'],
+            ['/services/cloud-infrastructure/', 'Cloud & Infrastructure'],
+          ]}
+        />
+      </DeepDive>
+    </div>
+  </section>
 
   <!-- 4b. How it works -->
   <section class="section">
@@ -214,6 +463,32 @@ const outcomes: Outcome[] = [
     </div>
   </section>
 
+  <!-- 6b. Technologies (2026-11-18): confirmed names only, from src/data/tech.ts -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Technology"
+        title="Technologies supporting "
+        accent="dependable IT operations."
+        lead="Tools matter less than how consistently they are run, but you should know what we work with."
+      />
+      <TechStack page="it" note="Running something that is not listed? Tell us what you have. Onboarding starts from the environment you already run." />
+    </div>
+  </section>
+
+  <!-- 6c. Illustrative scenarios (2026-11-18) -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Illustrative Managed IT Scenarios"
+        title="The technology challenges we help "
+        accent="businesses address."
+        lead="Four common situations and how we would approach each one. These are illustrative scenarios, not client case studies."
+      />
+      <UseCases cases={scenarios} />
+    </div>
+  </section>
+
   <!-- 7. Connected services -->
   <section class="section section-alt">
     <div class="wrap">
@@ -230,6 +505,14 @@ const outcomes: Outcome[] = [
           ['/services/software/', 'Applications we build for you can stay supported and maintained after launch.'],
         ]}
       />
+    </div>
+  </section>
+
+  <!-- 7b. Technical FAQ (2026-11-18) -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="Questions" title="Technical questions, " accent="plain answers." />
+      <FaqList items={faqs} openFirst={false} />
     </div>
   </section>
 

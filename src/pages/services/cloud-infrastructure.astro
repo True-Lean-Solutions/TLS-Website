@@ -7,6 +7,15 @@
  * (high-availability architecture as a named service, specific LAN/WAN/Wi-Fi
  * offerings) are left out: see docs/decisions.md 2026-11-18.
  *
+ * Technical depth (Hemang's brief after customer feedback, 2026-11-18): the
+ * capability lists say more about how the work is done, and five sections
+ * were added between the existing ones: network engineering, security by
+ * design (with the recovery timeline), technologies, illustrative use cases
+ * and an FAQ. Existing sections, art and motion are unchanged. Named
+ * technologies come from src/data/tech.ts, which shows confirmed ones only;
+ * the use cases are labeled illustrative because no verified infrastructure
+ * project exists yet. Evidence for every line: docs/capability-matrix.md.
+ *
  * Hero: the foundation builds in layers — workplace, then network, then
  * cloud — then a server workload migrates to the cloud and a continuity copy
  * is made. One cycle loops while on screen (sequence.ts). Reduced motion / no
@@ -27,6 +36,14 @@ import CapabilityGroups, { type CapabilityGroup } from '../../components/service
 import EngagementModels, { type EngagementModel } from '../../components/service/EngagementModels.astro';
 import OutcomeList, { type Outcome } from '../../components/service/OutcomeList.astro';
 import ConnectedServices from '../../components/service/ConnectedServices.astro';
+import DeepDive, { type SpecGroup } from '../../components/service/DeepDive.astro';
+import NetworkScene from '../../components/service/NetworkScene.astro';
+import SecurityLayersScene from '../../components/service/SecurityLayersScene.astro';
+import RecoveryBlock from '../../components/service/RecoveryBlock.astro';
+import ScopeNote from '../../components/service/ScopeNote.astro';
+import TechStack from '../../components/service/TechStack.astro';
+import UseCases, { type UseCase } from '../../components/service/UseCases.astro';
+import FaqList from '../../components/FaqList.astro';
 import { cta, site } from '../../data/site';
 
 // Draft copy (2026-11-18), pending Hemang's approval.
@@ -47,35 +64,170 @@ const challenges = [
 const groups: CapabilityGroup[] = [
   {
     title: 'Cloud',
-    line: 'Cloud environments sized for what you actually run, and moved there without disrupting the business.',
+    line: 'Cloud environments designed around what you actually run, with identity, networking and recovery planned in, and moved there without disrupting the business.',
     icon: 'cloud',
     accent: 'red',
     art: 'cloud',
-    items: ['Cloud migration and deployment', 'Managed cloud on AWS, Microsoft Azure and Google Cloud', 'Hybrid, private and public cloud', 'Virtualization and virtual desktops'],
+    items: [
+      'Cloud readiness assessment and architecture',
+      'Cloud migration and deployment, planned around dependencies',
+      'Managed cloud on AWS, Microsoft Azure and Google Cloud',
+      'Compute, storage, databases and virtual networks',
+      'Hybrid, private and public cloud',
+      'Virtualization and virtual desktops',
+    ],
   },
   {
     title: 'Network and servers',
-    line: 'Dependable connections between your people, your places and your systems.',
+    line: 'Dependable, segmented connections between your people, your places and your systems.',
     icon: 'integration',
     accent: 'blue',
     art: 'network',
-    items: ['Network design and implementation', 'Network refresh and upgrades', 'Internet connectivity planning', 'Server configuration and deployment'],
+    items: [
+      'Network design and implementation: LAN, WAN and Wi-Fi',
+      'Routing, switching and network segmentation (VLANs)',
+      'Firewalls, site-to-site VPN and secure remote access',
+      'Internet connectivity planning, with failover and SD-WAN',
+      'Network refresh and upgrades',
+      'Server configuration, deployment and virtualization',
+    ],
   },
   {
     title: 'Workplace infrastructure',
-    line: 'The physical side of IT, planned properly instead of improvised.',
+    line: 'The physical side of IT, planned and documented instead of improvised.',
     icon: 'building',
     accent: 'plum',
     art: 'workplace',
-    items: ['Structured cabling', 'Office IT setup and relocation', 'Data center relocation and colocation', 'Hardware procurement'],
+    items: [
+      'Structured cabling, racks and patch panels',
+      'Wireless access point placement',
+      'Office IT setup, relocation and cutover planning',
+      'Data center relocation and colocation',
+      'Hardware procurement and lifecycle planning',
+      'Network diagrams and technical documentation',
+    ],
   },
   {
     title: 'Communications and continuity',
-    line: 'Phones that move with your people, and a plan for the day something fails.',
+    line: 'Phones that move with your people, and a tested plan for the day something fails.',
     icon: 'phone',
     accent: 'red',
     art: 'comms',
-    items: ['VoIP and unified communications', 'Microsoft Teams phones and conferencing', 'Cloud backup', 'Business continuity planning'],
+    items: [
+      'VoIP and unified communications',
+      'Microsoft Teams phones, call queues and conferencing',
+      'Cloud and off-site backup',
+      'Recovery testing and failover planning',
+      'Recovery targets (RTO and RPO) agreed for each system',
+      'Business continuity planning',
+    ],
+  },
+];
+
+/* Network engineering (2026-11-18). */
+const network: SpecGroup[] = [
+  {
+    title: 'Network architecture',
+    why: 'A layout planned around your sites, people and applications, instead of equipment added as needs came up.',
+    items: ['LAN and WAN design', 'Multi-location connectivity', 'Routing and switching', 'Network topology planning and diagrams', 'SD-WAN where it fits'],
+  },
+  {
+    title: 'Secure connectivity',
+    why: 'Connections are encrypted where they leave the building and limited to what each person or device needs.',
+    items: ['Site-to-site VPN between offices', 'Secure remote access for staff', 'Firewall configuration', 'VLANs and network segmentation', 'Separate staff and guest networks'],
+  },
+  {
+    title: 'Performance and availability',
+    why: 'Enough coverage and capacity for a normal day, and a fallback for a bad one.',
+    items: ['Wireless coverage planning', 'Capacity planning', 'Quality of Service for voice and video', 'Redundant connectivity and internet failover'],
+  },
+  {
+    title: 'Network management',
+    why: 'A network stays dependable when its records are current and changes are planned.',
+    items: ['Network monitoring', 'Configuration documentation', 'Device lifecycle management', 'Planned upgrades', 'Troubleshooting and optimization'],
+  },
+];
+
+/* Security by design (2026-11-18): five layers, matching the diagram. */
+const security: SpecGroup[] = [
+  {
+    title: '1. Identity and access',
+    why: 'Access is designed first: who can sign in, from where, and to what.',
+    items: ['Multi-factor authentication and single sign-on', 'Role-based, least-privilege access', 'Conditional access policies', 'Access reviews, including administrator accounts'],
+  },
+  {
+    title: '2. Network security',
+    why: 'The network decides what can talk to what, and keeps the rest apart.',
+    items: ['Firewall policies', 'Intrusion prevention', 'Network segmentation', 'VPN and secure remote access'],
+  },
+  {
+    title: '3. Cloud and applications',
+    why: 'A cloud platform is as secure as its configuration. The defaults are a starting point.',
+    items: ['Security configuration reviews and hardening', 'Private networking for workloads', 'Encryption at rest and in transit', 'Cloud logging and monitoring'],
+  },
+  {
+    title: '4. Servers and workloads',
+    why: 'Systems that are patched and locked down give an attacker less to work with.',
+    items: ['Operating system hardening', 'Patch management', 'Vulnerability assessments', 'Controlled administrative access'],
+  },
+];
+
+/* Illustrative use cases (2026-11-18): scenarios, not client projects. */
+const useCases: UseCase[] = [
+  {
+    title: 'Multi-location network modernization',
+    challenge: 'Several offices, each with a network that grew independently. Connections between sites are unreliable, and nobody can see the whole picture.',
+    approach: ['Topology assessment', 'Routing and switching redesign', 'VLAN segmentation', 'Site-to-site VPN', 'Wireless optimization', 'Redundant links', 'Central monitoring'],
+    aim: 'Consistent connectivity between sites, a network you can see into, and room to add the next location.',
+    icon: 'integration',
+  },
+  {
+    title: 'Cloud migration and modernization',
+    challenge: 'On-site servers are close to the end of their life, and adding capacity means buying more hardware.',
+    approach: ['Workload assessment', 'Dependency mapping', 'Cloud architecture', 'Identity and network security', 'Staged migration', 'Monitoring', 'Recovery planning'],
+    aim: 'Capacity that grows with the business, a clearer view of what is running, and less reliance on aging hardware.',
+    icon: 'cloud',
+  },
+  {
+    title: 'Secure office infrastructure',
+    challenge: 'A business is opening an office or moving to a new one, and everything has to work on the first morning.',
+    approach: ['Structured cabling', 'Managed switches', 'Wireless access points', 'Firewall configuration', 'Network segmentation', 'Phones and conferencing', 'Documentation'],
+    aim: 'An office that is ready on the first day, and a move that disrupts work as little as possible.',
+    icon: 'building',
+  },
+  {
+    title: 'Infrastructure resilience',
+    challenge: 'One internet line, one server and backups that have never been restored. A single failure would stop the business.',
+    approach: ['Risk assessment', 'Redundant connectivity', 'Backup modernization', 'Failover planning', 'Restore testing'],
+    aim: 'Fewer single points of failure, and a tested expectation of how long recovery takes.',
+    icon: 'shield',
+  },
+];
+
+/* Technical FAQ (2026-11-18). Answers restate what the page already says; no new commitments. */
+const faqs: { q: string; a: string[] }[] = [
+  {
+    q: 'Which cloud platforms do you support?',
+    a: ['We work with Amazon Web Services (AWS), Microsoft Azure and Google Cloud, in public, private and hybrid setups. We recommend a platform for each workload based on what you already run, how it has to be secured and operated, and your budget.'],
+  },
+  {
+    q: 'Can you work with our existing network and equipment?',
+    a: ['Yes. Every engagement starts by mapping what you have. Where existing equipment is sound we design around it, and plan a refresh for the parts that are holding you back, instead of replacing everything.'],
+  },
+  {
+    q: 'Can you connect multiple offices and remote staff?',
+    a: ['Yes. Multi-location design is part of network engineering: site-to-site VPN or SD-WAN between offices, secure remote access for staff, and the same segmentation rules at every site.'],
+  },
+  {
+    q: 'How do you approach cloud and network security?',
+    a: ['As part of the design, not as an add-on. Identity and access come first, then network controls, secure configuration, hardened and patched workloads, and data that is protected and recoverable. Security assessments, risk management and compliance support are covered by our Cybersecurity & Compliance service.'],
+  },
+  {
+    q: 'How do you plan for outages?',
+    a: [
+      'We agree recovery targets for each important system: how much recent data you can afford to lose (RPO) and how quickly it has to be back (RTO). Backups, failover and redundant links are designed to meet those targets, then checked with restore tests.',
+      'No plan can guarantee recovery in every situation, which is why the tests matter.',
+    ],
   },
 ];
 
@@ -193,6 +345,47 @@ const outcomes: Outcome[] = [
     </div>
   </section>
 
+  <!-- 3b. Network engineering (2026-11-18) -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Network Engineering"
+        title="A network designed around "
+        accent="how your business works."
+        lead="Your network connects everything the business depends on: people, devices, applications, offices, cloud services and data. We treat it as an engineered system, designed and documented as a whole, rather than a collection of installed equipment."
+      />
+      <DeepDive groups={network}>
+        <NetworkScene />
+      </DeepDive>
+    </div>
+  </section>
+
+  <!-- 3c. Security by design (2026-11-18) -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Security by Design"
+        title="Security belongs "
+        accent="in the foundation."
+        lead="Security added after the cloud and the network are built is expensive and full of gaps. We consider identity, networking, workload protection, data security and recovery while the foundation is being designed."
+      />
+      <DeepDive groups={security} flip>
+        <SecurityLayersScene />
+        <Fragment slot="after">
+        <RecoveryBlock
+          title="5. Data protection and recovery"
+          why="A backup job that finishes is not proof that a system can be brought back. Recovery is planned around two numbers the business sets for each system, then tested."
+          items={['Backup schedules set from the RPO', 'Off-site, access-controlled backups', 'Critical system dependencies mapped', 'Recovery priorities agreed in advance', 'Restore tests on a schedule', 'Documented recovery and failover procedures']}
+        />
+        <ScopeNote
+          text="This is security built into the foundation. For security assessments, risk management and compliance support, see"
+          links={[['/services/cyber-security/', 'Cybersecurity & Compliance']]}
+        />
+        </Fragment>
+      </DeepDive>
+    </div>
+  </section>
+
   <!-- 4. How it works -->
   <section class="section">
     <div class="wrap">
@@ -224,6 +417,32 @@ const outcomes: Outcome[] = [
     </div>
   </section>
 
+  <!-- 6b. Technologies (2026-11-18): confirmed names only, from src/data/tech.ts -->
+  <section class="section section-alt">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Technology"
+        title="The right technology "
+        accent="for the environment."
+        lead="We choose technology against your requirements, what you already run, how it has to be secured and operated, your budget and where the business is going. Not every business needs the same stack."
+      />
+      <TechStack page="cloud" note="Running something that is not listed? Tell us what you have. We start from your existing environment, not from a preferred product." />
+    </div>
+  </section>
+
+  <!-- 6c. Illustrative use cases (2026-11-18) -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading
+        eyebrow="Illustrative Infrastructure Use Cases"
+        title="What infrastructure engineering looks like "
+        accent="in practice."
+        lead="Four common situations and how we would approach each one. These are illustrative scenarios, not client case studies: every environment is assessed before a design is proposed."
+      />
+      <UseCases cases={useCases} />
+    </div>
+  </section>
+
   <!-- 7. Connected services -->
   <section class="section section-alt">
     <div class="wrap">
@@ -240,6 +459,14 @@ const outcomes: Outcome[] = [
           ['/services/data-analytics/', 'Put the data your systems produce to work, on infrastructure built to hold it.'],
         ]}
       />
+    </div>
+  </section>
+
+  <!-- 7b. Technical FAQ (2026-11-18) -->
+  <section class="section">
+    <div class="wrap">
+      <SectionHeading eyebrow="Questions" title="Technical questions, " accent="plain answers." />
+      <FaqList items={faqs} openFirst={false} />
     </div>
   </section>
 

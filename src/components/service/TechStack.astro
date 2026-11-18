@@ -1,0 +1,105 @@
+---
+/**
+ * "Technologies we support" (2026-11-18): the confirmed technologies for a
+ * page, grouped by category. Names only, no logos and no carousel, and never
+ * "partners": a name here says we support the platform, nothing more.
+ * The list comes from src/data/tech.ts, which shows confirmed entries only.
+ */
+import { techFor, type TechPage } from '../../data/tech';
+
+interface Props {
+  page: TechPage;
+  /** A closing line under the list. */
+  note?: string;
+}
+const { page, note } = Astro.props;
+const categories = techFor(page);
+---
+
+<div class="ts glass-panel" data-reveal>
+  <p class="ts-label">Technologies we support</p>
+  <dl class="ts-rows">
+    {
+      categories.map((c) => (
+        <div class="ts-row">
+          <dt>{c.title}</dt>
+          <dd>
+            <ul>
+              {c.items.map((name) => (
+                <li>{name}</li>
+              ))}
+            </ul>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+  {note && <p class="ts-note">{note}</p>}
+</div>
+
+<style>
+  .ts {
+    padding: clamp(1.25rem, 3vw, 2rem);
+    --gp-fill: rgba(255, 255, 255, 0.86);
+  }
+  .ts-label {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-head);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .ts-rows {
+    margin: 0;
+  }
+  .ts-row {
+    display: grid;
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+    gap: 0.5rem 1.5rem;
+    align-items: center;
+    padding-block: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .ts-row dt {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.98rem;
+    color: var(--ink);
+  }
+  .ts-row dd {
+    margin: 0;
+  }
+  .ts-row ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .ts-row li {
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    font-family: var(--font-head);
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .ts-note {
+    margin: 0;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-2);
+    font-size: 0.93rem;
+    line-height: 1.55;
+  }
+  @media (max-width: 720px) {
+    .ts-row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

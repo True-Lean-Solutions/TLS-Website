@@ -1,0 +1,55 @@
+---
+/**
+ * A short note that says where one service ends and its neighbors take over,
+ * with links to them (2026-11-18). Used under the new technical sections on
+ * the Managed IT and Cloud & Infrastructure pages.
+ */
+import Icon from '../Icon.astro';
+import type { IconName } from '../iconTypes';
+import { href as link } from '../../data/site';
+
+interface Props {
+  /** The sentence, up to where the links start. */
+  text: string;
+  /** [site path, label] for each neighboring service. */
+  links: [string, string][];
+  icon?: IconName;
+}
+const { text, links, icon = 'shield' } = Astro.props;
+const joiner = (i: number) => (i === 0 ? ' ' : i === links.length - 1 ? ' and ' : ', ');
+---
+
+<p class="sn" data-reveal>
+  <span class="sn-ico" aria-hidden="true">
+    <Icon name={icon} size={20} />
+  </span>
+  <span>
+    {text}{links.map(([to, label], i) => <>{joiner(i)}<a href={link(to)}>{label}</a></>)}.
+  </span>
+</p>
+
+<style>
+  .sn {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+    padding: 1rem 1.2rem;
+    border-radius: var(--radius);
+    background: var(--blue-tint);
+    border: 1px solid var(--blue-edge);
+    color: var(--ink);
+    font-size: 0.97rem;
+    line-height: 1.55;
+  }
+  .sn-ico {
+    flex: none;
+    display: inline-flex;
+    margin-top: 0.1rem;
+    color: var(--blue-text);
+  }
+  .sn a {
+    font-weight: 600;
+    color: var(--blue-text);
+  }
+</style>

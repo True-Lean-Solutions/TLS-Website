@@ -1,0 +1,154 @@
+---
+/**
+ * A technical deep dive (2026-11-18): the capability groups for one subject
+ * beside the diagram that explains it. Each group says why it matters to the
+ * business in a sentence, then lists the specific work under it.
+ *
+ * The diagram goes in the default slot. `flip` puts it on the left.
+ */
+import type { Accent } from '../../data/services';
+
+export interface SpecGroup {
+  title: string;
+  /** The business reason, in a sentence. */
+  why: string;
+  items: string[];
+  accent?: Accent;
+}
+
+interface Props {
+  groups: SpecGroup[];
+  flip?: boolean;
+}
+const { groups, flip = false } = Astro.props;
+const tones: Record<Accent, string> = {
+  red: 'var(--red)',
+  blue: 'var(--blue)',
+  plum: 'var(--plum)',
+};
+const cycle: Accent[] = ['red', 'blue', 'plum', 'blue'];
+---
+
+<div class:list={['dd', { 'dd--flip': flip }]}>
+  <ul class="dd-groups" data-reveal="stagger">
+    {
+      groups.map((g, i) => (
+        <li class="dd-group" style={`--c: ${tones[g.accent ?? cycle[i % cycle.length]]}`}>
+          <h3>{g.title}</h3>
+          <p>{g.why}</p>
+          <ul>
+            {g.items.map((it) => (
+              <li>{it}</li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ul>
+  <div class="dd-figure" data-reveal>
+    <slot />
+  </div>
+  {
+    Astro.slots.has('after') && (
+      <div class="dd-after">
+        <slot name="after" />
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .dd {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+    align-items: start;
+  }
+  .dd--flip .dd-groups {
+    order: 2;
+  }
+  .dd-after {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+  .dd-groups {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.6rem 1.75rem;
+  }
+  .dd-group {
+    position: relative;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-2);
+  }
+  /* A short stroke of the group's color on the rule. */
+  .dd-group::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -1px;
+    width: 2.25rem;
+    height: 2px;
+    background: var(--c);
+  }
+  .dd-group h3 {
+    margin: 0 0 0.4rem;
+    font-size: 1.05rem;
+    line-height: 1.3;
+  }
+  .dd-group > p {
+    margin: 0 0 0.75rem;
+    color: var(--text-2);
+    font-size: 0.93rem;
+    line-height: 1.55;
+  }
+  .dd-group ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .dd-group ul li {
+    position: relative;
+    padding-left: 1.1rem;
+    font-size: 0.93rem;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .dd-group ul li::before {
+    content: '';
+    position: absolute;
+    left: 0.1rem;
+    top: 0.5em;
+    width: 6px;
+    height: 6px;
+    background: var(--c);
+    transform: rotate(45deg);
+  }
+  @media (max-width: 1024px) {
+    .dd {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    /* The picture first, then the detail. */
+    .dd .dd-figure {
+      order: 1;
+    }
+    .dd .dd-groups {
+      order: 2;
+    }
+    .dd-figure {
+      max-width: 640px;
+      width: 100%;
+      margin-inline: auto;
+    }
+  }
+  @media (max-width: 560px) {
+    .dd-groups {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

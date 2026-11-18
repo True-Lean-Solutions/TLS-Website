@@ -1,0 +1,229 @@
+---
+/**
+ * Diagram 02: layered security (Cloud & Infrastructure, 2026-11-18). Five
+ * layers of control, with logging, monitoring and governance running down
+ * the side of all of them. Illustrative: it shows how the controls
+ * complement each other, not a guarantee that every threat is stopped.
+ *
+ * Stages (StagedFigure): 1 a signed-in user is verified · 2 the network
+ * allows the connection · 3 the application and the workload under it ·
+ * 4 the data · 5 a request without valid access is refused at the first
+ * control · 6 the refusal is logged. Without motion: the whole picture.
+ */
+import Icon from '../Icon.astro';
+import StagedFigure, { type Stage } from './StagedFigure.astro';
+import DiagramNode from './DiagramNode.astro';
+import type { IconName } from '../iconTypes';
+
+const stages: Stage[] = [
+  { title: 'Identity', text: 'A user signs in. Identity controls such as multi-factor authentication and conditional access confirm who is asking.' },
+  { title: 'Network', text: 'Network controls allow that connection to the application it needs, and to nothing else.' },
+  { title: 'Application', text: 'The application reaches only the resources this user is authorized for, on workloads that are hardened and patched.' },
+  { title: 'Data', text: 'Data is encrypted in transit and at rest, and backed up so it can be recovered.' },
+  { title: 'Refuse', text: 'A request without valid access is refused at the first control it meets.' },
+  { title: 'Record', text: 'The refusal is logged so it can be reviewed. Layers reduce risk; no single control catches everything.' },
+];
+
+interface Layer {
+  title: string;
+  icon: IconName;
+  status: string;
+  /** The stage that lights it. */
+  k: number;
+}
+const layers: Layer[] = [
+  { title: 'Identity and access', icon: 'user', status: 'Verified', k: 1 },
+  { title: 'Network', icon: 'integration', status: 'Allowed', k: 2 },
+  { title: 'Cloud and applications', icon: 'cloud', status: 'Authorized', k: 3 },
+  { title: 'Servers and workloads', icon: 'server', status: 'Hardened', k: 3 },
+  { title: 'Data and recovery', icon: 'database', status: 'Encrypted', k: 4 },
+];
+const TOP = 22;
+const H = 12.8;
+const GAP = 2;
+const y = (i: number) => TOP + i * (H + GAP);
+const mid = (i: number) => y(i) + H / 2;
+const X = 9; // the signed-in user's path, down the gutter
+const XB = 52; // the refused request
+const seg = (a: number, b: number) => `M${X} ${a} L${X} ${b}`;
+const path = [
+  { d: seg(9, mid(0)), k: 1 },
+  { d: seg(mid(0), mid(1)), k: 2 },
+  { d: seg(mid(1), mid(3)), k: 3 },
+  { d: seg(mid(3), mid(4)), k: 4 },
+];
+const refused = `M${XB} 9 L${XB} ${TOP}`;
+const logged = `M${XB + 9} 16 L90 16 L90 ${TOP}`;
+---
+
+<StagedFigure note="Illustrative layered controls" stages={stages}>
+  <svg class="dg-links" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <path class="dg-link sl-track" d={seg(9, mid(4))} />
+    {
+      path.map((s) => (
+        <g class="sf-from" style={`--k: ${s.k}`}>
+          <path class="dg-link sl-ok" d={s.d} />
+          <path class="dg-flow" d={s.d} style="--c: #34d399" />
+        </g>
+      ))
+    }
+    {layers.map((l, i) => <path class="dg-link sl-ok sf-from" d={`M${X} ${mid(i)} L15 ${mid(i)}`} style={`--k: ${l.k}`} />)}
+    <g class="sf-from" style="--k: 5">
+      <path class="dg-link sl-bad" d={refused} />
+    </g>
+    <g class="sf-from" style="--k: 6">
+      <path class="dg-link sl-log" d={logged} />
+      <path class="dg-flow" d={logged} style="--c: #fbbf24" />
+    </g>
+  </svg>
+
+  <!-- Logging, monitoring and governance: across every layer -->
+  <div class="sl-rail" style={`top: ${TOP}%; height: ${4 * (H + GAP) + H}%`}>
+    <span>Logging · Monitoring · Governance</span>
+    <i class="dg-halo sf-from" style="--k: 6; --h: #fbbf24"></i>
+  </div>
+
+  {
+    layers.map((l, i) => (
+      <div class="sl-layer" style={`top: ${y(i)}%; height: ${H}%`}>
+        <i class="sl-lit sf-from" style={`--k: ${l.k}`} />
+        <span class="sl-num">{i + 1}</span>
+        <span class="sl-ico">
+          <Icon name={l.icon} size={18} />
+        </span>
+        <span class="sl-title">{l.title}</span>
+        <span class="sl-status sf-from" style={`--k: ${l.k}`}>
+          {l.status}
+        </span>
+      </div>
+    ))
+  }
+
+  <DiagramNode p={[X, 9]} label="Signed-in user" icon="user" side="r" tone="#34d399" class="sf-from" style="--k: 1" />
+  <DiagramNode p={[XB, 9]} label="No valid access" icon="alert" side="r" tone="#ff8f8f" class="sf-from" style="--k: 5" />
+  <span class="dg-badge dg-badge--bad sf-from" style={`--k: 5; left: ${XB}%; top: ${TOP - 1.2}%`}>Refused</span>
+  <span class="dg-badge dg-badge--warn sf-from" style="--k: 6; left: 78%; top: 16%">Logged</span>
+</StagedFigure>
+
+<style>
+  .sl-track {
+    stroke: rgba(255, 255, 255, 0.14);
+    stroke-dasharray: 2 5;
+  }
+  .sl-ok {
+    stroke: rgba(52, 211, 153, 0.75);
+  }
+  .sl-bad {
+    stroke: #ff8f8f;
+    stroke-dasharray: 4 4;
+  }
+  .sl-log {
+    stroke: rgba(251, 191, 36, 0.7);
+  }
+  .sl-layer {
+    position: absolute;
+    left: 15%;
+    width: 66%;
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0 0.85rem 0 0.6rem;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)), rgba(16, 24, 48, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  /* The layer has done its part: a green edge. */
+  .sl-lit {
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 1px solid rgba(52, 211, 153, 0.7);
+    box-shadow: 0 0 18px -4px rgba(52, 211, 153, 0.55);
+    pointer-events: none;
+  }
+  .sl-num {
+    display: grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    font-family: var(--font-head);
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .sl-ico {
+    display: inline-flex;
+    color: #5cc3ff;
+  }
+  .sl-title {
+    font-family: var(--font-head);
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #fff;
+  }
+  .sl-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-head);
+    font-size: 0.64rem;
+    font-weight: 600;
+    color: #34d399;
+    white-space: nowrap;
+  }
+  .sl-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .sl-rail {
+    position: absolute;
+    left: 85%;
+    width: 10%;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(251, 191, 36, 0.07);
+    border: 1px dashed rgba(251, 191, 36, 0.45);
+  }
+  .sl-rail span {
+    writing-mode: vertical-rl;
+    font-family: var(--font-head);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(253, 224, 138, 0.92);
+    white-space: nowrap;
+  }
+  .sl-rail .dg-halo {
+    inset: -4px;
+  }
+  @media (max-width: 640px) {
+    .sl-layer {
+      gap: 0.4rem;
+      padding: 0 0.5rem 0 0.4rem;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+    .sl-ico {
+      display: none;
+    }
+    .sl-title {
+      font-size: 0.68rem;
+    }
+    .sl-status {
+      font-size: 0.56rem;
+    }
+    .sl-rail span {
+      font-size: 0.52rem;
+      letter-spacing: 0.1em;
+    }
+  }
+</style>
