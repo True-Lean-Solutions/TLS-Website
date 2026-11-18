@@ -1021,3 +1021,19 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - LAN, WAN and Wi-Fi as separate offerings;
 - any 24/7, response-time, uptime or SLA statement (one partner advertises 24/7 monitoring and support);
 - any location or industry claim.
+
+## 2026-11-18: Premium illustrations on the new service pages
+
+- **Asked (Hemang):** "more creative SVG", to look as premium as Data & Analytics.
+- **Illustrated capability cards.** `ServiceArt.astro` has ten small code-drawn illustrations, one per capability group:
+  - Managed IT: ticket queue, health trace, backup sync;
+  - Cloud: migration, network, workplace cabling, calls;
+  - Compliance: risk radar, gap checklist, policy seal.
+  `CapabilityGroups` shows them on a tinted, dotted plate (the `art` field). On card hover each does one small thing; reduced motion keeps them still.
+- **`ProcessRail.astro`** replaces the step grids on both new pages: numbered nodes on a red-to-blue line that draws with the scroll, with each step lighting as it is reached (`scrub.ts`). On phones it becomes a vertical rail.
+- **`FlowMap.astro`** is a dark signature section on each new page:
+  - Managed IT: "Every issue has a path to resolution."
+  - Cloud: "Turn what you have into one foundation."
+  Sources → stages → outcomes, joined by curved connectors that assemble with the scroll, then a slow pulse runs along them. On phones it becomes stacked lists, which are also the screen-reader version everywhere.
+- **Managed IT's outcomes** moved from the dark band to a light section, so the page keeps one dark signature band below the hero.
+- **Copy** is illustration labels and flow lines only: status words and generic examples, with no numbers or new claims.

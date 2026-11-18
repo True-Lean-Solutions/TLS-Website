@@ -4,6 +4,8 @@
  * names the business need first, then the specific capabilities under it.
  */
 import Icon from '../Icon.astro';
+import ServiceArt from './ServiceArt.astro';
+import type { ArtName } from './art';
 import type { IconName } from '../iconTypes';
 import type { Accent } from '../../data/services';
 
@@ -14,6 +16,8 @@ export interface CapabilityGroup {
   icon: IconName;
   accent: Accent;
   items: string[];
+  /** A small illustration of what the group does (ServiceArt). */
+  art?: ArtName;
 }
 
 interface Props {
@@ -31,7 +35,12 @@ const accents: Record<Accent, string> = {
 <ul class:list={['cap-groups', `cap-groups--${groups.length}`]} data-reveal="stagger">
   {
     groups.map((g) => (
-      <li class="cap ix-card ix-card--quiet ix-light" style={accents[g.accent]}>
+      <li class:list={['cap ix-card ix-card--quiet ix-light', { 'cap--art': g.art }]} style={accents[g.accent]}>
+        {g.art && (
+          <div class="cap-art">
+            <ServiceArt name={g.art} />
+          </div>
+        )}
         <div class="cap-head">
           <span class="cap-icon glass-icon" aria-hidden="true">
             <Icon name={g.icon} size={24} />
@@ -69,6 +78,21 @@ const accents: Record<Accent, string> = {
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 1.6rem 1.6rem 1.4rem;
+  }
+  /* The illustration panel (after the Data & Analytics bento): a tinted,
+     dotted plate the picture sits on. */
+  .cap-art {
+    margin: -0.35rem -0.35rem 1.35rem;
+    padding: 1rem 1.1rem;
+    border-radius: calc(var(--radius-lg) - 4px);
+    background:
+      radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--c) 14%, transparent), transparent 60%),
+      color-mix(in srgb, var(--c) 5%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--c) 16%, transparent);
+    overflow: hidden;
+  }
+  .cap--art {
+    padding-top: 1rem;
   }
   .cap-head {
     display: flex;
