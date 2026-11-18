@@ -1,0 +1,273 @@
+---
+/**
+ * Data protection and recovery, with diagram 03: the recovery timeline
+ * (Cloud & Infrastructure, 2026-11-18). It separates the two questions a
+ * recovery plan has to answer: how much recent data can be lost (RPO) and
+ * how long the system can be down (RTO).
+ *
+ * The timeline draws with the scroll (scrub.ts: --p and [data-at]); without
+ * motion it is complete. Illustrative: no times are shown, because targets
+ * are set per system.
+ */
+interface Props {
+  title: string;
+  why: string;
+  items: string[];
+}
+const { title, why, items } = Astro.props;
+---
+
+<div class="rb">
+  <div class="rb-text" data-reveal>
+    <h3>{title}</h3>
+    <p>{why}</p>
+    <ul>
+      {items.map((it) => <li>{it}</li>)}
+    </ul>
+  </div>
+  <figure class="rb-figure" data-reveal>
+    <div class="rt glass-panel" data-scrub data-scrub-start="top 92%" data-scrub-end="top 45%">
+      <p class="rt-title">A backup is not a recovery plan</p>
+      <div class="rt-line" aria-hidden="true">
+        <span class="rt-seg rt-seg--rpo"></span>
+        <span class="rt-seg rt-seg--rto"></span>
+        <span class="rt-mark rt-mark--a" data-at="0.05"></span>
+        <span class="rt-mark rt-mark--b" data-at="0.42"></span>
+        <span class="rt-mark rt-mark--c" data-at="0.95"></span>
+      </div>
+      <ol class="rt-points">
+        <li data-at="0.05">Last good backup</li>
+        <li data-at="0.42">Incident</li>
+        <li data-at="0.95">Service restored</li>
+      </ol>
+      <dl class="rt-defs">
+        <div class="rt-def rt-def--rpo" data-at="0.3">
+          <dt>
+            <abbr title="Recovery point objective">RPO</abbr>
+            <span>Recovery point objective</span>
+          </dt>
+          <dd>How much recent data the business can afford to lose, measured in time. It sets how often backups run.</dd>
+        </div>
+        <div class="rt-def rt-def--rto" data-at="0.7">
+          <dt>
+            <abbr title="Recovery time objective">RTO</abbr>
+            <span>Recovery time objective</span>
+          </dt>
+          <dd>How quickly a system has to be working again after a disruption. It sets how recovery is built and tested.</dd>
+        </div>
+      </dl>
+    </div>
+    <figcaption>Illustrative. Targets are agreed per system, then checked with restore tests.</figcaption>
+  </figure>
+</div>
+
+<style>
+  .rb {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    gap: clamp(1.75rem, 4vw, 3.5rem);
+    align-items: center;
+    padding-top: clamp(2rem, 4vw, 3rem);
+    border-top: 1px solid var(--border-2);
+  }
+  .rb-text h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+  }
+  .rb-text p {
+    margin: 0 0 1rem;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .rb-text ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem 1.5rem;
+  }
+  .rb-text li {
+    position: relative;
+    padding-left: 1.1rem;
+    font-size: 0.93rem;
+    line-height: 1.45;
+  }
+  .rb-text li::before {
+    content: '';
+    position: absolute;
+    left: 0.1rem;
+    top: 0.5em;
+    width: 6px;
+    height: 6px;
+    background: var(--plum);
+    transform: rotate(45deg);
+  }
+  .rb-figure {
+    margin: 0;
+    /* Color for the glass to sit on. */
+    padding: clamp(0.9rem, 2vw, 1.4rem);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(60% 90% at 0% 0%, rgba(217, 64, 64, 0.16), transparent 70%),
+      radial-gradient(60% 90% at 100% 100%, rgba(18, 136, 207, 0.2), transparent 70%),
+      var(--surface);
+    border: 1px solid var(--border);
+  }
+  .rb-figure figcaption {
+    margin-top: 0.8rem;
+    font-size: 0.8rem;
+    color: var(--text-2);
+    text-align: center;
+  }
+  .rt {
+    --split: 42%;
+    padding: clamp(1.1rem, 2.4vw, 1.6rem);
+  }
+  .rt-title {
+    margin: 0 0 1.4rem;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+  .rt-line {
+    position: relative;
+    height: 10px;
+    margin-inline: 8px;
+    border-radius: 999px;
+    background: var(--section);
+  }
+  .rt-seg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: 999px;
+    transform-origin: left;
+  }
+  .rt-seg--rpo {
+    left: 0;
+    width: var(--split);
+    background: var(--plum);
+  }
+  .rt-seg--rto {
+    left: var(--split);
+    right: 0;
+    background: var(--blue);
+  }
+  .rt-mark {
+    position: absolute;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 3px solid var(--ink);
+    transition: scale var(--ix-base) var(--ix-ease);
+  }
+  .rt-mark--a {
+    left: 0;
+  }
+  .rt-mark--b {
+    left: var(--split);
+    border-color: var(--red-text);
+  }
+  .rt-mark--c {
+    left: 100%;
+    border-color: #15803d;
+  }
+  .rt-points {
+    list-style: none;
+    margin: 0.7rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: var(--split) minmax(0, 1fr) auto;
+    font-family: var(--font-head);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .rt-points li:nth-child(3) {
+    text-align: right;
+  }
+  .rt-defs {
+    margin: 1.3rem 0 0;
+    display: grid;
+    grid-template-columns: var(--split) minmax(0, 1fr);
+    gap: 1rem;
+  }
+  .rt-def {
+    padding-top: 0.75rem;
+    border-top: 2px solid var(--c);
+  }
+  .rt-def--rpo {
+    --c: var(--plum);
+  }
+  .rt-def--rto {
+    --c: var(--blue);
+    --ct: var(--blue-text);
+  }
+  .rt-def dt {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.1rem 0.5rem;
+    font-family: var(--font-head);
+  }
+  .rt-def abbr {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--ct, var(--c));
+    text-decoration: none;
+  }
+  .rt-def dt span {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-2);
+  }
+  .rt-def dd {
+    margin: 0.35rem 0 0;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--text-2);
+  }
+
+  /* ---- Drawn with the scroll ---- */
+  .rt.is-scrub .rt-seg--rpo {
+    transform: scaleX(clamp(0, calc(var(--p, 1) / 0.42), 1));
+  }
+  .rt.is-scrub .rt-seg--rto {
+    transform: scaleX(clamp(0, calc((var(--p, 1) - 0.42) / 0.53), 1));
+  }
+  .rt.is-scrub [data-at] {
+    opacity: 0.25;
+    transition:
+      opacity var(--ix-base) var(--ix-ease),
+      scale var(--ix-base) var(--ix-ease);
+  }
+  .rt.is-scrub .rt-mark[data-at] {
+    scale: 0.6;
+  }
+  .rt.is-scrub [data-at].is-on {
+    opacity: 1;
+    scale: 1;
+  }
+
+  @media (max-width: 900px) {
+    .rb {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 480px) {
+    .rb-text ul {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .rt-defs {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .rt-points {
+      font-size: 0.68rem;
+    }
+  }
+</style>

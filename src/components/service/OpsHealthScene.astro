@@ -1,0 +1,227 @@
+---
+/**
+ * Diagram 05: operational health visibility (Managed IT, 2026-11-18). Four
+ * kinds of system report to one monitoring layer; a server's storage climbs
+ * toward its threshold, is picked up, classed as planned maintenance, dealt
+ * with, and returns to its normal range.
+ *
+ * It explains detection and preventive maintenance. The hero (OpsScene)
+ * tells the other story, an incident being resolved. The readings are
+ * sample data: bars and status words, no figures, so it never reads as live
+ * monitoring.
+ *
+ * Stages (StagedFigure): 1 signals arrive · 2 readings in their normal
+ * range · 3 storage nears its threshold · 4 logged as planned maintenance ·
+ * 5 maintained, back in range. Without motion: the last stage.
+ */
+import StagedFigure, { type Stage } from './StagedFigure.astro';
+import DiagramNode from './DiagramNode.astro';
+import type { IconName } from '../iconTypes';
+
+const stages: Stage[] = [
+  { title: 'Report', text: 'Employee devices, servers, network equipment and business applications send health signals to one monitoring layer.' },
+  { title: 'Baseline', text: 'Most readings sit inside their normal range, so nobody needs to do anything.' },
+  { title: 'Detect', text: "A server's storage climbs toward its capacity threshold. Monitoring picks it up before anyone is affected." },
+  { title: 'Classify', text: 'The condition is logged and classed as planned maintenance, not an emergency.' },
+  { title: 'Maintain', text: 'Storage is cleaned up or extended in a maintenance window, and the reading returns to its normal range.' },
+];
+
+interface Row {
+  source: string;
+  icon: IconName;
+  reading: string;
+  /** Bar fill, percent of the track. Sample data. */
+  fill: number;
+  y: number;
+}
+const rows: Row[] = [
+  { source: 'Devices', icon: 'laptop', reading: 'Patch compliance', fill: 78, y: 21 },
+  { source: 'Servers', icon: 'server', reading: 'Disk capacity', fill: 56, y: 41 },
+  { source: 'Network', icon: 'integration', reading: 'Connectivity', fill: 88, y: 61 },
+  { source: 'Applications', icon: 'monitor', reading: 'Availability', fill: 92, y: 81 },
+];
+const X = 13;
+const PANEL = 38;
+// The panel covers 5% to 94% of the canvas height; rows are placed inside it to line up with the systems.
+---
+
+<StagedFigure note="Illustrative sample data" stages={stages}>
+  <svg class="dg-links" viewBox="0 0 100 100" preserveAspectRatio="none">
+    {
+      rows.map((r) => (
+        <g class="sf-from" style="--k: 1">
+          <path class="dg-link" d={`M${X} ${r.y} L${PANEL} ${r.y}`} />
+          <path class="dg-flow" d={`M${X} ${r.y} L${PANEL} ${r.y}`} />
+        </g>
+      ))
+    }
+  </svg>
+
+  <div class="oh-panel glass-panel glass-panel--dark">
+    <span class="oh-head">Monitoring</span>
+    {
+      rows.map((r, i) => (
+        <div class:list={['oh-row', { 'oh-row--subject': i === 1 }]} style={`top: ${(((r.y - 5) / 89) * 100).toFixed(2)}%`}>
+          {i === 1 && <i class="oh-flag sf-span" style="--k: 3; --e: 4" />}
+          <div class="sf-from" style="--k: 2">
+            <span class="oh-reading">{r.reading}</span>
+            <span class="oh-track">
+              <i class:list={['oh-fill', { 'oh-fill--disk': i === 1 }]} style={`--w: ${r.fill}%`} />
+              {i === 1 && <i class="oh-fill oh-fill--warn sf-span" style="--k: 3; --e: 4" />}
+              {i === 1 && <i class="oh-limit" />}
+            </span>
+            {
+              i === 1 ? (
+                <span class="oh-states">
+                  <span class="oh-state oh-state--ok sf-until" style="--k: 3">Normal</span>
+                  <span class="oh-state oh-state--warn sf-at" style="--k: 3">Near threshold</span>
+                  <span class="oh-state oh-state--warn sf-at" style="--k: 4">Planned maintenance</span>
+                  <span class="oh-state oh-state--ok sf-from" style="--k: 5">Back in range</span>
+                </span>
+              ) : (
+                <span class="oh-states">
+                  <span class="oh-state oh-state--ok">Normal</span>
+                </span>
+              )
+            }
+          </div>
+        </div>
+      ))
+    }
+  </div>
+
+  {
+    rows.map((r, i) => (
+      <DiagramNode p={[X, r.y]} label={r.source} icon={r.icon} tone={i === 1 ? '#ff9c9c' : undefined}>
+        {i === 1 && <i class="dg-halo sf-span" style="--k: 3; --e: 4; --h: #fbbf24" />}
+        {i === 1 && <i class="dg-halo sf-at" style="--k: 5; --h: #34d399" />}
+      </DiagramNode>
+    ))
+  }
+  <span class="dg-badge dg-badge--ok sf-at" style={`--k: 5; left: ${X + 13}%; top: ${rows[1].y - 7}%`}>Maintenance</span>
+</StagedFigure>
+
+<style>
+  .oh-panel {
+    position: absolute;
+    left: 38%;
+    right: 5%;
+    top: 5%;
+    bottom: 6%;
+    border-radius: 16px;
+  }
+  .oh-head {
+    position: absolute;
+    left: 1rem;
+    top: 0.7rem;
+    font-family: var(--font-head);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  /* Rows sit at the same height as the systems they read (percent of the canvas). */
+  .oh-row {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    translate: 0 -50%;
+  }
+  .oh-row > div {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .oh-flag {
+    position: absolute;
+    inset: -0.55rem -0.6rem;
+    border-radius: 10px;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.5);
+  }
+  .oh-reading {
+    position: relative;
+    font-family: var(--font-head);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .oh-track {
+    position: relative;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .oh-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--w);
+    border-radius: inherit;
+    background: linear-gradient(90deg, #1288cf, #5cc3ff);
+  }
+  /* The disk reading: up past the threshold in stages 3 and 4, back down in 5. */
+  .oh-fill--disk,
+  .oh-fill--warn {
+    width: calc(56% + 30% * clamp(0, var(--s) - 2, 1) - 38% * clamp(0, var(--s) - 4, 1));
+    transition:
+      width 1.3s var(--ix-ease),
+      opacity 0.6s ease;
+  }
+  .oh-fill--warn {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  }
+  /* The threshold. */
+  .oh-limit {
+    position: absolute;
+    left: 80%;
+    top: -4px;
+    bottom: -4px;
+    width: 2px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.55);
+  }
+  .oh-states {
+    position: relative;
+    display: grid;
+  }
+  .oh-state {
+    grid-area: 1 / 1;
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-head);
+    font-size: 0.62rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .oh-state::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .oh-state--ok {
+    color: #34d399;
+  }
+  .oh-state--warn {
+    color: #fbbf24;
+  }
+  @media (max-width: 640px) {
+    .oh-panel {
+      left: 36%;
+      right: 4%;
+    }
+    .oh-row {
+      left: 0.7rem;
+      right: 0.7rem;
+    }
+    .oh-reading {
+      font-size: 0.66rem;
+    }
+    .oh-state {
+      font-size: 0.58rem;
+    }
+  }
+</style>

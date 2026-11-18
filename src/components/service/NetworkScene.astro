@@ -1,0 +1,176 @@
+---
+/**
+ * Diagram 01: a connected business network (Cloud & Infrastructure, 2026-11-18).
+ * An illustrative architecture, not a client's network: a headquarters, a
+ * branch office, remote staff and cloud applications, joined, secured,
+ * segmented and given a second internet link.
+ *
+ * Stages (StagedFigure): 1 connect · 2 encrypted tunnels through the
+ * firewall · 3 staff, guest and server VLANs, with guest traffic kept out of
+ * the servers · 4 the primary link fails and the second one carries traffic
+ * · 5 steady state. Without motion: the steady state.
+ */
+import StagedFigure, { type Stage } from './StagedFigure.astro';
+import DiagramNode from './DiagramNode.astro';
+
+const stages: Stage[] = [
+  { title: 'Connect', text: 'Headquarters, the branch office, remote staff and cloud applications are joined into one planned network.' },
+  { title: 'Secure', text: 'Traffic between sites and from remote staff travels through encrypted VPN tunnels that end at the firewall.' },
+  { title: 'Segment', text: 'Staff devices, guest Wi-Fi and servers sit on separate VLANs, so a guest device has no route to business systems.' },
+  { title: 'Fail over', text: 'In a redundant setup, when the primary internet link drops, traffic moves to the second link.' },
+  { title: 'Run', text: 'The primary link is back, every path is labeled and documented, and the network is ready to be monitored.' },
+];
+
+// Positions in percent of the canvas.
+const cloud: [number, number] = [50, 9];
+const net: [number, number] = [50, 25];
+const remote: [number, number] = [13, 25];
+const branch: [number, number] = [87, 25];
+const fw: [number, number] = [50, 45];
+const sw: [number, number] = [58, 61];
+const ap: [number, number] = [31, 61];
+const staff: [number, number] = [17.5, 82];
+const guest: [number, number] = [43, 82];
+const servers: [number, number] = [78, 82];
+
+const L = (...ps: [number, number][]) => 'M' + ps.map((p) => p.join(' ')).join(' L');
+const wanA = `M${net.join(' ')} C41 31 41 39 ${fw.join(' ')}`;
+const wanB = `M${net.join(' ')} C59 31 59 39 ${fw.join(' ')}`;
+const links = {
+  cloud: L(cloud, net),
+  remote: L(remote, net),
+  branch: L(branch, net),
+  lan: L(fw, [50, 61], sw),
+  ap: L(sw, ap),
+  staff: L(ap, [31, 70], [staff[0], 70], [staff[0], 72]),
+  guest: L([31, 70], [guest[0], 70], [guest[0], 72]),
+  servers: L(sw, [58, 68], [servers[0], 68], [servers[0], 72]),
+};
+const blocked = L([54.5, 85], [66.5, 85]);
+---
+
+<StagedFigure note="Illustrative architecture" stages={stages}>
+  <!-- Headquarters, and the three VLANs inside it -->
+  <div class="dg-zone" style="left: 4%; top: 40%; width: 92%; height: 57%">
+    <span class="dg-zone-lbl">Headquarters</span>
+  </div>
+  <div class="dg-zone nw-vlan sf-from" style="--k: 3; --z: #5cc3ff; left: 6.5%; top: 72%; width: 22%; height: 23%">
+    <span class="dg-zone-lbl">Staff VLAN</span>
+  </div>
+  <div class="dg-zone nw-vlan sf-from" style="--k: 3; --z: #c9a0ff; left: 32%; top: 72%; width: 22%; height: 23%">
+    <span class="dg-zone-lbl">Guest VLAN</span>
+  </div>
+  <div class="dg-zone nw-vlan sf-from" style="--k: 3; --z: #ff9c9c; left: 67%; top: 72%; width: 22%; height: 23%">
+    <span class="dg-zone-lbl">Server VLAN</span>
+  </div>
+
+  <svg class="dg-links" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <!-- 1. The links -->
+    <g class="sf-from" style="--k: 1">
+      {Object.values(links).map((d) => <path class="dg-link" d={d} />)}
+      <path class="dg-link" d={wanA} />
+      <path class="dg-link nw-standby" d={wanB} />
+      <path class="dg-flow" d={links.cloud} />
+      <path class="dg-flow" d={links.remote} />
+      <path class="dg-flow" d={links.branch} />
+      <path class="dg-flow" d={links.lan} />
+      <path class="dg-flow" d={links.ap} />
+      <path class="dg-flow" d={links.staff} />
+      <path class="dg-flow" d={links.servers} />
+      <path class="dg-flow" d={links.guest} style="--c: #c9a0ff" />
+      <!-- The primary link carries traffic, except while it is down. -->
+      <path class="dg-flow sf-not" d={wanA} style="--k: 4" />
+    </g>
+    <!-- 2. Encrypted tunnels on the internet legs -->
+    <g class="sf-from" style="--k: 2">
+      <path class="nw-tunnel" d={links.remote} />
+      <path class="nw-tunnel" d={links.branch} />
+    </g>
+    <!-- 3. No route from the guest VLAN to the servers -->
+    <path class="nw-blocked sf-from" d={blocked} style="--k: 3" />
+    <!-- 4. The primary link is down; the second one carries traffic -->
+    <path class="nw-down sf-at" d={wanA} style="--k: 4" />
+    <path class="dg-flow sf-at" d={wanB} style="--k: 4; --c: #34d399" />
+  </svg>
+
+  <DiagramNode p={cloud} label="Cloud apps" icon="cloud" side="r" />
+  <DiagramNode p={net} label="Internet" glyph="globe" side="in" tone="rgba(255,255,255,0.85)" />
+  <DiagramNode p={remote} label="Remote staff" icon="laptop" />
+  <DiagramNode p={branch} label="Branch office" icon="building" />
+  <DiagramNode p={fw} label="Firewall" icon="shield" side="r" tone="#ff9c9c">
+    <i class="dg-halo sf-at" style="--k: 2"></i>
+  </DiagramNode>
+  <DiagramNode p={sw} label="Managed switch" glyph="switch" side="r" />
+  <DiagramNode p={ap} label="Wi-Fi" glyph="wifi" side="l" />
+  <DiagramNode p={staff} label="Staff devices" icon="laptop" />
+  <DiagramNode p={guest} label="Guest Wi-Fi" icon="user" tone="#c9a0ff" />
+  <DiagramNode p={servers} label="Servers" icon="server" tone="#ff9c9c" />
+
+  <!-- Labels that belong to a stage -->
+  <span class="dg-badge dg-badge--ok sf-from" style="--k: 2; left: 31%; top: 18.5%">Remote VPN</span>
+  <span class="dg-badge dg-badge--ok sf-from" style="--k: 2; left: 69%; top: 18.5%">Site-to-site VPN</span>
+  <span class="dg-badge dg-badge--bad sf-from" style="--k: 3; left: 60.5%; top: 85%">Blocked</span>
+  <span class="nw-wan nw-wan--a sf-not" style="--k: 4">Primary</span>
+  <span class="nw-wan nw-wan--b sf-not" style="--k: 4">Second link</span>
+  <span class="dg-badge dg-badge--bad sf-at" style="--k: 4; left: 36%; top: 34%">Link down</span>
+  <span class="dg-badge dg-badge--ok sf-at" style="--k: 4; left: 65%; top: 34%">Carrying traffic</span>
+</StagedFigure>
+
+<style>
+  .nw-vlan {
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--z) 55%, transparent);
+    background: color-mix(in srgb, var(--z) 9%, transparent);
+  }
+  .nw-vlan .dg-zone-lbl {
+    color: var(--z);
+  }
+  .nw-standby {
+    stroke-dasharray: 4 5;
+  }
+  .nw-tunnel {
+    fill: none;
+    stroke: rgba(52, 211, 153, 0.3);
+    stroke-width: 9;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .nw-blocked {
+    fill: none;
+    stroke: #ff8f8f;
+    stroke-width: 1.5;
+    stroke-dasharray: 3 4;
+    vector-effect: non-scaling-stroke;
+  }
+  .nw-down {
+    fill: none;
+    stroke: #ff8f8f;
+    stroke-width: 2;
+    stroke-dasharray: 5 6;
+    vector-effect: non-scaling-stroke;
+  }
+  .nw-wan {
+    position: absolute;
+    top: 34%;
+    translate: 0 -50%;
+    font-family: var(--font-head);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+  }
+  .nw-wan--a {
+    right: 59%;
+  }
+  .nw-wan--b {
+    left: 59%;
+  }
+  @media (max-width: 640px) {
+    .nw-vlan .dg-zone-lbl {
+      left: 0.35rem;
+      letter-spacing: 0.06em;
+    }
+  }
+</style>

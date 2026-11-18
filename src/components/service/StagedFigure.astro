@@ -1,0 +1,499 @@
+---
+/**
+ * Frame for the staged technical diagrams on the Managed IT and Cloud &
+ * Infrastructure pages (2026-11-18): a dark panel holding a schematic, and
+ * under it the stages in words.
+ *
+ * The diagram plays in stages while it is on screen (scroll layer:
+ * sequence.ts sets data-stage on this figure). Everything a scene needs is
+ * derived from one number, --s (the current stage), so a scene marks an
+ * element with the stage it belongs to (--k) and a class:
+ *
+ *   .sf-from ... appears at stage k and stays
+ *   .sf-at ..... shows during stage k only
+ *   .sf-span ... shows from stage k to stage e (--e)
+ *   .sf-until .. shows until stage k
+ *   .sf-not .... hides during stage k only
+ *
+ * Without the scroll layer (reduced motion, no JS) --s is past the last
+ * stage: the finished picture, with every stage written out as a list. The
+ * stage text is always in the page for screen readers; the drawing itself is
+ * decorative.
+ *
+ * The note is a strip along the foot of the panel.
+ *
+ * Scenes are laid out in percent on a canvas that changes shape on phones,
+ * so nodes are HTML and only the links are SVG (stretched, with strokes that
+ * do not scale). Shared pieces: .dg-links, .dg-link, .dg-node, .dg-zone,
+ * .dg-badge (see the global styles below).
+ */
+export interface Stage {
+  title: string;
+  text: string;
+}
+
+interface Props {
+  /** What the diagram shows, in a phrase. Shown as a small label on the panel. */
+  note: string;
+  stages: Stage[];
+  /** When each stage starts (ms). Defaults to an even pace. */
+  times?: number[];
+  /** How long the last stage holds before the loop restarts (ms). */
+  hold?: number;
+  /** Canvas shape, as CSS aspect ratios. */
+  ratio?: string;
+  ratioMobile?: string;
+}
+const { note, stages, hold = 5200, ratio = '8 / 7', ratioMobile = '5 / 6' } = Astro.props;
+// Stage 0 is the empty picture; the stages follow at an even pace, slow enough to read each caption.
+const times = Astro.props.times ?? [0, ...stages.map((_, i) => 500 + i * 4200)];
+---
+
+<figure
+  class="sf"
+  data-sequence={times.join(',')}
+  data-sequence-loop={hold}
+  style={`--sf-ratio: ${ratio}; --sf-ratio-m: ${ratioMobile}`}
+>
+  <div class="sf-panel">
+    <div class="sf-canvas" aria-hidden="true">
+      <slot />
+    </div>
+    <span class="sf-note">{note}</span>
+  </div>
+  <figcaption>
+    <!-- While it plays: the stage names, and the text of the stage on show. -->
+    <div class="sf-rail" aria-hidden="true">
+      <div class="sf-chips">
+        {
+          stages.map((s, i) => (
+            <span class="sf-chip" style={`--k: ${i + 1}`}>
+              <i>{i + 1}</i>
+              {s.title}
+            </span>
+          ))
+        }
+      </div>
+      <div class="sf-caption">
+        {
+          stages.map((s, i) => (
+            <p class:list={{ 'sf-last': i === stages.length - 1 }} style={`--k: ${i + 1}`}>
+              {s.text}
+            </p>
+          ))
+        }
+      </div>
+    </div>
+    <!-- The same stages as a list: shown when the diagram is still, always read by screen readers. -->
+    <ol class="sf-steps">
+      {
+        stages.map((s, i) => (
+          <li>
+            <span class="sf-step-n" aria-hidden="true">
+              {i + 1}
+            </span>
+            <span>
+              <strong>{s.title}.</strong> {s.text}
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+  </figcaption>
+</figure>
+
+<style is:global>
+  /* ---- The stage number, and what follows from it ---- */
+  .sf {
+    --s: 99;
+    --ok: #34d399;
+    --warn: #fbbf24;
+    --bad: #ff8f8f;
+    --sky: #5cc3ff;
+    margin: 0;
+    min-width: 0;
+  }
+  .sf.is-seq[data-stage='0'] {
+    --s: 0;
+  }
+  .sf.is-seq[data-stage='1'] {
+    --s: 1;
+  }
+  .sf.is-seq[data-stage='2'] {
+    --s: 2;
+  }
+  .sf.is-seq[data-stage='3'] {
+    --s: 3;
+  }
+  .sf.is-seq[data-stage='4'] {
+    --s: 4;
+  }
+  .sf.is-seq[data-stage='5'] {
+    --s: 5;
+  }
+  .sf.is-seq[data-stage='6'] {
+    --s: 6;
+  }
+  .sf.is-seq[data-stage='7'] {
+    --s: 7;
+  }
+  .sf-from,
+  .sf-at,
+  .sf-span,
+  .sf-until,
+  .sf-not {
+    transition: opacity 0.6s ease;
+  }
+  .sf-from {
+    opacity: clamp(0, calc(var(--s) - var(--k) + 1), 1);
+  }
+  .sf-at {
+    opacity: clamp(0, calc(1 - max(var(--s) - var(--k), var(--k) - var(--s))), 1);
+  }
+  .sf-span {
+    opacity: clamp(0, min(calc(var(--s) - var(--k) + 1), calc(var(--e) - var(--s) + 1)), 1);
+  }
+  .sf-until {
+    opacity: clamp(0, calc(var(--k) - var(--s)), 1);
+  }
+  .sf-not {
+    opacity: clamp(0, max(var(--s) - var(--k), var(--k) - var(--s)), 1);
+  }
+
+  /* ---- The panel ---- */
+  .sf-panel {
+    position: relative;
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(60% 55% at 72% 12%, rgba(18, 136, 207, 0.26), transparent 70%),
+      radial-gradient(50% 50% at 6% 100%, rgba(217, 64, 64, 0.18), transparent 70%),
+      #0a1020;
+    box-shadow:
+      0 40px 80px -40px rgba(13, 13, 13, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    color: #fff;
+  }
+  .sf-canvas {
+    position: relative;
+    aspect-ratio: var(--sf-ratio);
+    /* A faint engineering grid. */
+    background-image:
+      linear-gradient(rgba(120, 190, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120, 190, 255, 0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  /* A footer strip saying what kind of picture this is. */
+  .sf-note {
+    display: block;
+    padding: 0.6rem 1.1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(8, 12, 24, 0.55);
+    font-family: var(--font-head);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  /* ---- Under the panel: the stages ---- */
+  .sf figcaption {
+    margin-top: 1rem;
+  }
+  .sf-rail {
+    display: none;
+  }
+  .sf.is-seq .sf-rail {
+    display: grid;
+    gap: 0.7rem;
+  }
+  .sf-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .sf-chip {
+    --on: clamp(0, calc(1 - max(var(--s) - var(--k), var(--k) - var(--s))), 1);
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem 0.3rem 0.35rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    font-family: var(--font-head);
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: color-mix(in srgb, #fff calc(var(--on) * 100%), var(--text-2));
+    transition: color 0.45s ease;
+  }
+  /* The stage on show: the chip fills with ink. */
+  .sf-chip::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--ink);
+    opacity: var(--on);
+    transition: opacity 0.45s ease;
+  }
+  .sf-chip i {
+    display: inline-grid;
+    place-items: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: var(--section);
+    color: var(--ink);
+    font-style: normal;
+    font-size: 0.66rem;
+    font-weight: 700;
+  }
+  .sf-caption {
+    display: grid;
+  }
+  .sf-caption p {
+    grid-area: 1 / 1;
+    margin: 0;
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    opacity: clamp(0, calc(1 - max(var(--s) - var(--k), var(--k) - var(--s))), 1);
+    transition: opacity 0.45s ease;
+  }
+  .sf-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .sf-steps li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.7rem;
+    align-items: baseline;
+    color: var(--text-2);
+    font-size: 0.93rem;
+    line-height: 1.5;
+  }
+  .sf-steps strong {
+    font-family: var(--font-head);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .sf-step-n {
+    display: inline-grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border: 1px solid var(--border-2);
+    font-family: var(--font-head);
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--blue-text);
+  }
+  /* While it plays, the list is for screen readers only. */
+  .sf.is-seq .sf-steps {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---- Shared diagram pieces ---- */
+  .dg-links {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .dg-link {
+    fill: none;
+    stroke: rgba(160, 205, 255, 0.34);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+    transition:
+      stroke 0.6s ease,
+      opacity 0.6s ease;
+  }
+  /* Traffic on a link: dashes that travel along it. */
+  .dg-flow {
+    fill: none;
+    stroke: var(--c, var(--sky));
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+    stroke-dasharray: 2 12;
+    transition: opacity 0.6s ease;
+  }
+  .sf.is-seq .dg-flow {
+    animation: dg-march 1.1s linear infinite;
+  }
+  .dg-flow--back {
+    animation-direction: reverse !important;
+  }
+  @keyframes dg-march {
+    to {
+      stroke-dashoffset: -14;
+    }
+  }
+  /* A node: an icon tile centered on its point, with its label beside it. */
+  .dg-node {
+    --t: var(--sky);
+    position: absolute;
+    translate: -50% -50%;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 12px;
+    color: var(--t);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)), #101830;
+    border: 1px solid color-mix(in srgb, var(--t) 45%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+  .dg-lbl {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 0.4rem);
+    translate: -50% 0;
+    font-family: var(--font-head);
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.86);
+    white-space: nowrap;
+  }
+  .dg-node--up .dg-lbl {
+    top: auto;
+    bottom: calc(100% + 0.3rem);
+  }
+  .dg-node--ur .dg-lbl {
+    left: calc(100% + 0.25rem);
+    top: auto;
+    bottom: calc(100% - 0.3rem);
+    translate: 0 0;
+  }
+  /* A wide node with its label inside (for a node that links cross). */
+  .dg-node--in {
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0 0.7rem 0 0.55rem;
+  }
+  .dg-node--in .dg-lbl {
+    position: static;
+    translate: none;
+  }
+  .dg-node--r .dg-lbl {
+    left: calc(100% + 0.5rem);
+    top: 50%;
+    translate: 0 -50%;
+  }
+  .dg-node--l .dg-lbl {
+    left: auto;
+    right: calc(100% + 0.5rem);
+    top: 50%;
+    translate: 0 -50%;
+  }
+  /* A ring around a node while it is the subject of a stage. */
+  .dg-halo {
+    --h: var(--ok);
+    position: absolute;
+    inset: -5px;
+    border-radius: 16px;
+    border: 1.5px solid var(--h);
+    box-shadow: 0 0 18px color-mix(in srgb, var(--h) 55%, transparent);
+    pointer-events: none;
+  }
+  .dg-zone {
+    position: absolute;
+    border-radius: 14px;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.025);
+  }
+  .dg-zone-lbl {
+    position: absolute;
+    left: 0.6rem;
+    top: 0.45rem;
+    font-family: var(--font-head);
+    font-size: 0.56rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+  }
+  .dg-badge {
+    --b: var(--sky);
+    position: absolute;
+    translate: -50% -50%;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.24rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(12, 18, 34, 0.92);
+    border: 1px solid color-mix(in srgb, var(--b) 55%, transparent);
+    color: var(--b);
+    font-family: var(--font-head);
+    font-size: 0.62rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .dg-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .dg-badge--ok {
+    --b: var(--ok);
+  }
+  .dg-badge--warn {
+    --b: var(--warn);
+  }
+  .dg-badge--bad {
+    --b: var(--bad);
+  }
+  @media (max-width: 640px) {
+    .sf-canvas {
+      aspect-ratio: var(--sf-ratio-m);
+    }
+    .dg-node {
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 10px;
+    }
+    .dg-node--in {
+      width: auto;
+    }
+    .dg-node svg {
+      width: 18px;
+      height: 18px;
+    }
+    .dg-lbl {
+      font-size: 0.62rem;
+    }
+    .dg-badge {
+      font-size: 0.58rem;
+      padding: 0.2rem 0.45rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dg-flow {
+      animation: none !important;
+    }
+  }
+</style>

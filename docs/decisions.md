@@ -1080,3 +1080,25 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Built on native `<details>`**, so it works without JavaScript, by keyboard, with screen readers and with find-in-page. The answers stay in the page's HTML for search engines.
 - **The 2027 post** now uses it for its seven questions. The wording is unchanged, and the "Frequently asked questions" heading stays in "In This Article".
 - **Note for scoped CSS:** Astro does not process `:global()` inside `:not()`, and the browser then drops the whole rule. State is carried by attributes (`[open]`, `[data-closing]`) instead.
+
+## 2026-11-18: Technical depth on Managed IT and Cloud & Infrastructure
+
+- **Asked (Hemang, a 12-part brief after customer feedback):** the two pages explain the services well but need more technical detail, specific technologies, real project examples, and cloud security, network infrastructure and cybersecurity capabilities. Not a redesign: existing sections, art, motion, order, URLs and CTAs stay as they are.
+- **Existing capability cards** keep their groups and design; the lines and lists say more (four items became six in each card).
+- **New sections, placed between the existing ones:**
+  - Cloud & Infrastructure: Network Engineering; Security by Design (four layers beside the diagram, the fifth as a recovery block with the RTO and RPO timeline); Technology; Illustrative Infrastructure Use Cases; a technical FAQ.
+  - Managed IT: Proactive IT Operations; Secure IT Operations (identity, devices, Microsoft 365, protection, and the join, work, leave strip); Beyond the Launch (application support and reliability); Technology; Illustrative Managed IT Scenarios; a technical FAQ.
+  - The brief's endpoint/identity section and managed security section are one section, because their content overlaps.
+- **Diagrams** (new components in `src/components/service/`): `NetworkScene` (01), `SecurityLayersScene` (02), `RecoveryBlock` (03), `OpsHealthScene` (05), `LifecycleStrip` (06), `EndpointScene` (07), `ObservabilityScene` (08). 04 (before and after) was not built: the brief ties it to a real project, and "From Accumulated to Designed" already tells that story.
+  - They share one frame, `StagedFigure`: a dark panel like the "How it works" scenes, a strip saying the picture is illustrative, and the stages in words underneath. Each plays in stages while on screen through the existing `sequence.ts` hook; no scroll-layer code changed. Reduced motion and no JS get the finished picture and the stages as a list.
+  - Flat schematics, not isometric: these are architecture diagrams, and a network engineer should be able to read them. Nodes are HTML placed in percent and only the links are SVG, so the canvas can be taller on phones and labels stay readable.
+  - No figures anywhere in them: bars, status words and "illustrative" labels, so nothing reads as live data or a guarantee. A security alert is shown as something a person investigates, never as a confirmed breach.
+- **Liquid glass:** the existing `.glass-panel` utility on the monitoring and observability panels inside the diagrams, the recovery timeline and the technology list. Nothing existing was given new glass. The skill's WebGL engine was not added, for the reason recorded on 2026-11-18 (it refracts images and canvases, not live page content).
+- **Claims.** The full record is `docs/capability-matrix.md`.
+  - Capabilities are on the page when the brief asks for them and they are already approved, documented by a delivery partner, or a technical practice inside one of those. All new copy is draft until Hemang approves it.
+  - **Named products are held to the brief's stricter rule:** `src/data/tech.ts` lists every candidate with a status, and only `confirmed` ones render (Azure, AWS, Google Cloud, Microsoft 365 and its parts, Teams Phone). Partner-documented names (for example Windows Server, Jamf, SentinelOne) are ready to switch on once confirmed.
+  - **No project examples:** no verified infrastructure or managed IT project exists in the sources, so both pages carry labeled illustrative scenarios, as the brief allows.
+  - Now included, after being left out on 2026-11-18: patch management, LAN/WAN/Wi-Fi design, and website support (scoped to software TLS builds, and other applications by agreement).
+  - Still not claimed: 24/7 cover, response times, SLAs, a SOC or managed detection and response, formal site reliability engineering, compliance certification, cabling standards.
+- **Partners** remain unnamed, including in the matrix (Partner A and Partner B): this repository is public.
+- **Regression check:** section-by-section screenshots before and after at 1440 and 390 px. Sections above the first insertion are pixel-identical; later ones differ only by one-pixel text anti-aliasing from their new vertical offset. No existing component file changed.

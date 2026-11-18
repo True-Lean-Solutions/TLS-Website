@@ -1,0 +1,117 @@
+---
+/**
+ * Diagram 07: a managed device, from enrollment to an alert (Managed IT,
+ * 2026-11-18). One employee laptop and the managed services around it:
+ * identity, endpoint protection, patch management, security monitoring and
+ * backup. It shows that routine maintenance and security are the same work.
+ *
+ * Stages (StagedFigure): 1 the laptop is enrolled · 2 policies are applied ·
+ * 3 it reports a missing update · 4 the update is installed · 5 it reports
+ * its new status · 6 separately, an alert is sent to a person to
+ * investigate. An alert is shown as a question to look into, never as a
+ * confirmed breach. Without motion: the last stage.
+ */
+import StagedFigure, { type Stage } from './StagedFigure.astro';
+import DiagramNode from './DiagramNode.astro';
+
+const stages: Stage[] = [
+  { title: 'Enroll', text: 'A new laptop is enrolled, so it is tied to an identity and a named person from its first day.' },
+  { title: 'Configure', text: 'Approved security and configuration policies are applied: protection, encryption, updates and backup.' },
+  { title: 'Report', text: 'The device reports a security update it has not installed yet.' },
+  { title: 'Patch', text: 'The update is approved and installed through patch management.' },
+  { title: 'Confirm', text: 'The device reports its new status, and its record is brought up to date.' },
+  { title: 'Investigate', text: 'Separately, a security alert is raised and sent to a person to investigate. An alert is a question, not a confirmed breach.' },
+];
+
+type P = [number, number];
+const laptop: P = [18, 36];
+const review: P = [18, 79];
+const SX = 60;
+const identity: P = [SX, 14];
+const protection: P = [SX, 29];
+const patching: P = [SX, 44];
+const monitoring: P = [SX, 59];
+const backup: P = [SX, 74];
+const curve = (a: P, b: P) => `M${a[0]} ${a[1]} C${(a[0] + b[0]) / 2} ${a[1]} ${(a[0] + b[0]) / 2} ${b[1]} ${b[0]} ${b[1]}`;
+const toIdentity = curve(laptop, identity);
+const toProtection = curve(laptop, protection);
+const toPatching = curve(laptop, patching);
+const toMonitoring = curve(laptop, monitoring);
+const toBackup = curve(laptop, backup);
+const route = curve(monitoring, review);
+---
+
+<StagedFigure note="Illustrative device lifecycle" stages={stages}>
+  <div class="dg-zone" style="left: 49%; top: 4%; width: 47%; height: 80%">
+    <span class="dg-zone-lbl">Managed operations</span>
+  </div>
+
+  <svg class="dg-links" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <!-- 1. Enrolled: tied to an identity -->
+    <path class="dg-link sf-from" d={toIdentity} style="--k: 1" />
+    <path class="dg-flow sf-at" d={toIdentity} style="--k: 1" />
+    <!-- 2. Policies arrive from the managed services -->
+    <g class="sf-from" style="--k: 2">
+      {[toProtection, toPatching, toMonitoring, toBackup].map((d) => <path class="dg-link" d={d} />)}
+    </g>
+    <g class="sf-at" style="--k: 2">
+      {[toProtection, toPatching, toMonitoring, toBackup].map((d) => <path class="dg-flow dg-flow--back" d={d} />)}
+    </g>
+    <!-- 3. The device reports a missing update -->
+    <path class="dg-flow sf-at" d={toMonitoring} style="--k: 3; --c: #fbbf24" />
+    <!-- 4. The update is installed -->
+    <path class="dg-flow dg-flow--back sf-at" d={toPatching} style="--k: 4; --c: #34d399" />
+    <!-- 6. An alert goes to a person -->
+    <g class="sf-from" style="--k: 6">
+      <path class="dg-link ep-route" d={route} />
+      <path class="dg-flow" d={route} style="--c: #fbbf24" />
+    </g>
+  </svg>
+
+  <DiagramNode p={laptop} label="Employee laptop" icon="laptop" class="ep-laptop">
+    <i class="dg-halo sf-span" style="--k: 3; --e: 4; --h: #fbbf24"></i>
+    <i class="dg-halo sf-at" style="--k: 5; --h: #34d399"></i>
+  </DiagramNode>
+  <DiagramNode p={identity} label="Identity" glyph="key" side="r" />
+  <DiagramNode p={protection} label="Endpoint protection" icon="shield" side="r" tone="#ff9c9c">
+    <i class="dg-halo sf-from" style="--k: 6; --h: #fbbf24"></i>
+  </DiagramNode>
+  <DiagramNode p={patching} label="Patch management" glyph="wrench" side="r">
+    <i class="dg-halo sf-at" style="--k: 4; --h: #34d399"></i>
+  </DiagramNode>
+  <DiagramNode p={monitoring} label="Security monitoring" icon="monitor" side="r" />
+  <DiagramNode p={backup} label="Backup" icon="database" side="r" />
+  <DiagramNode p={review} label="Technician review" icon="headset" tone="#fbbf24" class="sf-from" style="--k: 6" />
+
+  <!-- What the device is reporting -->
+  <span class="ep-status">
+    <span class="dg-badge sf-at" style="--k: 1">Enrolled</span>
+    <span class="dg-badge sf-at" style="--k: 2">Policies applied</span>
+    <span class="dg-badge dg-badge--warn sf-at" style="--k: 3">Update pending</span>
+    <span class="dg-badge sf-at" style="--k: 4">Installing update</span>
+    <span class="dg-badge dg-badge--ok sf-from" style="--k: 5">Up to date</span>
+  </span>
+  <span class="dg-badge dg-badge--warn sf-from" style="--k: 6; left: 33%; top: 66%">Alert to investigate</span>
+</StagedFigure>
+
+<style>
+  .ep-status {
+    position: absolute;
+    left: 18%;
+    top: 51%;
+  }
+  /* The badges share one spot under the laptop. */
+  .ep-status .dg-badge {
+    left: 0;
+    top: 0;
+  }
+  .ep-route {
+    stroke: rgba(251, 191, 36, 0.55);
+    stroke-dasharray: 4 5;
+  }
+  @media (max-width: 640px) {
+    .ep-status {
+      left: 20%;
+    }
+  }
+</style>
