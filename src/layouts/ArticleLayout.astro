@@ -4,7 +4,7 @@ import BlockRenderer from '../components/BlockRenderer.astro';
 import InsightCard from '../components/InsightCard.astro';
 import { site, href as withBase, canonicalUrl } from '../data/site';
 import { categoryMeta, formatDate, type Post } from '../data/insights';
-import { srcsetFor, preloadFor, ARTICLE_COVER_SIZES } from '../data/images';
+import { srcsetFor, preloadFor, dimsFor, ARTICLE_COVER_SIZES } from '../data/images';
 import { articleOutline } from '../data/article-outline';
 
 interface Props {
@@ -42,6 +42,8 @@ const jsonLd = {
 // suffix shrinks or drops so the title stays near 60 characters in results.
 // Beside the article: "The 30-Second Read" (the post's takeaways) and
 // "In This Article" (its sections, each a jump link; src/scripts/scroll/article.ts).
+// The cover's frame takes the image's own shape (3:2 banners, 16:9 campaign heroes).
+const coverDims = (data.cover && dimsFor(data.cover)) || { width: 1800, height: 1200 };
 const outline = articleOutline(data.blocks);
 const showToc = outline.items.length > 1;
 const hasAside = data.takeaways.length > 0 || showToc;
@@ -83,7 +85,7 @@ const pageTitle = [`${data.title} | True Lean Solutions`, `${data.title} | TLS`]
     {
       data.cover && (
         <div class="wrap cover-wrap">
-          <img class="cover" src={withBase(data.cover)} srcset={srcsetFor(data.cover)} sizes={ARTICLE_COVER_SIZES} alt={data.coverAlt ?? ''} width="1800" height="1200" fetchpriority="high" />
+          <img class="cover" src={withBase(data.cover)} srcset={srcsetFor(data.cover)} sizes={ARTICLE_COVER_SIZES} alt={data.coverAlt ?? ''} width={coverDims.width} height={coverDims.height} style={`aspect-ratio: ${coverDims.width} / ${coverDims.height}`} fetchpriority="high" />
         </div>
       )
     }

@@ -120,6 +120,18 @@ collections:
               - { label: Body, name: body, widget: text }
               - { label: Tags, name: tag, widget: string, required: false, hint: 'Separate tags with " · ".' }
               - { label: Style, name: variant, widget: select, options: [dark, light], default: dark }
+          - label: Download (PDF or file)
+            name: download
+            widget: object
+            summary: 'Download: {{fields.title}}'
+            fields:
+              - { label: Eyebrow, name: eyebrow, widget: string, required: false, hint: 'e.g. "Free 18-page guide".' }
+              - { label: Title, name: title, widget: string }
+              - { label: Body, name: body, widget: text }
+              - { label: "What's inside", name: items, widget: list, required: false }
+              - { label: File path, name: file, widget: string, hint: 'A file in public/, e.g. /resources/guide.pdf.' }
+              - { label: Button label, name: button, widget: string, default: 'Download the free PDF' }
+              - { label: Note under the button, name: note, widget: string, required: false }
           - label: Quote
             name: quote
             widget: object

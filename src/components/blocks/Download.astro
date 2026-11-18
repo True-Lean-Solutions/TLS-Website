@@ -1,0 +1,259 @@
+---
+/**
+ * A downloadable resource offered inside a post (2026-11-18): a dark banner
+ * with what the file is, what's inside, and one download button. The file
+ * lives in public/ (never a Drive link). The page stack on the right is drawn
+ * in CSS.
+ */
+import Icon from '../Icon.astro';
+import { href as withBase } from '../../data/site';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  body: string;
+  items?: string[];
+  file: string;
+  button?: string;
+  note?: string;
+}
+const { eyebrow, title, body, items = [], file, button = 'Download the free PDF', note } = Astro.props;
+---
+
+<aside class="dl block-wide ix-light">
+  <div class="dl-copy">
+    {eyebrow && <p class="dl-eyebrow">{eyebrow}</p>}
+    <h3>{title}</h3>
+    <p class="dl-body">{body}</p>
+    {
+      items.length > 0 && (
+        <ul class="dl-items">
+          {items.map((it) => (
+            <li>
+              <Icon name="check" size={14} />
+              {it}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+    <div class="dl-actions">
+      <a class="dl-btn" href={withBase(file)} download data-magnetic>
+        <span>{button}</span>
+        <Icon name="arrow" size={18} class="dl-arrow" />
+      </a>
+      {note && <span class="dl-note">{note}</span>}
+    </div>
+  </div>
+  <div class="dl-art" aria-hidden="true">
+    <span class="dl-page dl-page--back"></span>
+    <span class="dl-page dl-page--mid"></span>
+    <span class="dl-page dl-page--front">
+      <span class="dl-page-tag">The Field Guide</span>
+      <span class="dl-page-line dl-page-line--t"></span>
+      <span class="dl-page-line dl-page-line--t dl-page-line--red"></span>
+      <span class="dl-page-line"></span>
+      <span class="dl-page-line dl-page-line--s"></span>
+      <span class="dl-page-bar"></span>
+    </span>
+  </div>
+</aside>
+
+<style>
+  .dl {
+    --c: #5cc3ff;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.42fr);
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: center;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    border-radius: var(--radius-xl);
+    color: #fff;
+    background:
+      radial-gradient(60% 90% at 100% 0%, rgba(18, 136, 207, 0.4), transparent 65%),
+      radial-gradient(50% 80% at 0% 100%, rgba(217, 64, 64, 0.32), transparent 65%),
+      #0d1220;
+    box-shadow: 0 30px 60px -32px rgba(13, 13, 13, 0.6);
+    overflow: hidden;
+  }
+  .dl-eyebrow {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(92, 195, 255, 0.16);
+    color: #9bdcff;
+    font-family: var(--font-head);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .dl h3 {
+    margin-top: 0.9rem;
+    font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+    line-height: 1.2;
+    color: #fff;
+  }
+  .dl-body {
+    margin-top: 0.7rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  .dl-items {
+    list-style: none;
+    margin: 1.1rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem 1.25rem;
+    font-size: 0.92rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .dl-items li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    line-height: 1.4;
+  }
+  .dl-items li :global(svg) {
+    flex: none;
+    margin-top: 0.22em;
+    color: #34d399;
+  }
+  .dl-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem 1.1rem;
+    margin-top: 1.6rem;
+  }
+  .dl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 48px;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    background: var(--red-text);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.98rem;
+    text-decoration: none;
+    box-shadow: 0 12px 26px -12px rgba(194, 54, 54, 0.9);
+    transition:
+      background var(--ix-fast) ease,
+      transform var(--ix-base) var(--ix-ease);
+  }
+  .dl-btn:hover {
+    background: #a82f2f;
+  }
+  .dl-btn :global(.dl-arrow) {
+    transform: rotate(90deg);
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  .dl-btn:hover :global(.dl-arrow) {
+    transform: rotate(90deg) translateX(3px);
+  }
+  .dl-note {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  /* The page stack. */
+  .dl-art {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    max-width: 210px;
+    width: 100%;
+    justify-self: center;
+  }
+  .dl-page {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 18px 36px -16px rgba(0, 0, 0, 0.6);
+    transition: transform var(--ix-slow) var(--ix-ease);
+  }
+  .dl-page--back {
+    transform: rotate(9deg) translate(8%, 2%);
+    opacity: 0.55;
+  }
+  .dl-page--mid {
+    transform: rotate(4deg) translate(4%, 1%);
+    opacity: 0.8;
+  }
+  .dl-page--front {
+    transform: rotate(-3deg);
+    display: grid;
+    align-content: start;
+    gap: 7%;
+    padding: 14% 12%;
+    overflow: hidden;
+  }
+  .dl:hover .dl-page--back {
+    transform: rotate(13deg) translate(12%, 2%);
+  }
+  .dl:hover .dl-page--front {
+    transform: rotate(-5deg) translateY(-3%);
+  }
+  .dl-page-tag {
+    font-family: var(--font-head);
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--red-text);
+  }
+  .dl-page-line {
+    display: block;
+    height: 5%;
+    min-height: 5px;
+    width: 86%;
+    border-radius: 3px;
+    background: #d5dae6;
+  }
+  .dl-page-line--t {
+    height: 9%;
+    min-height: 9px;
+    width: 92%;
+    background: #141a26;
+  }
+  .dl-page-line--red {
+    width: 58%;
+    background: var(--red);
+    margin-top: -3%;
+  }
+  .dl-page-line--s {
+    width: 60%;
+  }
+  .dl-page-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4%;
+    background: var(--grad-h);
+  }
+
+  @media (max-width: 720px) {
+    .dl {
+      grid-template-columns: 1fr;
+    }
+    .dl-art {
+      display: none;
+    }
+    .dl-items {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dl-page,
+    .dl-btn,
+    .dl-btn :global(.dl-arrow) {
+      transition: none;
+    }
+  }
+</style>

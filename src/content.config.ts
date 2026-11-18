@@ -56,6 +56,21 @@ const imageBlock = z.object({
   caption: z.string().optional(),
 });
 
+/** A downloadable resource (a guide, a template) offered inside a post. */
+const download = z.object({
+  type: z.literal('download'),
+  eyebrow: z.string().optional(),
+  title: z.string(),
+  body: z.string(),
+  /** What's inside, as a short list. */
+  items: z.array(z.string()).default([]),
+  /** Public path of the file, e.g. /resources/guide.pdf. */
+  file: z.string(),
+  button: z.string().default('Download the free PDF'),
+  /** Shown under the button, e.g. "PDF · 18 pages". */
+  note: z.string().optional(),
+});
+
 const block = z.discriminatedUnion('type', [
   richtext,
   stats,
@@ -64,6 +79,7 @@ const block = z.discriminatedUnion('type', [
   callout,
   quote,
   imageBlock,
+  download,
 ]);
 
 export type Block = z.infer<typeof block>;

@@ -7,6 +7,7 @@ import Steps from './blocks/Steps.astro';
 import Callout from './blocks/Callout.astro';
 import Quote from './blocks/Quote.astro';
 import ImageBlock from './blocks/ImageBlock.astro';
+import Download from './blocks/Download.astro';
 
 interface Props {
   blocks: Block[];
@@ -34,6 +35,9 @@ const { blocks, headingIds = [] } = Astro.props;
           <Callout title={b.title} body={b.body} tag={b.tag} variant={b.variant} />
         )}
         {b.type === 'quote' && <Quote text={b.text} attribution={b.attribution} />}
+        {b.type === 'download' && (
+          <Download eyebrow={b.eyebrow} title={b.title} body={b.body} items={b.items} file={b.file} button={b.button} note={b.note} />
+        )}
         {b.type === 'image' && (
           <ImageBlock src={b.src} alt={b.alt} caption={b.caption} />
         )}
