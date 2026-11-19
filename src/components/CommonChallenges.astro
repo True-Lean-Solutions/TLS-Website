@@ -69,16 +69,12 @@ const visual = href('/home/challenges-visual.webp');
  */
 const VISUAL: 'model' | 'image' = 'model';
 const useModel = (VISUAL as string) === 'model';
-/** The haze behind the visual: the picture itself, blurred, or the model's colors. */
-const aura = useModel
-  ? 'radial-gradient(40% 46% at 38% 52%, #ff5d6c, transparent 70%), radial-gradient(42% 48% at 72% 46%, #2f9bff, transparent 70%), radial-gradient(48% 55% at 54% 58%, #6b5cf0, transparent 72%)'
-  : `url(${visual})`;
 ---
 
-<section class="cc" aria-labelledby="cc-title">
+<section class:list={['cc', { 'cc--model': useModel }]} aria-labelledby="cc-title">
   <!-- Atmosphere (desktop): the platform image itself, deeply blurred, as a
        colour-matched haze reaching past the picture's edges. -->
-  <div class="cc-aura" aria-hidden="true" style={`background-image: ${aura}`}></div>
+  {!useModel && <div class="cc-aura" aria-hidden="true" style={`background-image: url(${visual})`} />}
   <div class="wrap">
     <div class="cc-copy">
       <div class="cc-intro" data-reveal="stagger">
@@ -256,6 +252,29 @@ const aura = useModel
     display: block;
     width: 100%;
     height: auto;
+  }
+  /* The model (ChallengesModel) has no picture edges to hide, so it needs
+     none of the picture's haze: no glow behind it and no edge fades. Its
+     floor ends cleanly by itself. */
+  .cc--model::before {
+    display: none;
+  }
+  .cc--model .cc-visual {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  /* Below 1280px the model is a band of its own. The left fifth of its
+     canvas is empty (on desktop that part sits behind the cards), so here it
+     is drawn larger and shifted to center the platform. */
+  @media (max-width: 1279px) {
+    .cc--model .cc-visual {
+      overflow: hidden;
+    }
+    .cc--model .cc-visual :global(svg.cm) {
+      width: 128%;
+      max-width: none;
+      margin-left: -17.8%;
+    }
   }
 
   /* Desktop atmosphere around the platform. */

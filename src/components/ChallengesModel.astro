@@ -7,8 +7,13 @@
  * (Business Problem, Lean Thinking, Right Solution, Measurable Results) and
  * the light that runs between them.
  *
+ * The picture needed a blurred haze around it to hide its edges. The model
+ * has no haze: its dark floor is a field of tiles that ends cleanly, whole in
+ * the middle and thinning to dots at the rim, so the scene stands on the
+ * page as part of it (Hemang, 2026-11-20).
+ *
  * It has the picture's shape and keeps the platform in the same place, so
- * CommonChallenges positions and fades it exactly as it did the picture.
+ * CommonChallenges positions it exactly as it did the picture.
  * Decorative: aria-hidden, like the picture's empty alt.
  *
  * Motion, only while it is on screen and never with reduced motion: the
@@ -17,7 +22,7 @@
  * little with the pointer, nearer ones more, which gives the depth.
  */
 import { href } from '../data/site';
-import { W, H, O, base, middle, upper, cards, card, traces, grid, tiles } from './challengesModel';
+import { W, H, O, base, middle, upper, cards, card, traces, grid, tiles, field } from './challengesModel';
 
 const mark = { w: 196, h: 113 }; // the TLS mark lying on the top tier (foreshortened)
 const tones = ['#7f8cff', '#4fb6ff', '#c77dff'];
@@ -25,20 +30,15 @@ const tones = ['#7f8cff', '#4fb6ff', '#c77dff'];
 
 <svg class="cm" viewBox={`0 0 ${W} ${H}`} width={W} height={H} aria-hidden="true" focusable="false">
   <defs>
-    <!-- The floor: lit under the platform, dark around it, dissolving into the page. -->
-    <radialGradient id="cm-floor" gradientUnits="userSpaceOnUse" cx={O[0]} cy={O[1] + 10} r="900" gradientTransform={`translate(0 ${O[1] * 0.42}) scale(1 0.58)`}>
+    <!-- The floor: lit under the platform, dark around it. -->
+    <radialGradient id="cm-floor" gradientUnits="userSpaceOnUse" cx={O[0]} cy={O[1] + 10} r="760" gradientTransform={`translate(0 ${O[1] * 0.42}) scale(1 0.58)`}>
       <stop offset="0" stop-color="#3a3f8f" />
-      <stop offset="0.3" stop-color="#1c2152" />
-      <stop offset="0.62" stop-color="#151a3f" />
-      <stop offset="0.86" stop-color="#8f93cf" />
-      <stop offset="1" stop-color="#f8f8fc" />
+      <stop offset="0.4" stop-color="#1c2152" />
+      <stop offset="1" stop-color="#131837" />
     </radialGradient>
-    <radialGradient id="cm-fade" gradientUnits="userSpaceOnUse" cx={O[0]} cy={O[1]} r="860" gradientTransform={`translate(0 ${O[1] * 0.42}) scale(1 0.58)`}>
-      <stop offset="0.55" stop-color="#fff" />
-      <stop offset="0.9" stop-color="#000" />
-    </radialGradient>
+    <!-- The floor's outline: the tile field (challengesModel.ts). Crisp, no blur. -->
     <mask id="cm-mask" maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
-      <rect width={W} height={H} fill="url(#cm-fade)" />
+      {field.map((points) => <polygon points={points} fill="#fff" />)}
     </mask>
     {
       [
@@ -82,8 +82,8 @@ const tones = ['#7f8cff', '#4fb6ff', '#c77dff'];
 
   <!-- 1. The floor -->
   <g class="cm-layer" style="--z: -0.5">
-    <rect width={W} height={H} fill="url(#cm-floor)" />
     <g mask="url(#cm-mask)">
+      <rect width={W} height={H} fill="url(#cm-floor)" />
       {tiles.map((t) => <polygon points={t.points} fill={tones[t.tone % 3]} fill-opacity={0.07 + t.tone * 0.035} />)}
       {grid.map((d) => <path d={d} class="cm-grid" />)}
       <ellipse cx={O[0] - 330} cy={O[1] + 10} rx="330" ry="170" fill="url(#cm-glow-red)" />
@@ -153,8 +153,8 @@ const tones = ['#7f8cff', '#4fb6ff', '#c77dff'];
         <g class="cm-float cm-float--card" style={`--i: ${c.i}`}>
           <path d={c.stem} stroke={c.c} stroke-width="2" stroke-dasharray="3 6" stroke-opacity="0.8" />
           <g transform={c.matrix}>
-            <rect width={card.w} height={card.h} rx="22" fill={c.c} fill-opacity="0.35" filter="url(#cm-soft)" />
-            <rect width={card.w} height={card.h} rx="22" transform={c.depth} fill="#cfcaf5" fill-opacity="0.55" />
+            <rect width={card.w} height={card.h} rx="22" fill={c.c} fill-opacity="0.3" filter="url(#cm-blur)" />
+            <rect width={card.w} height={card.h} rx="22" transform={c.depth} fill="#cfcaf5" fill-opacity="0.8" />
             <rect width={card.w} height={card.h} rx="22" fill="url(#cm-glass)" stroke={c.c} stroke-width="2.5" />
             <rect x="5" y="5" width={card.w - 10} height={card.h - 10} rx="18" fill="none" stroke="#fff" stroke-opacity="0.9" stroke-width="1.5" />
             <g transform="translate(26 44) scale(1.18)" stroke={c.ink} fill={c.ink} stroke-width="5" stroke-linecap="round" stroke-linejoin="round">

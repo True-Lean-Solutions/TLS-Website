@@ -152,3 +152,26 @@ for (let i = -9; i <= 8; i++) {
     });
   }
 }
+
+/**
+ * The floor's outline. The picture hid its edges in a blur; the model's
+ * floor ends cleanly instead: it is a field of dark tiles, whole in the
+ * middle, shrinking and thinning toward the rim. FIELD is the field's reach
+ * on screen around the platform (a soft-cornered oval).
+ */
+const FIELD = { rx: 575, ry: 420, power: 3, solid: 0.54 };
+const TILE = 64;
+export const field: string[] = [];
+for (let i = -13; i <= 12; i++) {
+  for (let j = -13; j <= 12; j++) {
+    const cx = (i + 0.5) * TILE;
+    const cy = (j + 0.5) * TILE;
+    const c = iso(cx, cy);
+    const d = Math.abs((c[0] - O[0]) / FIELD.rx) ** FIELD.power + Math.abs((c[1] - O[1]) / FIELD.ry) ** FIELD.power;
+    if (d >= 1) continue;
+    // Whole tiles overlap a touch, so no seams show; rim tiles shrink to dots.
+    const k = d < FIELD.solid ? 1.04 : 0.94 * (1 - ((d - FIELD.solid) / (1 - FIELD.solid)) * 0.82);
+    const h = (TILE / 2) * k;
+    field.push([iso(cx - h, cy - h), iso(cx + h, cy - h), iso(cx + h, cy + h), iso(cx - h, cy + h)].map((q) => q.join(',')).join(' '));
+  }
+}
