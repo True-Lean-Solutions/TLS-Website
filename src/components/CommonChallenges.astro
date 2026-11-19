@@ -11,6 +11,7 @@
  */
 import Eyebrow from './Eyebrow.astro';
 import Icon from './Icon.astro';
+import ChallengesModel from './ChallengesModel.astro';
 import type { IconName } from './iconTypes';
 import type { Accent } from '../data/services';
 import { href } from '../data/site';
@@ -60,12 +61,24 @@ const accents: Record<Accent, string> = {
 };
 
 const visual = href('/home/challenges-visual.webp');
+/**
+ * The visual: 'model' is the platform drawn in code as a 3D SVG
+ * (ChallengesModel.astro, 2026-11-20, a local preview awaiting Hemang's
+ * decision); 'image' is the picture it replaces. Change this one word to go
+ * back.
+ */
+const VISUAL: 'model' | 'image' = 'model';
+const useModel = (VISUAL as string) === 'model';
+/** The haze behind the visual: the picture itself, blurred, or the model's colors. */
+const aura = useModel
+  ? 'radial-gradient(40% 46% at 38% 52%, #ff5d6c, transparent 70%), radial-gradient(42% 48% at 72% 46%, #2f9bff, transparent 70%), radial-gradient(48% 55% at 54% 58%, #6b5cf0, transparent 72%)'
+  : `url(${visual})`;
 ---
 
 <section class="cc" aria-labelledby="cc-title">
   <!-- Atmosphere (desktop): the platform image itself, deeply blurred, as a
        colour-matched haze reaching past the picture's edges. -->
-  <div class="cc-aura" aria-hidden="true" style={`background-image: url(${visual})`}></div>
+  <div class="cc-aura" aria-hidden="true" style={`background-image: ${aura}`}></div>
   <div class="wrap">
     <div class="cc-copy">
       <div class="cc-intro" data-reveal="stagger">
@@ -83,14 +96,13 @@ const visual = href('/home/challenges-visual.webp');
            band between the intro and the cards. -->
       <div class="cc-body">
         <div class="cc-visual" data-reveal>
-          <img
-            src={visual}
-            alt=""
-            width="1672"
-            height="941"
-            loading="lazy"
-            decoding="async"
-          />
+          {
+            useModel ? (
+              <ChallengesModel />
+            ) : (
+              <img src={visual} alt="" width="1672" height="941" loading="lazy" decoding="async" />
+            )
+          }
         </div>
 
         <ul class="cc-list" data-reveal="stagger">
