@@ -264,6 +264,39 @@ const useModel = (VISUAL as string) === 'model';
     -webkit-mask-image: none;
     mask-image: none;
   }
+  /* Desktop: the model stands beside the four cards, centered on them, and
+     the space beside the heading stays clear (Hemang, 2026-11-20). The
+     picture was centered on the whole section instead.
+     How: the cards' wrapper becomes a flex row that centers its items. The
+     model is still positioned in the section (its left edge is worked out
+     from the section's width), but with no top of its own it takes the place
+     the flex row would give it, which is the vertical center of the cards. */
+  @media (min-width: 1280px) {
+    /* Sized to stand beside the cards: about as tall as the four of them,
+       so it never reaches up beside the heading or past the section's foot
+       on wide screens. */
+    .cc--model {
+      --cc-img-w: clamp(760px, (100% - var(--cc-right) - 44px) / 0.652, 940px);
+    }
+    .cc--model .wrap {
+      padding-bottom: calc(var(--space-7) + 1rem);
+    }
+    .cc--model .cc-body {
+      display: flex;
+      align-items: center;
+      margin-top: var(--gap-block);
+    }
+    .cc--model .cc-list {
+      flex: 1 1 auto;
+      margin-top: 0;
+    }
+    .cc--model .cc-visual {
+      top: auto;
+      /* The scene's middle (the platform) is a little below the middle of its
+         canvas, so it is lifted by that much to line up with the cards. */
+      translate: 0 -3.6%;
+    }
+  }
   /* Below 1280px the model is a band of its own. The left fifth of its
      canvas is empty (on desktop that part sits behind the cards), so here it
      is drawn larger and shifted to center the platform. */

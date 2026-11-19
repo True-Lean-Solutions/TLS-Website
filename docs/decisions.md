@@ -1126,3 +1126,5 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Same footprint:** the model has the picture's shape (1672 x 941) and keeps the platform in the same place, so the section's layout is unchanged. Below 1280px it is drawn larger, because the left fifth of its canvas is empty there.
 - **Going back:** `VISUAL = 'image'` in `CommonChallenges.astro`. The picture file stays in `public/home`.
 - This changes the 2026-09-29 note "no new image" for this fold.
+- **Position (same day, Hemang):** on desktop the model stands beside the four cards, centered on them and about as tall as the four together, and the space beside the heading is left clear. The picture had been centered on the whole section. The model's left edge is still worked out from the section's width; only its vertical place changed (it takes the center of the cards' row). Tablet and phone layouts are unchanged.
+- **Fix:** the floor's fill no longer reaches the drawing's own edge, which had shown as a faint hairline along the top while the scroll story scaled the model.
