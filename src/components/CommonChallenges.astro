@@ -3,7 +3,9 @@
  * Home › Common Business Challenges — between Why TLS and What We Do.
  * Layout and copy: the "Fold 4" reference (Hemang, 2026-09-29;
  * docs/references/pages/home/fold-4-common-challenges.png), copy verbatim.
- * Visual: the TLS isometric platform image (Hemang, 2026-09-29), sharp in the
+ * Visual since 2026-11-20: the platform as a 3D SVG model (ChallengesModel),
+ * with no haze or edge fades. Before that, and still available through the
+ * VISUAL switch below: the TLS isometric platform image (Hemang, 2026-09-29), sharp in the
  * middle and softly blurred toward its edges (public/home/challenges-visual.webp),
  * dissolved into the canvas on every edge with CSS masks, so it reads as part
  * of the section, not a rectangle.
@@ -11,6 +13,7 @@
  */
 import Eyebrow from './Eyebrow.astro';
 import Icon from './Icon.astro';
+import ChallengesModel from './ChallengesModel.astro';
 import type { IconName } from './iconTypes';
 import type { Accent } from '../data/services';
 import { href } from '../data/site';
@@ -60,12 +63,19 @@ const accents: Record<Accent, string> = {
 };
 
 const visual = href('/home/challenges-visual.webp');
+/**
+ * The visual: 'model' is the platform drawn in code as a 3D SVG
+ * (ChallengesModel.astro, approved by Hemang 2026-11-20); 'image' is the
+ * picture it replaced, kept in public/home. Change this one word to go back.
+ */
+const VISUAL: 'model' | 'image' = 'model';
+const useModel = (VISUAL as string) === 'model';
 ---
 
-<section class="cc" aria-labelledby="cc-title">
+<section class:list={['cc', { 'cc--model': useModel }]} aria-labelledby="cc-title">
   <!-- Atmosphere (desktop): the platform image itself, deeply blurred, as a
        colour-matched haze reaching past the picture's edges. -->
-  <div class="cc-aura" aria-hidden="true" style={`background-image: url(${visual})`}></div>
+  {!useModel && <div class="cc-aura" aria-hidden="true" style={`background-image: url(${visual})`} />}
   <div class="wrap">
     <div class="cc-copy">
       <div class="cc-intro" data-reveal="stagger">
@@ -83,14 +93,13 @@ const visual = href('/home/challenges-visual.webp');
            band between the intro and the cards. -->
       <div class="cc-body">
         <div class="cc-visual" data-reveal>
-          <img
-            src={visual}
-            alt=""
-            width="1672"
-            height="941"
-            loading="lazy"
-            decoding="async"
-          />
+          {
+            useModel ? (
+              <ChallengesModel />
+            ) : (
+              <img src={visual} alt="" width="1672" height="941" loading="lazy" decoding="async" />
+            )
+          }
         </div>
 
         <ul class="cc-list" data-reveal="stagger">
@@ -244,6 +253,29 @@ const visual = href('/home/challenges-visual.webp');
     display: block;
     width: 100%;
     height: auto;
+  }
+  /* The model (ChallengesModel) has no picture edges to hide, so it needs
+     none of the picture's haze: no glow behind it and no edge fades. Its
+     floor ends cleanly by itself. */
+  .cc--model::before {
+    display: none;
+  }
+  .cc--model .cc-visual {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  /* Below 1280px the model is a band of its own. The left fifth of its
+     canvas is empty (on desktop that part sits behind the cards), so here it
+     is drawn larger and shifted to center the platform. */
+  @media (max-width: 1279px) {
+    .cc--model .cc-visual {
+      overflow: hidden;
+    }
+    .cc--model .cc-visual :global(svg.cm) {
+      width: 128%;
+      max-width: none;
+      margin-left: -17.8%;
+    }
   }
 
   /* Desktop atmosphere around the platform. */

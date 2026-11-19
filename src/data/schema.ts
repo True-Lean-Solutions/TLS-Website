@@ -30,7 +30,7 @@ const organization = {
   slogan: site.tagline,
   email: site.email,
   telephone: site.phone,
-  sameAs: [site.social.linkedin, site.social.facebook],
+  sameAs: [site.social.linkedin, site.social.facebook, site.social.youtube],
   contactPoint: {
     '@type': 'ContactPoint',
     contactType: 'sales',

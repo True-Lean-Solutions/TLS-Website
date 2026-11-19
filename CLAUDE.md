@@ -133,7 +133,7 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
 3. **Common Business Challenges** (added 2026-09-29).
    - Layout and copy: the Fold 4 reference (`docs/references/pages/home/fold-4-common-challenges.png`). Copy verbatim as Hemang supplied it.
    - Four challenge cards, each linking to the solution that answers it.
-   - Visual: the TLS isometric platform image Hemang supplied (not the reference image, and no new image). See `docs/decisions.md`.
+   - Visual: since 2026-11-20, the same platform scene drawn in code as a 3D SVG model (`ChallengesModel.astro`), on its dark tile floor with a clean edge and no haze. The picture Hemang supplied on 2026-09-29 is kept (`VISUAL = 'image'` in `CommonChallenges.astro` brings it back). See `docs/decisions.md`.
 4. **What We Do.** Four service cards with icons (09), from the Home doc's "What We Do" section. Each card links to its service page.
 5. **Recent Results.** *Hidden since 2026-09-30 (Hemang): `SHOW_RESULTS = false` in `src/pages/index.astro`; set it to `true` to bring it back.*
    - The three verified stats from the Home doc (11 layout, verified numbers only).
@@ -168,9 +168,9 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
   - Tagline.
   - The positioning statement "We help organizations turn business needs into practical technology solutions."
   - Columns (since 2026-09-29, Hemang's footer reference), separated by hairlines: brand (lockup, the approved statement "Solve the Right Problem. Build the Right Solution.", positioning, social circles), Quick Links (the header's navigation), Solutions (all ten since 2026-11-18), Latest Insights (three newest posts with their covers and categories, from the Insights collection), Contact (email, phone, the "Discuss Your Project" CTA). A back-to-top button sits in the legal bar.
-  - Contact column: email `success@trueleansolutions.com`, phone (941) 777-5326, LinkedIn `https://www.linkedin.com/company/108455615/`, Facebook `https://www.facebook.com/profile.php?id=61585073567371`.
+  - Contact column: email `success@trueleansolutions.com`, phone (941) 777-5326, LinkedIn `https://www.linkedin.com/company/108455615/`, Facebook `https://www.facebook.com/profile.php?id=61585073567371`, YouTube `https://www.youtube.com/@TLS-TrueLeanSolutions` (added 2026-11-20).
   - © with the build year computed at build time, alongside links to Privacy Policy (`/privacy-policy/`) and Terms of Service (`/terms-of-service/`).
-  - No YouTube and no newsletter/"Stay Connected" capture in v1.
+  - No newsletter/"Stay Connected" capture in v1. (YouTube was out of v1 until the channel existed; its icon is in the footer since 2026-11-20.)
 
 ## Design tokens
 

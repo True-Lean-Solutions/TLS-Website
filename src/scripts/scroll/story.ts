@@ -62,7 +62,7 @@ export function initChallengeStory(): Cleanup {
   const section = document.querySelector<HTMLElement>('.cc');
   if (!section) return () => {};
   const cards = [...section.querySelectorAll<HTMLElement>('.cc-card')];
-  const img = section.querySelector<HTMLElement>('.cc-visual img');
+  const img = section.querySelector<HTMLElement | SVGSVGElement>('.cc-visual img, .cc-visual > svg');
   if (cards.length < 2) return () => {};
 
   let active = -1;
