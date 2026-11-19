@@ -1115,3 +1115,4 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Now:** the footer's social row is LinkedIn, Facebook, YouTube, email. The icon is YouTube's own play-button mark (the Simple Icons outline, like the LinkedIn and Facebook marks beside it) in YouTube red, in the same white circle. It opens in a new tab.
 - **This reverses** the v1 rule "No YouTube in the footer", which dated from before the channel existed.
 - The URL is defined once as `site.social.youtube`, and is also listed in the organization schema's `sameAs` with the other official profiles.
+- **Email icon (same day):** the drawn envelope was replaced with the Gmail logo in its own colors, because the envelope did not read as a real mail icon beside the brand logos. It still opens an email to `success@trueleansolutions.com`, and its label is unchanged.
