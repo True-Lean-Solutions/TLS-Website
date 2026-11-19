@@ -1108,3 +1108,10 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Asked (Hemang):** Meeting Intelligence and AI Visibility Growth Team were listed in the footer under Solutions, at the same level as the ten solutions. They are part of AI & Automation, not solutions of their own, so they should not appear there.
 - **Now:** the footer's Solutions column lists the ten solutions only. This reverses the footer half of the 2026-11-11 decision.
 - **Still linked:** both product pages are reached from "Learn More" on the AI & Automation page and from the line under the portfolio on `/services/`. They stay in the sitemap.
+
+## 2026-11-20: YouTube in the footer
+
+- **Asked (Hemang):** add a YouTube icon to the footer, next to the other social icons, linking to the TLS channel (`https://www.youtube.com/@TLS-TrueLeanSolutions`).
+- **Now:** the footer's social row is LinkedIn, Facebook, YouTube, email. The icon is YouTube's own play-button mark (the Simple Icons outline, like the LinkedIn and Facebook marks beside it) in YouTube red, in the same white circle. It opens in a new tab.
+- **This reverses** the v1 rule "No YouTube in the footer", which dated from before the channel existed.
+- The URL is defined once as `site.social.youtube`, and is also listed in the organization schema's `sameAs` with the other official profiles.

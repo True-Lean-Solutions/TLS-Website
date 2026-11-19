@@ -29,6 +29,8 @@ export const site = {
   social: {
     linkedin: 'https://www.linkedin.com/company/108455615/',
     facebook: 'https://www.facebook.com/profile.php?id=61585073567371',
+    /** The TLS YouTube channel (Hemang, 2026-11-20). */
+    youtube: 'https://www.youtube.com/@TLS-TrueLeanSolutions',
   },
 
   /** Apps Script endpoint for the contact form (public, receive-only). */
