@@ -3,7 +3,9 @@
  * Home › Common Business Challenges — between Why TLS and What We Do.
  * Layout and copy: the "Fold 4" reference (Hemang, 2026-09-29;
  * docs/references/pages/home/fold-4-common-challenges.png), copy verbatim.
- * Visual: the TLS isometric platform image (Hemang, 2026-09-29), sharp in the
+ * Visual since 2026-11-20: the platform as a 3D SVG model (ChallengesModel),
+ * with no haze or edge fades. Before that, and still available through the
+ * VISUAL switch below: the TLS isometric platform image (Hemang, 2026-09-29), sharp in the
  * middle and softly blurred toward its edges (public/home/challenges-visual.webp),
  * dissolved into the canvas on every edge with CSS masks, so it reads as part
  * of the section, not a rectangle.
@@ -63,9 +65,8 @@ const accents: Record<Accent, string> = {
 const visual = href('/home/challenges-visual.webp');
 /**
  * The visual: 'model' is the platform drawn in code as a 3D SVG
- * (ChallengesModel.astro, 2026-11-20, a local preview awaiting Hemang's
- * decision); 'image' is the picture it replaces. Change this one word to go
- * back.
+ * (ChallengesModel.astro, approved by Hemang 2026-11-20); 'image' is the
+ * picture it replaced, kept in public/home. Change this one word to go back.
  */
 const VISUAL: 'model' | 'image' = 'model';
 const useModel = (VISUAL as string) === 'model';

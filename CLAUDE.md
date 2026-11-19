@@ -133,7 +133,7 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
 3. **Common Business Challenges** (added 2026-09-29).
    - Layout and copy: the Fold 4 reference (`docs/references/pages/home/fold-4-common-challenges.png`). Copy verbatim as Hemang supplied it.
    - Four challenge cards, each linking to the solution that answers it.
-   - Visual: the TLS isometric platform image Hemang supplied (not the reference image, and no new image). See `docs/decisions.md`.
+   - Visual: since 2026-11-20, the same platform scene drawn in code as a 3D SVG model (`ChallengesModel.astro`), on its dark tile floor with a clean edge and no haze. The picture Hemang supplied on 2026-09-29 is kept (`VISUAL = 'image'` in `CommonChallenges.astro` brings it back). See `docs/decisions.md`.
 4. **What We Do.** Four service cards with icons (09), from the Home doc's "What We Do" section. Each card links to its service page.
 5. **Recent Results.** *Hidden since 2026-09-30 (Hemang): `SHOW_RESULTS = false` in `src/pages/index.astro`; set it to `true` to bring it back.*
    - The three verified stats from the Home doc (11 layout, verified numbers only).

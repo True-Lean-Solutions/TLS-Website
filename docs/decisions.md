@@ -1116,3 +1116,13 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **This reverses** the v1 rule "No YouTube in the footer", which dated from before the channel existed.
 - The URL is defined once as `site.social.youtube`, and is also listed in the organization schema's `sameAs` with the other official profiles.
 - **Email icon (same day):** the drawn envelope was replaced with the Gmail logo in its own colors, because the envelope did not read as a real mail icon beside the brand logos. It still opens an email to `success@trueleansolutions.com`, and its label is unchanged.
+
+## 2026-11-20: 3D SVG model in Common Business Challenges
+
+- **Asked (Hemang):** replace the platform picture in Home › Common Business Challenges with a 3D model in SVG. Previewed locally first, then approved.
+- **The model (`ChallengesModel.astro`, geometry in `challengesModel.ts`):** the same scene as the picture, drawn in code: a dark tile floor with light traces, the three-tier platform with red and blue edge light and the TLS mark on top, and four glass panels (Business Problem, Lean Thinking, Right Solution, Measurable Results, the wording already used in `HeroArt`).
+- **No haze.** The picture had a blurred glow behind it and soft fades on every edge, to hide its borders. Hemang asked for those to go and the dark floor to stay. The floor now ends cleanly: a field of tiles, whole in the middle and thinning to small diamonds at the rim. The section's glow, aura and CSS masks are switched off for the model.
+- **Motion:** the upper tiers and the panels float a few pixels, light travels the traces toward the platform, and with a mouse the layers shift slightly with the pointer (nearer layers more), which gives the depth. It runs only while on screen; reduced motion gets a still picture. The script lives in the component, like `HeroArt`'s. The scroll story still eases the visual forward (`story.ts` now finds the model as well as the picture).
+- **Same footprint:** the model has the picture's shape (1672 x 941) and keeps the platform in the same place, so the section's layout is unchanged. Below 1280px it is drawn larger, because the left fifth of its canvas is empty there.
+- **Going back:** `VISUAL = 'image'` in `CommonChallenges.astro`. The picture file stays in `public/home`.
+- This changes the 2026-09-29 note "no new image" for this fold.
