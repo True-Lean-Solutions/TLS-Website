@@ -1167,3 +1167,9 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Trade-off, told to Hemang:** the download no longer depends on the address being real, so some leads will carry mistyped or made-up emails. The emailed copy's status in the sheet ("Sent" or "Failed") still shows which addresses work.
 - **The card's title** links to `/insights/dont-carry-that-problem-into-2027/` (`guide.post`). The button is now "Get the guide".
 
+## 2026-11-21: No emailed copy of the guide
+
+- **Asked (Hemang):** drop the emailed copy. The guide downloads in the visitor's browser when they give a name and an email, and that is all.
+- **Now:** the script only writes the lead to the "Guide Leads" tab. It sends nothing, so it needs no mail permission, no sender address and no daily cap. The sheet's Email Status columns are replaced by "Asked Before".
+- **On the site:** the button reads "Download the guide"; the notice says the guide downloads right away and that TLS may email to follow up; the confirmation points to the downloads folder and keeps the plain download link.
+- **Known cost:** nothing verifies the address any more.
