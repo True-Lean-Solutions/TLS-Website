@@ -17,9 +17,9 @@ The site offers one guide for a name and an email address (Hemang, 2026-11-21). 
 ## When the floating card shows
 
 - After 30% of the page is scrolled or 20 seconds, whichever comes first, on any page a visitor lands on.
-- As a short teaser first. The form opens only when the visitor chooses "Get the free guide".
+- As a one-line tab ("Free field guide"), never as a pop-up. The card with the form opens only when the visitor chooses it.
 - Never on Contact, the legal pages, 404, or a page that already has the guide's own card.
-- Never over Tali: it waits while Tali's panel is open and, on narrow screens, while Tali's message bubble is showing.
+- One voice at a time: it waits while Tali's panel is open or Tali's message bubble is showing, at every screen width, and steps aside if Tali speaks up later.
 - Never while the visitor is typing in another field.
 - At most three times in 14 days. After a dismissal, not for 14 days. After the guide is sent, never again on that browser.
 - Not after `guide.lastDay`. The footer link goes on that day too. The post's card keeps working.

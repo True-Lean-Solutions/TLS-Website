@@ -5,7 +5,9 @@
  * guide for a name and an email. It is not a modal: it never covers the page,
  * never takes focus on its own and never blocks scrolling.
  *
- * It arrives as a short teaser; the form opens only when the visitor asks.
+ * It arrives as a one-line tab, never as a pop-up, and never while Tali is
+ * speaking (Hemang, 2026-11-21: two prompts at once looked pushy). The card
+ * with the form opens only when the visitor asks.
  * When and how often it shows is in the script below. It renders only while
  * the form's endpoint is set (see data/guide.ts).
  */
@@ -25,11 +27,13 @@ import { guide, guideEnabled } from '../data/guide';
       data-quiet={guide.quietPaths.join(',')}
       hidden
     >
+      <canvas class="gp-glass" data-guide-glass />
       <span class="gp-rail" aria-hidden="true" />
-      <button type="button" class="gp-x" data-guide-close aria-label="Dismiss the field guide offer">
+      <button type="button" class="gp-x" data-guide-close aria-label="Hide the field guide offer">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
       </button>
 
+      <div class="gp-inner">
       <div class="gp-head">
         <span class="gp-art" aria-hidden="true">
           <span class="gp-page gp-page--back" />
@@ -48,8 +52,9 @@ import { guide, guideEnabled } from '../data/guide';
 
       <div class="gp-teaser">
         <button type="button" class="gp-more" data-guide-expand aria-expanded="false" aria-controls="gp-body">
-          <span>Get the free guide</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          <svg class="gp-doc" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z" /><path d="M14 3v5h5M9 13h6M9 17h4" /></svg>
+          <span>{guide.kicker}</span>
+          <svg class="gp-go" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
         </button>
       </div>
 
@@ -59,6 +64,7 @@ import { guide, guideEnabled } from '../data/guide';
           {guide.facts.map((f) => <li>{f}</li>)}
         </ul>
         <GuideForm idPrefix="gp" source="popup" />
+      </div>
       </div>
     </aside>
   )
@@ -75,10 +81,9 @@ import { guide, guideEnabled } from '../data/guide';
     /* Above the page and the header, below Tali (900). */
     z-index: 850;
     width: min(348px, calc(100vw - 2 * var(--gp-gap)));
+    display: flex;
     max-height: calc(100dvh - var(--header-h) - 2 * var(--gp-bottom));
-    overflow: hidden auto;
-    overscroll-behavior: contain;
-    padding: 1rem 1rem 1.05rem;
+    overflow: hidden;
     border-radius: 20px;
     color: var(--ink);
     opacity: 0;
@@ -89,6 +94,37 @@ import { guide, guideEnabled } from '../data/guide';
   }
   .guide-prompt[hidden] {
     display: none;
+  }
+  /* The content scrolls inside the card on very short screens; the glass,
+     the rail and the close button stay put. */
+  .gp-inner {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    padding: 1rem 1rem 1.05rem;
+  }
+  /* Liquid glass, drawn by the WebGL engine (src/vendor/liquid-glass.js) once
+     the card is opened: a refracting rim, dispersion and glare over a soft
+     field of brand light. Until then, and wherever WebGL2 is missing, the
+     card keeps the CSS glass of .glass-panel. */
+  .gp-glass {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    display: none;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .guide-prompt[data-lg='glass']:not([data-state='teaser']) {
+    --gp-fill: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .guide-prompt[data-lg='glass']:not([data-state='teaser']) .gp-glass {
+    display: block;
   }
   .guide-prompt.is-in {
     opacity: 1;
@@ -246,7 +282,7 @@ import { guide, guideEnabled } from '../data/guide';
   .gp-more svg {
     transition: transform var(--ix-base) var(--ix-ease);
   }
-  .gp-more:hover svg {
+  .gp-more:hover .gp-go {
     transform: translateX(3px);
   }
 
@@ -293,16 +329,51 @@ import { guide, guideEnabled } from '../data/guide';
     }
   }
 
-  /* Phones: the teaser keeps clear of Tali's launcher (64px, bottom right);
-     the open card takes the full width and sits just above it. */
+  /* At rest it is a small tab, not a card: one line, nothing to read around
+     and nothing that has to be closed. The card opens only when asked. */
+  .guide-prompt[data-state='teaser'] {
+    display: flex;
+    align-items: center;
+    width: auto;
+    border-radius: 999px;
+  }
+  .guide-prompt[data-state='teaser'] .gp-inner {
+    padding: 0 2.35rem 0 0;
+    overflow: visible;
+  }
+  .guide-prompt[data-state='teaser'] :is(.gp-rail, .gp-head) {
+    display: none;
+  }
+  .guide-prompt[data-state='teaser'] .gp-teaser {
+    margin: 0;
+  }
+  .guide-prompt[data-state='teaser'] .gp-more {
+    min-height: 44px;
+    padding: 0 0.35rem 0 1rem;
+    background: transparent;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 0.86rem;
+    box-shadow: none;
+  }
+  .guide-prompt[data-state='teaser'] .gp-more:hover {
+    background: transparent;
+    color: var(--red-text);
+  }
+  .gp-doc {
+    color: var(--red-text);
+  }
+  .guide-prompt[data-state='teaser'] .gp-x {
+    top: 50%;
+    right: 0.4rem;
+    translate: 0 -50%;
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Phones: the open card takes the full width and sits just above Tali's
+     launcher (64px, bottom right). */
   @media (max-width: 560px) {
-    .guide-prompt[data-state='teaser'] {
-      width: min(348px, calc(100vw - 2 * var(--gp-gap) - 76px));
-      padding: 0.8rem 0.85rem 0.9rem;
-    }
-    .guide-prompt[data-state='teaser'] .gp-art {
-      display: none;
-    }
     .guide-prompt:not([data-state='teaser']) {
       width: calc(100vw - 2 * var(--gp-gap));
       bottom: calc(var(--gp-bottom) + 76px);
@@ -339,6 +410,9 @@ import { guide, guideEnabled } from '../data/guide';
   const WAIT_MS = 20_000;
   /** While Tali is talking (or open), check again this often. */
   const RETRY_MS = 1500;
+  /** Tali must have been quiet this long before the tab shows (its second
+   *  message follows the first after a short pause). */
+  const TALI_QUIET_MS = 5000;
 
   const card = document.querySelector<HTMLElement>('[data-guide-prompt]');
   const openers = [...document.querySelectorAll<HTMLElement>('[data-guide-open]')];
@@ -369,16 +443,94 @@ import { guide, guideEnabled } from '../data/guide';
 
     let returnTo: HTMLElement | null = null;
     let visible = false;
+
+    // ---- Liquid glass (WebGL), loaded the first time the card opens ----
+    type Glass = { pause(): void; resume(): void; refresh(): void };
+    let glass: Glass | null = null;
+    let glassAsked = false;
+
+    /** What the glass refracts: a pale field with soft brand-colored light. */
+    const glassBackdrop = () => {
+      const c = document.createElement('canvas');
+      c.width = 696;
+      c.height = 960;
+      const g = c.getContext('2d');
+      if (!g) return null;
+      g.fillStyle = '#f7f7fc';
+      g.fillRect(0, 0, c.width, c.height);
+      const glow = (x: number, y: number, r: number, color: string) => {
+        const grad = g.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, color);
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = grad;
+        g.fillRect(0, 0, c.width, c.height);
+      };
+      glow(40, 30, 420, 'rgba(217,64,64,0.34)');
+      glow(680, 180, 380, 'rgba(18,136,207,0.30)');
+      glow(120, 940, 460, 'rgba(18,136,207,0.26)');
+      glow(660, 900, 400, 'rgba(135,54,98,0.26)');
+      glow(350, 480, 300, 'rgba(255,255,255,0.75)');
+      return c;
+    };
+
+    const startGlass = async () => {
+      if (glassAsked) return;
+      glassAsked = true;
+      const canvas = card.querySelector<HTMLCanvasElement>('[data-guide-glass]');
+      const backdrop = glassBackdrop();
+      if (!canvas || !backdrop) return;
+      try {
+        // A UMD file: the bundler hands it over as the default export; loaded
+        // as a plain script it would define the global instead.
+        type Engine = { create(c: HTMLCanvasElement, o: object): Glass | null };
+        const mod = (await import('../vendor/liquid-glass.js')) as { default?: Engine };
+        const engine = mod.default?.create ? mod.default : (globalThis as { LiquidGlass?: Engine }).LiquidGlass;
+        // The canvas needs a size before the engine can draw into it.
+        canvas.style.display = 'block';
+        glass =
+          engine?.create(canvas, {
+            background: backdrop,
+            backgroundColor: '#f7f7fc',
+            preset: 'frosted',
+            maxDpr: 1.5,
+            params: {
+              thickness: 22,
+              refraction: 0.06,
+              dispersion: 9,
+              blur: 6,
+              tint: [255, 255, 255, 0.3],
+              fresnelStrength: 34,
+              glareStrength: 80,
+              glareAngle: -45,
+              shadowStrength: 0,
+            },
+            shapes: [{ element: card, radius: 20, roundness: 2 }],
+            onError: () => {},
+          }) ?? null;
+        canvas.style.display = '';
+        if (!visible) glass?.pause();
+      } catch {
+        // No engine: the CSS glass stays.
+        canvas.style.display = '';
+      }
+    };
     /** The teaser stepped aside for Tali and comes back when Tali is done. */
     let parked = false;
 
-    // Never over Tali: not while its panel is open, and on narrow screens not
-    // while its message bubble is showing (they would share the bottom edge).
+    // One voice at a time: never while Tali's panel is open or its message
+    // bubble is showing, at any screen width.
     const taliRoot = document.querySelector<HTMLElement>('.tali');
     const taliNudge = document.querySelector<HTMLElement>('[data-nudge]');
+    const taliActive = () => !!taliRoot?.classList.contains('is-open') || (!!taliNudge && !taliNudge.hidden);
+    let taliQuietSince = taliActive() ? 0 : Date.now();
+    /** Busy while Tali is showing, and for a short while after. */
     const taliBusy = () => {
-      if (taliRoot?.classList.contains('is-open')) return true;
-      return !!taliNudge && !taliNudge.hidden && window.matchMedia('(max-width: 720px)').matches;
+      if (taliActive()) {
+        taliQuietSince = 0;
+        return true;
+      }
+      if (!taliQuietSince) taliQuietSince = Date.now();
+      return Date.now() - taliQuietSince < TALI_QUIET_MS;
     };
 
     const setState = (state: 'teaser' | 'open' | 'done') => {
@@ -386,6 +538,7 @@ import { guide, guideEnabled } from '../data/guide';
       const open = state !== 'teaser';
       body.hidden = !open;
       expand.setAttribute('aria-expanded', String(open));
+      if (open) void startGlass();
     };
 
     const show = (state: 'teaser' | 'open') => {
@@ -393,6 +546,7 @@ import { guide, guideEnabled } from '../data/guide';
       if (visible) return;
       visible = true;
       card.hidden = false;
+      glass?.resume();
       // Next frame, so the entrance transition runs from the hidden state.
       requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('is-in')));
     };
@@ -402,7 +556,9 @@ import { guide, guideEnabled } from '../data/guide';
       visible = false;
       card.classList.remove('is-in');
       const finish = () => {
-        if (!visible) card.hidden = true;
+        if (visible) return;
+        card.hidden = true;
+        glass?.pause();
       };
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       window.setTimeout(finish, reduce ? 0 : 340);
@@ -460,15 +616,26 @@ import { guide, guideEnabled } from '../data/guide';
     // aside and returns afterwards. An open form stays (Tali itself waits
     // while a visitor is typing in a field).
     if ('MutationObserver' in window) {
-      const yieldToTali = () => {
+      let back = 0;
+      const comeBack = () => {
+        if (!parked) return;
         if (taliBusy()) {
+          back = window.setTimeout(comeBack, RETRY_MS);
+          return;
+        }
+        parked = false;
+        show('teaser');
+      };
+      const yieldToTali = () => {
+        window.clearTimeout(back);
+        if (taliActive()) {
+          taliQuietSince = 0;
           if (visible && card.dataset.state === 'teaser') {
             parked = true;
             hide(false);
           }
         } else if (parked) {
-          parked = false;
-          show('teaser');
+          back = window.setTimeout(comeBack, RETRY_MS);
         }
       };
       const watch = new MutationObserver(yieldToTali);
@@ -514,6 +681,8 @@ import { guide, guideEnabled } from '../data/guide';
       };
       window.addEventListener('scroll', onScroll, { passive: true });
       timer = window.setTimeout(offer, WAIT_MS);
+      // Tali greets shortly after the page loads: its quiet time starts then.
+      taliQuietSince = Date.now();
     }
   } else {
     // No card on this page: links that would open it have nothing to open.

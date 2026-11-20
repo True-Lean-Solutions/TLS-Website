@@ -1145,3 +1145,18 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Open:** the Privacy Policy does not yet describe this collection; it needs a clause before or soon after the form goes live (Himanshu approves every clause). The spreadsheet's "Submissions" tab has no rows and its "Rejected" tab has one, so the contact form's own logging is worth a check.
 - **Checked:** `astro check` and `build`; in a browser at 360, 768, 1024 and 1440 px with a local endpoint: the triggers, validation, the confirmation, dismissal and its 14 days, the footer link, Escape and focus return, the honeypot, the post's card, and that the card and Tali never overlap.
 
+## 2026-11-21: The guide offer is a tab, not a pop-up
+
+- **Reported (Hemang):** Tali's message bubble and the guide card both asking for attention looked like too many pop-ups, and one more thing to close.
+- **Now:** the guide arrives as a one-line glass tab, "Free field guide", bottom left. It carries no card until the visitor chooses it, so there is nothing to read around and nothing that has to be closed (its small close button still hides it for 14 days).
+- **One voice at a time:** the tab never shows while Tali's bubble or panel is showing, at any width (before, only on narrow screens), and it steps aside if Tali speaks up later. Tali is unchanged.
+- The triggers, limits and the card itself are as recorded above.- **No flicker:** the tab waits until Tali has been quiet for five seconds, so it does not appear between Tali's first and second message.
+
+## 2026-11-21: The WebGL liquid-glass engine on the guide card
+
+- **Asked (Hemang):** use the liquid-glass skill's effect on the card itself.
+- **Now:** the opened card is drawn by the skill's engine (`src/vendor/liquid-glass.js`, v1.1.0, MIT notice in `src/vendor/README.md`): a refracting rim, dispersion and glare. This reverses the 2026-11-18 note for this one component.
+- **What it refracts:** the engine can only refract a picture it draws itself, not the live page behind the card. So the card carries its own backdrop, a pale field with soft red, plum and blue light drawn in code, and the glass bends that. The card is therefore no longer see-through when open; it reads as a lit glass slab.
+- **Cost kept low:** the engine (about 34 KB) loads only when a visitor opens the card, never on page load, and pauses while the card is hidden. The one-line tab keeps the CSS glass.
+- **Fallback:** without WebGL2 or JavaScript the card keeps the `.glass-panel` look. Reduced transparency and reduced motion are honored by the engine.
+
