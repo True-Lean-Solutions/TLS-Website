@@ -1173,3 +1173,12 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Now:** the script only writes the lead to the "Guide Leads" tab. It sends nothing, so it needs no mail permission, no sender address and no daily cap. The sheet's Email Status columns are replaced by "Asked Before".
 - **On the site:** the button reads "Download the guide"; the notice says the guide downloads right away and that TLS may email to follow up; the confirmation points to the downloads folder and keeps the plain download link.
 - **Known cost:** nothing verifies the address any more.
+
+## 2026-11-21: The field-guide lead form is live
+
+- **Go-ahead (Hemang):** deploy the script and switch the form on.
+- **Script:** project "TLS Guide Leads", bound to the "TLS LEADS From Website" spreadsheet, deployed as a web app (version 1; execute as the deploying account, access: anyone) from Hemang's own Google account. If that account loses edit access to the spreadsheet, the form stops recording leads.
+- **Checked against the live script before switching on:** an accepted lead landed in "Guide Leads" and a honeypot submission in "Guide Leads Rejected".
+- **Site:** `site.guideEndpoint` now holds the deployment URL, so the tab, the card, the footer link and the gated card in the 2027 post are on.
+- **Still open:** the Privacy Policy clause for this collection.
+

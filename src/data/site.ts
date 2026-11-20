@@ -43,7 +43,8 @@ export const site = {
    * this is empty the lead form is switched off everywhere: no floating card,
    * no footer link, and the post's download card keeps its direct download.
    */
-  guideEndpoint: '',
+  guideEndpoint:
+    'https://script.google.com/macros/s/AKfycby4BcqW3EYf159ykBnUnRxAUAnc_jZtsWBzqKai60U5EqdXXQd3UsDJrJ6u65R3wK9W/exec',
 } as const;
 
 /** Approved CTAs (v2.3 §09). Never "Get Started" or "Request a Quote". */
