@@ -1160,3 +1160,10 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - **Cost kept low:** the engine (about 34 KB) loads only when a visitor opens the card, never on page load, and pauses while the card is hidden. The one-line tab keeps the CSS glass.
 - **Fallback:** without WebGL2 or JavaScript the card keeps the `.glass-panel` look. Reduced transparency and reduced motion are honored by the engine.
 
+## 2026-11-21: The guide downloads on submit; the card links to its post
+
+- **Asked (Hemang):** when a visitor gives a name and an email, download the PDF in their browser straight away; and link the card's title to the Insights post of the same name.
+- **Now:** submitting the form saves the PDF at once (a same-site download, started inside the click) and still emails a copy. The confirmation says so and carries a plain download link in case a browser blocks the automatic one. This replaces "delivery by email only" above.
+- **Trade-off, told to Hemang:** the download no longer depends on the address being real, so some leads will carry mistyped or made-up emails. The emailed copy's status in the sheet ("Sent" or "Failed") still shows which addresses work.
+- **The card's title** links to `/insights/dont-carry-that-problem-into-2027/` (`guide.post`). The button is now "Get the guide".
+

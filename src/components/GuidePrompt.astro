@@ -13,6 +13,7 @@
  */
 import GuideForm from './GuideForm.astro';
 import { guide, guideEnabled } from '../data/guide';
+import { href as withBase } from '../data/site';
 ---
 
 {
@@ -46,7 +47,9 @@ import { guide, guideEnabled } from '../data/guide';
         </span>
         <div class="gp-copy">
           <p class="gp-kicker">{guide.kicker}</p>
-          <p class="gp-title" id="gp-title">{guide.title}</p>
+          <p class="gp-title" id="gp-title">
+            <a href={withBase(guide.post)}>{guide.title}</a>
+          </p>
         </div>
       </div>
 
@@ -199,6 +202,25 @@ import { guide, guideEnabled } from '../data/guide';
     line-height: 1.25;
     color: var(--ink);
     text-wrap: balance;
+  }
+
+  /* The title leads to the guide's own Insights post. */
+  .gp-title a {
+    color: inherit;
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat;
+    transition:
+      color var(--ix-fast) ease,
+      background-size 300ms var(--ix-ease);
+  }
+  .gp-title a:is(:hover, :focus-visible) {
+    color: var(--red-text);
+    background-size: 100% 1.5px;
+  }
+  .gp-title a:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   /* The guide as a small page stack, like the download card in the post. */

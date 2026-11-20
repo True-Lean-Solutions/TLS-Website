@@ -1,7 +1,7 @@
 ---
 /**
- * The field-guide lead form: name and email, then the guide arrives by email
- * (Hemang, 2026-11-21). Used by the floating card (GuidePrompt) and by the
+ * The field-guide lead form: name and email, then the PDF downloads in the
+ * browser straight away and a copy arrives by email (Hemang, 2026-11-21). Used by the floating card (GuidePrompt) and by the
  * download card inside a post, so a page can hold more than one: every id is
  * prefixed and the script below wires each form on its own.
  *
@@ -34,6 +34,8 @@ const id = (s: string) => `${idPrefix}-${s}`;
   data-endpoint={site.guideEndpoint}
   data-guide={guide.id}
   data-source={source}
+  data-file={withBase(guide.file)}
+  data-file-name={guide.downloadName}
 >
   <div class="gf-fields">
     <div class="gf-field">
@@ -63,7 +65,7 @@ const id = (s: string) => `${idPrefix}-${s}`;
   </button>
 
   <p class="gf-notice">
-    We'll email the guide to this address and may follow up about it. See our
+    The guide downloads right away. We'll also email a copy to this address and may follow up about it. See our
     <a href={withBase('/privacy-policy/')}>Privacy Policy</a>.
   </p>
 
@@ -77,9 +79,10 @@ const id = (s: string) => `${idPrefix}-${s}`;
 <div class:list={['guide-done', { 'guide-done--dark': dark }]} data-guide-done role="status" tabindex="-1" hidden>
   <svg class="gd-tick" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
   <div>
-    <p class="gd-title">The guide is on its way.</p>
+    <p class="gd-title">Your guide is downloading.</p>
     <p class="gd-text">
-      Check <strong data-guide-sent-to>your inbox</strong> in a few minutes, and your spam folder if it isn't there.
+      We've also emailed a copy to <strong data-guide-sent-to>your inbox</strong>. If the download did not start,
+      <a href={withBase(guide.file)} download={guide.downloadName}>download the PDF here</a>.
     </p>
   </div>
 </div>
@@ -277,6 +280,13 @@ const id = (s: string) => `${idPrefix}-${s}`;
     font-weight: 700;
     font-size: 0.98rem;
   }
+  .gd-text a {
+    color: var(--blue-text);
+    font-weight: 500;
+  }
+  .guide-done--dark .gd-text a {
+    color: #9bdcff;
+  }
   .gd-text {
     margin-top: 0.2rem;
     font-size: 0.88rem;
@@ -368,6 +378,20 @@ const id = (s: string) => `${idPrefix}-${s}`;
     };
     [name, email].forEach((f) => f.addEventListener('input', () => f.removeAttribute('aria-invalid')));
 
+    /** Save the PDF through a temporary same-site link (no navigation). */
+    const download = () => {
+      const file = form.dataset.file;
+      if (!file) return;
+      const link = document.createElement('a');
+      link.href = file;
+      link.download = form.dataset.fileName ?? '';
+      link.rel = 'noopener';
+      link.hidden = true;
+      document.body.append(link);
+      link.click();
+      link.remove();
+    };
+
     const confirm = (address: string) => {
       const to = done.querySelector<HTMLElement>('[data-guide-sent-to]');
       if (to && address) to.textContent = address;
@@ -393,8 +417,10 @@ const id = (s: string) => `${idPrefix}-${s}`;
       button.disabled = true;
       form.classList.add('is-sending');
 
-      // Honeypot filled → a bot. Show the confirmation, send nothing.
+      // Honeypot filled → a bot. Show the confirmation, send and save nothing.
       if (!honeypot || honeypot.value.trim() === '') {
+        // Inside the click itself, so the browser treats the download as asked for.
+        download();
         const params = new URLSearchParams({
           form: 'field-guide',
           guide: form.dataset.guide ?? '',

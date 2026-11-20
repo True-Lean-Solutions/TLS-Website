@@ -7,7 +7,7 @@
  *
  * Lead magnet (Hemang, 2026-11-21): when the file is the current guide
  * (data/guide.ts) and its form is live, the button gives way to the name and
- * email form, and the guide arrives by email instead of downloading here.
+ * email form; the PDF then downloads here and a copy goes out by email.
  */
 import Icon from '../Icon.astro';
 import GuideForm from '../GuideForm.astro';
@@ -49,7 +49,7 @@ const gated = guideEnabled && file === guide.file;
         <div class="dl-form">
           <p class="dl-form-lead">Tell us where to send it.</p>
           <GuideForm idPrefix="dl" source="post" dark />
-          {note && <p class="dl-note dl-note--form">{note}, sent to your inbox</p>}
+          {note && <p class="dl-note dl-note--form">{note}</p>}
         </div>
       ) : (
         <div class="dl-actions">

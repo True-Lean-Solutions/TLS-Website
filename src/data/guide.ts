@@ -16,7 +16,11 @@ export const guide = {
   facts: ['5 practical steps', '6 printable worksheets', '18 pages'],
   /** Public path of the PDF; a download card for this file becomes the form. */
   file: '/resources/dont-carry-that-problem-into-2027-field-guide.pdf',
-  button: 'Email me the guide',
+  /** The Insights post the guide belongs to; the card's title links to it. */
+  post: '/insights/dont-carry-that-problem-into-2027/',
+  /** Name the browser saves the PDF under. */
+  downloadName: 'Dont-Carry-That-Problem-Into-2027-Field-Guide.pdf',
+  button: 'Get the guide',
   /** The guide is tied to the year end: the floating card stops after this day. */
   lastDay: '2026-12-31',
   /** Pages where the floating card never appears. */

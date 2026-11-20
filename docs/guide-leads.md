@@ -8,7 +8,7 @@ The site offers one guide for a name and an email address (Hemang, 2026-11-21). 
 |---|---|---|
 | Guide settings | `src/data/guide.ts` | Title, promise, the PDF's path, the last day the floating card shows, the pages where it never shows |
 | Endpoint | `site.guideEndpoint` in `src/data/site.ts` | The Apps Script URL. **Empty means off:** no floating card, no footer link, and the post's download card keeps its direct download |
-| Form | `src/components/GuideForm.astro` | Name and email. Sends the same way as the contact form (URLSearchParams, fire-and-forget, honeypot, time trap) |
+| Form | `src/components/GuideForm.astro` | Name and email, then the PDF downloads in the browser at once (and a copy is emailed). Sends the same way as the contact form (URLSearchParams, fire-and-forget, honeypot, time trap) |
 | Floating card | `src/components/GuidePrompt.astro` | The liquid-glass card, bottom left, on every page |
 | Post card | `src/components/blocks/Download.astro` | A download block whose file is the guide shows the form instead of a download button |
 | Footer link | `src/components/Footer.astro` | "Free field guide" in the legal bar opens the card |
