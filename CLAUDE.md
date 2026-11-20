@@ -23,7 +23,7 @@ When sources conflict, the brand guide wins on tagline, color, imagery and claim
   - The "35% operational costs" and "45 → 22 days" claims are unverified. Never publish them.
   - Every number in the mock-ups is a placeholder. Never publish one.
   - Testimonials come from the reviews sheet, verbatim, attributed exactly as the sheet gives them.
-- **No Google Docs, Sheets, Apps Script content or Drive hotlinks at build time or runtime.** Import content once into the repo. The contact form's Apps Script endpoint is the single exception, and it only receives data.
+- **No Google Docs, Sheets, Apps Script content or Drive hotlinks at build time or runtime.** Import content once into the repo. The two form endpoints are the only exceptions, and they only receive data: the contact form's (`site.contactEndpoint`) and the field-guide lead form's (`site.guideEndpoint`, Hemang 2026-11-21; see `docs/guide-leads.md`).
 - **You may draft and revise page copy; you may not invent claims.** Writing and reworking marketing copy off the §1 baseline is expected — headings, transitions, section framing, calls to action drawn from v2.3 §09. What you must never fabricate is a *claim about TLS*: a metric, a client, a testimonial, a partnership, a capability, a date, or any specific factual assertion that no source supports. When a layout needs a fact you don't have, ask. UI micro-copy (for example "Read more", "Menu", "Search insights", form validation messages) is always fine.
 - **No Tech Transpire branding.** No Tech Transpire logos, colors or visual world (mountains, paths, summits). **Exception, now settled:** the About page keeps its "True Lean Solutions and Tech Transpire" text section (Himanshu, 2026-09-28). That is a written section only — it introduces no Tech Transpire logo, color, or imagery, and no `@techtranspire.com` address appears anywhere on the site.
 - **CTAs come from v2.3 §09.** The primary CTA is "Discuss Your Project". Never use "Get Started" or "Request a Quote".
@@ -58,6 +58,7 @@ Where the answer would not change what you build, proceed and state the assumpti
   - nav dropdowns and the mobile menu;
   - Insights search and topic filter;
   - the contact form;
+  - the field-guide lead form and its floating card (`GuideForm.astro`, `GuidePrompt.astro`; see `docs/guide-leads.md`);
   - the interaction layer (`src/scripts/motion.ts` + `src/styles/motion.css`: scroll reveals, cursor light, magnetic CTAs; see `docs/decisions.md`, 2026-09-28). Reuse its utilities (`.glass-icon`, `.ix-card`, `.ix-light`, `data-reveal`) rather than adding one-off animations.
   - the scroll layer (`src/scripts/scroll/`: GSAP + ScrollTrigger + SplitText, Lenis smooth scrolling; see `docs/decisions.md`, 2026-09-29). It applies itself site-wide from existing hooks (`SectionHeading`, `data-reveal` groups, `.ix-card`, the hero components). New pages get it automatically; add a new *kind* of motion there, in the matching module, never inline on a page. Reveals use opacity only (never `visibility`), so content stays focusable.
   Everything else ships as static HTML.
@@ -170,7 +171,7 @@ Page `<title>` and meta description come from the `TLS: Website Pages (2026-09-2
   - Columns (since 2026-09-29, Hemang's footer reference), separated by hairlines: brand (lockup, the approved statement "Solve the Right Problem. Build the Right Solution.", positioning, social circles), Quick Links (the header's navigation), Solutions (all ten since 2026-11-18), Latest Insights (three newest posts with their covers and categories, from the Insights collection), Contact (email, phone, the "Discuss Your Project" CTA). A back-to-top button sits in the legal bar.
   - Contact column: email `success@trueleansolutions.com`, phone (941) 777-5326, LinkedIn `https://www.linkedin.com/company/108455615/`, Facebook `https://www.facebook.com/profile.php?id=61585073567371`, YouTube `https://www.youtube.com/@TLS-TrueLeanSolutions` (added 2026-11-20).
   - © with the build year computed at build time, alongside links to Privacy Policy (`/privacy-policy/`) and Terms of Service (`/terms-of-service/`).
-  - No newsletter/"Stay Connected" capture in v1. (YouTube was out of v1 until the channel existed; its icon is in the footer since 2026-11-20.)
+  - No newsletter/"Stay Connected" capture in v1. The field-guide lead form is the one capture on the site (Hemang, 2026-11-21): its "Free field guide" link sits in the legal bar while `site.guideEndpoint` is set. (YouTube was out of v1 until the channel existed; its icon is in the footer since 2026-11-20.)
 
 ## Design tokens
 
@@ -247,7 +248,7 @@ Keep this mechanism exactly. It was debugged three times in Phase 1, and replaci
 - Keep `docs/references/README.md` current when references are added.
 - Out of scope for v1:
   - (Tali, the site assistant, is now **live**, brought forward from v1.1 by Hemang on 2026-10-05 — see `docs/tali.md`.)
-  - newsletter / "Stay Connected" capture (dropped 2026-09-28);
+  - newsletter / "Stay Connected" capture (dropped 2026-09-28; the field-guide lead form, added 2026-11-21, is a guide request and not a newsletter);
   - dark mode;
   - **Referral Partner Program / FAQ pages (dropped 2026-09-28** — handled externally at akhani.us, the referral partner portal).
   - (Privacy Policy and Terms of Service are now **in** v1 — see the Pages table.)

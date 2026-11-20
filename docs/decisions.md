@@ -1128,3 +1128,42 @@ Tali answers those questions instead. `knowledge.ts` gains an **Executive Adviso
 - This changes the 2026-09-29 note "no new image" for this fold.
 - **Position (same day, Hemang):** on desktop the model stands beside the four cards, centered on them and about as tall as the four together, and the space beside the heading is left clear. The picture had been centered on the whole section. The model's left edge is still worked out from the section's width; only its vertical place changed (it takes the center of the cards' row). Tablet and phone layouts are unchanged.
 - **Fix:** the floor's fill no longer reaches the drawing's own edge, which had shown as a faint hairline along the top while the scroll story scaled the model.
+
+## 2026-11-21: The field guide becomes a lead magnet
+
+- **Asked (Hemang):** offer "Don't Carry That Problem Into 2027: The Field Guide" for a name and an email address, on every page; turn the post's existing download card into that form; email the PDF automatically from `success@trueleansolutions.com`; record leads in a new "Guide Leads" tab of the "TLS LEADS From Website" spreadsheet; no consent checkbox; use the site's liquid glass.
+- **This reverses two v1 rules.** "No newsletter/Stay Connected capture" (2026-09-28) no longer covers a guide request, and the contact form is no longer the only Apps Script endpoint: `site.guideEndpoint` is the second. Like the first, it only receives data.
+- **Off until the endpoint is set.** `site.guideEndpoint` is empty in this change, so nothing visitors see is different yet: no floating card, no footer link, and the post's card still downloads the PDF directly. Setting the URL switches all three on. Steps: `docs/guide-leads.md`.
+- **Floating card (`GuidePrompt.astro`):** bottom left, because Tali has the bottom right. Not a modal: it never covers the page, takes focus or blocks scrolling. It arrives as a teaser after 30% scroll or 20 seconds; the form opens only when asked. It keeps out of Tali's way, stays off Contact and the legal pages, shows at most three times in 14 days, stays away 14 days after a dismissal and for good once the guide is sent. It stops after 2026-12-31 (`guide.lastDay`), because the guide is about the year end.
+- **Liquid glass:** the existing `.glass-panel` utility with the cursor light. The skill's WebGL engine was not added, for the reason recorded on 2026-11-18 (it refracts images and canvases, not live page content, and this card floats over the page).
+- **The post's card (`blocks/Download.astro`):** a download block whose file is the current guide shows the form in place of the button. Any other download block is unchanged.
+- **Footer:** "Free field guide" in the legal bar opens the card, so a visitor who dismissed it can still ask.
+- **No checkbox (Hemang):** the line under the button says the guide will be emailed and that TLS may follow up, with a link to the Privacy Policy. The time that line was on screen is stored with the lead. Hemang was told that marketing email to the UK, Canada and Australia normally needs consent.
+- **Delivery by email only:** the confirmation gives no download link, so the address has to be real. The PDF's public URL still works for anyone who has it.
+- **Spam and abuse:** the contact form's honeypot and time trap, checked again in the script; one email per address per guide in 24 hours; a cap of 150 emails a day; rejected submissions logged to their own tab.
+- **The script is in the repo** (`docs/apps-script/guide-leads.gs`) as the copy of record. It is bound to the spreadsheet, so no spreadsheet ID is published here.
+- **Open:** the Privacy Policy does not yet describe this collection; it needs a clause before or soon after the form goes live (Himanshu approves every clause). The spreadsheet's "Submissions" tab has no rows and its "Rejected" tab has one, so the contact form's own logging is worth a check.
+- **Checked:** `astro check` and `build`; in a browser at 360, 768, 1024 and 1440 px with a local endpoint: the triggers, validation, the confirmation, dismissal and its 14 days, the footer link, Escape and focus return, the honeypot, the post's card, and that the card and Tali never overlap.
+
+## 2026-11-21: The guide offer is a tab, not a pop-up
+
+- **Reported (Hemang):** Tali's message bubble and the guide card both asking for attention looked like too many pop-ups, and one more thing to close.
+- **Now:** the guide arrives as a one-line glass tab, "Free field guide", bottom left. It carries no card until the visitor chooses it, so there is nothing to read around and nothing that has to be closed (its small close button still hides it for 14 days).
+- **One voice at a time:** the tab never shows while Tali's bubble or panel is showing, at any width (before, only on narrow screens), and it steps aside if Tali speaks up later. Tali is unchanged.
+- The triggers, limits and the card itself are as recorded above.- **No flicker:** the tab waits until Tali has been quiet for five seconds, so it does not appear between Tali's first and second message.
+
+## 2026-11-21: The WebGL liquid-glass engine on the guide card
+
+- **Asked (Hemang):** use the liquid-glass skill's effect on the card itself.
+- **Now:** the opened card is drawn by the skill's engine (`src/vendor/liquid-glass.js`, v1.1.0, MIT notice in `src/vendor/README.md`): a refracting rim, dispersion and glare. This reverses the 2026-11-18 note for this one component.
+- **What it refracts:** the engine can only refract a picture it draws itself, not the live page behind the card. So the card carries its own backdrop, a pale field with soft red, plum and blue light drawn in code, and the glass bends that. The card is therefore no longer see-through when open; it reads as a lit glass slab.
+- **Cost kept low:** the engine (about 34 KB) loads only when a visitor opens the card, never on page load, and pauses while the card is hidden. The one-line tab keeps the CSS glass.
+- **Fallback:** without WebGL2 or JavaScript the card keeps the `.glass-panel` look. Reduced transparency and reduced motion are honored by the engine.
+
+## 2026-11-21: The guide downloads on submit; the card links to its post
+
+- **Asked (Hemang):** when a visitor gives a name and an email, download the PDF in their browser straight away; and link the card's title to the Insights post of the same name.
+- **Now:** submitting the form saves the PDF at once (a same-site download, started inside the click) and still emails a copy. The confirmation says so and carries a plain download link in case a browser blocks the automatic one. This replaces "delivery by email only" above.
+- **Trade-off, told to Hemang:** the download no longer depends on the address being real, so some leads will carry mistyped or made-up emails. The emailed copy's status in the sheet ("Sent" or "Failed") still shows which addresses work.
+- **The card's title** links to `/insights/dont-carry-that-problem-into-2027/` (`guide.post`). The button is now "Get the guide".
+

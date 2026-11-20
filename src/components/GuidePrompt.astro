@@ -1,0 +1,713 @@
+---
+/**
+ * The floating field-guide card (Hemang, 2026-11-21): a small liquid-glass
+ * card in the bottom-left corner (Tali has the bottom-right) that offers the
+ * guide for a name and an email. It is not a modal: it never covers the page,
+ * never takes focus on its own and never blocks scrolling.
+ *
+ * It arrives as a one-line tab, never as a pop-up, and never while Tali is
+ * speaking (Hemang, 2026-11-21: two prompts at once looked pushy). The card
+ * with the form opens only when the visitor asks.
+ * When and how often it shows is in the script below. It renders only while
+ * the form's endpoint is set (see data/guide.ts).
+ */
+import GuideForm from './GuideForm.astro';
+import { guide, guideEnabled } from '../data/guide';
+import { href as withBase } from '../data/site';
+---
+
+{
+  guideEnabled && (
+    <aside
+      class="guide-prompt glass-panel ix-light"
+      id="guide-prompt"
+      aria-labelledby="gp-title"
+      data-guide-prompt
+      data-state="teaser"
+      data-last-day={guide.lastDay}
+      data-quiet={guide.quietPaths.join(',')}
+      hidden
+    >
+      <canvas class="gp-glass" data-guide-glass />
+      <span class="gp-rail" aria-hidden="true" />
+      <button type="button" class="gp-x" data-guide-close aria-label="Hide the field guide offer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+
+      <div class="gp-inner">
+      <div class="gp-head">
+        <span class="gp-art" aria-hidden="true">
+          <span class="gp-page gp-page--back" />
+          <span class="gp-page gp-page--front">
+            <span class="gp-line gp-line--t" />
+            <span class="gp-line gp-line--red" />
+            <span class="gp-line" />
+            <span class="gp-line gp-line--s" />
+          </span>
+        </span>
+        <div class="gp-copy">
+          <p class="gp-kicker">{guide.kicker}</p>
+          <p class="gp-title" id="gp-title">
+            <a href={withBase(guide.post)}>{guide.title}</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="gp-teaser">
+        <button type="button" class="gp-more" data-guide-expand aria-expanded="false" aria-controls="gp-body">
+          <svg class="gp-doc" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z" /><path d="M14 3v5h5M9 13h6M9 17h4" /></svg>
+          <span>{guide.kicker}</span>
+          <svg class="gp-go" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </button>
+      </div>
+
+      <div class="gp-body" id="gp-body" hidden>
+        <p class="gp-promise">{guide.promise}</p>
+        <ul class="gp-facts">
+          {guide.facts.map((f) => <li>{f}</li>)}
+        </ul>
+        <GuideForm idPrefix="gp" source="popup" />
+      </div>
+      </div>
+    </aside>
+  )
+}
+
+<style>
+  .guide-prompt {
+    --gp-fill: rgba(255, 255, 255, 0.86);
+    --gp-gap: max(16px, env(safe-area-inset-left));
+    --gp-bottom: max(16px, env(safe-area-inset-bottom));
+    position: fixed;
+    left: var(--gp-gap);
+    bottom: var(--gp-bottom);
+    /* Above the page and the header, below Tali (900). */
+    z-index: 850;
+    width: min(348px, calc(100vw - 2 * var(--gp-gap)));
+    display: flex;
+    max-height: calc(100dvh - var(--header-h) - 2 * var(--gp-bottom));
+    overflow: hidden;
+    border-radius: 20px;
+    color: var(--ink);
+    opacity: 0;
+    translate: 0 14px;
+    transition:
+      opacity 320ms ease,
+      translate 520ms var(--ix-ease);
+  }
+  .guide-prompt[hidden] {
+    display: none;
+  }
+  /* The content scrolls inside the card on very short screens; the glass,
+     the rail and the close button stay put. */
+  .gp-inner {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    padding: 1rem 1rem 1.05rem;
+  }
+  /* Liquid glass, drawn by the WebGL engine (src/vendor/liquid-glass.js) once
+     the card is opened: a refracting rim, dispersion and glare over a soft
+     field of brand light. Until then, and wherever WebGL2 is missing, the
+     card keeps the CSS glass of .glass-panel. */
+  .gp-glass {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    display: none;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .guide-prompt[data-lg='glass']:not([data-state='teaser']) {
+    --gp-fill: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .guide-prompt[data-lg='glass']:not([data-state='teaser']) .gp-glass {
+    display: block;
+  }
+  .guide-prompt.is-in {
+    opacity: 1;
+    translate: 0 0;
+  }
+  /* The brand gradient as a hairline along the top edge. */
+  .gp-rail {
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    border-radius: 0 0 2px 2px;
+    background: var(--grad-h);
+  }
+  .gp-x {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.45rem;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-2);
+    cursor: pointer;
+    transition:
+      background-color var(--ix-fast) ease,
+      color var(--ix-fast) ease;
+  }
+  /* A 44px touch target around the 32px button. */
+  .gp-x::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+  .gp-x:hover {
+    background: rgba(13, 13, 13, 0.07);
+    color: var(--ink);
+  }
+  .gp-x:focus-visible,
+  .gp-more:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  .gp-head {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding-right: 1.9rem;
+  }
+  .gp-copy {
+    min-width: 0;
+  }
+  .gp-kicker {
+    font-family: var(--font-head);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--red-text);
+  }
+  .gp-title {
+    margin-top: 0.2rem;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+
+  /* The title leads to the guide's own Insights post. */
+  .gp-title a {
+    color: inherit;
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat;
+    transition:
+      color var(--ix-fast) ease,
+      background-size 300ms var(--ix-ease);
+  }
+  .gp-title a:is(:hover, :focus-visible) {
+    color: var(--red-text);
+    background-size: 100% 1.5px;
+  }
+  .gp-title a:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* The guide as a small page stack, like the download card in the post. */
+  .gp-art {
+    position: relative;
+    flex: none;
+    width: 44px;
+    aspect-ratio: 3 / 4;
+  }
+  .gp-page {
+    position: absolute;
+    inset: 0;
+    border-radius: 5px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 16px -8px rgba(13, 13, 13, 0.35);
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  .gp-page--back {
+    transform: rotate(8deg) translate(10%, 2%);
+    opacity: 0.7;
+  }
+  .gp-page--front {
+    transform: rotate(-4deg);
+    display: grid;
+    align-content: start;
+    gap: 3px;
+    padding: 7px 6px;
+  }
+  .guide-prompt:hover .gp-page--back {
+    transform: rotate(12deg) translate(14%, 2%);
+  }
+  .gp-line {
+    display: block;
+    height: 2px;
+    width: 86%;
+    border-radius: 2px;
+    background: #d5dae6;
+  }
+  .gp-line--t {
+    height: 4px;
+    background: #141a26;
+  }
+  .gp-line--red {
+    height: 4px;
+    width: 56%;
+    background: var(--red);
+  }
+  .gp-line--s {
+    width: 58%;
+  }
+
+  .gp-teaser {
+    margin-top: 0.85rem;
+  }
+  .guide-prompt[data-state='open'] .gp-teaser,
+  .guide-prompt[data-state='done'] .gp-teaser {
+    display: none;
+  }
+  .gp-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.7rem 1.2rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--red-text);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.92rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 10px 22px -10px rgba(194, 54, 54, 0.8);
+    transition: background-color var(--ix-fast) ease;
+  }
+  .gp-more:hover {
+    background: #a82f2f;
+  }
+  .gp-more svg {
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  .gp-more:hover .gp-go {
+    transform: translateX(3px);
+  }
+
+  .gp-body {
+    margin-top: 0.8rem;
+  }
+  .gp-body[hidden] {
+    display: none;
+  }
+  .gp-promise {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-2);
+  }
+  .gp-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0.65rem 0 0.9rem;
+    padding: 0;
+  }
+  .gp-facts li {
+    padding: 0.28rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(13, 13, 13, 0.06);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.72rem;
+    color: var(--ink);
+  }
+  .guide-prompt[data-state='done'] :is(.gp-promise, .gp-facts) {
+    display: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .guide-prompt[data-state='open'] .gp-body {
+      animation: gp-open 420ms var(--ix-ease) both;
+    }
+  }
+  @keyframes gp-open {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+  }
+
+  /* At rest it is a small tab, not a card: one line, nothing to read around
+     and nothing that has to be closed. The card opens only when asked. */
+  .guide-prompt[data-state='teaser'] {
+    display: flex;
+    align-items: center;
+    width: auto;
+    border-radius: 999px;
+  }
+  .guide-prompt[data-state='teaser'] .gp-inner {
+    padding: 0 2.35rem 0 0;
+    overflow: visible;
+  }
+  .guide-prompt[data-state='teaser'] :is(.gp-rail, .gp-head) {
+    display: none;
+  }
+  .guide-prompt[data-state='teaser'] .gp-teaser {
+    margin: 0;
+  }
+  .guide-prompt[data-state='teaser'] .gp-more {
+    min-height: 44px;
+    padding: 0 0.35rem 0 1rem;
+    background: transparent;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 0.86rem;
+    box-shadow: none;
+  }
+  .guide-prompt[data-state='teaser'] .gp-more:hover {
+    background: transparent;
+    color: var(--red-text);
+  }
+  .gp-doc {
+    color: var(--red-text);
+  }
+  .guide-prompt[data-state='teaser'] .gp-x {
+    top: 50%;
+    right: 0.4rem;
+    translate: 0 -50%;
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Phones: the open card takes the full width and sits just above Tali's
+     launcher (64px, bottom right). */
+  @media (max-width: 560px) {
+    .guide-prompt:not([data-state='teaser']) {
+      width: calc(100vw - 2 * var(--gp-gap));
+      bottom: calc(var(--gp-bottom) + 76px);
+      max-height: calc(100dvh - var(--header-h) - var(--gp-bottom) - 92px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .guide-prompt {
+      translate: none;
+      transition: opacity 200ms ease;
+    }
+    .gp-page,
+    .gp-more svg {
+      transition: none;
+    }
+  }
+  @media print {
+    .guide-prompt {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { GUIDE_DISMISSED_KEY, GUIDE_DONE_KEY, GUIDE_SHOWN_KEY, guideStore } from '../scripts/guide';
+
+  const DAY = 86_400_000;
+  /** After a dismissal the card stays away this long. */
+  const QUIET_AFTER_DISMISS = 14 * DAY;
+  /** It offers itself at most this many times in that same window. */
+  const MAX_AUTO_SHOWS = 3;
+  /** It arrives after this much of the page has been scrolled, or this long. */
+  const SCROLL_SHARE = 0.3;
+  const WAIT_MS = 20_000;
+  /** While Tali is talking (or open), check again this often. */
+  const RETRY_MS = 1500;
+  /** Tali must have been quiet this long before the tab shows (its second
+   *  message follows the first after a short pause). */
+  const TALI_QUIET_MS = 5000;
+
+  const card = document.querySelector<HTMLElement>('[data-guide-prompt]');
+  const openers = [...document.querySelectorAll<HTMLElement>('[data-guide-open]')];
+
+  if (card) {
+    const body = card.querySelector<HTMLElement>('.gp-body')!;
+    const expand = card.querySelector<HTMLButtonElement>('[data-guide-expand]')!;
+    const close = card.querySelector<HTMLButtonElement>('[data-guide-close]')!;
+    const nameField = () => card.querySelector<HTMLInputElement>('input[name="name"]');
+    const inline = document.querySelector<HTMLElement>('[data-guide-inline]');
+
+    const now = Date.now();
+    const num = (key: string) => Number(guideStore.get(key)) || 0;
+    // The last day runs to its end in the visitor's own time zone.
+    const lastDay = new Date(`${card.dataset.lastDay}T23:59:59`).getTime();
+    const expired = Number.isFinite(lastDay) && now > lastDay;
+    const path = location.pathname.replace(/\/?$/, '/');
+    const quiet = (card.dataset.quiet ?? '').split(',').some((p) => p && path.endsWith(p));
+
+    const shows = (): number[] => {
+      try {
+        const list = JSON.parse(guideStore.get(GUIDE_SHOWN_KEY) ?? '[]');
+        return Array.isArray(list) ? list.filter((t) => typeof t === 'number' && now - t < QUIET_AFTER_DISMISS) : [];
+      } catch {
+        return [];
+      }
+    };
+
+    let returnTo: HTMLElement | null = null;
+    let visible = false;
+
+    // ---- Liquid glass (WebGL), loaded the first time the card opens ----
+    type Glass = { pause(): void; resume(): void; refresh(): void };
+    let glass: Glass | null = null;
+    let glassAsked = false;
+
+    /** What the glass refracts: a pale field with soft brand-colored light. */
+    const glassBackdrop = () => {
+      const c = document.createElement('canvas');
+      c.width = 696;
+      c.height = 960;
+      const g = c.getContext('2d');
+      if (!g) return null;
+      g.fillStyle = '#f7f7fc';
+      g.fillRect(0, 0, c.width, c.height);
+      const glow = (x: number, y: number, r: number, color: string) => {
+        const grad = g.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, color);
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = grad;
+        g.fillRect(0, 0, c.width, c.height);
+      };
+      glow(40, 30, 420, 'rgba(217,64,64,0.34)');
+      glow(680, 180, 380, 'rgba(18,136,207,0.30)');
+      glow(120, 940, 460, 'rgba(18,136,207,0.26)');
+      glow(660, 900, 400, 'rgba(135,54,98,0.26)');
+      glow(350, 480, 300, 'rgba(255,255,255,0.75)');
+      return c;
+    };
+
+    const startGlass = async () => {
+      if (glassAsked) return;
+      glassAsked = true;
+      const canvas = card.querySelector<HTMLCanvasElement>('[data-guide-glass]');
+      const backdrop = glassBackdrop();
+      if (!canvas || !backdrop) return;
+      try {
+        // A UMD file: the bundler hands it over as the default export; loaded
+        // as a plain script it would define the global instead.
+        type Engine = { create(c: HTMLCanvasElement, o: object): Glass | null };
+        const mod = (await import('../vendor/liquid-glass.js')) as { default?: Engine };
+        const engine = mod.default?.create ? mod.default : (globalThis as { LiquidGlass?: Engine }).LiquidGlass;
+        // The canvas needs a size before the engine can draw into it.
+        canvas.style.display = 'block';
+        glass =
+          engine?.create(canvas, {
+            background: backdrop,
+            backgroundColor: '#f7f7fc',
+            preset: 'frosted',
+            maxDpr: 1.5,
+            params: {
+              thickness: 22,
+              refraction: 0.06,
+              dispersion: 9,
+              blur: 6,
+              tint: [255, 255, 255, 0.3],
+              fresnelStrength: 34,
+              glareStrength: 80,
+              glareAngle: -45,
+              shadowStrength: 0,
+            },
+            shapes: [{ element: card, radius: 20, roundness: 2 }],
+            onError: () => {},
+          }) ?? null;
+        canvas.style.display = '';
+        if (!visible) glass?.pause();
+      } catch {
+        // No engine: the CSS glass stays.
+        canvas.style.display = '';
+      }
+    };
+    /** The teaser stepped aside for Tali and comes back when Tali is done. */
+    let parked = false;
+
+    // One voice at a time: never while Tali's panel is open or its message
+    // bubble is showing, at any screen width.
+    const taliRoot = document.querySelector<HTMLElement>('.tali');
+    const taliNudge = document.querySelector<HTMLElement>('[data-nudge]');
+    const taliActive = () => !!taliRoot?.classList.contains('is-open') || (!!taliNudge && !taliNudge.hidden);
+    let taliQuietSince = taliActive() ? 0 : Date.now();
+    /** Busy while Tali is showing, and for a short while after. */
+    const taliBusy = () => {
+      if (taliActive()) {
+        taliQuietSince = 0;
+        return true;
+      }
+      if (!taliQuietSince) taliQuietSince = Date.now();
+      return Date.now() - taliQuietSince < TALI_QUIET_MS;
+    };
+
+    const setState = (state: 'teaser' | 'open' | 'done') => {
+      card.dataset.state = state;
+      const open = state !== 'teaser';
+      body.hidden = !open;
+      expand.setAttribute('aria-expanded', String(open));
+      if (open) void startGlass();
+    };
+
+    const show = (state: 'teaser' | 'open') => {
+      if (card.dataset.state !== 'done') setState(state);
+      if (visible) return;
+      visible = true;
+      card.hidden = false;
+      glass?.resume();
+      // Next frame, so the entrance transition runs from the hidden state.
+      requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('is-in')));
+    };
+
+    const hide = (remember: boolean) => {
+      if (!visible) return;
+      visible = false;
+      card.classList.remove('is-in');
+      const finish = () => {
+        if (visible) return;
+        card.hidden = true;
+        glass?.pause();
+      };
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.setTimeout(finish, reduce ? 0 : 340);
+      if (remember) guideStore.set(GUIDE_DISMISSED_KEY, String(Date.now()));
+      if (returnTo?.isConnected) returnTo.focus({ preventScroll: true });
+      returnTo = null;
+    };
+
+    expand.addEventListener('click', () => {
+      setState('open');
+      nameField()?.focus({ preventScroll: true });
+    });
+    // Closing after the guide was sent is not a "no": nothing to remember.
+    close.addEventListener('click', () => {
+      parked = false;
+      hide(card.dataset.state !== 'done');
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        hide(card.dataset.state !== 'done');
+      }
+    });
+    document.addEventListener('guide:sent', (e) => {
+      const form = (e as CustomEvent<{ form: HTMLElement }>).detail?.form;
+      if (form && card.contains(form)) setState('done');
+      // Sent from the post's own card while this one is showing: step aside.
+      else hide(false);
+    });
+
+    // "Get the free guide" links elsewhere on the page (the footer). On a
+    // page with the guide's own card, they lead there instead.
+    openers.forEach((opener) => {
+      const wrap = opener.closest<HTMLElement>('[data-guide-open-wrap]') ?? opener;
+      wrap.hidden = expired;
+      if (expired) return;
+      opener.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (inline) {
+          const field = inline.querySelector<HTMLInputElement>('input[name="name"]');
+          const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          inline.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+          (field ?? inline).focus({ preventScroll: true });
+          return;
+        }
+        returnTo = opener;
+        parked = false;
+        show('open');
+        // After the card is displayed, so the field can take focus.
+        requestAnimationFrame(() => nameField()?.focus({ preventScroll: true }));
+      });
+    });
+
+    // Tali speaks up after the teaser is already showing: the teaser steps
+    // aside and returns afterwards. An open form stays (Tali itself waits
+    // while a visitor is typing in a field).
+    if ('MutationObserver' in window) {
+      let back = 0;
+      const comeBack = () => {
+        if (!parked) return;
+        if (taliBusy()) {
+          back = window.setTimeout(comeBack, RETRY_MS);
+          return;
+        }
+        parked = false;
+        show('teaser');
+      };
+      const yieldToTali = () => {
+        window.clearTimeout(back);
+        if (taliActive()) {
+          taliQuietSince = 0;
+          if (visible && card.dataset.state === 'teaser') {
+            parked = true;
+            hide(false);
+          }
+        } else if (parked) {
+          back = window.setTimeout(comeBack, RETRY_MS);
+        }
+      };
+      const watch = new MutationObserver(yieldToTali);
+      if (taliNudge) watch.observe(taliNudge, { attributes: true, attributeFilter: ['hidden'] });
+      if (taliRoot) watch.observe(taliRoot, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // ---- Offering itself ----
+    const mayOffer =
+      !expired &&
+      !quiet &&
+      !inline &&
+      num(GUIDE_DONE_KEY) === 0 &&
+      now - num(GUIDE_DISMISSED_KEY) > QUIET_AFTER_DISMISS &&
+      shows().length < MAX_AUTO_SHOWS;
+
+    if (mayOffer) {
+      let offered = false;
+      let timer = 0;
+
+      // Not while the visitor is typing somewhere (the contact form, search).
+      const typing = () => {
+        const el = document.activeElement;
+        return !!el && el.matches('input, textarea, select, [contenteditable="true"]');
+      };
+
+      const offer = () => {
+        if (offered || visible) return;
+        if (document.hidden || taliBusy() || typing()) {
+          timer = window.setTimeout(offer, RETRY_MS);
+          return;
+        }
+        offered = true;
+        window.removeEventListener('scroll', onScroll);
+        window.clearTimeout(timer);
+        guideStore.set(GUIDE_SHOWN_KEY, JSON.stringify([...shows(), Date.now()]));
+        show('teaser');
+      };
+
+      const onScroll = () => {
+        const room = document.documentElement.scrollHeight - window.innerHeight;
+        if (room > 0 && window.scrollY / room >= SCROLL_SHARE) offer();
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      timer = window.setTimeout(offer, WAIT_MS);
+      // Tali greets shortly after the page loads: its quiet time starts then.
+      taliQuietSince = Date.now();
+    }
+  } else {
+    // No card on this page: links that would open it have nothing to open.
+    openers.forEach((opener) => ((opener.closest<HTMLElement>('[data-guide-open-wrap]') ?? opener).hidden = true));
+  }
+</script>

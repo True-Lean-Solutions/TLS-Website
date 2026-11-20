@@ -4,9 +4,15 @@
  * with what the file is, what's inside, and one download button. The file
  * lives in public/ (never a Drive link). The page stack on the right is drawn
  * in CSS.
+ *
+ * Lead magnet (Hemang, 2026-11-21): when the file is the current guide
+ * (data/guide.ts) and its form is live, the button gives way to the name and
+ * email form; the PDF then downloads here and a copy goes out by email.
  */
 import Icon from '../Icon.astro';
+import GuideForm from '../GuideForm.astro';
 import { href as withBase } from '../../data/site';
+import { guide, guideEnabled } from '../../data/guide';
 
 interface Props {
   eyebrow?: string;
@@ -18,9 +24,10 @@ interface Props {
   note?: string;
 }
 const { eyebrow, title, body, items = [], file, button = 'Download the free PDF', note } = Astro.props;
+const gated = guideEnabled && file === guide.file;
 ---
 
-<aside class="dl block-wide ix-light">
+<aside class="dl block-wide ix-light" data-guide-inline={gated ? '' : undefined} tabindex={gated ? -1 : undefined}>
   <div class="dl-copy">
     {eyebrow && <p class="dl-eyebrow">{eyebrow}</p>}
     <h3>{title}</h3>
@@ -37,13 +44,23 @@ const { eyebrow, title, body, items = [], file, button = 'Download the free PDF'
         </ul>
       )
     }
-    <div class="dl-actions">
-      <a class="dl-btn" href={withBase(file)} download data-magnetic>
-        <span>{button}</span>
-        <Icon name="arrow" size={18} class="dl-arrow" />
-      </a>
-      {note && <span class="dl-note">{note}</span>}
-    </div>
+    {
+      gated ? (
+        <div class="dl-form">
+          <p class="dl-form-lead">Tell us where to send it.</p>
+          <GuideForm idPrefix="dl" source="post" dark />
+          {note && <p class="dl-note dl-note--form">{note}</p>}
+        </div>
+      ) : (
+        <div class="dl-actions">
+          <a class="dl-btn" href={withBase(file)} download data-magnetic>
+            <span>{button}</span>
+            <Icon name="arrow" size={18} class="dl-arrow" />
+          </a>
+          {note && <span class="dl-note">{note}</span>}
+        </div>
+      )
+    }
   </div>
   <div class="dl-art" aria-hidden="true">
     <span class="dl-page dl-page--back"></span>
@@ -159,6 +176,33 @@ const { eyebrow, title, body, items = [], file, button = 'Download the free PDF'
   .dl-note {
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.7);
+  }
+  /* The lead form, in place of the download button. */
+  .dl-form {
+    --gf-cols: repeat(2, minmax(0, 1fr));
+    display: grid;
+    gap: 0.75rem;
+    max-width: 34rem;
+    margin-top: 1.5rem;
+    padding-top: 1.3rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+  }
+  .dl-form-lead {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+  }
+  .dl-note--form {
+    margin-top: 0.1rem;
+  }
+  .dl:focus {
+    outline: none;
+  }
+  @media (max-width: 560px) {
+    .dl-form {
+      --gf-cols: 1fr;
+    }
   }
 
   /* The page stack. */

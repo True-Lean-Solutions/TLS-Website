@@ -36,6 +36,14 @@ export const site = {
   /** Apps Script endpoint for the contact form (public, receive-only). */
   contactEndpoint:
     'https://script.google.com/macros/s/AKfycbwPf3eXxyOC_5e9vMMX6bhX8cevN5j9ZHwdvsj36FzzrldTgMCnvH4GhP3LCSPjc7ZcTg/exec',
+
+  /**
+   * Apps Script endpoint for the field-guide lead form (public, receive-only;
+   * Hemang, 2026-11-21). The script is docs/apps-script/guide-leads.gs. While
+   * this is empty the lead form is switched off everywhere: no floating card,
+   * no footer link, and the post's download card keeps its direct download.
+   */
+  guideEndpoint: '',
 } as const;
 
 /** Approved CTAs (v2.3 §09). Never "Get Started" or "Request a Quote". */

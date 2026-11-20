@@ -1,0 +1,442 @@
+---
+/**
+ * The field-guide lead form: name and email, then the PDF downloads in the
+ * browser straight away and a copy arrives by email (Hemang, 2026-11-21). Used by the floating card (GuidePrompt) and by the
+ * download card inside a post, so a page can hold more than one: every id is
+ * prefixed and the script below wires each form on its own.
+ *
+ * Sending follows the contact form's mechanism: POST URLSearchParams (never
+ * JSON), fire-and-forget, the `website` honeypot and the `form_ts` time trap,
+ * both checked again by the Apps Script (docs/apps-script/guide-leads.gs).
+ * There is no consent checkbox (Hemang): the notice under the button says
+ * what will be sent, and the time it was shown is sent as `notice_shown`.
+ */
+import Icon from './Icon.astro';
+import { site, href as withBase } from '../data/site';
+import { guide } from '../data/guide';
+
+interface Props {
+  /** Unique per form on a page, e.g. "gp" or "dl". */
+  idPrefix: string;
+  /** Where the form sits, written to the sheet: "popup" or "post". */
+  source: 'popup' | 'post';
+  /** On a dark surface (the post's download card). */
+  dark?: boolean;
+}
+const { idPrefix, source, dark = false } = Astro.props;
+const id = (s: string) => `${idPrefix}-${s}`;
+---
+
+<form
+  class:list={['guide-form', { 'guide-form--dark': dark }]}
+  novalidate
+  data-guide-form
+  data-endpoint={site.guideEndpoint}
+  data-guide={guide.id}
+  data-source={source}
+  data-file={withBase(guide.file)}
+  data-file-name={guide.downloadName}
+>
+  <div class="gf-fields">
+    <div class="gf-field">
+      <label for={id('name')}>Name</label>
+      <input id={id('name')} name="name" type="text" autocomplete="name" maxlength="120" required aria-describedby={id('err')} />
+    </div>
+    <div class="gf-field">
+      <label for={id('email')}>Work email</label>
+      <input id={id('email')} name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required aria-describedby={id('err')} />
+    </div>
+  </div>
+
+  {/* Honeypot: off-screen, skipped by Tab, hidden from screen readers. */}
+  <div class="gf-hp" aria-hidden="true">
+    <label for={id('website')}>Website</label>
+    <input id={id('website')} name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <p class="gf-err" id={id('err')} role="alert" hidden></p>
+
+  <button class="gf-submit" type="submit">
+    <span class="gf-face">
+      <span>{guide.button}</span>
+      <Icon name="arrow" size={16} class="gf-arrow" />
+    </span>
+    <span class="gf-busy" aria-hidden="true"><span class="gf-spin"></span>Sending…</span>
+  </button>
+
+  <p class="gf-notice">
+    The guide downloads right away. We'll also email a copy to this address and may follow up about it. See our
+    <a href={withBase('/privacy-policy/')}>Privacy Policy</a>.
+  </p>
+
+  <noscript>
+    <p class="gf-ns">
+      This form needs JavaScript. Email <a href={`mailto:${site.email}`}>{site.email}</a> and we'll send the guide.
+    </p>
+  </noscript>
+</form>
+
+<div class:list={['guide-done', { 'guide-done--dark': dark }]} data-guide-done role="status" tabindex="-1" hidden>
+  <svg class="gd-tick" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
+  <div>
+    <p class="gd-title">Your guide is downloading.</p>
+    <p class="gd-text">
+      We've also emailed a copy to <strong data-guide-sent-to>your inbox</strong>. If the download did not start,
+      <a href={withBase(guide.file)} download={guide.downloadName}>download the PDF here</a>.
+    </p>
+  </div>
+</div>
+
+<style>
+  .guide-form {
+    --gf-ink: var(--ink);
+    --gf-sub: var(--text-2);
+    --gf-line: var(--border-2);
+    --gf-field: var(--surface);
+    --gf-link: var(--blue-text);
+    --gf-err: var(--red-text);
+    display: grid;
+    gap: 0.7rem;
+  }
+  .guide-form--dark {
+    --gf-ink: #fff;
+    --gf-sub: rgba(255, 255, 255, 0.78);
+    --gf-line: rgba(255, 255, 255, 0.28);
+    --gf-field: rgba(255, 255, 255, 0.08);
+    --gf-link: #9bdcff;
+    --gf-err: #ffb4b4;
+  }
+  .guide-form[hidden] {
+    display: none;
+  }
+  .gf-fields {
+    display: grid;
+    /* A parent may ask for two columns (the post's download card). */
+    grid-template-columns: var(--gf-cols, 1fr);
+    gap: 0.6rem;
+  }
+  .gf-field {
+    display: grid;
+    gap: 0.3rem;
+  }
+  label {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--gf-ink);
+  }
+  input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--gf-line);
+    border-radius: var(--radius);
+    background: var(--gf-field);
+    color: var(--gf-ink);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    outline: 2px solid transparent;
+    outline-offset: 0;
+    transition:
+      border-color var(--ix-fast) ease,
+      outline-color var(--ix-fast) ease,
+      box-shadow var(--ix-base) var(--ix-ease);
+  }
+  input:focus-visible {
+    outline-color: var(--red);
+    border-color: var(--red);
+    box-shadow: 0 10px 24px -14px rgba(217, 64, 64, 0.5);
+  }
+  .guide-form--dark input:focus-visible {
+    outline-color: #5cc3ff;
+    border-color: #5cc3ff;
+    box-shadow: none;
+  }
+  input[aria-invalid='true'] {
+    border-color: var(--gf-err);
+  }
+  .gf-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .gf-err {
+    font-size: 0.85rem;
+    color: var(--gf-err);
+  }
+  .gf-submit {
+    display: inline-grid;
+    justify-self: start;
+    min-height: 46px;
+    padding: 0.8rem 1.35rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--red-text);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 10px 22px -10px rgba(194, 54, 54, 0.8);
+    transition:
+      background-color var(--ix-fast) ease,
+      transform var(--ix-base) var(--ix-ease);
+  }
+  .gf-submit > * {
+    grid-area: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition:
+      opacity 200ms ease,
+      translate 360ms var(--ix-ease);
+  }
+  .gf-submit :global(.gf-arrow) {
+    transition: transform var(--ix-base) var(--ix-ease);
+  }
+  .gf-submit:hover {
+    background: #a82f2f;
+  }
+  .gf-submit:hover :global(.gf-arrow) {
+    transform: translateX(3px);
+  }
+  .gf-submit:focus-visible {
+    outline: 2px solid var(--gf-ink);
+    outline-offset: 3px;
+  }
+  .gf-busy {
+    opacity: 0;
+    translate: 0 0.6rem;
+  }
+  .gf-spin {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+  }
+  .guide-form.is-sending .gf-submit {
+    cursor: progress;
+  }
+  .guide-form.is-sending .gf-face {
+    opacity: 0;
+    translate: 0 -0.6rem;
+  }
+  .guide-form.is-sending .gf-busy {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .guide-form.is-sending .gf-spin {
+    animation: gf-spin 700ms linear infinite;
+  }
+  .gf-notice,
+  .gf-ns {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--gf-sub);
+  }
+  .gf-notice a,
+  .gf-ns a {
+    color: var(--gf-link);
+  }
+
+  .guide-done {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius);
+    background: var(--blue-tint);
+    border: 1px solid var(--blue-edge);
+    color: var(--ink);
+  }
+  .guide-done[hidden] {
+    display: none;
+  }
+  .guide-done--dark {
+    background: rgba(92, 195, 255, 0.14);
+    border-color: rgba(92, 195, 255, 0.4);
+    color: #fff;
+  }
+  .guide-done:focus-visible {
+    outline: 2px solid var(--blue-text);
+    outline-offset: 2px;
+  }
+  .gd-tick {
+    flex: none;
+    margin-top: 0.1rem;
+    color: var(--blue-text);
+  }
+  .guide-done--dark .gd-tick {
+    color: #5cc3ff;
+  }
+  .gd-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.98rem;
+  }
+  .gd-text a {
+    color: var(--blue-text);
+    font-weight: 500;
+  }
+  .guide-done--dark .gd-text a {
+    color: #9bdcff;
+  }
+  .gd-text {
+    margin-top: 0.2rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .guide-done:not([hidden]) {
+      animation: gf-in 520ms var(--ix-ease) both;
+    }
+    .guide-done:not([hidden]) .gd-tick path {
+      stroke-dasharray: 24;
+      animation: gf-draw 700ms var(--ix-ease) 160ms both;
+    }
+  }
+  @keyframes gf-in {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+  }
+  @keyframes gf-draw {
+    from {
+      stroke-dashoffset: 24;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes gf-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+  @media (forced-colors: active) {
+    input:focus-visible {
+      outline: 3px solid Highlight;
+      outline-offset: 2px;
+    }
+  }
+</style>
+
+<script>
+  import { GUIDE_DONE_KEY, guideStore } from '../scripts/guide';
+
+  /** The form was loaded at this moment; the Apps Script compares it with `submitted`. */
+  const loadedAt = Date.now();
+  const SENDING_MS = 420;
+  // Deliberately loose: the browser's own check runs too, and the Apps Script
+  // has the final say. This only catches "name@host" with no dot.
+  const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  document.querySelectorAll<HTMLFormElement>('[data-guide-form]').forEach((form) => {
+    const endpoint = form.dataset.endpoint ?? '';
+    const done = form.nextElementSibling as HTMLElement | null;
+    const name = form.querySelector<HTMLInputElement>('input[name="name"]');
+    const email = form.querySelector<HTMLInputElement>('input[name="email"]');
+    const honeypot = form.querySelector<HTMLInputElement>('input[name="website"]');
+    const err = form.querySelector<HTMLElement>('.gf-err');
+    const button = form.querySelector<HTMLButtonElement>('.gf-submit');
+    if (!endpoint || !done || !done.matches('[data-guide-done]') || !name || !email || !err || !button) return;
+
+    let busy = false;
+    // When the notice under the button was first on screen (recorded as the
+    // moment the visitor could read what they were agreeing to receive).
+    let noticeShown = '';
+    const notice = form.querySelector('.gf-notice');
+    if (notice && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          noticeShown = new Date().toISOString();
+          io.disconnect();
+        }
+      });
+      io.observe(notice);
+    }
+
+    const fail = (field: HTMLInputElement, message: string) => {
+      field.setAttribute('aria-invalid', 'true');
+      err.textContent = message;
+      err.hidden = false;
+      field.focus();
+    };
+    const clear = () => {
+      name.removeAttribute('aria-invalid');
+      email.removeAttribute('aria-invalid');
+      err.hidden = true;
+      err.textContent = '';
+    };
+    [name, email].forEach((f) => f.addEventListener('input', () => f.removeAttribute('aria-invalid')));
+
+    /** Save the PDF through a temporary same-site link (no navigation). */
+    const download = () => {
+      const file = form.dataset.file;
+      if (!file) return;
+      const link = document.createElement('a');
+      link.href = file;
+      link.download = form.dataset.fileName ?? '';
+      link.rel = 'noopener';
+      link.hidden = true;
+      document.body.append(link);
+      link.click();
+      link.remove();
+    };
+
+    const confirm = (address: string) => {
+      const to = done.querySelector<HTMLElement>('[data-guide-sent-to]');
+      if (to && address) to.textContent = address;
+      form.hidden = true;
+      done.hidden = false;
+      done.focus({ preventScroll: true });
+      guideStore.set(GUIDE_DONE_KEY, String(Date.now()));
+      document.dispatchEvent(new CustomEvent('guide:sent', { detail: { form } }));
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (busy) return;
+      clear();
+
+      const nameValue = name.value.trim();
+      const emailValue = email.value.trim();
+      if (nameValue.length < 2) return fail(name, 'Please enter your name.');
+      if (!emailValue) return fail(email, 'Please enter your email address.');
+      if (!EMAIL.test(emailValue) || !email.checkValidity()) return fail(email, 'That email address does not look right.');
+
+      busy = true;
+      button.disabled = true;
+      form.classList.add('is-sending');
+
+      // Honeypot filled → a bot. Show the confirmation, send and save nothing.
+      if (!honeypot || honeypot.value.trim() === '') {
+        // Inside the click itself, so the browser treats the download as asked for.
+        download();
+        const params = new URLSearchParams({
+          form: 'field-guide',
+          guide: form.dataset.guide ?? '',
+          source: form.dataset.source ?? '',
+          page: location.pathname,
+          name: nameValue,
+          email: emailValue,
+          website: '',
+          form_ts: String(loadedAt),
+          notice_shown: noticeShown || new Date().toISOString(),
+          submitted: new Date().toISOString(),
+        });
+        // Fire-and-forget: Apps Script answers with a redirect the page cannot read.
+        fetch(endpoint, { method: 'POST', body: params, keepalive: true }).catch(() => {});
+      }
+      window.setTimeout(() => confirm(emailValue), SENDING_MS);
+    });
+  });
+</script>

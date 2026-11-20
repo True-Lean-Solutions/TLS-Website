@@ -5,7 +5,8 @@
  * Latest Insights (the three newest posts with their covers), and Contact.
  * Then the legal bar with a back-to-top button. Everything comes from existing
  * sources (site.ts, nav.ts, services.ts, the Insights collection); nothing is
- * duplicated. No newsletter capture in v1 (CLAUDE.md): Contact leads to the
+ * duplicated. No newsletter capture in v1 (CLAUDE.md); the legal bar's "Free
+ * field guide" link opens the lead card while its form is live. Contact leads to the
  * primary CTA instead.
  */
 import Lockup from './Lockup.astro';
@@ -16,6 +17,7 @@ import FooterSocials from './FooterSocials.astro';
 import { site, cta, href as withBase } from '../data/site';
 import { primaryNav, legalLinks } from '../data/nav';
 import { solutions } from '../data/services';
+import { guide, guideEnabled } from '../data/guide';
 
 interface Props {
   /** Three newest published posts; the column is hidden when empty. */
@@ -88,6 +90,16 @@ const solutionLinks = solutions.map((s) => ({ label: s.title, href: s.href }));
               <a href={withBase(l.href)}>{l.label}</a>
             </li>
           ))
+        }
+        {
+          /* Opens the field-guide card (GuidePrompt); shown by its script. */
+          guideEnabled && (
+            <li data-guide-open-wrap hidden>
+              <button type="button" data-guide-open aria-controls="guide-prompt">
+                {guide.kicker}
+              </button>
+            </li>
+          )
         }
       </ul>
       <p class="copyright">© {year} {site.name}. All rights reserved.</p>
@@ -270,7 +282,16 @@ const solutionLinks = solutions.map((s) => ({ label: s.title, href: s.href }));
     margin-inline: 0.85rem;
     color: var(--border-2);
   }
-  .legal a {
+  .legal li[hidden] {
+    display: none;
+  }
+  .legal button {
+    padding: 0;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+  }
+  .legal :is(a, button) {
     font-size: 0.86rem;
     color: var(--text-2);
     text-decoration: none;
@@ -279,7 +300,7 @@ const solutionLinks = solutions.map((s) => ({ label: s.title, href: s.href }));
       color 250ms ease,
       background-size 300ms var(--ix-ease);
   }
-  .legal a:is(:hover, :focus-visible) {
+  .legal :is(a, button):is(:hover, :focus-visible) {
     color: var(--red-text);
     background-size: 100% 1px;
   }
