@@ -1,7 +1,7 @@
 ---
 /**
  * The field-guide lead form: name and email, then the PDF downloads in the
- * browser straight away and a copy arrives by email (Hemang, 2026-11-21). Used by the floating card (GuidePrompt) and by the
+ * browser straight away. Nothing is emailed (Hemang, 2026-11-21). Used by the floating card (GuidePrompt) and by the
  * download card inside a post, so a page can hold more than one: every id is
  * prefixed and the script below wires each form on its own.
  *
@@ -61,11 +61,11 @@ const id = (s: string) => `${idPrefix}-${s}`;
       <span>{guide.button}</span>
       <Icon name="arrow" size={16} class="gf-arrow" />
     </span>
-    <span class="gf-busy" aria-hidden="true"><span class="gf-spin"></span>Sending…</span>
+    <span class="gf-busy" aria-hidden="true"><span class="gf-spin"></span>Preparing…</span>
   </button>
 
   <p class="gf-notice">
-    The guide downloads right away. We'll also email a copy to this address and may follow up about it. See our
+    The guide downloads right away. We may email you to follow up about it. See our
     <a href={withBase('/privacy-policy/')}>Privacy Policy</a>.
   </p>
 
@@ -81,7 +81,7 @@ const id = (s: string) => `${idPrefix}-${s}`;
   <div>
     <p class="gd-title">Your guide is downloading.</p>
     <p class="gd-text">
-      We've also emailed a copy to <strong data-guide-sent-to>your inbox</strong>. If the download did not start,
+      Look for it in your downloads. If it did not start,
       <a href={withBase(guide.file)} download={guide.downloadName}>download the PDF here</a>.
     </p>
   </div>
@@ -392,9 +392,7 @@ const id = (s: string) => `${idPrefix}-${s}`;
       link.remove();
     };
 
-    const confirm = (address: string) => {
-      const to = done.querySelector<HTMLElement>('[data-guide-sent-to]');
-      if (to && address) to.textContent = address;
+    const confirm = () => {
       form.hidden = true;
       done.hidden = false;
       done.focus({ preventScroll: true });
@@ -436,7 +434,7 @@ const id = (s: string) => `${idPrefix}-${s}`;
         // Fire-and-forget: Apps Script answers with a redirect the page cannot read.
         fetch(endpoint, { method: 'POST', body: params, keepalive: true }).catch(() => {});
       }
-      window.setTimeout(() => confirm(emailValue), SENDING_MS);
+      window.setTimeout(confirm, SENDING_MS);
     });
   });
 </script>
